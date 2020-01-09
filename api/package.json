@@ -1,0 +1,43 @@
+{
+  "name": "purify-api",
+  "version": "0.0.1",
+  "description": "Manage vulns",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src/index.js -d lib && cp lib/index.js src/app.js",
+    "start": "nodemon src/index.js --exec babel-node",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@hapi/boom": "^8.0.1",
+    "dotenv": "^8.2.0",
+    "fastify": "^2.10.0",
+    "fastify-boom": "^0.1.0",
+    "fastify-cors": "^3.0.0",
+    "fastify-file-upload": "^2.0.1",
+    "fastify-jwt": "^1.2.1",
+    "fastify-static": "^2.5.1",
+    "fastify-swagger": "^0.15.3",
+    "jira-connector": "^3.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
+    "mongoose": "^5.8.1",
+    "node-uuid": "^1.4.8",
+    "pino-pretty": "^3.4.0",
+    "slug": "^1.1.0",
+    "string-similarity": "^3.0.0",
+    "xml-js": "^1.6.11"
+  },
+  "devDependencies": {
+    "@babel/node": "^7.7.7",
+    "@babel/cli": "^7.7.7",
+    "@babel/register": "^7.7.7",
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-mocha": "^6.2.2",
+    "nodemon": "^2.0.2"
+  }
+}

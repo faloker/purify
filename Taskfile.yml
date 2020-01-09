@@ -1,0 +1,58 @@
+version: '2'
+
+output: prefixed
+
+tasks:
+  web:
+    dir: web
+    deps: [install-web-deps]
+    cmds:
+      - npm run serve
+    silent: true
+
+  install-web-deps:
+    dir: web
+    cmds:
+      - npm i
+    status:
+      - test -d node_modules
+    prefix: "Installing web dependencies"
+    silent: true
+
+  api:
+    dir: api
+    deps: [mongo, install-api-deps]
+    cmds:
+      - npm run start
+    silent: true
+
+  install-api-deps:
+    dir: api
+    cmds:
+      - npm i
+    status:
+      - test -d node_modules
+    prefix: "Installing api dependencies"
+    silent: true
+
+  mongo:
+    cmds:
+      - docker run -p 27017:27017 -d --name dev_mongo mongo
+    status:
+      - docker ps | grep dev_mongo
+    silent: true
+  
+  start:
+    cmds: 
+      - docker-compose up -d --build
+    silent: true
+    status:
+      - docker ps | grep purify_app_1
+  
+  restart:
+    cmds: 
+      - docker-compose stop
+      - docker-compose rm -f
+      - task: start
+    silent: true
+
