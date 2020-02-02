@@ -317,13 +317,16 @@
           />
         </div>
         <v-card-actions>
+          <v-spacer />
           <v-btn
-            color="green text-none"
-            dark
+            color="green"
+            outlined
+            block
             @click="report = false"
           >
             Confirm
           </v-btn>
+          <v-spacer />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -397,8 +400,7 @@ export default {
         compare_fields: this.compare_fields.map((i) => i.replace('issue.', '')),
       }).then(() => {
         this.loading = false;
-        this.$store.dispatch(FETCH_REPORTS);
-        this.$store.dispatch(ISSUES_FETCH);
+        this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug);
 
         this.$emit('update:stepper', false);
 
