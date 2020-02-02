@@ -19,6 +19,17 @@
       <v-list dense>
         <v-list-item
           active-class="primary--text"
+          :to="{name: 'Dashboard'}"
+        >
+          <v-list-item-action>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Dashboard</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
+          active-class="primary--text"
           :to="{name: 'Projects'}"
         >
           <v-list-item-action>
@@ -46,6 +57,8 @@
       app
       color="primary"
       dark
+      flat
+      dense
       hide-on-scroll
     >
       <v-btn
@@ -55,7 +68,7 @@
         <v-icon>mdi-menu</v-icon>
       </v-btn>
       <v-toolbar-title>
-        <span class="font-weight-bold">{{ activePage }}</span>
+        <span id="active-page-name" class="font-weight-bold">{{ activePage }}</span>
       </v-toolbar-title>
     </v-app-bar>
   </div>
@@ -68,10 +81,10 @@ export default {
   data() {
     return {
       drawer: false,
-    }
+    };
   },
   computed: {
-    ...mapGetters(['allPages', 'activePage', 'currentUser']),
+    ...mapGetters(['activePage', 'currentUser']),
   },
 };
 </script>
