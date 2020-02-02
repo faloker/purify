@@ -7,7 +7,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install root dependencies
-        uses: npm i
+        run: npm i
       - name: Start server with docker-compose
         run:  npm start
       - name: Execute tests
