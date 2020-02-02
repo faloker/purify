@@ -26,6 +26,7 @@ const auth = {
         email: { type: 'string' },
         username: { type: 'string' },
         image: { type: 'string' },
+        _id: { type: 'string' },
       },
     },
   },
@@ -56,4 +57,20 @@ const login = {
   },
 };
 
-export default { create, auth, login };
+const createToken = {
+  description: 'Create API token for user',
+  tags: ['users'],
+  response: {
+    200: {
+      description: 'Success',
+      type: 'object',
+      properties: {
+        api_token: { type: 'string' },
+      },
+    },
+  },
+};
+
+export default {
+  create, auth, login, createToken,
+};

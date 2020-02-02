@@ -1,4 +1,4 @@
-const create = {
+export const create = {
   description: 'Create a project',
   tags: ['projects'],
   summary: 'Create a project',
@@ -46,7 +46,7 @@ const create = {
 //   },
 // };
 
-const fetch = {
+export const fetch = {
   description: 'Fetch all projects',
   summary: 'Get all projects',
   tags: ['projects'],
@@ -59,4 +59,18 @@ const fetch = {
   },
 };
 
-export default { create, fetch };
+export const stats = {
+  description: 'Fetch statistics for the project and its units',
+  summary: 'Fetch statistics for the project and its units',
+  tags: ['projects'],
+  querystring: {
+    project: { type: 'string' },
+  },
+  // response: {
+  //   200: {
+  //     description: 'Success',
+  //     type: 'array',
+  //     items: 'project#',
+  //   },
+  // },
+};
