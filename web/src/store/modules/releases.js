@@ -30,8 +30,9 @@ const actions = {
     context.commit(SET_UNITS, data);
   },
   async [CREATE_UNIT](context, payload) {
-    await UnitsService.create(payload);
+    const { data } = await UnitsService.create(payload);
     context.dispatch(FETCH_UNITS, payload.project);
+    return data;
   },
   [DELETE_RELEASE](id) {
     return UnitsService.deleteRelease(id);

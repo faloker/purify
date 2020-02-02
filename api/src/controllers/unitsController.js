@@ -1,4 +1,6 @@
 import boom from '@hapi/boom';
+import slug from 'slug';
+
 import Unit from '../models/Unit';
 import Project from '../models/Project';
 import Report from '../models/Report';
@@ -8,6 +10,7 @@ const createUnit = async (req, reply) => {
   const { body } = req;
 
   const project = await Project.findOne({ slug: body.project });
+  body.slug = `${body.project}-${slug(body.name)}`;
   body.project = project._id;
   const doc = await new Unit(body).save();
 
@@ -15,7 +18,7 @@ const createUnit = async (req, reply) => {
 };
 
 const getUnitsByProjectSlug = async (req, reply) => {
-  const project = await Project.findOne({ slug: req.params.slug });
+  const project = await Project.findOne({ slug: req.query.project });
 
   if (project) {
     const units = await Unit.find({ project: project._id });

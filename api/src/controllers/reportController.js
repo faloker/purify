@@ -3,9 +3,10 @@ import boom from '@hapi/boom';
 import _ from 'lodash';
 
 import Report from '../models/Report';
+import Issue from '../models/Report';
 import Template from '../models/Template';
 import Unit from '../models/Unit';
-import templateController from './templateController';
+import templatesController from './templatesController';
 import { xmlToJson } from '../utils';
 
 const saveReport = async (req, reply) => {
@@ -34,7 +35,7 @@ const saveReport = async (req, reply) => {
 
     if (req.body.template) {
       const template = await Template.findOne({ name: req.body.template });
-      await templateController.applyTemplate(report, template);
+      await templatesController.applyTemplate(report, template);
     }
     // req.log.info(`${rawData}`);
     reply.code(201).send(report);
@@ -82,6 +83,7 @@ const getContent = async (req, reply) => {
 
 const deleteReport = async (req, reply) => {
   const res = await Report.deleteOne({ _id: req.params.id });
+  await Issue.deleteMany({ report: req.params.id });
 
   if (res) {
     reply.send();

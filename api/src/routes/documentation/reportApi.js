@@ -17,7 +17,7 @@ const save = {
       type: 'object',
       properties: {
         _id: { type: 'string' },
-        statistics: { 
+        statistics: {
           type: 'object',
           properties: {
             new: { type: 'number' },
@@ -33,7 +33,7 @@ const fetchByUnit = {
   description: 'Get reports by unit slug',
   tags: ['reports'],
   querystring: {
-    unit_slug: { type: 'string' },
+    unit: { type: 'string' },
   },
   response: {
     200: {

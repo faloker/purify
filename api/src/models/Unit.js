@@ -5,7 +5,7 @@ import slug from 'slug';
 const UnitSchema = mongoose.Schema(
   {
     _id: { type: String, default: uuid.v4 },
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     slug: { type: String, lowercase: true, unique: true },
     project: { type: String, ref: 'Project' },
   },

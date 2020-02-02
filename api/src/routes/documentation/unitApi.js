@@ -18,8 +18,8 @@ const create = {
 const getByProjectSlug = {
   description: 'Get units by project slug',
   tags: ['units'],
-  params: {
-    slug: { type: 'string' },
+  querystring: {
+    project: { type: 'string' },
   },
   response: {
     200: {

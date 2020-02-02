@@ -8,8 +8,9 @@ import {
   ISSUES_FETCH,
   ISSUE_UPDATE,
   CREATE_TICKET,
+  POST_COMMENT,
 } from '../actions';
-import ApiService, { IssuesService } from '@/common/api.service';
+import { IssuesService } from '@/common/api.service';
 
 const state = {
   items: [],
@@ -33,11 +34,18 @@ const actions = {
     const { data } = await IssuesService.fetchIssuesByUnit(unitSlug);
     commit(SET_ISSUES, data);
   },
+
   async [ISSUE_UPDATE]({ commit }, payload) {
     IssuesService.updateIssues(payload);
   },
+
   async [CREATE_TICKET](context, { id, fields }) {
     const { data } = await IssuesService.createTicket(id, fields);
+    return data;
+  },
+
+  async [POST_COMMENT](context, { id, comment }) {
+    const { data } = await IssuesService.postComment(id, comment);
     return data;
   },
 };

@@ -1,13 +1,13 @@
 import _ from 'lodash';
 
-import issueController from './issueController';
+import issuesController from './issuesController';
 import Template from '../models/Template';
 import Report from '../models/Report';
 
 const applyTemplate = async (report, template) => {
   const rep = report;
   const issues = template.path_to_issues !== '' ? _.get(report.content, template.path_to_issues) : report.content;
-  const stat = await issueController.saveIssues(issues, template, report);
+  const stat = await issuesController.saveIssues(issues, template, report);
 
   rep.statistics = stat;
   rep.template = template._id;

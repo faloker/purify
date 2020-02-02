@@ -8,7 +8,7 @@
             class="ml-2"
           >
             <v-row justify="center">
-              <v-tooltip top>
+              <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-btn
                     icon
@@ -34,7 +34,7 @@
             >
               <v-card>
                 <v-card-title>
-                  <span class="headline">Change risk</span>
+                  <span class="title mb-2">Change risk</span>
                 </v-card-title>
                 <v-card-text>
                   <v-select
@@ -42,6 +42,7 @@
                     :items="severities"
                     label="How bad is it?"
                     outlined
+                    dense
                   />
                 </v-card-text>
                 <v-divider />
@@ -49,9 +50,7 @@
                   <v-spacer />
                   <v-btn
                     color="green darken-1"
-                    rounded
                     text
-                    outlined
                     @click="updateIssue(issue, 'risk', risk)"
                   >
                     Confirm
@@ -92,7 +91,7 @@
               :color="issue.is_closed ? 'green' : 'red darken-3'"
               @click="updateIssue(issue, 'is_closed', !issue.is_closed)"
             >
-              {{ issue.is_closed ? 'Open' : 'Close' }}
+              {{ issue.is_closed ? 'Open' : 'Resolve' }}
             </v-btn>
             <v-btn
               v-if="!issue.ticket"
@@ -101,13 +100,13 @@
               color="blue darken-3"
               @click="ticketDialog = !ticketDialog"
             >
-              Create Ticket
               <v-icon
                 color="blue darken-3"
-                right
+                left
               >
                 mdi-jira
               </v-icon>
+              Create Ticket
             </v-btn>
             <v-btn
               v-else
@@ -126,10 +125,44 @@
               </v-icon>
               {{ issue.ticket.key }}
             </v-btn>
+            <v-btn
+              outlined
+              class="mr-2"
+              @click="editDialog = true"
+            >
+              <v-icon left>
+                mdi-pencil
+              </v-icon>
+              Edit
+            </v-btn>
+            <v-btn
+              outlined
+              class="mr-2"
+              @click="commentDialog = true"
+            >
+              <v-icon :left="issue.comments.length" small>
+                mdi-comment-text-multiple
+              </v-icon>
+              <span v-if="issue.comments.length">
+                {{ issue.comments.length }}
+              </span>
+            </v-btn>
+            <v-dialog
+              :key="`edit-dialog-${issue._id}`"
+              v-model="editDialog"
+              max-width="800"
+            >
+              <edit-issue-dialog :issue.sync="issue" />
+            </v-dialog>
             <jira-ticket-dialog
+              :key="`ticket-dialog-${issue._id}`"
               :issue.sync="issue"
-              :issue-text="preparedMarkdown(issue.template.body_fields)"
               :dialog.sync="ticketDialog"
+            />
+            <comment-dialog
+              :key="`idcd-${issue._id}`"
+              :issue.sync="issue"
+              :dialog.sync="commentDialog"
             />
           </v-col>
         </v-row>
@@ -163,6 +196,8 @@
 /* eslint-disable no-restricted-syntax */
 import FieldsParser from '@/components/FieldsParser.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
+import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
+import CommentDialog from '@/components/dialogs/CommentDialog.vue';
 import { matchPattern } from '@/common/utils.servive';
 import {
   ISSUE_UPDATE, ISSUES_FETCH,
@@ -173,6 +208,8 @@ export default {
   components: {
     JiraTicketDialog,
     FieldsParser,
+    CommentDialog,
+    EditIssueDialog,
   },
   props: {
     issue: {
@@ -184,22 +221,24 @@ export default {
   data() {
     return {
       ticketDialog: false,
+      editDialog: false,
       severities: ['Info', 'Low', 'Medium', 'High', 'Critical'],
       riskDialog: false,
+      commentDialog: false,
       risk: 'Medium',
     };
   },
   computed: {
-  },
-  methods: {
-    preparedMarkdown(body) {
+    preparedMarkdown() {
       let result = '';
-      for (const key of body) {
+      for (const key of this.issue.template.body_fields) {
         result += `## ${this.parseKey(key)}\n`;
         result += `${this.getValue(key)}\n\n`;
       }
       return result;
     },
+  },
+  methods: {
     isPrintable(obj) {
       return ['string', 'boolean', 'number'].includes(typeof obj);
     },
@@ -237,9 +276,4 @@ export default {
 };
 </script>
 <style>
-.section-text {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
 </style>

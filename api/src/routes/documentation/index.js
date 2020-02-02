@@ -1,7 +1,7 @@
 import reports from './reportApi';
 import units from './unitApi';
 import issues from './issueApi';
-import projects from './projectApi';
+import * as projects from './projectApi';
 import templates from './templateApi';
 import users from './userApi';
 

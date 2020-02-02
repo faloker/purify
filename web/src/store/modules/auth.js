@@ -29,11 +29,11 @@ const actions = {
     commit(PURGE_AUTH);
   },
   async [LOGIN]({ commit }, credentials) {
-    const { data } = await ApiService.post('login', credentials);
+    const { data } = await ApiService.post('users/login', credentials);
     commit(SET_AUTH, data);
   },
   async [REGISTER]({ commit }, credentials) {
-    const { data } = await ApiService.post('signup', credentials);
+    const { data } = await ApiService.post('users/signup', credentials);
     commit(SET_AUTH, data);
   },
   async [UPDATE_USER]({ commit }, payload) {
@@ -57,10 +57,11 @@ const actions = {
     try {
       JwtService.getToken();
       ApiService.setHeader();
-      const { data } = await ApiService.get('auth');
+      const { data } = await ApiService.get('users/auth');
       commit(SET_USER, data);
     } catch (e) {
       commit(PURGE_AUTH);
+      throw e;
     }
   },
 };

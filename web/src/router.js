@@ -12,6 +12,7 @@ import Settings from '@/views/Settings.vue';
 import ReleasePage from '@/views/ReleasePage.vue';
 import Welcome from '@/views/Welcome.vue';
 import Profile from '@/views/Profile.vue';
+import Dashboard from '@/views/Dashboard.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import { CHECK_AUTH } from './store/actions';
 
@@ -21,10 +22,9 @@ Vue.use(Router);
 // eslint-disable-next-line import/prefer-default-export
 export const router = new Router({
   // mode: 'history',
-  base: process.env.BASE_URL,
   routes: [
     {
-      path: '/', redirect: 'projects',
+      path: '/', redirect: '/projects',
     },
     {
       path: '/welcome',
@@ -38,6 +38,14 @@ export const router = new Router({
       name: 'Projects',
       components: {
         default: Projects,
+        header: TheHeader,
+      },
+    },
+    {
+      path: '/dashboard',
+      name: 'Dashboard',
+      components: {
+        default: Dashboard,
         header: TheHeader,
       },
     },
@@ -90,13 +98,9 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicPages.includes(to.path);
   const { isAuthenticated } = store.getters;
 
-  if (authRequired && !isAuthenticated) {
-    return next('/welcome');
-  }
-
   if (to.path !== '/welcome') {
-    store.dispatch(CHECK_AUTH);
+    store.dispatch(CHECK_AUTH).catch(() => next('/welcome'));
   }
 
-  return next();
+  next();
 });

@@ -1,6 +1,8 @@
 **/node_modules
 **/npm-debug.log
+**/.env
 Dockerfile
 .dockerignore
 .gitignore
 **/.git
+cypress

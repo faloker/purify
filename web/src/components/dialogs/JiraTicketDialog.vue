@@ -9,6 +9,7 @@
       <v-toolbar
         color="green darken-2"
         dark
+        dense
       >
         <v-btn
           icon
@@ -17,7 +18,7 @@
         >
           <v-icon>close</v-icon>
         </v-btn>
-        <v-toolbar-title class="headline">
+        <v-toolbar-title class="title">
           Ticket editor
         </v-toolbar-title>
         <v-spacer />
@@ -27,9 +28,9 @@
             text
             @click="finisher = !finisher"
           >
-            finish
+            next
             <v-icon class="ml-2">
-              mdi-arrow-right-box
+              mdi-chevron-right
             </v-icon>
           </v-btn>
           <v-dialog
@@ -39,7 +40,7 @@
           >
             <v-card>
               <v-card-title>
-                <span class="headline">Complete Ticket</span>
+                <span class="title">Complete Ticket</span>
               </v-card-title>
               <v-card-text>
                 <v-container grid-list-md>
@@ -50,6 +51,7 @@
                       <v-text-field
                         v-model="summary"
                         required
+                        dense
                         label="Summary"
                         outlined
                       />
@@ -60,6 +62,7 @@
                       <v-select
                         v-model="selectedIssuesType"
                         :items="issuesTypes"
+                        dense
                         item-text="name"
                         label="Issue type"
                         outlined
@@ -72,6 +75,7 @@
                       <v-select
                         v-model="selectedProject"
                         :items="projects"
+                        dense
                         item-text="key"
                         label="Project key"
                         outlined
@@ -84,6 +88,7 @@
                       <v-select
                         v-model="selectedAssignee"
                         :items="assignee"
+                        dense
                         item-text="name"
                         label="Assignee"
                         outlined
@@ -96,6 +101,7 @@
                       <v-select
                         v-model="selectedComponents"
                         :items="components"
+                        dense
                         item-text="name"
                         label="Components"
                         outlined
@@ -111,7 +117,6 @@
                 <v-spacer />
                 <v-btn
                   color="red darken-1"
-                  rounded
                   text
                   @click="finisher = !finisher"
                 >
@@ -119,9 +124,7 @@
                 </v-btn>
                 <v-btn
                   color="green darken-1"
-                  rounded
                   text
-                  outlined
                   @click="createTicket()"
                 >
                   Create
@@ -133,7 +136,7 @@
       </v-toolbar>
       <vue-simplemde
         ref="markdownEditor"
-        v-model="issueText"
+        v-model="preparedMarkdown"
         :configs="configs"
       />
     </v-card>
@@ -154,10 +157,10 @@ export default {
     VueSimplemde,
   },
   props: {
-    issueText: {
-      required: true,
-      type: String,
-    },
+    // issueText: {
+    //   required: true,
+    //   type: String,
+    // },
     issue: {
       required: true,
       type: Object,
@@ -174,7 +177,7 @@ export default {
       configs: {
         spellChecker: false, // disable spell check
       },
-      summary: this.applyPattern(this.issue.fields, this.issue.template.title_pattern),
+      // summary: this.applyPattern(this.issue.fields, this.issue.template.title_pattern),
       issuesTypes: [{ name: 'Bug' }],
       projects: [{ key: 'DEV' }],
       components: [{ name: 'kek' }],
@@ -185,9 +188,29 @@ export default {
       selectedComponents: [],
     };
   },
+  computed: {
+    preparedMarkdown() {
+      let result = '';
+      for (const key of this.issue.template.body_fields) {
+        result += `## ${this.parseKey(key)}\n`;
+        result += `${this.getValue(key)}\n\n`;
+      }
+      return result;
+    },
+    summary() {
+      return this.applyPattern(this.issue.fields, this.issue.template.title_pattern);
+    },
+  },
   methods: {
     applyPattern(obj, template) {
       return matchPattern(obj, template);
+    },
+    parseKey(key) {
+      const res = key.includes('.') ? key.match(/\.[^.]+$/)[0].replace('.', '') : key;
+      return _.capitalize(_.startCase(res));
+    },
+    getValue(key) {
+      return _.get(this.issue.fields, key);
     },
     async createTicket() {
       const payload = {};
@@ -196,7 +219,7 @@ export default {
       payload.assignee = { name: null };
       payload.issuetype = this.selectedIssuesType;
       payload.summary = this.summary;
-      payload.description = j2md.to_jira(this.issueText);
+      payload.description = j2md.to_jira(this.preparedMarkdown);
       payload.components = this.selectedComponents;
 
       const ticket = await this.$store.dispatch(CREATE_TICKET, {

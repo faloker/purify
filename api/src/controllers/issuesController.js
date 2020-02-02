@@ -1,16 +1,17 @@
 /* eslint-disable no-restricted-syntax */
 import _ from 'lodash';
 import boom from '@hapi/boom';
-import JiraClient from 'jira-connector';
 import similarity from 'string-similarity';
 
+import jira from '../plugins/jira';
 import Issue from '../models/Issue';
 import Unit from '../models/Unit';
 import Ticket from '../models/Ticket';
+import Comment from '../models/Comment';
 
 
 const fetchByUnit = async (req, reply) => {
-  const unit = await Unit.findOne({ slug: req.query.unit_slug });
+  const unit = await Unit.findOne({ slug: req.query.unit });
 
   if (!unit) {
     throw boom.notFound('Unable to find unit');
@@ -18,7 +19,8 @@ const fetchByUnit = async (req, reply) => {
 
   const docs = await Issue.find({ unit: unit._id })
     .populate('template', ['title_pattern', 'body_fields', 'subtitle_pattern', 'name'])
-    .populate('ticket');
+    .populate('ticket')
+    .populate({ path: 'comments', populate: { path: 'author', select: 'username image' } });
   reply.send(docs);
 };
 
@@ -75,6 +77,7 @@ const saveIssues = async (issues, template, report) => {
       const newIssue = await new Issue(
         {
           unit: report.unit,
+          date: report.date,
           template: template._id,
           fields: issue,
           report: report._id,
@@ -123,26 +126,9 @@ const updateIssues = async (req, reply) => {
   reply.send(doc);
 };
 
-const updateManyIssues = async (req, reply) => {
-  const doc = await Issue.updateMany({
-    _id: { $in: req.body.ids },
-  }, {
-    $set: req.body.change,
-  });
-  reply.send(doc);
-};
-
 const createJiraTicket = async (req, reply) => {
-  const jira = new JiraClient({
-    host: process.env.JIRA_URL,
-    basic_auth: {
-      // eslint-disable-next-line no-use-before-define
-      base64: Buffer.from(`${process.env.JIRA_USER}:${process.env.JIRA_API_KEY}`).toString('base64'),
-    },
-  });
-
   const ticket = await jira.issue.createIssue({ fields: req.body });
-  // req.log.info(ticket);
+
   const t = await new Ticket({
     type: 'jira',
     link: `https://${process.env.JIRA_URL}/browse/${ticket.key}`,
@@ -160,10 +146,34 @@ const createJiraTicket = async (req, reply) => {
 
 const deleteIssue = async (req) => Issue.deleteOne({ _id: req.params.id });
 
+const postComment = async (req, reply) => {
+  const comment = await new Comment(req.body).save();
+
+  // jira.issue
+  //   .getIssue({ issueKey: 'DEV-31' })
+  //   .then((issue) => {
+  //     console.log(issue);
+  //   });
+
+  if (comment) {
+    await Issue.updateOne({
+      _id: req.params.id,
+    }, {
+      $push: { comments: comment._id },
+    });
+
+    const cmt = await Comment.findOne({ _id: comment._id }).populate('author', ['username', 'image']);
+    reply.code(201).send(cmt);
+  } else {
+    boom.badData('Unable to save comment');
+  }
+};
+
 export default {
   fetchByUnit,
   saveIssues,
   deleteIssue,
   updateIssues,
   createJiraTicket,
+  postComment,
 };

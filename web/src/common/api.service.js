@@ -91,7 +91,7 @@ export const ReportsService = {
   },
 
   applyTemplate(reportId, templateId) {
-    return ApiService.update('reports', reportId, templateId);
+    return ApiService.update('reports/', reportId, templateId);
   },
 
   getContent(reportId) {
@@ -99,18 +99,18 @@ export const ReportsService = {
   },
 
   fetchReportsByUnit(unitSlug) {
-    return ApiService.query('reports', {
-      params: { unit_slug: unitSlug },
+    return ApiService.query('reports/', {
+      params: { unit: unitSlug },
     });
   },
 };
 
 export const TemplatesService = {
   addTemplate(params) {
-    return ApiService.post('templates', params);
+    return ApiService.post('templates/', params);
   },
   fetchNames() {
-    return ApiService.get('templates');
+    return ApiService.get('templates/');
   },
 };
 
@@ -122,24 +122,30 @@ export const ProfileService = {
 
 export const IssuesService = {
   fetchIssuesByUnit(unitSlug) {
-    return ApiService.query('issues', {
-      params: { unit_slug: unitSlug },
+    return ApiService.query('issues/', {
+      params: { unit: unitSlug },
     });
   },
+
   updateIssues(payload) {
-    return ApiService.update('issues', payload);
+    return ApiService.update('issues/', payload);
   },
+
   createTicket(id, payload) {
-    return ApiService.post(`issue/${id}/jira`, payload);
+    return ApiService.post(`issues/${id}/jira`, payload);
+  },
+
+  postComment(id, comment) {
+    return ApiService.post(`issues/${id}/comment`, comment);
   },
 };
 
 export const ProjectsService = {
   getProjects() {
-    return ApiService.get('projects');
+    return ApiService.get('projects/');
   },
   createProject(params) {
-    return ApiService.post('projects', params);
+    return ApiService.post('projects/', params);
   },
   deleteProject(id) {
     return ApiService.delete(`projects/${id}`);
@@ -148,15 +154,14 @@ export const ProjectsService = {
 
 export const UnitsService = {
   get(slug) {
-    return ApiService.get(`project/${slug}/units`);
+    return ApiService.query('units/', {
+      params: { project: slug },
+    });
   },
   delete(id) {
-    return ApiService.delete(`release/${id}`);
+    return ApiService.delete(`releases/${id}`);
   },
   create(params) {
-    return ApiService.post('units', params);
-  },
-  changeState(id, stateStatus) {
-    return ApiService.update('release', id, { state: stateStatus });
+    return ApiService.post('units/', params);
   },
 };

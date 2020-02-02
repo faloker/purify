@@ -17,33 +17,29 @@
           ref="search"
           v-model="search"
           clearable
+          dense
           outlined
           @keydown.esc="onEsc"
         >
           <v-template slot="label">
-            What about <strong>search</strong> here?
             <v-icon style="vertical-align: middle">
               search
             </v-icon>
+            Search for unit
           </v-template>
         </v-text-field>
       </v-flex>
       <v-flex shrink>
         <div>
-          <v-tooltip right>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                color="primary"
-                icon
-                class="mx-3 my-2"
-                @click="dialog = true"
-                v-on="on"
-              >
-                <v-icon>mdi-plus-thick</v-icon>
-              </v-btn>
-            </template>
-            <span>Add new unit</span>
-          </v-tooltip>
+          <v-btn
+            color="primary"
+            class="mx-3"
+            text
+            @click="dialog = true"
+          >
+            <v-icon>mdi-pencil</v-icon>
+            Create unit
+          </v-btn>
           <v-dialog
             v-model="dialog"
             persistent
@@ -51,7 +47,7 @@
           >
             <v-card>
               <v-card-title>
-                <span class="headline">New Unit</span>
+                <span class="title">New Unit</span>
               </v-card-title>
               <v-card-text>
                 <v-layout wrap>
@@ -59,6 +55,7 @@
                     <v-text-field
                       v-model="unitName"
                       outlined
+                      dense
                       label="Unit name"
                       clearable
                       required
@@ -66,12 +63,10 @@
                   </v-flex>
                 </v-layout>
               </v-card-text>
-              <v-divider />
               <v-card-actions>
                 <v-spacer />
                 <v-btn
                   color="red darken-1"
-                  rounded
                   text
                   @click="dialog = false"
                 >
@@ -79,9 +74,7 @@
                 </v-btn>
                 <v-btn
                   color="green darken-1"
-                  rounded
                   text
-                  outlined
                   @click="createUnit"
                 >
                   Create
@@ -117,22 +110,22 @@
             </v-btn>
           </template>
 
-          <template
-            v-slot:item.progress="{ item }"
-            class="text-center"
-          >
-            <v-progress-linear
-              background-color="blue-grey"
-              height="14"
-              color="lime"
-              striped
-              :value="calcProgress(item)"
-            />
+          <template v-slot:item.progress="{ item }">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-progress-linear
+                  background-color="blue-grey"
+                  height="14"
+                  color="lime"
+                  striped
+                  :value="calcProgress(item)"
+                  v-on="on"
+                />
+              </template>
+              <span>{{ item.closed_tickets_len }} / {{ item.tickets_len }}</span>
+            </v-tooltip>
           </template>
-          <template
-            v-slot:item.reports="{ item }"
-            class="subheading text-center"
-          >
+          <template v-slot:item.reports="{ item }">
             <v-btn
               text
               rounded
@@ -168,20 +161,20 @@ export default {
       unitName: '',
       headers: [
         {
-          text: 'Name', width: '15%', align: 'center', value: 'name',
+          text: 'Name', width: '30%', align: 'center', value: 'name',
         },
         {
           text: 'Progress',
-          width: '15%',
+          width: '30%',
           align: 'center',
           value: 'progress',
-          sortable: true,
+          sortable: false,
         },
         {
-          text: 'Reports', width: '10%', align: 'center', value: 'reports',
+          text: 'Reports', width: '15%', align: 'center', value: 'reports',
         },
         {
-          text: 'Last Update', width: '10%', align: 'center', value: 'startDate',
+          text: 'Actions', width: '15%', align: 'center', value: 'startDate', sortable: false,
         },
       ],
     };
@@ -223,16 +216,16 @@ export default {
         project: this.$route.params.slug,
       };
 
-      this.$store.dispatch(CREATE_UNIT, payload);
-
-      this.unitName = '';
-      this.dialog = false;
+      this.$store.dispatch(CREATE_UNIT, payload).then(() => {
+        this.unitName = '';
+        this.dialog = false;
+      });
     },
     onEsc() {
       this.$refs.search.blur();
     },
     calcProgress(item) {
-      return (item.tickets_len / 100) * item.closed_tickets_len;
+      return (item.closed_tickets_len / item.tickets_len) * 100;
     },
   },
 };

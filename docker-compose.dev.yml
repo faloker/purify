@@ -1,0 +1,28 @@
+version: "2"
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_db:/data/db
+    ports:
+      - 27017:27017
+
+  app:
+    build: .
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - 8080:3000
+    environment:
+      NODE_ENV: production
+      MONGO_USERNAME: root
+      MONGO_PASSWORD: example
+
+volumes:
+  mongo_db: {}    

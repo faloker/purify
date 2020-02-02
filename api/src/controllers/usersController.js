@@ -1,4 +1,5 @@
 import boom from '@hapi/boom';
+import { randomBytes } from 'crypto';
 import User from '../models/User';
 
 const createUser = async (req, reply) => {
@@ -38,8 +39,24 @@ const loginUser = async (req, reply) => {
   });
 };
 
+const createToken = async (req, reply) => {
+  const token = randomBytes(16).toString('hex');
+
+  await User.findOneAndUpdate({ _id: req.user.id }, { $set: { token } });
+  reply.code(201).send({ token });
+};
+
+const verifyToken = async (token) => {
+  const user = await User.findOne({ token });
+  if (!user) {
+    throw boom.unauthorized('Token is invalid');
+  }
+};
+
 export default {
   createUser,
   authUser,
   loginUser,
+  createToken,
+  verifyToken,
 };

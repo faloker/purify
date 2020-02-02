@@ -7,15 +7,15 @@
       <template v-slot:activator="{ on }">
         <v-btn
           icon
-          color="green"
+          color="red"
           :disabled="!items.length"
           v-on="on"
           @click="updateIssues(items, 'is_fp', true)"
         >
-          <v-icon> thumbs_up_down</v-icon>
+          <v-icon>thumb_down</v-icon>
         </v-btn>
       </template>
-      <span>Mark as fp</span>
+      <span>Mark issues as false positive</span>
     </v-tooltip>
     <!-- <v-tooltip
       top

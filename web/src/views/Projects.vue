@@ -3,103 +3,93 @@
     flat
     height="100%"
   >
-    <v-layout
-      wrap
-      class="pt-5 mb-5"
-    >
-      <v-spacer />
-      <v-flex
-        xs4
-        shrink
-      >
-        <v-text-field
-          id="search"
-          ref="search"
-          v-model="search"
-          clearable
-          outlined
-          @keydown.esc="onEsc"
-        >
-          <v-template slot="label">
-            What about <strong>search</strong> here?
-            <v-icon style="vertical-align: middle">
-              search
-            </v-icon>
-          </v-template>
-        </v-text-field>
-      </v-flex>
-      <v-flex shrink>
-        <v-tooltip right>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              color="primary"
-              icon
-              class="mx-3 my-2"
-              @click="dialog = true"
-              v-on="on"
-            >
-              <v-icon>mdi-plus-thick</v-icon>
-            </v-btn>
-          </template>
-          <span>Add new project</span>
-        </v-tooltip>
-        <v-dialog
-          v-model="dialog"
-          max-width="400px"
-        >
-          <v-card>
-            <v-card-title>
-              <span class="mb-3 headline">New project</span>
-            </v-card-title>
-            <v-spacer />
-            <v-card-text>
-              <v-layout wrap>
-                <v-flex xs12>
-                  <v-text-field
-                    v-model="projectTitle"
-                    label="Project title"
-                    clearable
-                    required
-                  />
-                </v-flex>
-                <v-flex xs12>
-                  <v-text-field
-                    v-model="projectSubtitle"
-                    label="Project short description"
-                    clearable
-                    hint="For example, list of technologies: django, react, e.t.c"
-                    required
-                  />
-                </v-flex>
-              </v-layout>
-            </v-card-text>
-            <v-divider />
-            <v-card-actions>
+    <v-container>
+      <v-row>
+        <v-spacer />
+        <v-col>
+          <v-text-field
+            id="search"
+            ref="search"
+            v-model="search"
+            clearable
+            dense
+            outlined
+            @keydown.esc="onEsc"
+          >
+            <v-template slot="label">
+              <v-icon style="vertical-align: middle">
+                search
+              </v-icon>
+              Search for project
+            </v-template>
+          </v-text-field>
+        </v-col>
+        <v-col>
+          <v-btn
+            color="primary"
+            text
+            class=""
+            @click="dialog = true"
+          >
+            <v-icon>mdi-pencil</v-icon>
+            Create project
+          </v-btn>
+          <v-dialog
+            v-model="dialog"
+            max-width="500px"
+          >
+            <v-card>
+              <v-card-title>
+                <span class="mb-3 title">New project</span>
+              </v-card-title>
               <v-spacer />
-              <v-btn
-                color="red darken-1"
-                rounded
-                text
-                @click="dialog = false"
-              >
-                Close
-              </v-btn>
-              <v-btn
-                color="green darken-1"
-                rounded
-                text
-                outlined
-                @click="createProject"
-              >
-                Create
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-flex>
-      <v-spacer />
-    </v-layout>
-    <v-container fluid>
+              <v-card-text>
+                <v-layout wrap>
+                  <v-flex xs12>
+                    <v-text-field
+                      v-model="projectTitle"
+                      label="Project title"
+                      outlined
+                      dense
+                      clearable
+                      required
+                    />
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-text-field
+                      v-model="projectSubtitle"
+                      label="Project short description"
+                      clearable
+                      dense
+                      outlined
+                      hint="For example, a tech stack: django, react, e.t.c"
+                      required
+                    />
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn
+                  color="red darken-1"
+                  text
+                  @click="dialog = false"
+                >
+                  Close
+                </v-btn>
+                <v-btn
+                  color="green darken-1"
+                  :disabled="projectTitle.length < 3"
+                  text
+                  @click="createProject"
+                >
+                  Create
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-col>
+      </v-row>
       <v-row
         align="center"
         justify="space-around"

@@ -2,10 +2,10 @@
   <v-hover>
     <v-card
       slot-scope="{ hover }"
-      :class="`elevation-${hover ? 20 : 2}`"
-      class="mx-auto my-4"
+      :class="`elevation-${hover ? 15 : 0}`"
+      outlined
+      class="mx-auto my-3"
       width="400"
-      :to="{name: 'Units', params: { slug: project.slug }}"
     >
       <!-- <v-sheet
           v-if="!project.chart"
@@ -16,7 +16,7 @@
             Not enough data for chart
           </span>
         </v-sheet> -->
-      <v-sheet
+      <!-- <v-sheet
         class="v-sheet--offset mx-auto"
         color="primary"
         elevation="12"
@@ -29,45 +29,68 @@
           line-width="2"
           padding="16"
         />
-      </v-sheet>
+      </v-sheet> -->
 
-      <v-card-text class="text-center">
+      <div class="px-3 pt-3">
         <div class="title font-weight-light mb-2">
-          {{ project.title }}
+          <router-link :to="{name: 'Units', params: { slug: project.slug }}">
+            {{ project.title }}
+          </router-link>
         </div>
         <div class="subheading font-weight-light grey--text">
           {{ project.subtitle }}
         </div>
         <v-divider class="mt-2" />
-        <v-container>
-          <v-row>
-            <v-col>
-              <p class="display-1 font-weight-black">
-                {{ project.units }}
-              </p>
-              <span class="subheading font-weight-medium">Units</span>
-            </v-col>
+        <v-container fluid>
+          <v-row
+            dense
+            class="text-center"
+          >
             <v-col>
               <p class="display-1 font-weight-black">
                 {{ project.issues }}
               </p>
-              <span class="subheading font-weight-medium">Issues</span>
+              <span class="subheading">
+                <v-icon small>fa-bug</v-icon>
+                Issues
+              </span>
             </v-col>
             <v-col>
               <p class="display-1 font-weight-black">
                 {{ project.tickets }}
               </p>
-              <span class="subheading font-weight-medium">Tickets</span>
+              <span class="subheading">
+                <v-icon small>mdi-cards</v-icon>
+                Tickets
+              </span>
+            </v-col>
+            <v-col>
+              <p class="display-1 font-weight-black">
+                {{ project.units }}
+              </p>
+              <span class="subheading font-weight-medium">
+                <v-icon small>mdi-folder</v-icon>
+                Units
+              </span>
             </v-col>
           </v-row>
-          <v-divider />
-          <v-row no-gutters>
+          <!-- <v-row no-gutters>
             <v-col>
               <span class="caption grey--text font-weight-light ">last update 26 minutes ago</span>
             </v-col>
-          </v-row>
+          </v-row> -->
         </v-container>
-      </v-card-text>
+      </div>
+      <v-divider />
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          color="primary"
+          text
+        >
+          Actions
+        </v-btn>
+      </v-card-actions>
     </v-card>
   </v-hover>
 </template>
