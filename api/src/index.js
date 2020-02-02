@@ -1,7 +1,18 @@
-import boom from '@hapi/boom';
-import fs from 'fs';
-import { randomBytes } from 'crypto';
 import dotenv from 'dotenv';
+import { randomBytes } from 'crypto';
+
+import reportsRoutes from './routes/reports';
+import projectsRoutes from './routes/projects';
+import issuesRoutes from './routes/issues';
+import templatesRoutes from './routes/templates';
+import usersRoutes from './routes/users';
+import unitsRoutes from './routes/units';
+import db from './plugins/db';
+import addSchemas from './schemas';
+
+import authHooks from './hooks/auth';
+import loggerHooks from './hooks/logger';
+import mountCrons from './plugins/cron';
 
 const fastify = require('fastify')({
   logger: {
@@ -10,80 +21,45 @@ const fastify = require('fastify')({
   },
 });
 
+// Read .env file from current directory
 dotenv.config();
-
-const mongoose = require('mongoose');
-
-const routes = require('./routes');
-const schemas = require('./schemas');
 
 const swagger = require('./config/swagger');
 
+// Register plugins
 fastify.register(require('fastify-swagger'), swagger.options);
 fastify.register(require('fastify-file-upload'));
 fastify.register(require('fastify-boom'));
 fastify.register(require('fastify-cors'));
-
-
+fastify.register(require('fastify-helmet'));
 fastify.register(require('fastify-jwt'), {
   secret: randomBytes(40).toString('hex'),
 });
 
-fastify.decorate('authenticate', async (request, reply) => {
-  try {
-    await request.jwtVerify();
-  } catch (err) {
-    throw boom.unauthorized('You are not authorized');
-  }
-});
+// Register API routes
+fastify.register(reportsRoutes, { prefix: '/api/reports' });
+fastify.register(projectsRoutes, { prefix: '/api/projects' });
+fastify.register(issuesRoutes, { prefix: '/api/issues' });
+fastify.register(templatesRoutes, { prefix: '/api/templates' });
+fastify.register(usersRoutes, { prefix: '/api/users' });
+fastify.register(unitsRoutes, { prefix: '/api/units' });
 
-fastify.addHook('onRequest', async (req, reply) => {
-  const publicEndpoints = ['/api/login', '/api/auth', '/api/signup', '/documentation', '/css', '/js', '/img', '/fonts'];
-  const isPublic = publicEndpoints.filter((endpoint) => req.raw.url.includes(endpoint)).length;
+// Connect to mongodb
+fastify.register(db);
 
-  if (!(isPublic || req.raw.url === '/')) {
-    try {
-      await req.jwtVerify();
-    } catch (err) {
-      reply.send(err);
-    }
-  }
-});
+// Register hooks
+authHooks(fastify);
+loggerHooks(fastify);
 
-let mongoUrl = 'mongodb://localhost:27017/purify';
+// Add schemes
+addSchemas(fastify);
 
-if (process.env.NODE_ENV === 'production') {
-  fastify.register(require('fastify-static'), {
-    root: '/home/node/app/static',
-  });
-  mongoUrl = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongo:27017/admin`;
-}
+// Mount cron jobs
+mountCrons(fastify);
 
-mongoose.connect(mongoUrl, { useNewUrlParser: true })
-  .then(() => fastify.log.info('Connection to mongo established ...'))
-  .catch((err) => fastify.log.error(err));
-
-routes.forEach((route, index) => {
-  fastify.route(route);
-});
-
-schemas.forEach((schema, index) => {
-  fastify.addSchema(schema);
-});
-
-fastify.addHook('onError', async (request, reply, error) => {
-  fastify.log.error(error);
-});
-
-const start = async () => {
-  try {
-    await fastify.listen(3000, '0.0.0.0');
-    fastify.swagger();
-    fastify.log.info(`Server is up on ${fastify.server.address().port}`);
-  } catch (err) {
+fastify.listen(3000, '0.0.0.0', (err, address) => {
+  if (err) {
     fastify.log.error(err);
     process.exit(1);
   }
-};
-
-start();
+});
