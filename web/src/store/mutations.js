@@ -23,3 +23,5 @@ export const SET_TEMLATES_NAMES = 'setTemplatesNames';
 export const SET_CONTENT = 'setContent';
 
 export const SET_USER = 'setUser';
+
+export const SET_STATS = 'setStats';
