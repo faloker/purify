@@ -5,11 +5,12 @@
         {{ parseKey(ikey) }}
       </div>
       <v-divider class="my-1" />
-      <div
+      <p
         v-if="isPrintable(ivalue)"
-        class="subheading section-text mb-2"
-        v-html="ivalue"
-      />
+        style="white-space: pre-line;"
+      >
+        {{ ivalue }}
+      </p>
     </template>
     <template v-else-if="Array.isArray(ivalue)">
       <template v-if="isPrintable(ivalue[0])">
@@ -93,9 +94,3 @@ export default {
   },
 };
 </script>
-<style>
-.section-text {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-</style>
