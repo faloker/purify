@@ -47,12 +47,18 @@ tasks:
       - docker-compose up -d --build
     silent: true
     status:
+      - docker ps | grep purify_app_1  
+
+  start-dev:
+    cmds: 
+      - docker-compose -f docker-compose.dev.yml up -d --build
+    silent: true
+    status:
       - docker ps | grep purify_app_1
   
-  restart:
+  stop:
     cmds: 
       - docker-compose stop
       - docker-compose rm -f
-      - task: start
     silent: true
 
