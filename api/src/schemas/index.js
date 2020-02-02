@@ -1,5 +1,5 @@
-const schemas = [
-  {
+export default ((fastify) => {
+  fastify.addSchema({
     $id: 'project',
     type: 'object',
     properties: {
@@ -11,47 +11,9 @@ const schemas = [
       tickets: { type: 'number' },
       issues: { type: 'number' },
     },
-  },
-  {
-    $id: 'unit',
-    type: 'object',
-    properties: {
-      _id: { type: 'string' },
-      name: { type: 'string' },
-      slug: { type: 'string' },
-      project: { type: 'string' },
-      reports: { type: 'number' },
-      closed_tickets_len: { type: 'number' },
-      tickets_len: { type: 'number' },
-    },
-  },
-  {
-    $id: 'authUser',
-    type: 'object',
-    properties: {
-      username: { type: 'string' },
-      email: { type: 'string' },
-      token: { type: 'string' },
-      image: { type: 'string' },
-    },
-  },
-  {
-    $id: 'issue',
-    type: 'object',
-    properties: {
-      _id: { type: 'string' },
-      fields: { type: 'object' },
-      is_closed: { type: 'boolean' },
-      is_fp: { type: 'boolean' },
-      dup_score: { type: 'number' },
-      risk: { type: 'string' },
-      template: { type: 'string' },
-      report: { type: 'string' },
-      ticket_id: { type: 'string' },
-      unit: { type: 'string' },
-    },
-  },
-  {
+  });
+
+  fastify.addSchema({
     $id: 'report_without_content',
     type: 'object',
     properties: {
@@ -67,7 +29,48 @@ const schemas = [
       unit: { type: 'string' },
       template: { type: 'object', properties: { name: { type: 'string' } } },
     },
-  },
-];
+  });
 
-module.exports = schemas;
+  fastify.addSchema({
+    $id: 'issue',
+    type: 'object',
+    properties: {
+      _id: { type: 'string' },
+      fields: { type: 'object' },
+      is_closed: { type: 'boolean' },
+      is_fp: { type: 'boolean' },
+      dup_score: { type: 'number' },
+      risk: { type: 'string' },
+      template: { type: 'string' },
+      report: { type: 'string' },
+      ticket_id: { type: 'string' },
+      unit: { type: 'string' },
+      comments: { type: 'array' },
+    },
+  });
+
+  fastify.addSchema({
+    $id: 'authUser',
+    type: 'object',
+    properties: {
+      username: { type: 'string' },
+      email: { type: 'string' },
+      token: { type: 'string' },
+      image: { type: 'string' },
+    },
+  });
+
+  fastify.addSchema({
+    $id: 'unit',
+    type: 'object',
+    properties: {
+      _id: { type: 'string' },
+      name: { type: 'string' },
+      slug: { type: 'string' },
+      project: { type: 'string' },
+      reports: { type: 'number' },
+      closed_tickets_len: { type: 'number' },
+      tickets_len: { type: 'number' },
+    },
+  });
+});
