@@ -1,4 +1,3 @@
-import fastify from 'fastify';
 import { Schema, model } from 'mongoose';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import uuid from 'node-uuid';
@@ -15,6 +14,7 @@ const UserSchema = new Schema({
   hash: String,
   salt: String,
   theme: { type: String, default: '' },
+  token: String,
 }, { versionKey: false });
 
 
