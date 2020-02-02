@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "docker-compose -f docker-compose.dev.yml up -d --build",
     "cy:verify": "cypress verify",
     "cy:version": "cypress version",
     "cy:run": "cypress run"
