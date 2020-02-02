@@ -24,6 +24,9 @@ export const router = new Router({
   // mode: 'history',
   routes: [
     {
+      path: '/', redirect: '/projects',
+    },
+    {
       path: '/welcome',
       name: 'Welcome',
       components: {
