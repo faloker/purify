@@ -1,6 +1,6 @@
 describe('Registration', () => {
   beforeEach(() => {
-    // cy.task('flush:db')
+    cy.task('flush:db')
     cy.visit('http://localhost:8080/#/welcome')
   })
 
@@ -29,7 +29,7 @@ describe('Registration', () => {
 
 
   it('Fails to register with the same credentials', () => {
-    cy.request('POST', 'http://localhost:3000/api/users/signup', { 
+    cy.request('POST', 'http://localhost:8080/api/users/signup', { 
       email: 'test@test.test',
       password: 'test',
       username: 'test'
