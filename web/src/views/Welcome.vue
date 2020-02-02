@@ -30,10 +30,16 @@
               fixed-tabs
               slider-color="primary"
             >
-              <v-tab class="title text-none">
+              <v-tab
+                id="tab-login"
+                class="title text-none"
+              >
                 Login
               </v-tab>
-              <v-tab class="title text-none">
+              <v-tab
+                id="tab-register"
+                class="title text-none"
+              >
                 Register
               </v-tab>
               <v-tabs-items
@@ -47,6 +53,7 @@
                     >
                       <v-flex>
                         <v-text-field
+                          id="username"
                           v-model="username"
                           label="Username"
                           prepend-icon="accessibility_new"
@@ -55,6 +62,7 @@
                       </v-flex>
                       <v-flex>
                         <v-text-field
+                          id="password"
                           v-model="password"
                           label="Password"
                           required
@@ -64,11 +72,13 @@
                       </v-flex>
                       <v-flex align-self-center>
                         <v-btn
+                          class="mt-3"
+                          outlined
                           type="submit"
                           color="primary"
                           @click="login"
                         >
-                          Sign in
+                          Sign In
                         </v-btn>
                       </v-flex>
                     </v-layout>
@@ -81,6 +91,7 @@
                     >
                       <v-flex>
                         <v-text-field
+                          id="user"
                           v-model="username"
                           label="Username"
                           prepend-icon="accessibility_new"
@@ -89,6 +100,7 @@
                       </v-flex>
                       <v-flex>
                         <v-text-field
+                          id="email"
                           v-model="email"
                           label="Email"
                           required
@@ -97,6 +109,7 @@
                       </v-flex>
                       <v-flex>
                         <v-text-field
+                          id="pass"
                           v-model="password"
                           label="Password"
                           required
@@ -106,11 +119,13 @@
                       </v-flex>
                       <v-flex align-self-center>
                         <v-btn
+                          class="mt-3"
+                          outlined
                           type="submit"
                           color="primary"
                           @click="register"
                         >
-                          Sign up
+                          Sign Up
                         </v-btn>
                       </v-flex>
                     </v-layout>
