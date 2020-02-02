@@ -140,7 +140,7 @@
               class="mr-2"
               @click="commentDialog = true"
             >
-              <v-icon left small>
+              <v-icon :left="issue.comments.length" small>
                 mdi-comment-text-multiple
               </v-icon>
               <span v-if="issue.comments.length">
