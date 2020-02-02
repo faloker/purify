@@ -76,7 +76,7 @@
                           outlined
                           type="submit"
                           color="primary"
-                          @click="login"
+                          @click.prevent="login"
                         >
                           Sign In
                         </v-btn>
@@ -123,7 +123,7 @@
                           outlined
                           type="submit"
                           color="primary"
-                          @click="register"
+                          @click.prevent="register"
                         >
                           Sign Up
                         </v-btn>
