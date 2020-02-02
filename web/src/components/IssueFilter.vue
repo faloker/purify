@@ -7,6 +7,7 @@
             v-model="search_term"
             label="Issue text"
             clearable
+            dense
             prepend-icon="short_text"
             @input="$emit('search_term', search_term)"
           />
@@ -18,6 +19,7 @@
             prepend-icon="fa-bug"
             label="Risk"
             clearable
+            dense
             @input="$emit('risk_level', risk_level)"
           />
         </v-col>
@@ -28,15 +30,18 @@
             label="False Positive"
             prepend-icon="thumbs_up_down"
             clearable
+            dense
             @input="$emit('fp_status', fp_status)"
           />
-        </v-col><v-col>
+        </v-col>
+        <v-col>
           <v-select
             v-model="closed_status"
             :items="['Yes', 'No']"
-            label="Closed"
-            prepend-icon="fa-times"
+            label="Resolved"
+            prepend-icon="fa-check"
             clearable
+            dense
             @input="$emit('closed_status', closed_status)"
           />
         </v-col>
@@ -47,6 +52,7 @@
             label="Ticket"
             prepend-icon="mdi-cards"
             clearable
+            dense
             @input="$emit('ticket_status', ticket_status)"
           />
         </v-col>
@@ -114,6 +120,7 @@
             :items="templatesNamesAndTags.names"
             label="Template"
             chips
+            dense
             multiple
             clearable
             prepend-icon="fa-file"
@@ -137,6 +144,7 @@
             :items="templatesNamesAndTags.tags"
             label="Tags"
             chips
+            dense
             multiple
             clearable
             prepend-icon="mdi-tag-multiple"
