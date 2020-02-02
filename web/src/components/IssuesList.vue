@@ -15,7 +15,7 @@
                 on-icon="done_all"
                 class="pl-6"
                 v-on="on"
-                @change="selectAll"
+                @change="selectAll()"
               />
             </template>
             <span v-if="!allSelected">Select All</span>
@@ -109,13 +109,21 @@
                           {{ item.ticket.key }}
                         </v-btn>
                       </v-list-item-action>
-                    <!-- <v-flex shrink>
-                <v-list-item-action>
-                  <span class="caption grey--text font-weight-light">
-                    updated {{ dateInDays(item.date, today) }} day(s) ago
-                  </span>
-                </v-list-item-action>
-              </v-flex> -->
+                      <v-list-item-action>
+                        <v-btn
+                          v-if="item.comments.length"
+                          text
+                          class="mt-2 mr-3"
+                          @click="openComments(item)"
+                        >
+                          <v-icon left small>
+                            mdi-comment-text-multiple
+                          </v-icon>
+                          <span>
+                            {{ item.comments.length }}
+                          </span>
+                        </v-btn>
+                      </v-list-item-action>
                     </template>
                   </v-list-item>
                   <v-divider
@@ -171,12 +179,19 @@
         </v-col>
       </v-row>
     </template>
+    <comment-dialog
+      :key="`ilcd-${selectedIssue._id}`"
+      :issue.sync="selectedIssue"
+      :dialog.sync="commentDialog"
+    />
   </v-container>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import GroupActionBtn from '@/components/buttons/GroupActionButton.vue';
 import IssueDetails from '@/components/dialogs/IssueDetails.vue';
+import CommentDialog from '@/components/dialogs/CommentDialog.vue';
 import { matchPattern, dateDiffInDays } from '@/common/utils.servive';
 
 export default {
@@ -184,6 +199,7 @@ export default {
   components: {
     GroupActionBtn,
     IssueDetails,
+    CommentDialog,
   },
   props: {
     rawItems: {
@@ -195,10 +211,11 @@ export default {
   data() {
     return {
       page: 1,
+      commentDialog: false,
       search: '',
       pageSize: 5,
       pageCount: this.rawItems / this.pageSize,
-      allSelected: false,
+      // allSelected: false,
       selected: [],
       rating: 3,
       dialog: false,
@@ -207,11 +224,15 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['activePage', 'currentUser']),
     items() {
       return this.rawItems.filter(
         (item, index) => (index >= (this.page - 1) * this.pageSize)
           && (index < this.page * this.pageSize),
       );
+    },
+    allSelected() {
+      return this.selected.length === 5;
     },
   },
 
@@ -234,13 +255,17 @@ export default {
     },
     selectAll() {
       if (this.allSelected) {
-        this.selected = this.items.map((i) => i._id);
-      } else {
         this.selected = [];
+      } else {
+        this.selected = this.items.map((i) => i._id);
       }
     },
     openIssue(item) {
       this.dialog = true;
+      this.selectedIssue = item;
+    },
+    openComments(item) {
+      this.commentDialog = true;
       this.selectedIssue = item;
     },
     genColor(risk) {
