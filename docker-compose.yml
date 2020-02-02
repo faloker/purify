@@ -11,13 +11,12 @@ services:
       - mongo_db:/data/db
 
   app:
-    # build: .
     image: faloker/purify
     restart: always
     depends_on:
-      - "mongo"
+      - mongo
     ports:
-      - "8080:3000"
+      - 8080:3000
     environment:
       NODE_ENV: production
       MONGO_USERNAME: root
