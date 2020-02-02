@@ -13,6 +13,9 @@ const issue = new Schema(
     report: { type: String, ref: 'Report' },
     ticket: { type: String, ref: 'Ticket' },
     unit: { type: String, ref: 'Unit' },
+    tags: [{ type: String }],
+    comments: [{ type: String, ref: 'Comment' }],
+    date: Date,
   },
   { versionKey: false },
 );
