@@ -7,12 +7,13 @@ import issuesRoutes from './routes/issues';
 import templatesRoutes from './routes/templates';
 import usersRoutes from './routes/users';
 import unitsRoutes from './routes/units';
-import db from './plugins/db';
 import addSchemas from './schemas';
 
 import authHooks from './hooks/auth';
 import loggerHooks from './hooks/logger';
 import mountCrons from './plugins/cron';
+import db from './plugins/db/connect';
+import mailer from './plugins/mailer';
 
 const fastify = require('fastify')({
   logger: {
@@ -47,6 +48,9 @@ fastify.register(unitsRoutes, { prefix: '/api/units' });
 // Connect to mongodb
 fastify.register(db);
 
+// Register mailing service
+// fastify.register(mailer);
+
 // Register hooks
 authHooks(fastify);
 loggerHooks(fastify);
@@ -55,7 +59,7 @@ loggerHooks(fastify);
 addSchemas(fastify);
 
 // Mount cron jobs
-mountCrons(fastify);
+// mountCrons(fastify);
 
 fastify.listen(3000, '0.0.0.0', (err, address) => {
   if (err) {
