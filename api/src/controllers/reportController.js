@@ -3,13 +3,13 @@ import boom from '@hapi/boom';
 import _ from 'lodash';
 
 import Report from '../models/Report';
-import Issue from '../models/Report';
+import Issue from '../models/Issue';
 import Template from '../models/Template';
 import Unit from '../models/Unit';
-import templatesController from './templatesController';
+import { applyTemplate } from './templatesController';
 import { xmlToJson } from '../utils';
 
-const saveReport = async (req, reply) => {
+export const saveReport = async (req, reply) => {
   const { file, unit } = req.body;
   const fileName = file.name;
   const rawData = file.data.toString('utf8');
@@ -22,10 +22,11 @@ const saveReport = async (req, reply) => {
   } else if (fileName.indexOf('.xml') > -1) {
     data = xmlToJson(rawData);
   } else {
-    throw boom.notAcceptable('Not supported format');
+    throw boom.notAcceptable('Unsupported format');
   }
 
   const u = await Unit.findOne({ slug: unit });
+
   if (u) {
     const report = await new Report({
       unit: u._id,
@@ -35,39 +36,47 @@ const saveReport = async (req, reply) => {
 
     if (req.body.template) {
       const template = await Template.findOne({ name: req.body.template });
-      await templatesController.applyTemplate(report, template);
+      await applyTemplate(report, template);
     }
-    // req.log.info(`${rawData}`);
+
     reply.code(201).send(report);
   } else {
     throw boom.notFound('Unable to find unit');
   }
 };
 
-const fetchReportsBySlug = async (req, reply) => {
-  const unit = await Unit.findOne({ slug: req.query.unit_slug });
+export const fetchReportsBySlug = async (req, reply) => {
+  const unit = await Unit.findOne({ slug: req.query.unit });
 
   if (!unit) {
     throw boom.notFound('Unable to find unit');
   }
 
-  const docs = await Report.find({ unit: unit._id }, '-content').populate('template', 'name');
+  const docs = await Report.find({ unit: unit._id }, '-content').populate(
+    'template',
+    'name'
+  );
   reply.send(docs);
 };
 
-const getContent = async (req, reply) => {
+export const getContent = async (req, reply) => {
   const report = await Report.findOne({ _id: req.params.id });
 
   const result = {};
 
   function recur(obj, path) {
-    if (_.isArray(obj)) {
-      result[path] = obj[0];
+    if (Array.isArray(obj) && Object.keys(obj).length) {
+      const len = Math.max(...obj.map(o => Object.keys(o).length), 0);
+      result[path] = _.find(obj, k => Object.keys(k).length === len);
     }
     _.forOwn(obj, (value, key) => {
-      if (_.isArray(value) && !_.isEmpty(value)) {
+      if (Array.isArray(value) && Object.keys(value).length) {
         if (_.isObject(value[0])) {
-          result[`${path}.${key}[0]`] = value[0];
+          const len = Math.max(...value.map(o => Object.keys(o).length), 0);
+          result[`${path}.${key}[0]`] = _.find(
+            value,
+            k => Object.keys(k).length === len
+          );
         }
       } else if (_.isObject(value)) {
         recur(value, `${path}.${key}`);
@@ -77,11 +86,10 @@ const getContent = async (req, reply) => {
 
   recur(report.content, 'root');
 
-
   reply.send(result);
 };
 
-const deleteReport = async (req, reply) => {
+export const deleteReport = async (req, reply) => {
   const res = await Report.deleteOne({ _id: req.params.id });
   await Issue.deleteMany({ report: req.params.id });
 
@@ -90,8 +98,4 @@ const deleteReport = async (req, reply) => {
   } else {
     throw boom.notFound('Unable to find report');
   }
-};
-
-export default {
-  saveReport, fetchReportsBySlug, getContent, deleteReport,
 };

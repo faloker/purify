@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import _ from 'lodash';
 import boom from '@hapi/boom';
 import similarity from 'string-similarity';
@@ -9,8 +8,7 @@ import Unit from '../models/Unit';
 import Ticket from '../models/Ticket';
 import Comment from '../models/Comment';
 
-
-const fetchByUnit = async (req, reply) => {
+export const fetchByUnit = async (req, reply) => {
   const unit = await Unit.findOne({ slug: req.query.unit });
 
   if (!unit) {
@@ -18,36 +16,48 @@ const fetchByUnit = async (req, reply) => {
   }
 
   const docs = await Issue.find({ unit: unit._id })
-    .populate('template', ['title_pattern', 'body_fields', 'subtitle_pattern', 'name'])
+    .populate('template', [
+      'title_pattern',
+      'body_fields',
+      'subtitle_pattern',
+      'name',
+    ])
     .populate('ticket')
-    .populate({ path: 'comments', populate: { path: 'author', select: 'username image' } });
+    .populate({
+      path: 'comments',
+      populate: { path: 'author', select: 'username image' },
+    });
   reply.send(docs);
 };
 
-const saveIssues = async (issues, template, report) => {
+export const saveIssues = async (issues, template, report) => {
   let newOnes = 0;
 
   let allIssuesInUnit = await Issue.find({ unit: report.unit });
 
-  allIssuesInUnit = allIssuesInUnit
-    .map((issue) => JSON.stringify(Object.values(issue.fields)));
+  allIssuesInUnit = allIssuesInUnit.map(issue =>
+    JSON.stringify(Object.values(issue.fields))
+  );
+
+  const fieldsToCompare = template.compare_fields;
   // allIssuesInUnit = allIssuesInUnit.map((f) => JSON.stringify(f));
 
   if (!allIssuesInUnit.length) allIssuesInUnit.push('');
 
-  const allTemplateIssuesInUnit = await Issue.find({ unit: report.unit, template: template._id });
+  const allTemplateIssuesInUnit = await Issue.find({
+    unit: report.unit,
+    template: template._id,
+  });
 
   for (const issue of issues) {
-    const fieldsToCompare = template.compare_fields;
     const statistics = {};
-
     let issueToUpdate = {};
 
     if (allTemplateIssuesInUnit.length) {
       for (const field of fieldsToCompare) {
         const { bestMatch } = similarity.findBestMatch(
           _.get(issue, field),
-          allTemplateIssuesInUnit.map((i) => _.get(i.fields, field)),
+          allTemplateIssuesInUnit.map(i => _.get(i.fields, field))
         );
 
         bestMatch.rating *= 100;
@@ -62,41 +72,23 @@ const saveIssues = async (issues, template, report) => {
       let issuesToFilter = allTemplateIssuesInUnit;
 
       for (const fi of Object.keys(statistics)) {
-        issuesToFilter = issuesToFilter.filter((di) => _.get(di.fields, fi) === statistics[fi].target);
+        issuesToFilter = issuesToFilter.filter(
+          di => _.get(di.fields, fi) === statistics[fi].target
+        );
       }
 
       issueToUpdate = issuesToFilter.length ? issuesToFilter[0] : {};
-    }
 
-    if (_.isEmpty(issueToUpdate)) {
-      const { bestMatch } = similarity.findBestMatch(
-        JSON.stringify(Object.values(issue)),
-        allIssuesInUnit,
-      );
-
-      const newIssue = await new Issue(
-        {
-          unit: report.unit,
-          date: report.date,
-          template: template._id,
-          fields: issue,
-          report: report._id,
-          dup_score: Math.round(bestMatch.rating * 100),
-        },
-      ).save();
-      newOnes += 1;
-
-      allIssuesInUnit.push(JSON.stringify(Object.values(newIssue.fields)));
-      allTemplateIssuesInUnit.push(newIssue);
-    } else {
       for (const field of template.merge_fields) {
         let originalField = _.get(issueToUpdate.fields, field);
         const newField = _.get(issue, field);
 
         if (originalField) {
-          if (typeof originalField === 'string'
-            && !originalField.includes(newField)) {
-            originalField += `\n\n${newField}`;
+          if (
+            typeof originalField === 'string' &&
+            !originalField.includes(newField)
+          ) {
+            originalField += `\n${newField}`;
           } else if (_.isArray(originalField)) {
             originalField = [...new Set([...originalField, ...newField])];
           }
@@ -104,10 +96,26 @@ const saveIssues = async (issues, template, report) => {
 
         _.set(issueToUpdate.fields, field, originalField);
       }
-      await Issue.updateOne(
-        { _id: issueToUpdate._id },
-        issueToUpdate,
+      await Issue.updateOne({ _id: issueToUpdate._id }, issueToUpdate);
+    } else {
+      const { bestMatch } = similarity.findBestMatch(
+        JSON.stringify(Object.values(issue)),
+        allIssuesInUnit
       );
+
+      const newIssue = await new Issue({
+        unit: report.unit,
+        date: report.date,
+        template: template._id,
+        fields: issue,
+        report: report._id,
+        dup_score: Math.round(bestMatch.rating * 100),
+      }).save();
+
+      newOnes += 1;
+
+      allIssuesInUnit.push(JSON.stringify(Object.values(newIssue.fields)));
+      allTemplateIssuesInUnit.push(newIssue);
     }
   }
 
@@ -117,16 +125,19 @@ const saveIssues = async (issues, template, report) => {
   };
 };
 
-const updateIssues = async (req, reply) => {
-  const doc = await Issue.updateMany({
-    _id: { $in: req.body.ids },
-  }, {
-    $set: req.body.change,
-  });
+export const updateIssues = async (req, reply) => {
+  const doc = await Issue.updateMany(
+    {
+      _id: { $in: req.body.ids },
+    },
+    {
+      $set: req.body.change,
+    }
+  );
   reply.send(doc);
 };
 
-const createJiraTicket = async (req, reply) => {
+export const createJiraTicket = async (req, reply) => {
   const ticket = await jira.issue.createIssue({ fields: req.body });
 
   const t = await new Ticket({
@@ -135,45 +146,35 @@ const createJiraTicket = async (req, reply) => {
     key: ticket.key,
   }).save();
 
-  await Issue.updateOne({
-    _id: req.params.id,
-  }, {
-    $set: { ticket: t._id },
-  });
+  await Issue.updateOne({ _id: req.params.id }, { $set: { ticket: t._id } });
 
   reply.code(201).send(t);
 };
 
-const deleteIssue = async (req) => Issue.deleteOne({ _id: req.params.id });
+export const deleteIssue = async (req, reply) => {
+  const res = await Issue.deleteOne({ _id: req.params.id });
+  reply.send(res);
+};
 
-const postComment = async (req, reply) => {
+export const postComment = async (req, reply) => {
   const comment = await new Comment(req.body).save();
 
-  // jira.issue
-  //   .getIssue({ issueKey: 'DEV-31' })
-  //   .then((issue) => {
-  //     console.log(issue);
-  //   });
-
   if (comment) {
-    await Issue.updateOne({
-      _id: req.params.id,
-    }, {
-      $push: { comments: comment._id },
-    });
+    await Issue.updateOne(
+      {
+        _id: req.params.id,
+      },
+      {
+        $push: { comments: comment._id },
+      }
+    );
 
-    const cmt = await Comment.findOne({ _id: comment._id }).populate('author', ['username', 'image']);
+    const cmt = await Comment.findOne({ _id: comment._id }).populate('author', [
+      'username',
+      'image',
+    ]);
     reply.code(201).send(cmt);
   } else {
     boom.badData('Unable to save comment');
   }
-};
-
-export default {
-  fetchByUnit,
-  saveIssues,
-  deleteIssue,
-  updateIssues,
-  createJiraTicket,
-  postComment,
 };

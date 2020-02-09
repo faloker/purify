@@ -1,13 +1,16 @@
 import _ from 'lodash';
 
-import issuesController from './issuesController';
+import { saveIssues } from './issuesController';
 import Template from '../models/Template';
 import Report from '../models/Report';
 
-const applyTemplate = async (report, template) => {
+export const applyTemplate = async (report, template) => {
   const rep = report;
-  const issues = template.path_to_issues !== '' ? _.get(report.content, template.path_to_issues) : report.content;
-  const stat = await issuesController.saveIssues(issues, template, report);
+  const issues =
+    template.path_to_issues !== ''
+      ? _.get(report.content, template.path_to_issues)
+      : report.content;
+  const stat = await saveIssues(issues, template, report);
 
   rep.statistics = stat;
   rep.template = template._id;
@@ -15,7 +18,7 @@ const applyTemplate = async (report, template) => {
   rep.save();
 };
 
-const saveTemplate = async (req, reply) => {
+export const saveTemplate = async (req, reply) => {
   const template = await new Template(req.body).save({ checkKeys: false });
   const report = await Report.findOne({ _id: req.body.report });
 
@@ -24,7 +27,7 @@ const saveTemplate = async (req, reply) => {
   reply.code(201).send(template);
 };
 
-const fetchTemplatesNames = async (req, reply) => {
+export const fetchTemplatesNames = async (req, reply) => {
   const allTemplates = await Template.find({}, 'name tags');
   const res = {
     names: [],
@@ -41,5 +44,3 @@ const fetchTemplatesNames = async (req, reply) => {
 
   return res;
 };
-
-export default { saveTemplate, applyTemplate, fetchTemplatesNames };
