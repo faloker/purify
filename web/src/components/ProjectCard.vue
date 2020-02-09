@@ -1,103 +1,148 @@
 <template>
-  <v-hover>
-    <v-card
-      slot-scope="{ hover }"
-      :class="`elevation-${hover ? 15 : 0}`"
-      outlined
-      class="mx-auto my-3"
-      width="400"
-    >
-      <!-- <v-sheet
-          v-if="!project.chart"
-          class="mb-2 mx-auto"
-          max-width="calc(100% - 32px)"
-        >
-          <span class="subheading font-weight-light grey--text">
-            Not enough data for chart
-          </span>
-        </v-sheet> -->
-      <!-- <v-sheet
-        class="v-sheet--offset mx-auto"
-        color="primary"
-        elevation="12"
-        max-width="calc(100% - 32px)"
+  <div>
+    <v-hover>
+      <v-card
+        slot-scope="{ hover }"
+        :class="`elevation-${hover ? 12 : 0}`"
+        outlined
+        class="mx-auto my-3"
+        width="400"
       >
-        <v-sparkline
-          :labels="labels"
-          :value="values"
-          color="white"
-          line-width="2"
-          padding="16"
-        />
-      </v-sheet> -->
-
-      <div class="px-3 pt-3">
-        <div class="title font-weight-light mb-2">
-          <router-link :to="{name: 'Units', params: { slug: project.slug }}">
-            {{ project.title }}
-          </router-link>
+        <div class="px-3 pt-3">
+          <div class="title font-weight-light mb-2">
+            <router-link :to="{name: 'Units', params: { slug: project.slug }}">
+              {{ project.title }}
+            </router-link>
+          </div>
+          <div class="subheading font-weight-light grey--text">
+            {{ project.subtitle }}
+          </div>
+          <v-divider class="mt-2" light></v-divider>
+          <v-container fluid>
+            <v-row dense class="text-center">
+              <v-col>
+                <p class="display-1 font-weight-black">
+                  {{ project.issues }}
+                </p>
+                <span class="subheading">
+                  <v-icon class="mx-1" small>fa-bug</v-icon>Issues
+                </span>
+              </v-col>
+              <v-col>
+                <p class="display-1 font-weight-black">
+                  {{ project.tickets }}
+                </p>
+                <span class="subheading">
+                  <v-icon class="mx-1" small>mdi-cards</v-icon>Tickets
+                </span>
+              </v-col>
+              <v-col>
+                <p class="display-1 font-weight-black">
+                  {{ project.units }}
+                </p>
+                <span class="subheading font-weight-medium">
+                  <v-icon class="mx-1" small>mdi-folder</v-icon>Units
+                </span>
+              </v-col>
+            </v-row>
+          </v-container>
         </div>
-        <div class="subheading font-weight-light grey--text">
-          {{ project.subtitle }}
-        </div>
-        <v-divider class="mt-2" />
-        <v-container fluid>
-          <v-row
-            dense
-            class="text-center"
+        <v-divider light></v-divider>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            text
+            @click="dialog = true"
           >
-            <v-col>
-              <p class="display-1 font-weight-black">
-                {{ project.issues }}
-              </p>
-              <span class="subheading">
-                <v-icon small>fa-bug</v-icon>
-                Issues
-              </span>
-            </v-col>
-            <v-col>
-              <p class="display-1 font-weight-black">
-                {{ project.tickets }}
-              </p>
-              <span class="subheading">
-                <v-icon small>mdi-cards</v-icon>
-                Tickets
-              </span>
-            </v-col>
-            <v-col>
-              <p class="display-1 font-weight-black">
-                {{ project.units }}
-              </p>
-              <span class="subheading font-weight-medium">
-                <v-icon small>mdi-folder</v-icon>
-                Units
-              </span>
-            </v-col>
-          </v-row>
-          <!-- <v-row no-gutters>
-            <v-col>
-              <span class="caption grey--text font-weight-light ">last update 26 minutes ago</span>
-            </v-col>
-          </v-row> -->
-        </v-container>
-      </div>
-      <v-divider />
-      <v-card-actions>
+            Edit
+          </v-btn>
+          <v-btn
+            color="tertiary"
+            text
+            @click="confirmDialog = true"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-hover>
+    <v-dialog v-model="dialog" max-width="400">
+      <v-card>
+        <v-card-title>
+          <span class="title">Edit project</span>
+        </v-card-title>
         <v-spacer />
-        <v-btn
-          color="primary"
-          text
-        >
-          Actions
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-hover>
+        <v-card-text>
+          <v-layout wrap>
+            <v-flex xs12>
+              <v-text-field
+                v-model="title"
+                label="Project title"
+                outlined
+                dense
+                clearable
+                required
+              />
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field
+                v-model="subtitle"
+                label="Project short description"
+                clearable
+                dense
+                outlined
+                hint="For example, a tech stack: django, react, e.t.c"
+                required
+              />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+        <v-divider light></v-divider>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="tertiary"
+            text
+            @click="dialog = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
+            color="primary"
+            :disabled="title.length < 3"
+            text
+            @click="editProject"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="confirmDialog" max-width="300">
+      <v-card>
+        <v-card-title>
+          <span class="title">Delete project {{ project.title }}?</span>
+        </v-card-title>
+        <v-divider light></v-divider>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="tertiary"
+            text
+            @click="deleteProject"
+          >
+            Delete
+          </v-btn>
+          <v-spacer />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
 <script>
-import {
-  SET_ACTIVE_PROJECT,
-} from '@/store/mutations';
+import { SET_ACTIVE_PROJECT } from '@/store/mutations';
+import { DELETE_PROJECT, EDIT_PROJECT } from '@/store/actions';
 
 export default {
   name: 'ProjectCard',
@@ -109,39 +154,31 @@ export default {
   },
   data() {
     return {
-      labels: [
-        '12am',
-        '3am',
-        '6am',
-        '9am',
-        '12pm',
-        '3pm',
-        '6pm',
-        '9pm',
-      ],
-      values: [
-        200,
-        675,
-        410,
-        390,
-        310,
-        460,
-        250,
-        240,
-      ],
+      title: this.project.title || '',
+      subtitle: this.project.subtitle || '',
+      dialog: false,
+      confirmDialog: false,
     };
   },
   methods: {
-    // viewProject() {
-    //   this.$store.commit(SET_ACTIVE_PROJECT, this.project);
-    //   this.$router.push({ name: 'Releases' });
-    // },
+    deleteProject() {
+      this.$store.dispatch(DELETE_PROJECT, this.project._id).then(() => {
+        this.confirmDialog = false;
+        this.$toasted.global.api_success({
+          msg: `Project ${this.project.title} removed`,
+        });
+      });
+    },
+    editProject() {
+      this.$store
+        .dispatch(EDIT_PROJECT, {
+          id: this.project._id,
+          change: { title: this.title, subtitle: this.subtitle },
+        })
+        .then(() => {
+          this.dialog = false;
+        });
+    },
   },
 };
 </script>
-<style>
-  .v-sheet--offset {
-    top: -24px;
-    position: relative;
-  }
-</style>
