@@ -1,41 +1,33 @@
 <template>
-  <v-card
-    flat
-    height="100%"
-  >
-    <v-container>
-      <v-row>
-        <issue-filter
-          @fp_status="updateFPStatus"
-          @risk_level="updateRiskLevel"
-          @ticket_status="updateTicketStatus"
-          @search_term="updateSearchTerm"
-          @closed_status="updateClosedStatus"
-          @templates="templates = $event"
-          @endDate="endDate = $event"
-          @startDate="startDate = $event"
-        />
-      </v-row>
-      <v-row
-        justify="center"
-        align="center"
-      >
-        <v-col cols="12">
-          <v-skeleton-loader
-            :loading="loading"
-            transition="scale-transition"
-            type="paragraph@5"
-          >
-            <issues-list :raw-items="filtredIssues" />
-          </v-skeleton-loader>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card>
+  <v-container>
+    <v-row>
+      <issue-filter
+        @fp_status="updateFPStatus"
+        @risk_level="risk = $event"
+        @ticket_status="updateTicketStatus"
+        @search_term="search = $event"
+        @closed_status="updateClosedStatus"
+        @templates="templates = $event"
+        @timeback="timeback = $event"
+      />
+    </v-row>
+    <v-row justify="center" align="center">
+      <v-col cols="12">
+        <v-skeleton-loader
+          :loading="loading"
+          transition="scale-transition"
+          type="paragraph@5"
+        >
+          <issues-list :raw-items="filtredIssues" />
+        </v-skeleton-loader>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script>
 import { mapGetters } from 'vuex';
 import IssuesList from '@/components/IssuesList.vue';
+import { compareDesc, sub } from 'date-fns';
 import IssueFilter from '@/components/IssueFilter.vue';
 import { ISSUES_FETCH } from '@/store/actions';
 import { SET_ACTIVE_PAGE } from '@/store/mutations';
@@ -51,12 +43,11 @@ export default {
       fp: false,
       ticket: '',
       closed: false,
-      text: '',
+      search: '',
       templates: [],
-      endDate: '',
-      startDate: '',
+      timeback: '',
       loading: true,
-      risk_level: '',
+      risk: '',
     };
   },
   computed: {
@@ -64,29 +55,39 @@ export default {
     filtredIssues() {
       let issuesToDisplay = this.allIssues;
 
-      issuesToDisplay = this.fp !== '' ? issuesToDisplay
-        .filter((i) => i.is_fp === this.fp) : issuesToDisplay;
+      issuesToDisplay = this.timeback || ''
+        ? issuesToDisplay.filter(
+          i => new Date(i.created_at) > sub(new Date(), { days: this.timeback }),
+        )
+        : issuesToDisplay.sort(
+          (a, b) => compareDesc(Date.parse(a.created_at), Date.parse(b.created_at)),
+        );
 
-      issuesToDisplay = this.closed !== '' ? issuesToDisplay
-        .filter((i) => i.is_closed === this.closed) : issuesToDisplay;
+      issuesToDisplay = this.fp !== ''
+        ? issuesToDisplay.filter(i => i.is_fp === this.fp)
+        : issuesToDisplay;
 
-      issuesToDisplay = this.risk_level !== '' ? issuesToDisplay
-        .filter((i) => i.risk === this.risk_level) : issuesToDisplay;
+      issuesToDisplay = this.closed !== ''
+        ? issuesToDisplay.filter(i => i.is_closed === this.closed)
+        : issuesToDisplay;
 
-      issuesToDisplay = this.ticket !== '' ? issuesToDisplay
-        .filter((i) => !!i.ticket === this.ticket) : issuesToDisplay;
+      issuesToDisplay = this.risk || ''
+        ? issuesToDisplay.filter(i => i.risk === this.risk)
+        : issuesToDisplay;
 
-      issuesToDisplay = this.text !== '' ? issuesToDisplay
-        .filter((i) => JSON.stringify(i.fields).toLowerCase().includes(this.text)) : issuesToDisplay;
+      issuesToDisplay = this.ticket !== ''
+        ? issuesToDisplay.filter(i => !!i.ticket === this.ticket)
+        : issuesToDisplay;
 
-      issuesToDisplay = this.templates.length ? issuesToDisplay
-        .filter((i) => this.templates.includes(i.template.name)) : issuesToDisplay;
+      issuesToDisplay = this.search || ''
+        ? issuesToDisplay.filter(i => JSON.stringify(i.fields)
+          .toLowerCase()
+          .includes(this.search.toLowerCase()))
+        : issuesToDisplay;
 
-      // issuesToDisplay = this.startDate ? issuesToDisplay
-      //   .filter((i) => new Date(i.date) >= new Date(this.startDate)) : issuesToDisplay;
-
-      // issuesToDisplay = this.endDate ? issuesToDisplay
-      //   .filter((i) => new Date(i.date) <= new Date(this.endDate)) : issuesToDisplay;
+      issuesToDisplay = this.templates.length
+        ? issuesToDisplay.filter(i => this.templates.includes(i.template.name))
+        : issuesToDisplay;
 
       return issuesToDisplay;
     },
@@ -103,12 +104,6 @@ export default {
     },
     updateTicketStatus(textStatus) {
       this.ticket = textStatus ? textStatus === 'Yes' : '';
-    },
-    updateSearchTerm(searchTerm) {
-      this.text = searchTerm ? searchTerm.toLowerCase() : '';
-    },
-    updateRiskLevel(risk) {
-      this.risk_level = risk || '';
     },
     updateClosedStatus(textStatus) {
       this.closed = textStatus ? textStatus === 'Yes' : '';
