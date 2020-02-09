@@ -29,11 +29,11 @@
           item-key="_id"
           :items="allReports"
           :search="search"
-          :pagination.sync="pagination"
+          :items-per-page="5"
         >
-          <template v-slot:item.date="{ item }">
+          <template v-slot:item.created_at="{ item }">
             <div class="subheading">
-              {{ new Date(item.date).toLocaleDateString() }}
+              {{ new Date(item.created_at).toLocaleDateString() }}
             </div>
           </template>
           <template
@@ -119,12 +119,8 @@ export default {
       stepperDialog: false,
       reportContent: {},
       reportId: '',
-      pagination: {
-        sortBy: 'date',
-        descending: true,
-      },
       headers: [
-        { text: 'Date', value: 'date', width: '21%' },
+        { text: 'Date', value: 'created_at', width: '21%' },
         {
           text: 'Template',
           align: 'center',
