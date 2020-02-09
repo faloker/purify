@@ -56,62 +56,19 @@
             @input="$emit('ticket_status', ticket_status)"
           />
         </v-col>
-        <!-- <v-flex xs3>
-            <v-menu
-              v-model="menu2"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-text-field
-                  v-model="startDate"
-                  label="Start date"
-                  prepend-icon="event"
-                  readonly
-                  clearable
-                  v-on="on"
-                  @input="$emit('startDate', startDate)"
-                />
-              </template>
-              <v-date-picker
-                v-model="startDate"
-                color="primary"
-                @input="$emit('startDate', startDate)"
-              />
-            </v-menu>
-          </v-flex> -->
-        <!-- <v-flex xs3>
-            <v-menu
-              v-model="menu3"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-text-field
-                  v-model="endDate"
-                  label="End date"
-                  prepend-icon="event"
-                  readonly
-                  clearable
-                  @input="$emit('endDate', endDate)"
-                  v-on="on"
-                />
-              </template>
-              <v-date-picker
-                v-model="endDate"
-                color="primary"
-                @input="$emit('endDate', endDate)"
-              />
-            </v-menu>
-          </v-flex> -->
+        <v-col>
+          <v-select
+            v-model="timeback"
+            :items="dates"
+            item-text="text"
+            item-value="value"
+            label="Date"
+            prepend-icon="mdi-clock-outline"
+            clearable
+            dense
+            @input="$emit('timeback', timeback)"
+          />
+        </v-col>
       </v-row>
       <v-row>
         <v-col>
@@ -186,6 +143,21 @@ export default {
       menu3: false,
       templates: [],
       tags: [],
+      timeback: '',
+      dates: [
+        {
+          text: 'last day',
+          value: '1',
+        },
+        {
+          text: 'last 3 days',
+          value: '3',
+        },
+        {
+          text: 'last 7 days',
+          value: '7',
+        },
+      ],
       severities: ['Info', 'Low', 'Medium', 'High', 'Critical'],
     };
   },
