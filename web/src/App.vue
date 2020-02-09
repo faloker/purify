@@ -26,12 +26,12 @@ export default {
 </script>
 
 <style>
-#app {
+/* #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   background-color: rgb(255, 253, 253);
-}
+} */
 .router-link-active {
   color: #2c3e50;
 }

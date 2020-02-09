@@ -6,17 +6,11 @@
   >
     <v-card>
       <v-container style="max-width: 600px;">
-        <v-timeline
-          dense
-          clipped
-        >
-          <v-timeline-item
-            class="mb-7"
-            large
-          >
+        <v-timeline dense clipped>
+          <v-timeline-item class="mb-7" large>
             <template v-slot:icon>
               <v-avatar>
-                <img :src="currentUser.image">
+                <img :src="currentUser.image" />
               </v-avatar>
             </template>
             <v-text-field
@@ -43,27 +37,24 @@
           <v-slide-x-transition group>
             <v-timeline-item
               v-for="event in timeline"
-              :key="event.date"
+              :key="event.created_at"
               class="mb-4"
               small
             >
               <template v-slot:icon>
                 <v-avatar v-if="event.author.username === 'purify'">
-                  <img src="@/assets/purify-logo.png">
+                  <img src="@/assets/logo_trans.png" />
                 </v-avatar>
                 <v-avatar v-else>
-                  <img :src="event.author.image">
+                  <img :src="event.author.image" />
                 </v-avatar>
               </template>
               <v-row justify="space-between">
-                <v-col
-                  cols="7"
-                  v-text="event.text"
-                />
+                <v-col cols="7" v-text="event.text" />
                 <v-col
                   class="text-right"
                   cols="5"
-                  v-text="new Date(event.date).toDateString()"
+                  v-text="new Date(event.created_at).toDateString()"
                 />
               </v-row>
             </v-timeline-item>
@@ -75,9 +66,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
-import {
-  POST_COMMENT, ISSUES_FETCH,
-} from '@/store/actions';
+import { POST_COMMENT, ISSUES_FETCH } from '@/store/actions';
 
 export default {
   name: 'CommentDialog',
@@ -107,15 +96,18 @@ export default {
   methods: {
     postComment() {
       if (this.input) {
-        const comment = { author: this.currentUser._id, text: this.input, date: new Date() };
+        const comment = {
+          author: this.currentUser._id,
+          text: this.input,
+        };
 
-
-        this.$store.dispatch(POST_COMMENT, { id: this.issue._id, comment }).then((doc) => {
-          this.issue.comments.push(doc);
-          // this.events.push(doc);
-          this.input = null;
-          this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug);
-        });
+        this.$store
+          .dispatch(POST_COMMENT, { id: this.issue._id, comment })
+          .then((doc) => {
+            this.issue.comments.push(doc);
+            this.input = null;
+            this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug);
+          });
       }
     },
   },

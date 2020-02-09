@@ -3,10 +3,7 @@
     <v-card-title>
       <v-container>
         <v-row>
-          <v-col
-            cols="1"
-            class="ml-2"
-          >
+          <v-col cols="1" class="ml-2">
             <v-row justify="center">
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
@@ -17,9 +14,7 @@
                     @click="riskDialog = !riskDialog"
                     v-on="on"
                   >
-                    <v-icon>
-                      fa-bug
-                    </v-icon>
+                    <v-icon>fa-bug</v-icon>
                   </v-btn>
                 </template>
                 <span>Change Risk</span>
@@ -28,10 +23,7 @@
             <v-row justify="center">
               <span>{{ issue.risk }}</span>
             </v-row>
-            <v-dialog
-              v-model="riskDialog"
-              max-width="300"
-            >
+            <v-dialog v-model="riskDialog" max-width="300">
               <v-card>
                 <v-card-title>
                   <span class="title mb-2">Change risk</span>
@@ -59,18 +51,14 @@
               </v-card>
             </v-dialog>
           </v-col>
-          <v-divider
-            class="my-3 mx-3"
-            vertical
-          />
-          <v-col
-            class="ml-2"
-            cols="9"
-          >
+          <v-divider class="my-3 mx-3" vertical />
+          <v-col class="ml-2" cols="9">
             <v-row class="headline">
               {{ applyPattern(issue.fields, issue.template.title_pattern) }}
             </v-row>
-            <v-row class="title grey--text font-weight-light my-2">
+            <v-row
+              class="title grey--text font-weight-light my-2"
+            >
               {{ applyPattern(issue.fields, issue.template.subtitle_pattern) }}
             </v-row>
           </v-col>
@@ -80,6 +68,7 @@
             <v-btn
               v-if="!issue.is_closed"
               class="mr-2"
+              color="quinary"
               outlined
               @click="updateIssue(issue, 'is_fp', !issue.is_fp)"
             >
@@ -88,37 +77,33 @@
             <v-btn
               outlined
               class="mr-2"
-              :color="issue.is_closed ? 'green' : 'red darken-3'"
+              :color="issue.is_closed ? 'primary' : 'tertiary'"
               @click="updateIssue(issue, 'is_closed', !issue.is_closed)"
             >
-              {{ issue.is_closed ? 'Open' : 'Resolve' }}
+              {{ issue.is_closed ? "Open" : "Resolve" }}
             </v-btn>
             <v-btn
               v-if="!issue.ticket"
               outlined
               class="mr-2"
-              color="blue darken-3"
+              color="senary"
               @click="ticketDialog = !ticketDialog"
             >
-              <v-icon
-                color="blue darken-3"
-                left
-              >
+              <v-icon color="senary" left>
                 mdi-jira
-              </v-icon>
-              Create Ticket
+              </v-icon>Create Ticket
             </v-btn>
             <v-btn
               v-else
               outlined
               class="mx-2"
-              color="blue darken-3"
+              color="senary"
               :href="issue.ticket.link"
               target="_blank"
             >
               <v-icon
                 v-if="issue.ticket.type == 'jira'"
-                color="blue darken-3"
+                color="senary"
                 left
               >
                 mdi-jira
@@ -128,24 +113,23 @@
             <v-btn
               outlined
               class="mr-2"
+              color="secondary"
               @click="editDialog = true"
             >
               <v-icon left>
                 mdi-pencil
-              </v-icon>
-              Edit
+              </v-icon>Edit
             </v-btn>
             <v-btn
               outlined
               class="mr-2"
+              color="quaternary"
               @click="commentDialog = true"
             >
-              <v-icon :left="issue.comments.length" small>
+              <v-icon :left="!!issue.comments.length" small>
                 mdi-comment-text-multiple
               </v-icon>
-              <span v-if="issue.comments.length">
-                {{ issue.comments.length }}
-              </span>
+              <span v-if="issue.comments.length">{{ issue.comments.length }}</span>
             </v-btn>
             <v-dialog
               :key="`edit-dialog-${issue._id}`"
@@ -175,19 +159,13 @@
                 {{ issue.dup_score }}
               </span>
             </v-row>
-          </v-col>  -->
+          </v-col>-->
         </v-row>
       </v-container>
     </v-card-title>
     <v-container>
-      <v-col
-        v-for="key in issue.template.body_fields"
-        :key="`id-${key}`"
-      >
-        <fields-parser
-          :ikey="key"
-          :ivalue="getValue(key)"
-        />
+      <v-col v-for="field in issue.template.body_fields" :key="`id-${field.key}`">
+        <fields-parser :ikey="field" :ivalue="getValue(field.key)" />
       </v-col>
     </v-container>
   </v-card>
@@ -199,9 +177,7 @@ import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
 import { matchPattern } from '@/common/utils.servive';
-import {
-  ISSUE_UPDATE, ISSUES_FETCH,
-} from '@/store/actions';
+import { ISSUE_UPDATE, ISSUES_FETCH } from '@/store/actions';
 
 export default {
   name: 'IssueDetails',
@@ -231,9 +207,9 @@ export default {
   computed: {
     preparedMarkdown() {
       let result = '';
-      for (const key of this.issue.template.body_fields) {
-        result += `## ${this.parseKey(key)}\n`;
-        result += `${this.getValue(key)}\n\n`;
+      for (const field of this.issue.template.body_fields) {
+        result += `## ${this.parseKey(field.key)}\n`;
+        result += `${this.getValue(field.key)}\n\n`;
       }
       return result;
     },
@@ -254,7 +230,10 @@ export default {
     },
     updateIssue(item, field, value) {
       const change = {};
-      if (field === 'is_fp') { change.is_closed = true; this.issue.is_closed = true; }
+      if (field === 'is_fp') {
+        change.is_closed = true;
+        this.issue.is_closed = true;
+      }
       change[field] = value;
       this.issue[field] = value;
       this.$store.dispatch(ISSUE_UPDATE, { ids: [item._id], change }).then(() => {
@@ -263,11 +242,16 @@ export default {
     },
     genColor() {
       switch (this.issue.risk) {
-        case 'Info': return 'light-blue lighten-3';
-        case 'Low': return 'blue';
-        case 'Medium': return 'orange';
-        case 'High': return 'red darken-2';
-        case 'Critical': return 'red darken-4';
+        case 'Info':
+          return 'light-blue lighten-3';
+        case 'Low':
+          return 'blue';
+        case 'Medium':
+          return 'orange';
+        case 'High':
+          return 'red darken-2';
+        case 'Critical':
+          return 'red darken-4';
         default:
           return 'grey';
       }
@@ -275,5 +259,4 @@ export default {
   },
 };
 </script>
-<style>
-</style>
+<style></style>

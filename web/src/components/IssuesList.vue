@@ -23,118 +23,102 @@
           </v-tooltip>
         </v-col>
         <v-divider
+          light
           class="my-3"
           vertical
         />
         <v-col cols="3">
-          <group-action-btn
-            class="px-3"
-            :items="selected"
-          />
+          <group-action-btn class="px-3" :items="selected" />
         </v-col>
       </v-row>
-      <v-row
-        align="center"
-        justify="center"
-      >
+      <v-row align="center" justify="center">
         <v-col cols="12">
-          <v-card>
-            <v-list
-              flat
-              three-line
-            >
-              <v-list-item-group
-                v-model="selected"
-                multiple
-              >
-                <v-template
-                  v-for="(item, index) in items"
+          <v-list flat three-line>
+            <v-list-item-group v-model="selected" multiple>
+              <template v-for="(item, index) in items">
+                <v-list-item
                   :key="`issue-${item._id}`"
+                  :value="item._id"
+                  active-class="primary--text"
                 >
-                  <v-list-item
-                    :value="item._id"
-                    active-class="primary--text"
-                  >
-                    <template v-slot:default="{ active, toggle }">
-                      <v-list-item-action>
-                        <v-checkbox
-                          :input-value="active"
-                          :true-value="item._id"
-                          class="my-3 ml-2"
-                          color="primary"
-                          on-icon="done"
-                          @click="toggle"
-                        />
-                      </v-list-item-action>
-                      <v-list-item-icon>
+                  <template v-slot:default="{ active, toggle }">
+                    <v-list-item-action>
+                      <v-checkbox
+                        :input-value="active"
+                        :true-value="item._id"
+                        class="my-3 ml-2"
+                        color="primary"
+                        on-icon="done"
+                        @click="toggle"
+                      />
+                    </v-list-item-action>
+                    <v-list-item-icon>
+                      <v-icon
+                        left
+                        class="my-3 pr-4"
+                        :color="genColor(item.risk)"
+                      >
+                        fa-bug
+                      </v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content @click="openIssue(item)">
+                      <v-list-item-title>
+                        <!-- <div class="text-truncate"> -->
+                        {{ applyPattern(item.fields, item.template.title_pattern) }}
+                        <!-- </div> -->
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        <!-- <div class="text-truncate"> -->
+                        {{ applyPattern(item.fields, item.template.subtitle_pattern) }}
+                        <!-- </div> -->
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+
+                    <v-list-item-action>
+                      <v-btn
+                        v-if="item.ticket"
+                        outlined
+                        class="mt-2 mr-3"
+                        rounded
+                        color="blue darken-5"
+                        :href="item.ticket.link"
+                        target="_blank"
+                      >
                         <v-icon
-                          left
-                          class="my-3 pr-4"
-                          :color="genColor(item.risk)"
-                        >
-                          fa-bug
-                        </v-icon>
-                      </v-list-item-icon>
-
-                      <v-list-item-content @click="openIssue(item)">
-                        <v-list-item-title>
-                          <!-- <div class="text-truncate"> -->
-                          {{ applyPattern(item.fields, item.template.title_pattern) }}
-                        <!-- </div> -->
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                          <!-- <div class="text-truncate"> -->
-                          {{ applyPattern(item.fields, item.template.subtitle_pattern) }}
-                        <!-- </div> -->
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-
-                      <v-list-item-action>
-                        <v-btn
-                          v-if="item.ticket"
-                          outlined
-                          class="mt-2 mr-3"
-                          rounded
+                          v-if="item.ticket.type == 'jira'"
                           color="blue darken-5"
-                          :href="item.ticket.link"
-                          target="_blank"
+                          left
                         >
-                          <v-icon
-                            v-if="item.ticket.type == 'jira'"
-                            color="blue darken-5"
-                            left
-                          >
-                            mdi-jira
-                          </v-icon>
-                          {{ item.ticket.key }}
-                        </v-btn>
-                      </v-list-item-action>
-                      <v-list-item-action>
-                        <v-btn
-                          v-if="item.comments.length"
-                          text
-                          class="mt-2 mr-3"
-                          @click="openComments(item)"
-                        >
-                          <v-icon left small>
-                            mdi-comment-text-multiple
-                          </v-icon>
-                          <span>
-                            {{ item.comments.length }}
-                          </span>
-                        </v-btn>
-                      </v-list-item-action>
-                    </template>
-                  </v-list-item>
-                  <v-divider
-                    v-if="index + 1 < items.length"
-                    :key="`dvr-${index}`"
-                    class="mx-10"
-                  />
-                </v-template>
-              </v-list-item-group>
-            </v-list>
-          </v-card>
+                          mdi-jira
+                        </v-icon>
+                        {{ item.ticket.key }}
+                      </v-btn>
+                    </v-list-item-action>
+                    <v-list-item-action>
+                      <v-btn
+                        v-if="item.comments.length"
+                        text
+                        class="mt-2 mr-3"
+                        color="quaternary"
+                        @click="openComments(item)"
+                      >
+                        <v-icon left small>
+                          mdi-comment-text-multiple
+                        </v-icon>
+                        <span>{{ item.comments.length }}</span>
+                      </v-btn>
+                    </v-list-item-action>
+                  </template>
+                </v-list-item>
+                <v-divider
+                  v-if="index + 1 < items.length"
+                  :key="`dvr-${index}`"
+                  class="mx-10"
+                />
+              </template>
+            </v-list-item-group>
+          </v-list>
         </v-col>
       </v-row>
       <v-row class="text-center mt-3">
@@ -148,15 +132,13 @@
               chevron_left
             </v-icon>
           </v-btn>
-          <v-chip
-            disabled
-          >
-            {{ rawItems.indexOf(items[0]) + 1 }} - {{ rawItems.indexOf(items[items.length - 1]) + 1 }}
-            of {{ rawItems.length }}
+          <v-chip disabled>
+            {{ rawItems.indexOf(items[0]) + 1 }} -
+            {{ rawItems.indexOf(items[items.length - 1]) + 1 }} of {{ rawItems.length }}
           </v-chip>
           <v-btn
             icon
-            :disabled="(page * pageSize) >= rawItems.length"
+            :disabled="page * pageSize >= rawItems.length"
             @click="nextPage"
           >
             <v-icon large>
@@ -165,10 +147,7 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-dialog
-        v-model="dialog"
-        max-width="56%"
-      >
+      <v-dialog v-model="dialog" max-width="56%">
         <issue-details :issue="selectedIssue" />
       </v-dialog>
     </template>
@@ -215,20 +194,23 @@ export default {
       search: '',
       pageSize: 5,
       pageCount: this.rawItems / this.pageSize,
-      // allSelected: false,
       selected: [],
       rating: 3,
       dialog: false,
       selectedIssue: {},
-      today: Date.now(),
     };
+  },
+  watch: {
+    rawItems(newItems, oldItems) {
+      this.page = 1;
+    },
   },
   computed: {
     ...mapGetters(['activePage', 'currentUser']),
     items() {
       return this.rawItems.filter(
-        (item, index) => (index >= (this.page - 1) * this.pageSize)
-          && (index < this.page * this.pageSize),
+        (item, index) => index >= (this.page - 1) * this.pageSize
+          && index < this.page * this.pageSize,
       );
     },
     allSelected() {
@@ -243,12 +225,8 @@ export default {
     applyPattern(obj, template) {
       return matchPattern(obj, template);
     },
-    followLink(item) {
-      item.jira_ticket = '';
-      // window.open('http://google.com', '_blank');
-    },
     nextPage() {
-      if ((this.page * this.pageSize) < this.rawItems.length) this.page += 1;
+      if (this.page * this.pageSize < this.rawItems.length) this.page += 1;
     },
     prevPage() {
       if (this.page > 1) this.page -= 1;
@@ -257,7 +235,7 @@ export default {
       if (this.allSelected) {
         this.selected = [];
       } else {
-        this.selected = this.items.map((i) => i._id);
+        this.selected = this.items.map(i => i._id);
       }
     },
     openIssue(item) {
@@ -270,11 +248,16 @@ export default {
     },
     genColor(risk) {
       switch (risk) {
-        case 'Info': return 'light-blue lighten-3';
-        case 'Low': return 'blue';
-        case 'Medium': return 'orange';
-        case 'High': return 'red darken-2';
-        case 'Critical': return 'red darken-4';
+        case 'Info':
+          return 'light-blue lighten-3';
+        case 'Low':
+          return 'blue';
+        case 'Medium':
+          return 'orange';
+        case 'High':
+          return 'red darken-2';
+        case 'Critical':
+          return 'red darken-4';
         default:
           return 'grey';
       }
@@ -282,5 +265,4 @@ export default {
   },
 };
 </script>
-<style>
-</style>
+<style></style>
