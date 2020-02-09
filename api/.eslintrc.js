@@ -1,18 +1,14 @@
 module.exports = {
-    "extends": "airbnb-base",
-    "plugins": [
-      "mocha"
-    ],
-    "env": {
-      "node": true,
-      "mocha": true
-    },
-    "rules": {
-      'no-await-in-loop': 'off',
-      'func-names': 'off',
-      'no-restricted-syntax': 'off',
-      'no-underscore-dangle': 'off',
-      "mocha/no-exclusive-tests": "error",
-      "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
-    }
+  extends: ["airbnb-base", "plugin:prettier/recommended"],
+  env: {
+    node: true,
+    es6: true
+  },
+  rules: {
+    "prettier/prettier": ["error", { singleQuote: true }],
+    "no-await-in-loop": "off",
+    "func-names": "off",
+    "no-restricted-syntax": "off",
+    "no-underscore-dangle": "off",
+  }
 };
