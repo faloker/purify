@@ -25,7 +25,7 @@ describe('Login', () => {
     cy.get('#password').should('be.visible').type('keke')
     cy.contains('button', 'Sign In').click()
     
-    cy.contains('Welcome')
+    cy.contains('Login')
     cy.contains('.toasted', 'Username or password is invalid').should(
       'be.visible'
     )

@@ -11,7 +11,7 @@ describe('Registration', () => {
     cy.get('#pass').should('be.visible').type('keke')
     cy.contains('button', 'Sign Up').click()
     
-    cy.contains('Welcome')
+    cy.contains('Login')
     cy.contains('.toasted', 'User validation failed: email: is invalid').should(
       'be.visible'
     )
@@ -41,7 +41,7 @@ describe('Registration', () => {
     cy.get('#pass').should('be.visible').type('test')
     cy.contains('button', 'Sign Up').click()
 
-    cy.contains('Welcome')
+    cy.contains('Login')
     cy.contains('.toasted', 'duplicate key error').should(
       'be.visible'
     )
