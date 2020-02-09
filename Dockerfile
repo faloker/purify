@@ -1,4 +1,6 @@
-FROM node:13-alpine as build-stage
+FROM node:13-alpine as build-static
+
+RUN apk add --no-cache git
 
 WORKDIR /web
 
@@ -11,15 +13,28 @@ COPY ./web/ .
 RUN npm run build
 
 
+FROM node:13-alpine as build-api
+
+WORKDIR /api
+
+COPY ./api/package*.json ./
+
+RUN npm install
+
+COPY ./api/ .
+
+RUN npm run build
+
+
 FROM node:13-alpine as production-stage
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
 WORKDIR /home/node/app
 
-RUN npm install -g nodemon @babel/node @babel/cli @babel/core @babel/preset-env
+COPY --from=build-static /web/dist ./static
 
-COPY --from=build-stage /web/dist ./static
+COPY --from=build-api /api/lib ./lib
 
 COPY ./api/package*.json ./
 
@@ -31,4 +46,4 @@ COPY --chown=node:node ./api/ .
 
 EXPOSE 3000
 
-CMD [ "nodemon", "src/index.js", "--exec", "babel-node"]
+CMD [ "node", "lib/index.js"]

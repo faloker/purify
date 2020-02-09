@@ -4,14 +4,13 @@
   "description": "Manage vulns",
   "main": "index.js",
   "scripts": {
-    "build": "babel src/index.js -d lib && cp lib/index.js src/app.js",
+    "build": "babel src --out-dir lib",
     "start": "nodemon src/index.js --exec babel-node",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --cache --fix"
   },
   "dependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/preset-env": "^7.7.7",
+    "@babel/runtime": "^7.8.4",
     "@hapi/boom": "^8.0.1",
     "date-fns": "^2.9.0",
     "dotenv": "^8.2.0",
@@ -37,7 +36,10 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
     "@babel/node": "^7.7.7",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.7.7",
     "@babel/register": "^7.7.7",
     "babel-eslint": "^10.0.3",
     "eslint": "^6.7.2",
