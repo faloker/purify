@@ -7,7 +7,7 @@
   >
     <v-card>
       <v-toolbar
-        color="green darken-2"
+        color="#33333d"
         dark
         dense
       >
@@ -24,7 +24,7 @@
         <v-spacer />
         <v-toolbar-items>
           <v-btn
-            dark
+            color="primary"
             text
             @click="finisher = !finisher"
           >
@@ -191,9 +191,9 @@ export default {
   computed: {
     preparedMarkdown() {
       let result = '';
-      for (const key of this.issue.template.body_fields) {
-        result += `## ${this.parseKey(key)}\n`;
-        result += `${this.getValue(key)}\n\n`;
+      for (const field of this.issue.template.body_fields) {
+        result += `## ${this.parseKey(field.key)}\n`;
+        result += `${this.getValue(field.key)}\n\n`;
       }
       return result;
     },
@@ -241,5 +241,5 @@ export default {
 </script>
 
 <style>
-  @import '~simplemde/dist/simplemde.min.css';
+  @import '~simplemde-theme-dark/dist/simplemde-theme-dark.min.css';
 </style>
