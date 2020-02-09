@@ -1,32 +1,37 @@
-import reportController from '../../controllers/reportController';
+import {
+  deleteReport,
+  getContent,
+  saveReport,
+  fetchReportsBySlug,
+} from '../../controllers/reportController';
 import docs from '../documentation';
 
-export default (async (fastify, opts, done) => {
+export default async (fastify, opts, done) => {
   fastify.route({
     method: 'POST',
     url: '/',
-    handler: reportController.saveReport,
+    handler: saveReport,
     schema: docs.reports.save,
   });
 
   fastify.route({
     method: 'GET',
     url: '/',
-    handler: reportController.fetchReportsBySlug,
+    handler: fetchReportsBySlug,
     schema: docs.reports.fetchByUnit,
   });
 
   fastify.route({
     method: 'GET',
     url: '/:id/content',
-    handler: reportController.getContent,
+    handler: getContent,
   });
 
   fastify.route({
     method: 'DELETE',
     url: '/:id',
-    handler: reportController.deleteReport,
+    handler: deleteReport,
   });
 
   done();
-});
+};

@@ -1,4 +1,4 @@
-const fetchByUnit = {
+export const fetchByUnit = {
   description: 'Get issues by unit slug',
   tags: ['issues'],
   querystring: {
@@ -13,7 +13,7 @@ const fetchByUnit = {
   },
 };
 
-const postComment = {
+export const postComment = {
   description: 'Post comment',
   tags: ['issues'],
   params: {
@@ -24,10 +24,7 @@ const postComment = {
     properties: {
       author: { type: 'string' },
       text: { type: 'string' },
-      date: { type: 'string' },
     },
-    required: ['author', 'text', 'date'],
+    required: ['author', 'text'],
   },
 };
-
-export default { fetchByUnit, postComment };

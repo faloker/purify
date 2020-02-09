@@ -1,4 +1,4 @@
-export default ((fastify) => {
+export default fastify => {
   fastify.addSchema({
     $id: 'project',
     type: 'object',
@@ -18,7 +18,7 @@ export default ((fastify) => {
     type: 'object',
     properties: {
       _id: { type: 'string' },
-      date: { type: 'string' },
+      created_at: { type: 'string' },
       statistics: {
         type: 'object',
         properties: {
@@ -73,4 +73,4 @@ export default ((fastify) => {
       tickets_len: { type: 'number' },
     },
   });
-});
+};

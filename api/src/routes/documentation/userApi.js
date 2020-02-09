@@ -72,5 +72,8 @@ const createToken = {
 };
 
 export default {
-  create, auth, login, createToken,
+  create,
+  auth,
+  login,
+  createToken,
 };

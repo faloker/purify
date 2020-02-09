@@ -1,4 +1,4 @@
-import usersController from '../../controllers/usersController';
+import { verifyToken } from '../../controllers/usersController';
 
 const publicEndpoints = [
   '/api/users/login',
@@ -9,18 +9,20 @@ const publicEndpoints = [
   '/js',
   '/img',
   '/fonts',
-  '/favicon.ico'
+  '/favicon.ico',
 ];
 
-export default ((fastify) => {
+export default fastify => {
   fastify.addHook('onRequest', async (req, reply) => {
-    const isPublic = publicEndpoints.filter((endpoint) => req.raw.url.includes(endpoint)).length;
+    const isPublic = publicEndpoints.filter(endpoint =>
+      req.raw.url.includes(endpoint)
+    ).length;
 
     // eslint-disable-next-line no-prototype-builtins
     if (req.headers.hasOwnProperty('x-purify-token')) {
-      await usersController.verifyToken(req.headers['x-purify-token']);
+      await verifyToken(req.headers['x-purify-token']);
     } else if (!(isPublic || req.raw.url === '/')) {
       await req.jwtVerify();
     }
   });
-});
+};

@@ -1,29 +1,16 @@
 import { Schema, model } from 'mongoose';
-import slug from 'slug';
 import uuid from 'node-uuid';
+import slugify from '../plugins/db/schema';
 
-const ProjectsSchema = new Schema(
-  {
-    _id: { type: String, default: uuid.v4 },
-    title: String,
-    subtitle: String,
-    slug: { type: String, lowercase: true, unique: true },
-  },
-  { versionKey: false },
-);
-
-ProjectsSchema.pre('validate', function (next) {
-  if (!this.slug) {
-    this.slugify();
-  }
-
-  next();
+const projectSchema = new Schema({
+  _id: { type: String, default: uuid.v4 },
+  title: String,
+  subtitle: String,
+  slug: { type: String, lowercase: true, unique: true }
 });
 
-ProjectsSchema.methods.slugify = function () {
-  this.slug = slug(this.title);
-};
+projectSchema.plugin(slugify);
 
-const Projects = model('Project', ProjectsSchema);
+const Project = model('Project', projectSchema);
 
-export default Projects;
+export default Project;

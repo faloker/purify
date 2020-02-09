@@ -1,29 +1,16 @@
 import mongoose from 'mongoose';
 import uuid from 'node-uuid';
-import slug from 'slug';
+import slugify from '../plugins/db/schema';
 
-const UnitSchema = mongoose.Schema(
-  {
-    _id: { type: String, default: uuid.v4 },
-    name: { type: String, required: true },
-    slug: { type: String, lowercase: true, unique: true },
-    project: { type: String, ref: 'Project' },
-  },
-  { versionKey: false },
-);
-
-UnitSchema.pre('validate', function (next) {
-  if (!this.slug) {
-    this.slugify();
-  }
-
-  next();
+const unitSchema = mongoose.Schema({
+  _id: { type: String, default: uuid.v4 },
+  name: { type: String, required: true },
+  slug: { type: String, lowercase: true, unique: true },
+  project: { type: String, ref: 'Project' }
 });
 
-UnitSchema.methods.slugify = function () {
-  this.slug = slug(this.name);
-};
+unitSchema.plugin(slugify);
 
-const Unit = mongoose.model('Unit', UnitSchema);
+const Unit = mongoose.model('Unit', unitSchema);
 
 export default Unit;

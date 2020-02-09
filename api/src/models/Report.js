@@ -4,16 +4,15 @@ import uuid from 'node-uuid';
 const report = new Schema(
   {
     _id: { type: String, default: uuid.v4 },
-    date: Date,
     content: Object,
     statistics: {
       old: Number,
-      new: Number,
+      new: Number
     },
     unit: { type: String, ref: 'Unit' },
-    template: { type: String, ref: 'Template' },
+    template: { type: String, ref: 'Template' }
   },
-  { versionKey: false },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );
 
 const Report = model('Report', report);

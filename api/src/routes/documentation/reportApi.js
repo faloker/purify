@@ -1,4 +1,4 @@
-const save = {
+export const save = {
   description: 'Save a report',
   tags: ['reports'],
   summary: 'Save report',
@@ -29,7 +29,7 @@ const save = {
   },
 };
 
-const fetchByUnit = {
+export const fetchByUnit = {
   description: 'Get reports by unit slug',
   tags: ['reports'],
   querystring: {
@@ -44,7 +44,7 @@ const fetchByUnit = {
   },
 };
 
-const getContent = {
+export const getContent = {
   description: 'Get content of a report',
   tags: ['reports'],
   params: {
@@ -57,5 +57,3 @@ const getContent = {
     },
   },
 };
-
-export default { save, fetchByUnit, getContent };

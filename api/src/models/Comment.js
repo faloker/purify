@@ -5,10 +5,9 @@ const CommentSchema = mongoose.Schema(
   {
     _id: { type: String, default: uuid.v4 },
     text: String,
-    date: Date,
-    author: { type: String, ref: 'User' },
+    author: { type: String, ref: 'User' }
   },
-  { versionKey: false },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );
 
 const Comment = mongoose.model('Comment', CommentSchema);

@@ -14,36 +14,14 @@ const removeAttribute = (value, parentElement) => {
   }
 };
 
-const xmlToJson = (data) => JSON.parse(xml2json(data, {
-  compact: true,
-  spaces: 4,
-  ignoreAttributes: true,
-  textFn: removeAttribute,
-  cdataFn: removeAttribute,
-}));
-
-const mergeIssues = (srcIssue, destIssue, mergeFields) => {
-  const resIssueFields = destIssue.fields;
-  for (const field of mergeFields) {
-    resIssueFields[field] += `\n${srcIssue[field]}`;
-  }
-  return resIssueFields;
+export const xmlToJson = data => {
+  JSON.parse(
+    xml2json(data, {
+      compact: true,
+      spaces: 4,
+      ignoreAttributes: true,
+      textFn: removeAttribute,
+      cdataFn: removeAttribute,
+    })
+  );
 };
-
-const getDuplicateLevel = (issues, newIssue) => {
-  let highest = 0;
-  let level = 0;
-  let dupestIssue = {};
-
-  for (const issue of issues) {
-    if (issue.fields !== newIssue) {
-      level = Math.round(stringSimilarity.compareTwoStrings(
-        JSON.stringify(Object.values(issue.fields)), JSON.stringify(Object.values(newIssue)),
-      ) * 100);
-      if (highest < level) { highest = level; dupestIssue = issue; }
-    }
-  }
-  return { highest, dupestIssue };
-};
-
-export { xmlToJson, getDuplicateLevel, mergeIssues };

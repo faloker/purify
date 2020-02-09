@@ -1,34 +1,39 @@
-import usersController from '../../controllers/usersController';
+import {
+  createUser,
+  authUser,
+  loginUser,
+  createToken,
+} from '../../controllers/usersController';
 import docs from '../documentation';
 
-export default ((fastify, opts, done) => {
+export default (fastify, opts, done) => {
   fastify.route({
     method: 'POST',
     url: '/signup',
-    handler: usersController.createUser,
+    handler: createUser,
     schema: docs.users.create,
   });
 
   fastify.route({
     method: 'GET',
     url: '/auth',
-    handler: usersController.authUser,
+    handler: authUser,
     schema: docs.users.auth,
   });
 
   fastify.route({
     method: 'POST',
     url: '/login',
-    handler: usersController.loginUser,
+    handler: loginUser,
     schema: docs.users.login,
   });
 
   fastify.route({
     method: 'POST',
     url: '/tokens',
-    handler: usersController.createToken,
+    handler: createToken,
     schema: docs.users.createToken,
   });
 
   done();
-});
+};
