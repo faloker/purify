@@ -12,19 +12,17 @@ export default fp(async (fastify, opts, done) => {
     uri = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongo:27017/admin`;
   }
 
-  mongoose.connect(
-    uri,
-    {
+  mongoose
+    .connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
       useCreateIndex: true,
-    },
-  )
-    .then((connection) => {
+    })
+    .then(connection => {
       fastify.decorate('db', connection);
-      fastify.log.info('Connection to mongo established ...');
+      fastify.log.info('[MongoDB] Connection established');
       done();
     })
-    .catch((err) => fastify.log.error(err));
+    .catch(err => fastify.log.error(err));
 });
