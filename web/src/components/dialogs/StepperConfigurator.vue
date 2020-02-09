@@ -10,17 +10,11 @@
         non-linear
         vertical
       >
-        <v-stepper-step
-          :complete="e6 > 1"
-          step="1"
-        >
-          Select an array with issues
+        <v-stepper-step :complete="e6 > 1" step="1">
+          Select the array with the findings. You can view an example finding object in an array.
         </v-stepper-step>
         <v-stepper-content step="1">
-          <v-card
-            class="fill-height"
-            flat
-          >
+          <v-card class="fill-height" flat>
             <v-btn
               class="mx-2"
               outlined
@@ -43,31 +37,23 @@
             </v-card-text>
           </v-card>
         </v-stepper-content>
-        <v-stepper-step
-          :complete="e6 > 2"
-          step="2"
-        >
+        <v-stepper-step :complete="e6 > 2" step="2">
           Which fields will be in issue title and subtitle?
         </v-stepper-step>
         <v-stepper-content step="2">
-          <v-card
-            class="fill-height"
-            flat
-          >
-            <v-card-text>
-              <vue-json-pretty
-                v-model="title_fields"
-                :deep="2"
-                :path="'issue'"
-                :selectable-type="'multiple'"
-                :path-selectable="((path, data) => path !== 'issue')"
-                :data="exampleIssue"
-                :show-select-controller="true"
-                :highlight-selected-node="false"
-              />
-            </v-card-text>
+          <v-card class="fill-height" flat>
+            <vue-json-pretty
+              v-model="title_fields"
+              :deep="2"
+              :path="'issue'"
+              :selectable-type="'multiple'"
+              :path-selectable="(path, data) => path !== 'issue'"
+              :data="exampleIssue"
+              :show-select-controller="true"
+              :highlight-selected-node="false"
+            />
             <v-btn
-              class="mx-2"
+              class="mx-2 mt-3"
               outlined
               :disabled="!title_fields.length"
               color="primary"
@@ -76,8 +62,7 @@
               Next
             </v-btn>
             <v-btn
-
-              class="mx-2"
+              class="mx-2 mt-3"
               outlined
               @click="e6 = 1"
             >
@@ -85,45 +70,37 @@
             </v-btn>
           </v-card>
         </v-stepper-content>
-        <v-stepper-step
-          :complete="e6 > 3"
-          step="3"
-        >
+        <v-stepper-step :complete="e6 > 3" step="3">
           Add patterns to display title and subtitle
         </v-stepper-step>
         <v-stepper-content step="3">
-          <v-card
-            class="fill-height"
-            flat
-          >
-            <v-card-text>
-              <v-combobox
-                v-model="title_pattern"
-                label="Pattern for a title"
-                hint="For example, [{issue.severity}] -- {issue.title}"
-                persistent-hint
-                :items="title_fields.map(i => i.replace('issue.', ''))"
-              />
-              <v-combobox
-                v-model="subtitle_pattern"
-                class="pt-4"
-                label="Pattern for a subtitle"
-                hint="For example, {issue.CVSS} | {issue.short_description}"
-                persistent-hint
-                :items="title_fields.map(i => i.replace('issue.', ''))"
-              />
-            </v-card-text>
+          <v-card class="fill-height" flat>
+            <v-combobox
+              v-model="title_pattern"
+              label="Pattern for a title"
+              hint="For example, [{issue.severity}] -- {issue.title}"
+              persistent-hint
+              :items="title_fields.map(i => i.replace('issue.', ''))"
+            />
+            <v-combobox
+              v-model="subtitle_pattern"
+              class="pt-4"
+              label="Pattern for a subtitle"
+              hint="For example, {issue.CVSS} | {issue.short_description}"
+              persistent-hint
+              :items="title_fields.map(i => i.replace('issue.', ''))"
+            />
             <v-btn
               :disabled="!title_fields.length"
               color="primary"
-              class="mx-2"
+              class="mx-2 mt-3"
               outlined
               @click="e6 = 4"
             >
               Next
             </v-btn>
             <v-btn
-              class="mx-2"
+              class="mx-2 mt-3"
               outlined
               @click="e6 = 2"
             >
@@ -131,40 +108,32 @@
             </v-btn>
           </v-card>
         </v-stepper-content>
-        <v-stepper-step
-          :complete="e6 > 4"
-          step="4"
-        >
+        <v-stepper-step :complete="e6 > 4" step="4">
           Which fields will be in issue body?
         </v-stepper-step>
         <v-stepper-content step="4">
-          <v-card
-            class="fill-height"
-            flat
-          >
-            <v-card-text>
-              <vue-json-pretty
-                v-model="body_fields"
-                :deep="2"
-                :path="'issue'"
-                :selectable-type="'multiple'"
-                :path-selectable="((path, data) => path !== 'issue')"
-                :data="exampleIssue"
-                :show-select-controller="true"
-                :highlight-selected-node="false"
-              />
-            </v-card-text>
+          <v-card class="fill-height" flat>
+            <vue-json-pretty
+              v-model="body_fields"
+              :deep="2"
+              :path="'issue'"
+              :selectable-type="'multiple'"
+              :path-selectable="(path, data) => path !== 'issue'"
+              :data="exampleIssue"
+              :show-select-controller="true"
+              :highlight-selected-node="false"
+            />
             <v-btn
               :disabled="!body_fields.length"
               color="primary"
-              class="mx-2"
+              class="mx-2 mt-3"
               outlined
               @click="e6 = 5"
             >
               Next
             </v-btn>
             <v-btn
-              class="mx-2"
+              class="mx-2 mt-3"
               outlined
               @click="e6 = 3"
             >
@@ -172,68 +141,72 @@
             </v-btn>
           </v-card>
         </v-stepper-content>
-        <v-stepper-step
-          :complete="e6 > 5"
-          step="5"
-        >
-          Select field(s) that will be used to detect duplicates
+        <v-stepper-step :complete="e6 > 5" step="5">
+          Select types of fields in issue body
         </v-stepper-step>
         <v-stepper-content step="5">
-          <v-card
-            class="fill-height"
-            flat
-          >
+          <v-card class="fill-height" flat>
+            <template v-for="item in body_fields">
+              <div :key="item" class="my-2">
+                <span>
+                  {{ item }}
+                </span>
+                <v-btn-toggle
+                  v-model="type_body_fields[item]"
+                  color="primary"
+                  group
+                >
+                  <v-btn small value="text">
+                    Text
+                  </v-btn>
+
+                  <v-btn small value="html">
+                    Html
+                  </v-btn>
+
+                  <v-btn small value="base64">
+                    Base64
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+            </template>
+            <v-card-actions>
+              <v-btn
+                :disabled="Object.keys(type_body_fields).length !== body_fields.length"
+                color="primary"
+                class="mr-2 mt-3"
+                outlined
+                @click="e6 = 6"
+              >
+                Next
+              </v-btn>
+              <v-btn
+                class="mr-2 mt-3"
+                outlined
+                @click="e6 = 4"
+              >
+                Go back
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-stepper-content>
+        <v-stepper-step :complete="e6 > 6" step="6">
+          Select field(s) that will be used to detect duplicates
+        </v-stepper-step>
+        <v-stepper-content step="6">
+          <v-card class="fill-height" flat>
             <vue-json-pretty
               v-model="compare_fields"
               :deep="2"
               :path="'issue'"
               :selectable-type="'multiple'"
-              :path-selectable="((path, data) => path !== 'issue')"
+              :path-selectable="(path, data) => path !== 'issue'"
               :data="exampleIssue"
               :show-select-controller="true"
               :highlight-selected-node="false"
             />
             <v-btn
               :disabled="!compare_fields.length"
-              color="primary"
-              class="mx-2"
-              outlined
-              @click="e6 = 6"
-            >
-              Next
-            </v-btn>
-            <v-btn
-              class="mx-2"
-              outlined
-              @click="e6 = 4"
-            >
-              Go back
-            </v-btn>
-          </v-card>
-        </v-stepper-content>
-        <v-stepper-step
-          :complete="e6 > 6"
-          step="6"
-        >
-          Select field(s) that will be merged if the issues look the same (based on duplication score)
-        </v-stepper-step>
-        <v-stepper-content step="6">
-          <v-card
-            class="fill-height"
-            flat
-          >
-            <vue-json-pretty
-              v-model="merge_fields"
-              :deep="2"
-              :path="'issue'"
-              :selectable-type="'multiple'"
-              :path-selectable="((path, data) => path !== 'issue')"
-              :data="exampleIssue"
-              :show-select-controller="true"
-              :highlight-selected-node="false"
-            />
-            <v-btn
-              :disabled="!merge_fields.length"
               color="primary"
               class="mx-2"
               outlined
@@ -250,14 +223,45 @@
             </v-btn>
           </v-card>
         </v-stepper-content>
-        <v-stepper-step step="7">
-          Give a name for this template
+        <v-stepper-step :complete="e6 > 7" step="7">
+          Select field(s) that will be merged if the issues look the same (based on duplication
+          score)
         </v-stepper-step>
         <v-stepper-content step="7">
-          <v-card
-            class="fill-height"
-            flat
-          >
+          <v-card class="fill-height" flat>
+            <vue-json-pretty
+              v-model="merge_fields"
+              :deep="2"
+              :path="'issue'"
+              :selectable-type="'multiple'"
+              :path-selectable="(path, data) => path !== 'issue'"
+              :data="exampleIssue"
+              :show-select-controller="true"
+              :highlight-selected-node="false"
+            />
+            <v-btn
+              :disabled="!merge_fields.length"
+              color="primary"
+              class="mx-2"
+              outlined
+              @click="e6 = 8"
+            >
+              Next
+            </v-btn>
+            <v-btn
+              class="mx-2"
+              outlined
+              @click="e6 = 6"
+            >
+              Go back
+            </v-btn>
+          </v-card>
+        </v-stepper-content>
+        <v-stepper-step step="8">
+          Give a name for this template
+        </v-stepper-step>
+        <v-stepper-content step="8">
+          <v-card class="fill-height" flat>
             <v-text-field
               v-model="name"
               class="tname"
@@ -289,7 +293,7 @@
             <v-btn
               class="mx-2"
               outlined
-              @click="e6 = 6"
+              @click="e6 = 7"
             >
               Go back
             </v-btn>
@@ -335,13 +339,7 @@
 <script>
 import VueJsonPretty from 'vue-json-pretty';
 import { mapGetters } from 'vuex';
-import {
-  SAVE_TEMPLATE,
-  FETCH_REPORTS,
-  ISSUES_FETCH,
-  FETCH_CONTENT,
-} from '@/store/actions';
-import { SET_CONTENT } from '@/store/mutations';
+import { SAVE_TEMPLATE, FETCH_REPORTS, FETCH_CONTENT } from '@/store/actions';
 
 export default {
   name: 'StepperConfigurator',
@@ -372,9 +370,10 @@ export default {
       path_to_issues: '',
       title_fields: [],
       body_fields: [],
+      type_body_fields: {},
       report: false,
       rules: {
-        min: (v) => v.length >= 1 || 'Min 1 symbol',
+        min: v => v.length >= 3 || 'Min 3 symbols',
       },
     };
   },
@@ -387,27 +386,42 @@ export default {
   methods: {
     saveTemplate() {
       this.loading = true;
-      this.$store.dispatch(SAVE_TEMPLATE, {
-        path_to_issues: this.path_to_issues.replace('report.root.', '').replace('[0]', '').replace('report.root', ''),
-        report: this.reportId,
-        name: this.name,
-        title_pattern: this.title_pattern,
-        subtitle_pattern: this.subtitle_pattern,
-        tags: this.tags,
-        merge_fields: this.merge_fields.map((i) => i.replace('issue.', '')),
-        title_fields: this.title_fields.map((i) => i.replace('issue.', '')),
-        body_fields: this.body_fields.map((i) => i.replace('issue.', '')),
-        compare_fields: this.compare_fields.map((i) => i.replace('issue.', '')),
-      }).then(() => {
-        this.loading = false;
-        this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug);
 
-        this.$emit('update:stepper', false);
+      this.body_fields = [];
+      for (const key of Object.keys(this.type_body_fields)) {
+        this.body_fields.push({
+          key: key.replace('issue.', ''),
+          type: this.type_body_fields[key],
+        });
+      }
 
-        this.e6 = 1;
-        this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
-        this.tags = this.compare_fields = this.merge_fields = this.title_fields = this.body_fields = [];
-      });
+      this.$store
+        .dispatch(SAVE_TEMPLATE, {
+          path_to_issues: this.path_to_issues
+            .replace('report.root.', '')
+            .replace('[0]', '')
+            .replace('report.root', ''),
+          report: this.reportId,
+          name: this.name,
+          title_pattern: this.title_pattern,
+          subtitle_pattern: this.subtitle_pattern,
+          tags: this.tags,
+          body_fields: this.body_fields,
+          merge_fields: this.merge_fields.map((i) => i.replace('issue.', '')),
+          title_fields: this.title_fields.map((i) => i.replace('issue.', '')),
+          compare_fields: this.compare_fields.map((i) => i.replace('issue.', '')),
+        })
+        .then(() => {
+          this.loading = false;
+          this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug);
+
+          this.$emit('update:stepper', false);
+
+          this.e6 = 1;
+          this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
+          this.type_body_fields = {};
+          this.tags = this.compare_fields = this.merge_fields = this.title_fields = this.body_fields = [];
+        });
     },
 
     async getContent(reportId) {
