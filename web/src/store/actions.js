@@ -11,7 +11,7 @@ export const SAVE_TEMPLATE = 'saveTemplate';
 export const FETCH_TEMPLATES_NAMES = 'fetchTemplatesNames';
 
 export const CREATE_UNIT = 'createUnit';
-export const DELETE_RELEASE = 'deleteRelease';
+export const DELETE_UNIT = 'deleteRelease';
 export const FETCH_UNITS = 'fetchUnits';
 export const CHANGE_RELEASE_STATE = 'changeReleaseState';
 
@@ -33,3 +33,5 @@ export const FETCH_CONTENT = 'fetchContent';
 export const POST_COMMENT = 'postComment';
 
 export const FETCH_STATS = 'fetchStats';
+
+export const EDIT_PROJECT = 'editProject';

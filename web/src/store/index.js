@@ -5,7 +5,7 @@ import app from './modules/app';
 import projects from './modules/projects';
 import issues from './modules/issues';
 import report from './modules/reports';
-import releases from './modules/releases';
+import units from './modules/units';
 import auth from './modules/auth';
 import profile from './modules/profile';
 
@@ -18,7 +18,7 @@ export default new Vuex.Store({
     projects,
     issues,
     report,
-    releases,
+    units,
     profile,
   },
 });

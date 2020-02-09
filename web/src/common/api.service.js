@@ -11,13 +11,14 @@ const ApiService = {
     Vue.use(Toasted, {
       duration: 3000,
       keepOnHover: true,
-      theme: 'bubble',
+      theme: 'toasted-primary',
       iconPack: 'fontawesome',
       position: 'bottom-center',
     });
 
-    Vue.toasted.register('api_error',
-      (err) => {
+    Vue.toasted.register(
+      'api_error',
+      err => {
         if (err.response) {
           return err.response.data.message;
         }
@@ -26,22 +27,26 @@ const ApiService = {
       {
         type: 'error',
         icon: 'times',
-      });
-
-    Vue.toasted.register('api_success',
-      (msg) => {
-        if (typeof msg !== 'string') {
-          return 'Successful';
-        }
-        console.log(msg);
-        return msg;
       },
+    );
+
+    Vue.toasted.register(
+      'api_success',
+      payload => payload.msg,
       {
         type: 'success',
         icon: 'check',
-      });
+      },
+    );
 
     Vue.axios.defaults.baseURL = API_URL;
+    Vue.axios.interceptors.response.use(
+      response => response,
+      error => {
+        Vue.toasted.global.api_error(error);
+        return Promise.reject(error);
+      },
+    );
   },
 
   setHeader() {
@@ -49,37 +54,23 @@ const ApiService = {
   },
 
   query(resource, params) {
-    return Vue.axios.get(resource, params).catch((err) => {
-      throw new Error(`Error in ApiService ${err.response.error}`);
-    });
+    return Vue.axios.get(resource, params);
   },
 
   get(resource) {
-    return Vue.axios.get(`${resource}`).catch((err) => {
-      Vue.toasted.global.api_error(err);
-    });
+    return Vue.axios.get(resource);
   },
 
   post(resource, params) {
-    return Vue.axios.post(`${resource}`, params).catch((err) => {
-      Vue.toasted.global.api_error(err);
-    });
+    return Vue.axios.post(resource, params);
   },
 
-  update(resource, params) {
-    Vue.axios.patch(`${resource}`, params).then(() => {
-      Vue.toasted.global.api_success();
-    }).catch((err) => {
-      Vue.toasted.global.api_error(err);
-    });
+  patch(resource, params) {
+    return Vue.axios.patch(resource, params);
   },
 
   delete(resource) {
-    return Vue.axios.delete(resource).then(() => {
-      Vue.toasted.global.api_success();
-    }).catch((err) => {
-      Vue.toasted.global.api_error(err);
-    });
+    return Vue.axios.delete(resource);
   },
 };
 
@@ -91,11 +82,11 @@ export const ReportsService = {
   },
 
   applyTemplate(reportId, templateId) {
-    return ApiService.update('reports/', reportId, templateId);
+    return ApiService.patch('reports/', reportId, templateId);
   },
 
   getContent(reportId) {
-    return ApiService.get(`report/${reportId}/content`, reportId);
+    return ApiService.get(`reports/${reportId}/content`, reportId);
   },
 
   fetchReportsByUnit(unitSlug) {
@@ -128,7 +119,7 @@ export const IssuesService = {
   },
 
   updateIssues(payload) {
-    return ApiService.update('issues/', payload);
+    return ApiService.patch('issues/', payload);
   },
 
   createTicket(id, payload) {
@@ -140,17 +131,17 @@ export const IssuesService = {
   },
 };
 
-export const ProjectsService = {
-  getProjects() {
-    return ApiService.get('projects/');
-  },
-  createProject(params) {
-    return ApiService.post('projects/', params);
-  },
-  deleteProject(id) {
-    return ApiService.delete(`projects/${id}`);
-  },
-};
+// export const ProjectsService = {
+//   getProjects() {
+//     return ApiService.get('projects/');
+//   },
+//   createProject(params) {
+//     return ApiService.post('projects/', params);
+//   },
+//   deleteProject(id) {
+//     return ApiService.delete(`projects/${id}`);
+//   },
+// };
 
 export const UnitsService = {
   get(slug) {

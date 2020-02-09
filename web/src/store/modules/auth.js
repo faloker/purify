@@ -1,11 +1,7 @@
 import ApiService from '@/common/api.service';
 import JwtService from '@/common/jwt.service';
 import {
-  LOGIN,
-  LOGOUT,
-  REGISTER,
-  CHECK_AUTH,
-  UPDATE_USER,
+  LOGIN, LOGOUT, REGISTER, CHECK_AUTH, UPDATE_USER,
 } from '../actions';
 import { SET_AUTH, PURGE_AUTH, SET_USER } from '../mutations';
 

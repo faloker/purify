@@ -1,11 +1,11 @@
 /* eslint-disable no-shadow */
-import { ProjectsService } from '@/common/api.service';
 import ApiService from '@/common/api.service';
 import {
   FETCH_PROJECTS,
   DELETE_PROJECT,
   CREATE_PROJECT,
   FETCH_STATS,
+  EDIT_PROJECT,
 } from '@/store/actions';
 import {
   SET_PROJECTS,
@@ -35,7 +35,7 @@ const getters = {
 
 const actions = {
   async [FETCH_PROJECTS](context) {
-    const { data } = await ProjectsService.getProjects();
+    const { data } = await ApiService.get('projects/');
     context.commit(SET_PROJECTS, data);
   },
 
@@ -47,12 +47,18 @@ const actions = {
   },
 
   async [CREATE_PROJECT](context, payload) {
-    await ProjectsService.createProject(payload);
+    await ApiService.post('projects/', payload);
     context.dispatch(FETCH_PROJECTS);
   },
 
-  [DELETE_PROJECT](id) {
-    return ProjectsService.deleteProject(id);
+  async [DELETE_PROJECT](context, id) {
+    await ApiService.delete(`/projects/${id}`);
+    context.dispatch(FETCH_PROJECTS);
+  },
+
+  async [EDIT_PROJECT](context, { id, change }) {
+    await ApiService.patch(`/projects/${id}`, change);
+    context.dispatch(FETCH_PROJECTS);
   },
 };
 

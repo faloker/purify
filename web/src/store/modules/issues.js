@@ -1,5 +1,6 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 /* eslint-disable no-shadow */
+import { IssuesService } from '@/common/api.service';
 import {
   SELECT_ISSUE,
   SET_ISSUES,
@@ -10,7 +11,6 @@ import {
   CREATE_TICKET,
   POST_COMMENT,
 } from '../actions';
-import { IssuesService } from '@/common/api.service';
 
 const state = {
   items: [],
@@ -36,7 +36,7 @@ const actions = {
   },
 
   async [ISSUE_UPDATE]({ commit }, payload) {
-    IssuesService.updateIssues(payload);
+    await IssuesService.updateIssues(payload);
   },
 
   async [CREATE_TICKET](context, { id, fields }) {
