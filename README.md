@@ -2,7 +2,7 @@
 
 The goal of Purify to be an easy-in-use and efficient tool to simplify a workflow of managing vulnerabilities delivered from various tools. 
 
-Purify is design to parse any report if it is in JSON or XML. This means you don't need any special plug-ins to process reports from your selection of tools.
+Purify is designed to analyze the report of **any tool**, if the report is in JSON or XML format. This means you don't need any special plug-ins to process reports from your selection of tools.
 
 Collect all security findings in one place, review/validate/track them, collaborate, get notifications, export them into tracking systems (e.g. Jira) and so on.
 
