@@ -42,5 +42,4 @@ const fetch = {
   },
 };
 
-
 export default { create, getByProjectSlug, fetch };

@@ -2,7 +2,7 @@ import {
   createUnit,
   getUnitsByProjectSlug,
   editUnit,
-  deleteUnit
+  deleteUnit,
 } from '../../controllers/unitsController';
 import docs from '../documentation';
 
@@ -11,26 +11,26 @@ export default (fastify, opts, done) => {
     method: 'POST',
     url: '/',
     handler: createUnit,
-    schema: docs.units.create
+    schema: docs.units.create,
   });
 
   fastify.route({
     method: 'GET',
     url: '/',
     handler: getUnitsByProjectSlug,
-    schema: docs.units.getByProjectSlug
+    schema: docs.units.getByProjectSlug,
   });
 
   fastify.route({
     method: 'PATCH',
     url: '/:id',
-    handler: editUnit
+    handler: editUnit,
   });
 
   fastify.route({
     method: 'DELETE',
     url: '/:id',
-    handler: deleteUnit
+    handler: deleteUnit,
   });
 
   done();

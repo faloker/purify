@@ -4,7 +4,7 @@ import {
   getStats,
   createProject,
   deleteProject,
-  editProject
+  editProject,
 } from '../../controllers/projectController';
 
 export default async (fastify, opts, done) => {
@@ -12,31 +12,31 @@ export default async (fastify, opts, done) => {
     method: 'POST',
     url: '/',
     handler: createProject,
-    schema: docs.projects.create
+    schema: docs.projects.create,
   });
 
   fastify.route({
     method: 'GET',
     url: '/',
-    handler: fetchProjects
+    handler: fetchProjects,
   });
 
   fastify.route({
     method: 'GET',
     url: '/stats',
-    handler: getStats
+    handler: getStats,
   });
 
   fastify.route({
     method: 'DELETE',
     url: '/:id',
-    handler: deleteProject
+    handler: deleteProject,
   });
 
   fastify.route({
     method: 'PATCH',
     url: '/:id',
-    handler: editProject
+    handler: editProject,
   });
 
   done();

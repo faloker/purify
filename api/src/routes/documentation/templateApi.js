@@ -19,11 +19,11 @@ export const save = {
           type: 'object',
           properties: {
             key: { type: 'string' },
-            type: { type: 'string' }
-          }
-        }
+            type: { type: 'string' },
+          },
+        },
       },
-      compare_fields: { type: 'array', items: { type: 'string' } }
+      compare_fields: { type: 'array', items: { type: 'string' } },
     },
     required: [
       'path_to_issues',
@@ -34,16 +34,16 @@ export const save = {
       'merge_fields',
       'title_fields',
       'body_fields',
-      'compare_fields'
-    ]
+      'compare_fields',
+    ],
   },
   response: {
     201: {
       description: 'Success',
       type: 'object',
       properties: {
-        _id: { type: 'string' }
-      }
-    }
-  }
+        _id: { type: 'string' },
+      },
+    },
+  },
 };

@@ -5,7 +5,7 @@ const CommentSchema = mongoose.Schema(
   {
     _id: { type: String, default: uuid.v4 },
     text: String,
-    author: { type: String, ref: 'User' }
+    author: { type: String, ref: 'User' },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );

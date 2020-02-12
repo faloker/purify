@@ -6,7 +6,7 @@ const projectSchema = new Schema({
   _id: { type: String, default: uuid.v4 },
   title: String,
   subtitle: String,
-  slug: { type: String, lowercase: true, unique: true }
+  slug: { type: String, lowercase: true, unique: true },
 });
 
 projectSchema.plugin(slugify);

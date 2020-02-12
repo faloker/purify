@@ -11,7 +11,7 @@ const template = new Schema({
   merge_fields: Array,
   title_pattern: String,
   subtitle_pattern: String,
-  tags: [{ type: String }]
+  tags: [{ type: String }],
 });
 
 const Template = model('Template', template);
