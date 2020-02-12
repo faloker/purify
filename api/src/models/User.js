@@ -9,23 +9,23 @@ const UserSchema = new Schema({
     lowercase: true,
     unique: true,
     required: [true, "can't be blank"],
-    match: [/^[a-zA-Z0-9]+$/, 'is invalid']
+    match: [/^[a-zA-Z0-9]+$/, 'is invalid'],
   },
   email: {
     type: String,
     lowercase: true,
     unique: true,
     required: [true, "can't be blank"],
-    match: [/\S+@\S+\.\S+/, 'is invalid']
+    match: [/\S+@\S+\.\S+/, 'is invalid'],
   },
   image: String,
   password: String,
   token: String,
   salt: {
     type: String,
-    default: randomBytes(16).toString('hex')
+    default: randomBytes(16).toString('hex'),
   },
-  theme: { type: String, default: '' }
+  theme: { type: String, default: '' },
 });
 
 UserSchema.methods.validSecret = function(secret, field) {

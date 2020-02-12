@@ -1,5 +1,5 @@
 import boom from '@hapi/boom';
-import { randomBytes } from 'crypto';
+import { randomBytes, pbkdf2Sync } from 'crypto';
 
 import User from '../models/User';
 
@@ -44,14 +44,28 @@ export const loginUser = async (req, reply) => {
 
 export const createToken = async (req, reply) => {
   const token = randomBytes(16).toString('hex');
+  const { username, password } = req.body;
 
-  await User.findOneAndUpdate({ _id: req.user.id }, { $set: { token } });
-  reply.code(201).send({ token });
+  const user = await User.findOne({ username });
+
+  if (!user || !user.validSecret(password, 'password')) {
+    throw boom.unauthorized('Username or password is invalid');
+  }
+
+  const secret = pbkdf2Sync(token, user.salt, 10000, 512, 'sha512').toString(
+    'hex'
+  );
+
+  await User.updateOne({ username }, { $set: { token: secret } });
+  reply
+    .code(201)
+    .send({ token: Buffer.from(`${username}:${token}`).toString('base64') });
 };
 
-export const verifyToken = async token => {
-  const user = await User.findOne({ token });
-  if (!user) {
-    throw boom.unauthorized('Token is invalid');
+export const verifyToken = async (username, token) => {
+  const user = await User.findOne({ username });
+
+  if (!user || !user.validSecret(token, 'token')) {
+    throw boom.unauthorized('Username or token is invalid');
   }
 };

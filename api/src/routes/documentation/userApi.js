@@ -1,4 +1,4 @@
-const create = {
+export const create = {
   description: 'Create a user',
   tags: ['users'],
   body: {
@@ -15,7 +15,7 @@ const create = {
   },
 };
 
-const auth = {
+export const auth = {
   description: 'Auth user',
   tags: ['users'],
   response: {
@@ -32,7 +32,7 @@ const auth = {
   },
 };
 
-const login = {
+export const login = {
   description: 'Login user',
   tags: ['users'],
   body: {
@@ -57,23 +57,24 @@ const login = {
   },
 };
 
-const createToken = {
+export const createToken = {
   description: 'Create API token for user',
   tags: ['users'],
+  body: {
+    type: 'object',
+    properties: {
+      username: { type: 'string' },
+      password: { type: 'string' },
+    },
+    required: ['username', 'password'],
+  },
   response: {
-    200: {
+    201: {
       description: 'Success',
       type: 'object',
       properties: {
-        api_token: { type: 'string' },
+        token: { type: 'string' },
       },
     },
   },
-};
-
-export default {
-  create,
-  auth,
-  login,
-  createToken,
 };

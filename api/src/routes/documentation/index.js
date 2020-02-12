@@ -3,8 +3,13 @@ import units from './unitApi';
 import * as issues from './issueApi';
 import * as projects from './projectApi';
 import * as templates from './templateApi';
-import users from './userApi';
+import * as users from './userApi';
 
 export default {
-  units, reports, projects, templates, issues, users,
+  units,
+  reports,
+  projects,
+  templates,
+  issues,
+  users,
 };

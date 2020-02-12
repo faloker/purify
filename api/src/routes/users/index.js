@@ -30,7 +30,7 @@ export default (fastify, opts, done) => {
 
   fastify.route({
     method: 'POST',
-    url: '/tokens',
+    url: '/token',
     handler: createToken,
     schema: docs.users.createToken,
   });

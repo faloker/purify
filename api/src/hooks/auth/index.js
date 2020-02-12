@@ -3,6 +3,7 @@ import { verifyToken } from '../../controllers/usersController';
 const publicEndpoints = [
   '/api/users/login',
   '/api/users/auth',
+  '/api/users/token',
   '/api/users/signup',
   '/documentation',
   '/css',
@@ -19,8 +20,15 @@ export default fastify => {
     ).length;
 
     // eslint-disable-next-line no-prototype-builtins
-    if (req.headers.hasOwnProperty('x-purify-token')) {
-      await verifyToken(req.headers['x-purify-token']);
+    if (req.headers.hasOwnProperty('x-auth-token')) {
+      const [username, token] = Buffer.from(
+        req.headers['x-auth-token'],
+        'base64'
+      )
+        .toString()
+        .split(':');
+
+      await verifyToken(username, token);
     } else if (!(isPublic || req.raw.url === '/')) {
       await req.jwtVerify();
     }
