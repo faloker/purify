@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import store from './store';
 import TheHeader from '@/components/TheHeader.vue';
 import PersonalSettings from '@/components/PersonalSettings.vue';
 import TokensSettings from '@/components/TokensSettings.vue';
@@ -14,8 +13,8 @@ import Welcome from '@/views/Welcome.vue';
 import Profile from '@/views/Profile.vue';
 import Dashboard from '@/views/Dashboard.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
+import store from './store';
 import { CHECK_AUTH } from './store/actions';
-
 
 Vue.use(Router);
 
@@ -24,7 +23,8 @@ export const router = new Router({
   // mode: 'history',
   routes: [
     {
-      path: '/', redirect: '/projects',
+      path: '/',
+      redirect: '/projects',
     },
     {
       path: '/welcome',
@@ -32,6 +32,7 @@ export const router = new Router({
       components: {
         default: Welcome,
       },
+      meta: { title: 'Purify | Welcome' },
     },
     {
       path: '/projects',
@@ -40,6 +41,7 @@ export const router = new Router({
         default: Projects,
         header: TheHeader,
       },
+      meta: { title: 'Purify | Projects' },
     },
     {
       path: '/dashboard',
@@ -48,6 +50,7 @@ export const router = new Router({
         default: Dashboard,
         header: TheHeader,
       },
+      meta: { title: 'Purify | Dashboard' },
     },
     {
       path: '/project/:slug/units',
@@ -56,6 +59,7 @@ export const router = new Router({
         default: Units,
         header: TheHeader,
       },
+      meta: { title: 'Purify | Units' },
     },
     {
       path: '/unit/:slug/issues',
@@ -64,6 +68,7 @@ export const router = new Router({
         default: () => import('@/views/Issues.vue'),
         header: TheHeader,
       },
+      meta: { title: 'Purify | Issues' },
     },
     {
       path: '/unit/:slug/reports',
@@ -72,6 +77,7 @@ export const router = new Router({
         default: () => import('@/views/Reports.vue'),
         header: TheHeader,
       },
+      meta: { title: 'Purify | Reports' },
     },
     // {
     //   path: '/profile',
@@ -101,6 +107,8 @@ router.beforeEach((to, from, next) => {
   if (to.path !== '/welcome') {
     store.dispatch(CHECK_AUTH).catch(() => next('/welcome'));
   }
+
+  document.title = to.meta.title;
 
   next();
 });
