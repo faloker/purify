@@ -66,7 +66,7 @@
       dense
     >
       <v-spacer></v-spacer>
-      <v-btn icon>
+      <!-- <v-btn icon>
         <v-badge
           color="primary"
           content="6"
@@ -79,7 +79,7 @@
       </v-btn>
       <v-avatar class="mx-2" size="36">
         <img :src="currentUser.image" alt="ava" />
-      </v-avatar>
+      </v-avatar> -->
       <!-- <v-toolbar-title>
         <span id="active-page-name" class="ml-4 font-weight-bold">{{ activePage }}</span>
       </v-toolbar-title>-->
