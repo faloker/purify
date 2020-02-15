@@ -45,9 +45,7 @@
               <v-card-text>
                 <v-container grid-list-md>
                   <v-layout wrap>
-                    <v-flex
-                      xs12
-                    >
+                    <v-flex xs12>
                       <v-text-field
                         v-model="summary"
                         required
@@ -56,33 +54,26 @@
                         outlined
                       />
                     </v-flex>
-                    <v-flex
-                      xs6
-                    >
+                    <v-flex xs6>
                       <v-select
-                        v-model="selectedIssuesType"
+                        v-model="selectedIssueType"
                         :items="issuesTypes"
                         dense
-                        item-text="name"
                         label="Issue type"
                         outlined
                         required
                       />
                     </v-flex>
-                    <v-flex
-                      xs6
-                    >
-                      <v-select
+                    <v-flex xs6>
+                      <v-text-field
                         v-model="selectedProject"
-                        :items="projects"
                         dense
-                        item-text="key"
                         label="Project key"
                         outlined
                         required
                       />
                     </v-flex>
-                    <v-flex
+                    <!-- <v-flex
                       xs12
                     >
                       <v-select
@@ -94,18 +85,15 @@
                         outlined
                         required
                       />
-                    </v-flex>
-                    <v-flex
-                      xs12
-                    >
-                      <v-select
-                        v-model="selectedComponents"
-                        :items="components"
-                        dense
-                        item-text="name"
-                        label="Components"
-                        outlined
+                    </v-flex>-->
+                    <v-flex xs12>
+                      <v-combobox
+                        v-model="labels"
+                        label="Labels"
                         chips
+                        outlined
+                        dense
+                        small-chips
                         multiple
                       />
                     </v-flex>
@@ -146,9 +134,7 @@
 <script>
 import VueSimplemde from 'vue-simplemde';
 import j2md from 'jira2md';
-import {
-  CREATE_TICKET, ISSUES_FETCH,
-} from '@/store/actions';
+import { CREATE_TICKET, ISSUES_FETCH } from '@/store/actions';
 import { matchPattern } from '@/common/utils.servive';
 
 export default {
@@ -178,14 +164,15 @@ export default {
         spellChecker: false, // disable spell check
       },
       // summary: this.applyPattern(this.issue.fields, this.issue.template.title_pattern),
-      issuesTypes: [{ name: 'Bug' }],
+      issuesTypes: ['Bug', 'Task'],
       projects: [{ key: 'DEV' }],
       components: [{ name: 'kek' }],
       assignee: [{ name: 'DDDDD' }, { name: 'Jon Doe' }],
-      selectedIssuesType: { name: 'Bug' },
-      selectedProject: { key: 'd' },
+      selectedIssueType: '',
+      selectedProject: '',
       selectedAssignee: { name: 'Jon Doe' },
       selectedComponents: [],
+      labels: [],
     };
   },
   computed: {
@@ -198,7 +185,10 @@ export default {
       return result;
     },
     summary() {
-      return this.applyPattern(this.issue.fields, this.issue.template.title_pattern);
+      return this.applyPattern(
+        this.issue.fields,
+        this.issue.template.title_pattern,
+      );
     },
   },
   methods: {
@@ -206,7 +196,9 @@ export default {
       return matchPattern(obj, template);
     },
     parseKey(key) {
-      const res = key.includes('.') ? key.match(/\.[^.]+$/)[0].replace('.', '') : key;
+      const res = key.includes('.')
+        ? key.match(/\.[^.]+$/)[0].replace('.', '')
+        : key;
       return _.capitalize(_.startCase(res));
     },
     getValue(key) {
@@ -214,24 +206,24 @@ export default {
     },
     async createTicket() {
       const payload = {};
-      payload.project = { key: 'DEV' };
-      // payload.project = this.selectedProject;
+      payload.project = { key: this.selectedProject };
       payload.assignee = { name: null };
-      payload.issuetype = this.selectedIssuesType;
+      payload.issuetype = { name: this.selectedIssueType };
+      payload.labels = this.labels;
       payload.summary = this.summary;
       payload.description = j2md.to_jira(this.preparedMarkdown);
-      payload.components = this.selectedComponents;
+      // payload.components = this.components;
 
       const ticket = await this.$store.dispatch(CREATE_TICKET, {
         id: this.issue._id,
         fields: payload,
       });
 
-
       if (ticket) {
         await this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug);
-        // const updatedIssue = this.issue;
-        // updatedIssue.ticket = ticket;
+        this.$toasted.global.api_success({
+          msg: `Jira ticket ${ticket.key} created`,
+        });
         this.$emit('update:issue', { ...this.issue, ticket });
         this.$emit('update:dialog', false);
       }
@@ -241,5 +233,5 @@ export default {
 </script>
 
 <style>
-  @import '~simplemde-theme-dark/dist/simplemde-theme-dark.min.css';
+@import '~simplemde-theme-dark/dist/simplemde-theme-dark.min.css';
 </style>
