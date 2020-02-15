@@ -30,6 +30,15 @@
         <v-col cols="3">
           <group-action-btn class="px-3" :items="selected" />
         </v-col>
+        <v-spacer></v-spacer>
+
+        <v-col cols="1">
+          <v-select
+            v-model="pageSize"
+            :items="sizes"
+            label="Issues per page"
+          ></v-select>
+        </v-col>
       </v-row>
       <v-row align="center" justify="center">
         <v-col cols="12">
@@ -81,13 +90,13 @@
                         outlined
                         class="mt-2 mr-3"
                         rounded
-                        color="blue darken-5"
+                        color="senary"
                         :href="item.ticket.link"
                         target="_blank"
                       >
                         <v-icon
                           v-if="item.ticket.type == 'jira'"
-                          color="blue darken-5"
+                          color="senary"
                           left
                         >
                           mdi-jira
@@ -193,6 +202,7 @@ export default {
       commentDialog: false,
       search: '',
       pageSize: 5,
+      sizes: [5, 10, 50],
       pageCount: this.rawItems / this.pageSize,
       selected: [],
       rating: 3,
@@ -200,28 +210,27 @@ export default {
       selectedIssue: {},
     };
   },
-  watch: {
-    rawItems(newItems, oldItems) {
-      this.page = 1;
-    },
-  },
   computed: {
     ...mapGetters(['activePage', 'currentUser']),
     items() {
       return this.rawItems.filter(
         (item, index) => index >= (this.page - 1) * this.pageSize
-          && index < this.page * this.pageSize,
+            && index < this.page * this.pageSize,
       );
     },
     allSelected() {
-      return this.selected.length === 5;
+      return this.selected.length === this.pageSize;
     },
   },
-
-  methods: {
-    dateInDays(past, present) {
-      return dateDiffInDays(past, present);
+  watch: {
+    rawItems(newItems, oldItems) {
+      this.page = 1;
     },
+    pageSize(newValue, oldValue) {
+      this.page = 1;
+    },
+  },
+  methods: {
     applyPattern(obj, template) {
       return matchPattern(obj, template);
     },
