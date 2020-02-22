@@ -3,8 +3,8 @@ import {
   updateIssues,
   createJiraTicket,
   postComment,
-} from '../../controllers/issuesController';
-import docs from '../documentation';
+} from '../controllers/issuesController';
+import docs from './documentation';
 
 export default (fastify, opts, done) => {
   fastify.route({

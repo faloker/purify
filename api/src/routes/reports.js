@@ -3,8 +3,8 @@ import {
   getContent,
   saveReport,
   fetchReportsBySlug,
-} from '../../controllers/reportController';
-import docs from '../documentation';
+} from '../controllers/reportController';
+import docs from './documentation';
 
 export default async (fastify, opts, done) => {
   fastify.route({

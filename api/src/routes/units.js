@@ -3,8 +3,8 @@ import {
   getUnitsByProjectSlug,
   editUnit,
   deleteUnit,
-} from '../../controllers/unitsController';
-import docs from '../documentation';
+} from '../controllers/unitsController';
+import docs from './documentation';
 
 export default (fastify, opts, done) => {
   fastify.route({

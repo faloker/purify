@@ -1,8 +1,8 @@
 import {
   saveTemplate,
   fetchTemplatesNames,
-} from '../../controllers/templatesController';
-import docs from '../documentation';
+} from '../controllers/templatesController';
+import docs from './documentation';
 
 export default (fastify, opts, done) => {
   fastify.route({

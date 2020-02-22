@@ -3,8 +3,8 @@ import {
   authUser,
   loginUser,
   createToken,
-} from '../../controllers/usersController';
-import docs from '../documentation';
+} from '../controllers/usersController';
+import docs from './documentation';
 
 export default (fastify, opts, done) => {
   fastify.route({

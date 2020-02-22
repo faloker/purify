@@ -1,4 +1,4 @@
-import { verifyToken } from '../../controllers/usersController';
+import { verifyToken } from '../controllers/usersController';
 
 const publicEndpoints = [
   '/api/users/login',
@@ -11,6 +11,7 @@ const publicEndpoints = [
   '/img',
   '/fonts',
   '/favicon.ico',
+  '/config.js',
 ];
 
 export default fastify => {
@@ -19,8 +20,7 @@ export default fastify => {
       req.raw.url.includes(endpoint)
     ).length;
 
-    // eslint-disable-next-line no-prototype-builtins
-    if (req.headers.hasOwnProperty('x-auth-token')) {
+    if (Object.prototype.hasOwnProperty.call(req.headers, 'x-auth-token')) {
       const [username, token] = Buffer.from(
         req.headers['x-auth-token'],
         'base64'
