@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VuePageTransition from 'vue-page-transition';
 import _ from 'lodash';
-import '@mdi/font/css/materialdesignicons.css';
 import App from './App.vue';
 import { router } from './router';
 import store from './store';
