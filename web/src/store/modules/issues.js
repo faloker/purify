@@ -22,7 +22,7 @@ const getters = {
     return state.items;
   },
   issueById(state) {
-    return state.items.filter((i) => i.id === state.selectedIssueId)[0];
+    return state.items.filter(i => i.id === state.selectedIssueId)[0];
   },
   isSelected(state) {
     return !!state.selectedIssueId;

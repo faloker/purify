@@ -2,7 +2,6 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import Toasted from 'vue-toasted';
-import API_URL from '@/common/config';
 import JwtService from './jwt.service';
 
 const ApiService = {
@@ -39,7 +38,13 @@ const ApiService = {
       },
     );
 
-    Vue.axios.defaults.baseURL = API_URL;
+    if (process.env.NODE_ENV === 'local') {
+      Vue.axios.defaults.baseURL = 'http://localhost:3000';
+    } else {
+      // set based on the nginx config
+      Vue.axios.defaults.baseURL = window.API_URL;
+    }
+
     Vue.axios.interceptors.response.use(
       response => response,
       error => {
