@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-import { randomBytes } from 'crypto';
-
 import reportsRoutes from './routes/reports';
 import projectsRoutes from './routes/projects';
 import issuesRoutes from './routes/issues';
@@ -14,16 +11,12 @@ import loggerHooks from './hooks/logger';
 import mountCrons from './plugins/cron';
 import db from './plugins/db/connect';
 import mailer from './plugins/mailer';
+import jira from './plugins/jira';
+import config from './config';
 
 const fastify = require('fastify')({
-  logger: {
-    level: 'info',
-    prettyPrint: true,
-  },
+  logger: config.get('logger'),
 });
-
-// Read .env file from current directory
-dotenv.config();
 
 const swagger = require('./config/swagger');
 
@@ -31,10 +24,10 @@ const swagger = require('./config/swagger');
 fastify.register(require('fastify-swagger'), swagger.options);
 fastify.register(require('fastify-file-upload'));
 fastify.register(require('fastify-boom'));
-fastify.register(require('fastify-cors'));
+// fastify.register(require('fastify-cors'));
 fastify.register(require('fastify-helmet'));
 fastify.register(require('fastify-jwt'), {
-  secret: randomBytes(40).toString('hex'),
+  secret: config.get('jwt_secret'),
 });
 
 // Register API routes
@@ -46,10 +39,17 @@ fastify.register(usersRoutes, { prefix: '/api/users' });
 fastify.register(unitsRoutes, { prefix: '/api/units' });
 
 // Connect to mongodb
-fastify.register(db);
+fastify.register(db, config.get('database'));
 
-// Register mailing service
-// fastify.register(mailer);
+// Register smtp service
+if (config.get('smtp:enabled')) {
+  fastify.register(mailer, config.get('smtp:values'));
+}
+
+// Register jira service
+if (config.get('jira:enabled')) {
+  fastify.register(jira, config.get('jira:values'));
+}
 
 // Register hooks
 authHooks(fastify);
