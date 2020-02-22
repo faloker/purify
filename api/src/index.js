@@ -24,11 +24,14 @@ const swagger = require('./config/swagger');
 fastify.register(require('fastify-swagger'), swagger.options);
 fastify.register(require('fastify-file-upload'));
 fastify.register(require('fastify-boom'));
-// fastify.register(require('fastify-cors'));
 fastify.register(require('fastify-helmet'));
 fastify.register(require('fastify-jwt'), {
   secret: config.get('jwt_secret'),
 });
+
+if (process.env.NODE_ENV === 'local') {
+  fastify.register(require('fastify-cors'));
+}
 
 // Register API routes
 fastify.register(reportsRoutes, { prefix: '/api/reports' });
