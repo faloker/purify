@@ -4,12 +4,10 @@ export const SET_ACTIVE_PAGE = 'setActivePage';
 export const SET_PROJECTS = 'setProjects';
 export const SET_ACTIVE_PROJECT = 'setActiveProject';
 
-export const SELECT_ISSUE = 'selectIssue';
-
 export const SET_REPORTS = 'setReports';
 
 export const SET_UNITS = 'setUnits';
-export const SET_RELEASE = 'setRelease';
+export const SET_ACTIVE_UNIT = 'setRelease';
 
 export const SET_ISSUES = 'setIssues';
 

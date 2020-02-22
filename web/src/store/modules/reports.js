@@ -3,7 +3,6 @@
 import {
   ReportsService,
   TemplatesService,
-  UnitsService,
 } from '@/common/api.service';
 import {
   FETCH_REPORTS,
@@ -28,9 +27,6 @@ const state = {
 };
 
 const getters = {
-  allReports(state) {
-    return state.reports;
-  },
   templatesNamesAndTags(state) {
     return state.templatesNamesAndTags;
   },
@@ -40,17 +36,20 @@ const getters = {
 };
 
 const actions = {
-  async [FETCH_REPORTS]({ commit }, unitSlug) {
-    const { data } = await ReportsService.fetchReportsByUnit(unitSlug);
+  async [FETCH_REPORTS]({ commit }, unit) {
+    const { data } = await ReportsService.fetchReportsByUnit(unit);
     commit(SET_REPORTS, data);
   },
-  async [REPORT_DELETE]({ dispatch }, id) {
+
+  async [REPORT_DELETE]({ dispatch, rootState }, id) {
     await ReportsService.deleteReport(id);
+    dispatch(FETCH_REPORTS, rootState.units.activeUnit);
   },
+
   async [SAVE_TEMPLATE](context, payload) {
     await TemplatesService.addTemplate(payload);
-    context.dispatch(FETCH_REPORTS, payload.slug);
   },
+
   async [FETCH_TEMPLATES_NAMES]({ commit }) {
     const { data } = await TemplatesService.fetchNames();
     commit(SET_TEMLATES_NAMES, data);

@@ -2,7 +2,6 @@
 /* eslint-disable no-shadow */
 import { IssuesService } from '@/common/api.service';
 import {
-  SELECT_ISSUE,
   SET_ISSUES,
 } from '../mutations';
 import {
@@ -13,49 +12,38 @@ import {
 } from '../actions';
 
 const state = {
-  items: [],
-  selectedIssueId: null,
+  issues: [],
 };
 
-const getters = {
-  allIssues(state) {
-    return state.items;
-  },
-  issueById(state) {
-    return state.items.filter(i => i.id === state.selectedIssueId)[0];
-  },
-  isSelected(state) {
-    return !!state.selectedIssueId;
-  },
-};
+const getters = {};
 
 const actions = {
-  async [ISSUES_FETCH]({ commit }, unitSlug) {
-    const { data } = await IssuesService.fetchIssuesByUnit(unitSlug);
+  async [ISSUES_FETCH]({ commit }, unit) {
+    const { data } = await IssuesService.fetchIssuesByUnit(unit);
     commit(SET_ISSUES, data);
   },
 
-  async [ISSUE_UPDATE]({ commit }, payload) {
-    await IssuesService.updateIssues(payload);
+  async [ISSUE_UPDATE]({ dispatch, rootState }, { ids, change }) {
+    await IssuesService.updateIssues({ ids, change });
+    dispatch(ISSUES_FETCH, rootState.units.activeUnit);
   },
 
-  async [CREATE_TICKET](context, { id, fields }) {
+  async [CREATE_TICKET]({ dispatch, rootState }, { id, fields }) {
     const { data } = await IssuesService.createTicket(id, fields);
+    dispatch(ISSUES_FETCH, rootState.units.activeUnit);
     return data;
   },
 
-  async [POST_COMMENT](context, { id, comment }) {
+  async [POST_COMMENT]({ dispatch, rootState }, { id, comment }) {
     const { data } = await IssuesService.postComment(id, comment);
+    dispatch(ISSUES_FETCH, rootState.units.activeUnit);
     return data;
   },
 };
 
 const mutations = {
-  [SELECT_ISSUE](state, id) {
-    state.selectedIssueId = parseInt(id, 10);
-  },
   [SET_ISSUES](state, issues) {
-    state.items = issues;
+    state.issues = issues;
   },
 };
 

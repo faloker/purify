@@ -14,58 +14,46 @@ import {
 } from '@/store/mutations';
 
 const state = {
-  projectsList: [],
+  projects: [],
   activeProject: {},
   stats: {},
 };
 
-const getters = {
-  projectsList(state) {
-    return state.projectsList;
-  },
-
-  activeProject(state) {
-    return state.activeProject;
-  },
-
-  projectStats(state) {
-    return state.stats;
-  },
-};
+const getters = {};
 
 const actions = {
-  async [FETCH_PROJECTS](context) {
+  async [FETCH_PROJECTS]({ commit }) {
     const { data } = await ApiService.get('projects/');
-    context.commit(SET_PROJECTS, data);
+    commit(SET_PROJECTS, data);
   },
 
-  async [FETCH_STATS](context, project) {
+  async [FETCH_STATS]({ commit }, project) {
     const { data } = await ApiService.query('projects/stats', {
       params: { project },
     });
-    context.commit(SET_STATS, data);
+    commit(SET_STATS, data);
   },
 
-  async [CREATE_PROJECT](context, payload) {
+  async [CREATE_PROJECT]({ dispatch }, payload) {
     await ApiService.post('projects/', payload);
-    context.dispatch(FETCH_PROJECTS);
+    dispatch(FETCH_PROJECTS);
   },
 
-  async [DELETE_PROJECT](context, id) {
+  async [DELETE_PROJECT]({ dispatch }, id) {
     await ApiService.delete(`/projects/${id}`);
-    context.dispatch(FETCH_PROJECTS);
+    dispatch(FETCH_PROJECTS);
   },
 
-  async [EDIT_PROJECT](context, { id, change }) {
+  async [EDIT_PROJECT]({ dispatch }, { id, change }) {
     await ApiService.patch(`/projects/${id}`, change);
-    context.dispatch(FETCH_PROJECTS);
+    dispatch(FETCH_PROJECTS);
   },
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
 const mutations = {
   [SET_PROJECTS](state, projects) {
-    state.projectsList = projects;
+    state.projects = projects;
   },
   [SET_ACTIVE_PROJECT](state, project) {
     state.activeProject = project;
