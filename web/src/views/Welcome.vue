@@ -2,11 +2,11 @@
   <v-container>
     <v-row align="center" justify="center">
       <v-col cols="3" class="mt-12">
-        <v-row justify="center">
+        <v-row class="my-4" justify="center">
           <v-img
-            src="@/assets/logo_trans.png"
-            max-width="200"
-            max-height="150"
+            src="@/assets/logo_trans copy.png"
+            max-width="110"
+            max-height="110"
           ></v-img>
         </v-row>
         <v-row>
