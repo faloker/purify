@@ -1,11 +1,11 @@
 describe('Login', () => {
   beforeEach(() => {
     cy.task('flush:db')
-    cy.visit('http://127.0.0.1:8080/#/welcome')
+    cy.visit('http://localhost:8080/#/welcome')
   })
   
   it('Login with valid credentials', () => {
-    cy.request('POST', 'http://127.0.0.1:8080/api/users/signup', { 
+    cy.request('POST', 'http://localhost:8080/api/users/signup', { 
       email: 'test@test.test',
       password: 'test',
       username: 'test'

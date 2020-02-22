@@ -15,7 +15,7 @@ const mongoose = require("mongoose");
 module.exports = (on, config) => {
   on('task', {
     'flush:db': async () => {
-      const url = 'mongodb://root:example@localhost:27017/admin';
+      const url = 'mongodb://localhost:27017/purify';
       await mongoose.connect(url)
       await mongoose.connection.collection('users').remove()
       return null
