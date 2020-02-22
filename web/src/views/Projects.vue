@@ -97,10 +97,9 @@
   </v-container>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import ProjectCard from '@/components/ProjectCard.vue';
 import { FETCH_PROJECTS, CREATE_PROJECT } from '@/store/actions';
-import { SET_ACTIVE_PAGE } from '@/store/mutations';
 
 export default {
   components: {
@@ -116,18 +115,17 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['projectsList']),
+    ...mapState({
+      projects: state => state.projects.projects,
+    }),
     filtredItems() {
-      return this.projectsList.filter(
+      return this.projects.filter(
         item => _.toLower(item.title + item.subtitle).includes(_.toLower(this.search)),
       );
     },
   },
   mounted() {
-    this.$store.commit(SET_ACTIVE_PAGE, 'Projects');
-    this.$store.dispatch(FETCH_PROJECTS).then(() => {
-      this.loading = false;
-    });
+    this.$store.dispatch(FETCH_PROJECTS).then(() => { this.loading = false; });
 
     document.onkeydown = e => {
       // eslint-disable-next-line no-param-reassign

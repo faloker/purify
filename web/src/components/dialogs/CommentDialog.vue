@@ -66,7 +66,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
-import { POST_COMMENT, ISSUES_FETCH } from '@/store/actions';
+import { POST_COMMENT } from '@/store/actions';
 
 export default {
   name: 'CommentDialog',
@@ -103,10 +103,9 @@ export default {
 
         this.$store
           .dispatch(POST_COMMENT, { id: this.issue._id, comment })
-          .then((doc) => {
+          .then(doc => {
             this.issue.comments.push(doc);
             this.input = null;
-            this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug);
           });
       }
     },

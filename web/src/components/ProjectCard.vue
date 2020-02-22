@@ -141,7 +141,6 @@
   </div>
 </template>
 <script>
-import { SET_ACTIVE_PROJECT } from '@/store/mutations';
 import { DELETE_PROJECT, EDIT_PROJECT } from '@/store/actions';
 
 export default {

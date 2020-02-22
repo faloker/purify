@@ -23,11 +23,11 @@
             </v-template>
           </v-text-field>
         </v-card-title>
-      </v-flex> -->
+        </v-flex>-->
         <v-data-table
           :headers="headers"
           item-key="_id"
-          :items="allReports"
+          :items="reports"
           :search="search"
           :items-per-page="5"
         >
@@ -36,10 +36,7 @@
               {{ new Date(item.created_at).toLocaleDateString() }}
             </div>
           </template>
-          <template
-            v-slot:item.template="{ item }"
-            class="text-center"
-          >
+          <template v-slot:item.template="{ item }" class="text-center">
             <v-btn
               v-if="!item.template"
               outlined
@@ -47,8 +44,7 @@
               class="text-none"
               @click="openStepper(item._id)"
             >
-              <v-icon>add</v-icon>
-              Apply template
+              <v-icon>add</v-icon>Apply template
             </v-btn>
             <v-chip
               v-else
@@ -58,55 +54,38 @@
               {{ item.template.name }}
             </v-chip>
           </template>
-          <template
-            v-slot:item.new="{ item }"
-            class="text-center"
-          >
+          <template v-slot:item.new="{ item }" class="text-center">
             <b v-if="!item.statistics">--</b>
             <b v-else>{{ item.statistics.new }}</b>
           </template>
-          <template
-            v-slot:item.old="{ item }"
-            class="text-center"
-          >
+          <template v-slot:item.old="{ item }" class="text-center">
             <b v-if="!item.statistics">--</b>
             <b v-else>{{ item.statistics.old }}</b>
           </template>
-          <template
-            v-slot:item.action="{ item }"
-            class="text-center"
-          >
+          <template v-slot:item.action="{ item }" class="text-center">
             <v-btn
               text
               icon
               color="red darken-1"
               @click="deleteReport(item._id)"
             >
-              <v-icon>
-                fa-times
-              </v-icon>
+              <v-icon>fa-times</v-icon>
             </v-btn>
           </template>
           <v-alert v-slot:no-results>
             Your search for "{{ search }}" found no results.
           </v-alert>
         </v-data-table>
-        <stepper
-          :stepper.sync="stepperDialog"
-          :report-id="reportId"
-        />
+        <stepper :stepper.sync="stepperDialog" :report-id="reportId" />
       </v-card>
     </v-skeleton-loader>
   </v-container>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import Stepper from '@/components/dialogs/StepperConfigurator.vue';
-import {
-  FETCH_REPORTS,
-  REPORT_DELETE,
-} from '@/store/actions';
-import { SET_ACTIVE_PAGE } from '@/store/mutations';
+import { FETCH_REPORTS, REPORT_DELETE } from '@/store/actions';
+import { SET_ACTIVE_UNIT } from '@/store/mutations';
 
 export default {
   components: {
@@ -150,10 +129,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['allReports', 'activeRelease']),
+    ...mapState({
+      reports: state => state.reports.reports,
+    }),
   },
   mounted() {
-    this.$store.commit(SET_ACTIVE_PAGE, 'Reports');
+    this.$store.commit(SET_ACTIVE_UNIT, this.$route.params.slug);
     this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug).then(() => {
       this.loading = false;
     });
@@ -165,7 +146,6 @@ export default {
     },
     deleteReport(id) {
       this.$store.dispatch(REPORT_DELETE, id);
-      this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug);
     },
   },
 };

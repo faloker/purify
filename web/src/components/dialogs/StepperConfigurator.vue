@@ -407,9 +407,13 @@ export default {
           this.$emit('update:stepper', false);
 
           this.e6 = 1;
+          // eslint-disable-next-line no-multi-assign
           this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
           this.type_body_fields = {};
-          this.tags = this.compare_fields = this.merge_fields = this.title_fields = this.body_fields = [];
+          // eslint-disable-next-line no-multi-assign
+          this.tags = this.compare_fields = [];
+          // eslint-disable-next-line no-multi-assign
+          this.merge_fields = this.title_fields = this.body_fields = [];
         });
     },
 

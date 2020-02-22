@@ -27,7 +27,7 @@
 </template>
 <script>
 import {
-  ISSUE_UPDATE, ISSUES_FETCH,
+  ISSUE_UPDATE,
 } from '@/store/actions';
 
 export default {
@@ -47,9 +47,13 @@ export default {
   methods: {
     updateIssue() {
       const change = JSON.parse(this.rawIssue);
-      if (change.is_fp === 'true') { change.is_closed = true; this.issue.is_closed = true; }
-      this.$store.dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change }).then(async () => {
-        await this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug);
+
+      if (change.is_fp === 'true') {
+        change.is_closed = true;
+        this.issue.is_closed = true;
+      }
+
+      this.$store.dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change }).then(() => {
         this.$emit('update:issue', change);
       });
     },

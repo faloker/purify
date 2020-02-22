@@ -6,7 +6,7 @@
         <v-autocomplete
           id="projectSearch"
           v-model="selectedProject"
-          :items="projectsList"
+          :items="projects"
           item-text="title"
           clearable
           dense
@@ -19,7 +19,7 @@
         <v-autocomplete
           id="unitSearch"
           v-model="selectedUnit"
-          :items="unitsList"
+          :items="units"
           :disabled="!selectedProject"
           clearable
           dense
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import LineChart from '@/components/charts/LineChart.vue';
 import DoughnutChart from '@/components/charts/DoughnutChart.vue';
 import { SET_ACTIVE_PAGE } from '@/store/mutations';
@@ -73,7 +73,7 @@ export default {
   components: { LineChart, DoughnutChart },
   data: () => ({
     loaded: false,
-    unitsList: null,
+    units: null,
     selectedUnit: null,
     selectedProject: null,
     issuesLineChartData: {},
@@ -95,7 +95,10 @@ export default {
     ],
   }),
   computed: {
-    ...mapGetters(['projectsList', 'projectStats']),
+    ...mapState({
+      projects: state => state.projects.projects,
+      stats: state => state.projects.stats,
+    }),
   },
   mounted() {
     this.$store.commit(SET_ACTIVE_PAGE, 'Dashboard');
@@ -144,16 +147,13 @@ export default {
       ],
     };
     this.$store.dispatch(FETCH_PROJECTS);
-    // this.loaded = true;
   },
   methods: {
     fetchStats() {
       if (this.selectedProject) {
-        // this.loaded = false;
         this.$store.dispatch(FETCH_STATS, this.selectedProject).then(() => {
-          this.unitsList = Object.keys(this.projectStats.units);
-          this.setStats(this.projectStats.project);
-          // this.loaded = true;
+          this.units = Object.keys(this.stats.units);
+          this.setStats(this.stats.project);
         });
       }
     },
@@ -204,9 +204,9 @@ export default {
     updateStats() {
       this.loaded = false;
       if (this.selectedUnit) {
-        this.setStats(this.projectStats.units[this.selectedUnit]);
+        this.setStats(this.stats.units[this.selectedUnit]);
       } else {
-        this.setStats(this.projectStats.project);
+        this.setStats(this.stats.project);
       }
       this.loaded = true;
     },
