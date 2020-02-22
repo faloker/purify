@@ -32,7 +32,6 @@
             <v-card-title>
               <span class="title">New project</span>
             </v-card-title>
-            <v-spacer />
             <v-card-text>
               <v-col>
                 <v-row>
@@ -119,7 +118,9 @@ export default {
   computed: {
     ...mapGetters(['projectsList']),
     filtredItems() {
-      return this.projectsList.filter(item => _.toLower(item.title + item.subtitle).includes(_.toLower(this.search)));
+      return this.projectsList.filter(
+        item => _.toLower(item.title + item.subtitle).includes(_.toLower(this.search)),
+      );
     },
   },
   mounted() {
@@ -129,6 +130,7 @@ export default {
     });
 
     document.onkeydown = e => {
+      // eslint-disable-next-line no-param-reassign
       e = e || window.event;
       if (
         e.keyCode === 191 // Forward Slash '/'

@@ -223,9 +223,11 @@ export default {
     },
   },
   watch: {
+    // eslint-disable-next-line no-unused-vars
     rawItems(newItems, oldItems) {
       this.page = 1;
     },
+    // eslint-disable-next-line no-unused-vars
     pageSize(newValue, oldValue) {
       this.page = 1;
     },

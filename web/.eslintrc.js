@@ -3,6 +3,9 @@ module.exports = {
   env: {
     node: true
   },
+  "globals": {
+    "_": "readonly",
+  },
   extends: ["plugin:vue/recommended", "@vue/airbnb"],
   plugins: ["vuetify"],
   rules: {

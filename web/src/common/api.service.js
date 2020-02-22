@@ -39,7 +39,7 @@ const ApiService = {
     );
 
     if (process.env.NODE_ENV === 'local') {
-      Vue.axios.defaults.baseURL = 'http://localhost:3000';
+      Vue.axios.defaults.baseURL = 'http://localhost:3000/api';
     } else {
       // set based on the nginx config
       Vue.axios.defaults.baseURL = window.API_URL;

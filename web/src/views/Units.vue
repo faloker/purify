@@ -158,7 +158,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { FETCH_UNITS, CREATE_UNIT, DELETE_UNIT } from '@/store/actions';
-import { SET_UNITS, SET_ACTIVE_PAGE } from '@/store/mutations';
+import { SET_ACTIVE_PAGE } from '@/store/mutations';
 
 export default {
   name: 'Units',
@@ -213,6 +213,7 @@ export default {
     });
 
     document.onkeydown = e => {
+      // eslint-disable-next-line no-param-reassign
       e = e || window.event;
       if (
         e.keyCode === 191 // Forward Slash '/'
