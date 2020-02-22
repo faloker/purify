@@ -10,17 +10,25 @@ services:
     volumes:
       - mongo_db:/data/db
 
-  app:
-    image: faloker/purify
+  api:
+    image: faloker/purify-api
     restart: always
     depends_on:
       - mongo
-    ports:
-      - 8080:3000
     environment:
-      NODE_ENV: production
-      MONGO_USERNAME: root
-      MONGO_PASSWORD: example
+      NODE_ENV: prod
+
+  nginx:
+    image: faloker/purify-nginx
+    restart: always
+    volumes:
+      - /path/to/cert:/etc/nginx/ssl/cert
+      - /path/to/key:/etc/nginx/ssl/key
+    depends_on:
+      - api
+    ports:
+      - 443:443
+      - 80:80
 
 volumes:
-  mongo_db: {}    
+  mongo_db: {}
