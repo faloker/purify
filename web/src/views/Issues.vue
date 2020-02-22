@@ -25,12 +25,12 @@
   </v-container>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import IssuesList from '@/components/IssuesList.vue';
 import { compareDesc, sub } from 'date-fns';
 import IssueFilter from '@/components/IssueFilter.vue';
 import { ISSUES_FETCH } from '@/store/actions';
-import { SET_ACTIVE_PAGE } from '@/store/mutations';
+import { SET_ACTIVE_UNIT } from '@/store/mutations';
 
 export default {
   name: 'Issues',
@@ -51,9 +51,11 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['allIssues', 'isSelected', 'activeRelease']),
+    ...mapState({
+      issues: state => state.issues.issues,
+    }),
     filtredIssues() {
-      let issuesToDisplay = this.allIssues;
+      let issuesToDisplay = this.issues;
 
       issuesToDisplay = this.timeback || ''
         ? issuesToDisplay.filter(
@@ -93,7 +95,7 @@ export default {
     },
   },
   mounted() {
-    this.$store.commit(SET_ACTIVE_PAGE, 'Issues');
+    this.$store.commit(SET_ACTIVE_UNIT, this.$route.params.slug);
     this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug).then(() => {
       this.loading = false;
     });

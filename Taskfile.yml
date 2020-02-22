@@ -62,3 +62,8 @@ tasks:
       - docker-compose rm -f
     silent: true
 
+  reset:
+    cmds:
+      - task: stop
+      - task: start-dev
+    silent: true

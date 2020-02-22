@@ -1,11 +1,11 @@
-import docs from '../documentation';
+import docs from './documentation';
 import {
   fetchProjects,
   getStats,
   createProject,
   deleteProject,
   editProject,
-} from '../../controllers/projectController';
+} from '../controllers/projectController';
 
 export default async (fastify, opts, done) => {
   fastify.route({

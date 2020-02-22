@@ -180,7 +180,7 @@ import { mapGetters } from 'vuex';
 import GroupActionBtn from '@/components/buttons/GroupActionButton.vue';
 import IssueDetails from '@/components/dialogs/IssueDetails.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
-import { matchPattern, dateDiffInDays } from '@/common/utils.servive';
+import { matchPattern } from '@/common/utils.servive';
 
 export default {
   name: 'IssuesList',
@@ -223,9 +223,11 @@ export default {
     },
   },
   watch: {
+    // eslint-disable-next-line no-unused-vars
     rawItems(newItems, oldItems) {
       this.page = 1;
     },
+    // eslint-disable-next-line no-unused-vars
     pageSize(newValue, oldValue) {
       this.page = 1;
     },

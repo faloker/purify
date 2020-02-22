@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import uuid from 'node-uuid';
-import slugify from '../plugins/db/schema';
+import slugify from '../plugins/db/middleware';
 
 const projectSchema = new Schema({
   _id: { type: String, default: uuid.v4 },

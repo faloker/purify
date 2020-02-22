@@ -4,21 +4,25 @@ services:
   mongo:
     image: mongo
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - 27017:27017
 
-  app:
-    build: .
+  api:
+    build:
+      context: .
+      dockerfile: api.dockerfile
     restart: always
     depends_on:
       - mongo
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+      args:
+        env: dev
+    restart: always
+    depends_on:
+      - api
     ports:
-      - 8080:3000
-    environment:
-      NODE_ENV: production
-      MONGO_USERNAME: root
-      MONGO_PASSWORD: example
-   
+      - 8080:8080

@@ -134,7 +134,7 @@
 <script>
 import VueSimplemde from 'vue-simplemde';
 import j2md from 'jira2md';
-import { CREATE_TICKET, ISSUES_FETCH } from '@/store/actions';
+import { CREATE_TICKET } from '@/store/actions';
 import { matchPattern } from '@/common/utils.servive';
 
 export default {
@@ -220,7 +220,6 @@ export default {
       });
 
       if (ticket) {
-        await this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug);
         this.$toasted.global.api_success({
           msg: `Jira ticket ${ticket.key} created`,
         });

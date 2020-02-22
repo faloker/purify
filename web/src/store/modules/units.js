@@ -7,47 +7,43 @@ import {
 } from '@/store/actions';
 import {
   SET_UNITS,
-  SET_RELEASE,
+  SET_ACTIVE_UNIT,
 } from '@/store/mutations';
 
 const state = {
-  unitsList: [],
-  release: {},
+  units: [],
+  activeUnit: {},
 };
 
-const getters = {
-  unitsList(state) {
-    return state.unitsList;
-  },
-  activeRelease(state) {
-    return state.release;
-  },
-};
+const getters = {};
 
 const actions = {
-  async [FETCH_UNITS](context, slug) {
+  async [FETCH_UNITS]({ commit, rootState }) {
     const { data } = await ApiService.query('units/', {
-      params: { project: slug },
+      params: { project: rootState.projects.activeProject },
     });
-    context.commit(SET_UNITS, data);
+    commit(SET_UNITS, data);
   },
-  async [CREATE_UNIT](context, { name, project }) {
-    await ApiService.post('units/', { name, project });
-    context.dispatch(FETCH_UNITS, project);
+  async [CREATE_UNIT]({ dispatch, rootState }, name) {
+    await ApiService.post('units/', {
+      name,
+      project: rootState.projects.activeProject,
+    });
+    dispatch(FETCH_UNITS, rootState.projects.activeProject);
   },
-  async [DELETE_UNIT](context, { id, project }) {
+  async [DELETE_UNIT]({ dispatch, rootState }, id) {
     await ApiService.delete(`units/${id}`);
-    context.dispatch(FETCH_UNITS, project);
+    dispatch(FETCH_UNITS, rootState.projects.activeProject);
   },
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
 const mutations = {
   [SET_UNITS](state, units) {
-    state.unitsList = units;
+    state.units = units;
   },
-  [SET_RELEASE](state, release) {
-    state.release = release;
+  [SET_ACTIVE_UNIT](state, unit) {
+    state.activeUnit = unit;
   },
 };
 

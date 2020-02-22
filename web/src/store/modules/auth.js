@@ -1,9 +1,17 @@
+/* eslint-disable no-shadow */
 import ApiService from '@/common/api.service';
 import JwtService from '@/common/jwt.service';
 import {
-  LOGIN, LOGOUT, REGISTER, CHECK_AUTH, UPDATE_USER,
+  LOGIN,
+  LOGOUT,
+  REGISTER,
+  CHECK_AUTH,
 } from '../actions';
-import { SET_AUTH, PURGE_AUTH, SET_USER } from '../mutations';
+import {
+  SET_AUTH,
+  PURGE_AUTH,
+  SET_USER,
+} from '../mutations';
 
 const state = {
   errors: null,
@@ -31,23 +39,6 @@ const actions = {
   async [REGISTER]({ commit }, credentials) {
     const { data } = await ApiService.post('users/signup', credentials);
     commit(SET_AUTH, data);
-  },
-  async [UPDATE_USER]({ commit }, payload) {
-    const {
-      email, username, password, image,
-    } = payload;
-    const user = {
-      email,
-      username,
-      image,
-    };
-    if (password) {
-      user.password = password;
-    }
-
-    const { data } = await ApiService.put('user', user);
-    commit(SET_AUTH, data.user);
-    return data;
   },
   async [CHECK_AUTH]({ commit }) {
     try {

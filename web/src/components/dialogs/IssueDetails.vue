@@ -177,7 +177,7 @@ import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
 import { matchPattern } from '@/common/utils.servive';
-import { ISSUE_UPDATE, ISSUES_FETCH } from '@/store/actions';
+import { ISSUE_UPDATE } from '@/store/actions';
 
 export default {
   name: 'IssueDetails',
@@ -236,9 +236,7 @@ export default {
       }
       change[field] = value;
       this.issue[field] = value;
-      this.$store.dispatch(ISSUE_UPDATE, { ids: [item._id], change }).then(() => {
-        this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug);
-      });
+      this.$store.dispatch(ISSUE_UPDATE, { ids: [item._id], change });
     },
     genColor() {
       switch (this.issue.risk) {

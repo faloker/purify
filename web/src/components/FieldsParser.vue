@@ -8,7 +8,11 @@
       <p v-if="ikey.type === 'text'" style="white-space: pre-line;">
         {{ ivalue }}
       </p>
-      <div v-if="ikey.type === 'html'" style="white-space: pre-line;" v-html="ivalue">
+      <div
+        v-if="ikey.type === 'html'"
+        style="white-space: pre-line;"
+        v-html="ivalue"
+      >
         {{ ivalue }}
       </div>
       <div v-if="ikey.type === 'base64'" style="white-space: pre-line;">
@@ -22,7 +26,11 @@
         </div>
         <v-divider class="my-1" />
         <ul :id="`list-${ikey.key}`" class="ml-2 my-3">
-          <li v-for="(item, index) in ivalue" :key="`ai-${index}`" class="subheading">
+          <li
+            v-for="(item, index) in ivalue"
+            :key="`ai-${index}`"
+            class="subheading"
+          >
             {{ item }}
           </li>
         </ul>
@@ -33,6 +41,7 @@
         </div>
         <v-divider class="my-1" />
         <v-expansion-panel>
+          <!-- eslint-disable-next-line vue/valid-v-for -->
           <v-expansion-panel-content v-for="item in ivalue" :key="`${Math.random()}`">
             <template v-slot:header>
               <div class="title">
@@ -59,22 +68,22 @@
 </template>
 <script>
 export default {
-  name: "FieldsParser",
-  props: ["ikey", "ivalue", "level"],
+  name: 'FieldsParser',
+  props: ['ikey', 'ivalue', 'level'],
   methods: {
     getValue(obj, key) {
       return _.get(this.issue.fields, key);
     },
     parseKey(key) {
-      const res = key.includes(".") ? key.match(/\.[^.]+$/)[0].replace(".", "") : key;
+      const res = key.includes('.') ? key.match(/\.[^.]+$/)[0].replace('.', '') : key;
       return _.capitalize(_.startCase(res));
     },
     isPrintable(obj) {
-      return ["string", "boolean", "number"].includes(typeof obj);
+      return ['string', 'boolean', 'number'].includes(typeof obj);
     },
     decodeValue(str) {
       return atob(str);
-    }
-  }
+    },
+  },
 };
 </script>

@@ -156,9 +156,9 @@
   </v-container>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import { FETCH_UNITS, CREATE_UNIT, DELETE_UNIT } from '@/store/actions';
-import { SET_UNITS, SET_ACTIVE_PAGE } from '@/store/mutations';
+import { SET_ACTIVE_PROJECT } from '@/store/mutations';
 
 export default {
   name: 'Units',
@@ -201,18 +201,19 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['activeProject', 'unitsList']),
+    ...mapState({
+      units: state => state.units.units,
+    }),
     filtredItems() {
-      return this.unitsList.filter(item => _.toLower(item.name).includes(_.toLower(this.search)));
+      return this.units.filter(item => _.toLower(item.name).includes(_.toLower(this.search)));
     },
   },
   mounted() {
-    this.$store.commit(SET_ACTIVE_PAGE, 'Units');
-    this.$store.dispatch(FETCH_UNITS, this.$route.params.slug).then(() => {
-      this.loading = false;
-    });
+    this.$store.commit(SET_ACTIVE_PROJECT, this.$route.params.slug);
+    this.$store.dispatch(FETCH_UNITS).then(() => { this.loading = false; });
 
     document.onkeydown = e => {
+      // eslint-disable-next-line no-param-reassign
       e = e || window.event;
       if (
         e.keyCode === 191 // Forward Slash '/'
@@ -234,12 +235,7 @@ export default {
     },
 
     createUnit() {
-      const payload = {
-        name: this.unitName,
-        project: this.$route.params.slug,
-      };
-
-      this.$store.dispatch(CREATE_UNIT, payload).then(() => {
+      this.$store.dispatch(CREATE_UNIT, this.unitName).then(() => {
         this.unitName = '';
         this.dialog = false;
       });
@@ -257,12 +253,7 @@ export default {
     },
 
     deleteUnit(id) {
-      const payload = {
-        id,
-        project: this.$route.params.slug,
-      };
-
-      this.$store.dispatch(DELETE_UNIT, payload).then(() => {
+      this.$store.dispatch(DELETE_UNIT, id).then(() => {
         this.confirmDialog = false;
         this.$toasted.global.api_success({
           msg: `Unit ${this.unitToDelete.name} removed`,
