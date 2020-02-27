@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 export default fp(async (fastify, opts, done) => {
   let uri = `mongodb://${opts.host}:${opts.port}/purify`;
 
-  if (process.env.NODE_ENV === 'prod') {
+  if (process.env.NODE_ENV === 'production') {
     uri = `mongodb://${opts.user}:${opts.password}@${opts.host}:${opts.port}/admin`;
   }
 
