@@ -42,19 +42,21 @@ The logic hierarchy of Purify is simple:
 
 To upload a report (assumed that you already created a project and unit) you need a token:
 
-`http POST purify.host/api/users/token username="your_username" password="your_token"`
-
-Response will be like that
-
-`{"token": "base64_encoded_token"}`
+```
+http POST purify.host/api/users/token username="your_username" password="your_token"
+```
 
 Now you can upload a report
 
-`http -f POST purify.host/api/reports "x-auth-token:base64_encoded_token" "unit=gitleaks-test" file@/path/to/gitleaks-report.json`
+```
+http -f POST purify.host/api/reports "x-auth-token:your_token" "unit=gitleaks-test" file@/path/to/gitleaks-report.json
+```
 
 If you already created a template for such tool, you need to provide it, so report content will be parsed automatically
 
-`http -f POST purify.host/api/reports "x-auth-token:base64_encoded_token" "unit=gitleaks-test" "template=gitleaks" file@/path/to/gitleaks-report.json`
+```
+http -f POST purify.host/api/reports "x-auth-token:your_token" "unit=gitleaks-test" "template=gitleaks" file@/path/to/gitleaks-report.json
+```
 
 
 ## Deployment
@@ -130,7 +132,9 @@ volumes:
  
 To start them all
 
-`docker-compose up -d`
+```
+docker-compose up -d
+```
 
 ## Built With
 
