@@ -13,10 +13,12 @@ services:
   api:
     image: faloker/purify-api
     restart: always
+    volumes:
+      - ./config.json:/home/node/app/lib/config/production.json
     depends_on:
       - mongo
     environment:
-      NODE_ENV: prod
+      NODE_ENV: production
 
   nginx:
     image: faloker/purify-nginx
@@ -24,6 +26,7 @@ services:
     volumes:
       - /path/to/cert:/etc/nginx/ssl/cert
       - /path/to/key:/etc/nginx/ssl/key
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
     depends_on:
       - api
     ports:
