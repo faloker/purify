@@ -4,8 +4,8 @@
   "description": "Manage vulns",
   "main": "index.js",
   "scripts": {
-    "build": "babel src --out-dir lib",
-    "start": "NODE_ENV=local nodemon src/index.js --exec babel-node",
+    "build": "babel src --out-dir lib && cp src/config/*.json lib/config/",
+    "start": "nodemon src/index.js --exec babel-node",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --cache --fix"
   },
