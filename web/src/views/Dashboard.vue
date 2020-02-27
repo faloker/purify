@@ -8,6 +8,7 @@
           v-model="selectedProject"
           :items="projects"
           item-text="title"
+          item-value="slug"
           clearable
           dense
           outlined
