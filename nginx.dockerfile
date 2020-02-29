@@ -1,10 +1,10 @@
 FROM node:13-alpine as build-static
 
-RUN apk add --no-cache git
 WORKDIR /web
 COPY ./web/package*.json ./
 RUN npm install
 COPY ./web/ .
+RUN sed -i "/enbale_cdn/d" public/index.html 
 RUN npm run build
 
 FROM nginx as production-stage
