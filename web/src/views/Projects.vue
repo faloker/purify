@@ -98,6 +98,7 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+import { toLower } from 'lodash';
 import ProjectCard from '@/components/ProjectCard.vue';
 import { FETCH_PROJECTS, CREATE_PROJECT } from '@/store/actions';
 
@@ -120,29 +121,29 @@ export default {
     }),
     filtredItems() {
       return this.projects.filter(
-        item => _.toLower(item.title + item.subtitle).includes(_.toLower(this.search)),
+        item => toLower(item.title + item.subtitle).includes(toLower(this.search)),
       );
     },
   },
   mounted() {
     this.$store.dispatch(FETCH_PROJECTS).then(() => { this.loading = false; });
 
-    document.onkeydown = e => {
-      // eslint-disable-next-line no-param-reassign
-      e = e || window.event;
-      if (
-        e.keyCode === 191 // Forward Slash '/'
-        && e.target !== this.$refs.search.$refs.input
-      ) {
-        e.preventDefault();
-        this.$refs.search.focus();
-      } else if (
-        e.keyCode === 67
-        && e.target !== this.$refs.search.$refs.input
-      ) {
-        this.dialog = true;
-      }
-    };
+    // document.onkeydown = e => {
+    //   // eslint-disable-next-line no-param-reassign
+    //   e = e || window.event;
+    //   if (
+    //     e.keyCode === 191 // Forward Slash '/'
+    //     && e.target !== this.$refs.search.$refs.input
+    //   ) {
+    //     e.preventDefault();
+    //     this.$refs.search.focus();
+    //   } else if (
+    //     e.keyCode === 67
+    //     && e.target !== this.$refs.search.$refs.input
+    //   ) {
+    //     this.dialog = true;
+    //   }
+    // };
   },
   methods: {
     createProject() {

@@ -8,9 +8,7 @@
       class="mt-5"
     >
       <v-flex shrink>
-        <v-layout
-          row
-        >
+        <v-layout>
           <v-flex xs3>
             <div class="headline font-weight-bold">
               Public avatar
@@ -59,9 +57,7 @@
         <v-divider class="my-5" />
       </v-flex>
       <v-flex>
-        <v-layout
-          row
-        >
+        <v-layout>
           <v-flex xs3>
             <div class="headline font-weight-bold">
               Main settings

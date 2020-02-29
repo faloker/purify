@@ -132,21 +132,17 @@
 </template>
 
 <script>
-import VueSimplemde from 'vue-simplemde';
 import j2md from 'jira2md';
+import VueSimpleMDE from 'vue-simplemde';
 import { CREATE_TICKET } from '@/store/actions';
-import { matchPattern } from '@/common/utils.servive';
+import { matchPattern, parseKey, getValue } from '@/common/utils.servive';
 
 export default {
   name: 'JiraTicketDialog',
   components: {
-    VueSimplemde,
+    'vue-simplemde': VueSimpleMDE,
   },
   props: {
-    // issueText: {
-    //   required: true,
-    //   type: String,
-    // },
     issue: {
       required: true,
       type: Object,
@@ -163,7 +159,7 @@ export default {
       configs: {
         spellChecker: false, // disable spell check
       },
-      // summary: this.applyPattern(this.issue.fields, this.issue.template.title_pattern),
+      // summary: this.matchPattern(this.issue.fields, this.issue.template.title_pattern),
       issuesTypes: ['Bug', 'Task'],
       projects: [{ key: 'DEV' }],
       components: [{ name: 'kek' }],
@@ -180,30 +176,21 @@ export default {
       let result = '';
       for (const field of this.issue.template.body_fields) {
         result += `## ${this.parseKey(field.key)}\n`;
-        result += `${this.getValue(field.key)}\n\n`;
+        result += `${this.getValue(this.issue.fields, field.key)}\n\n`;
       }
       return result;
     },
     summary() {
-      return this.applyPattern(
+      return this.matchPattern(
         this.issue.fields,
         this.issue.template.title_pattern,
       );
     },
   },
   methods: {
-    applyPattern(obj, template) {
-      return matchPattern(obj, template);
-    },
-    parseKey(key) {
-      const res = key.includes('.')
-        ? key.match(/\.[^.]+$/)[0].replace('.', '')
-        : key;
-      return _.capitalize(_.startCase(res));
-    },
-    getValue(key) {
-      return _.get(this.issue.fields, key);
-    },
+    matchPattern,
+    parseKey,
+    getValue,
     async createTicket() {
       const payload = {};
       payload.project = { key: this.selectedProject };
@@ -232,5 +219,4 @@ export default {
 </script>
 
 <style>
-@import '~simplemde-theme-dark/dist/simplemde-theme-dark.min.css';
 </style>

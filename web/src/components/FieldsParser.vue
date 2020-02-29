@@ -67,17 +67,13 @@
   </div>
 </template>
 <script>
+import { parseKey } from '@/common/utils.servive';
+
 export default {
   name: 'FieldsParser',
   props: ['ikey', 'ivalue', 'level'],
   methods: {
-    getValue(obj, key) {
-      return _.get(this.issue.fields, key);
-    },
-    parseKey(key) {
-      const res = key.includes('.') ? key.match(/\.[^.]+$/)[0].replace('.', '') : key;
-      return _.capitalize(_.startCase(res));
-    },
+    parseKey,
     isPrintable(obj) {
       return ['string', 'boolean', 'number'].includes(typeof obj);
     },

@@ -8,9 +8,7 @@
       class="mt-5"
     >
       <v-flex>
-        <v-layout
-          row
-        >
+        <v-layout>
           <v-flex xs3>
             <div class="headline font-weight-bold">
               JIRA Credentials

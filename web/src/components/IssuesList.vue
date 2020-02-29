@@ -74,12 +74,12 @@
                     <v-list-item-content @click="openIssue(item)">
                       <v-list-item-title>
                         <!-- <div class="text-truncate"> -->
-                        {{ applyPattern(item.fields, item.template.title_pattern) }}
+                        {{ matchPattern(item.fields, item.template.title_pattern) }}
                         <!-- </div> -->
                       </v-list-item-title>
                       <v-list-item-subtitle>
                         <!-- <div class="text-truncate"> -->
-                        {{ applyPattern(item.fields, item.template.subtitle_pattern) }}
+                        {{ matchPattern(item.fields, item.template.subtitle_pattern) }}
                         <!-- </div> -->
                       </v-list-item-subtitle>
                     </v-list-item-content>
@@ -233,9 +233,7 @@ export default {
     },
   },
   methods: {
-    applyPattern(obj, template) {
-      return matchPattern(obj, template);
-    },
+    matchPattern,
     nextPage() {
       if (this.page * this.pageSize < this.rawItems.length) this.page += 1;
     },

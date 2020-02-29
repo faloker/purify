@@ -1,7 +1,6 @@
 <template>
   <v-card height="100%">
     <v-layout
-      row
       fill-height
     >
       <v-navigation-drawer
@@ -51,7 +50,6 @@
   </v-card>
 </template>
 <script>
-import { mapGetters } from 'vuex';
 import PersonalSettings from '@/components/PersonalSettings.vue';
 import TokensSettings from '@/components/TokensSettings.vue';
 import {

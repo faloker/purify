@@ -54,12 +54,12 @@
           <v-divider class="my-3 mx-3" vertical />
           <v-col class="ml-2" cols="9">
             <v-row class="headline">
-              {{ applyPattern(issue.fields, issue.template.title_pattern) }}
+              {{ matchPattern(issue.fields, issue.template.title_pattern) }}
             </v-row>
             <v-row
               class="title grey--text font-weight-light my-2"
             >
-              {{ applyPattern(issue.fields, issue.template.subtitle_pattern) }}
+              {{ matchPattern(issue.fields, issue.template.subtitle_pattern) }}
             </v-row>
           </v-col>
         </v-row>
@@ -165,7 +165,7 @@
     </v-card-title>
     <v-container>
       <v-col v-for="field in issue.template.body_fields" :key="`id-${field.key}`">
-        <fields-parser :ikey="field" :ivalue="getValue(field.key)" />
+        <fields-parser :ikey="field" :ivalue="getValue(issue.fields, field.key)" />
       </v-col>
     </v-container>
   </v-card>
@@ -176,7 +176,7 @@ import FieldsParser from '@/components/FieldsParser.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
-import { matchPattern } from '@/common/utils.servive';
+import { matchPattern, parseKey, getValue } from '@/common/utils.servive';
 import { ISSUE_UPDATE } from '@/store/actions';
 
 export default {
@@ -209,24 +209,17 @@ export default {
       let result = '';
       for (const field of this.issue.template.body_fields) {
         result += `## ${this.parseKey(field.key)}\n`;
-        result += `${this.getValue(field.key)}\n\n`;
+        result += `${this.getValue(this.issue.fields, field.key)}\n\n`;
       }
       return result;
     },
   },
   methods: {
+    matchPattern,
+    parseKey,
+    getValue,
     isPrintable(obj) {
       return ['string', 'boolean', 'number'].includes(typeof obj);
-    },
-    applyPattern(obj, template) {
-      return matchPattern(obj, template);
-    },
-    parseKey(key) {
-      const res = key.includes('.') ? key.match(/\.[^.]+$/)[0].replace('.', '') : key;
-      return _.capitalize(_.startCase(res));
-    },
-    getValue(key) {
-      return _.get(this.issue.fields, key);
     },
     updateIssue(item, field, value) {
       const change = {};

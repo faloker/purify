@@ -9,12 +9,18 @@
         width="400"
       >
         <div class="px-3 pt-3">
-          <div class="title font-weight-light mb-2">
-            <router-link :to="{name: 'Units', params: { slug: project.slug }}">
+          <div class="text-center font-weight-light mb-2">
+            <v-btn
+              text
+              color="primary"
+              rounded
+              class="text-none title"
+              :to="{name: 'Units', params: { slug: project.slug }}"
+            >
               {{ project.title }}
-            </router-link>
+            </v-btn>
           </div>
-          <div class="subheading font-weight-light grey--text">
+          <div class="text-center subheading font-weight-light grey--text">
             {{ project.subtitle }}
           </div>
           <v-divider class="mt-2" light></v-divider>

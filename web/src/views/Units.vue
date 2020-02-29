@@ -157,6 +157,7 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+import { toLower } from 'lodash';
 import { FETCH_UNITS, CREATE_UNIT, DELETE_UNIT } from '@/store/actions';
 import { SET_ACTIVE_PROJECT } from '@/store/mutations';
 
@@ -205,7 +206,7 @@ export default {
       units: state => state.units.units,
     }),
     filtredItems() {
-      return this.units.filter(item => _.toLower(item.name).includes(_.toLower(this.search)));
+      return this.units.filter(item => toLower(item.name).includes(toLower(this.search)));
     },
   },
   mounted() {
@@ -223,7 +224,7 @@ export default {
         this.$refs.search.focus();
       } else if (
         e.keyCode === 67
-        && e.target !== this.$refs.search.$refs.input
+        && !this.dialog
       ) {
         this.dialog = true;
       }
