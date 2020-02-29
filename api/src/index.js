@@ -14,6 +14,8 @@ import mailer from './plugins/mailer';
 import jira from './plugins/jira';
 import config from './config';
 
+const env = process.env.NODE_ENV || 'local';
+
 const fastify = require('fastify')({
   logger: config.get('logger'),
 });
@@ -29,7 +31,7 @@ fastify.register(require('fastify-jwt'), {
   secret: config.get('jwt_secret'),
 });
 
-if (process.env.NODE_ENV === 'local') {
+if (env === 'local') {
   fastify.register(require('fastify-cors'));
 }
 
