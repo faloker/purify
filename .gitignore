@@ -62,6 +62,7 @@ typings/
 # next.js build output
 .next
 
+dist
 .DS_Store
 
 screenshots/
