@@ -62,6 +62,11 @@ tasks:
       - docker-compose rm -f
     silent: true
 
+  local:
+    cmds: 
+      - docker-compose -f docker-compose.local.yml up -d --build
+    silent: true
+
   reset:
     cmds:
       - task: stop
