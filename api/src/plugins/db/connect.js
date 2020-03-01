@@ -6,6 +6,8 @@ export default fp(async (fastify, opts, done) => {
 
   if (process.env.NODE_ENV === 'production') {
     uri = `mongodb://${opts.user}:${opts.password}@${opts.host}:${opts.port}/admin`;
+  } else if (process.env.NODE_ENV === 'heroku') {
+    uri = process.env.MONGO_URI;
   }
 
   mongoose

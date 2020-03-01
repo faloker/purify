@@ -1,0 +1,6 @@
+{
+  "logger": {
+    "level": "info",
+    "prettyPrint": false
+  }
+}

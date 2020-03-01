@@ -28,13 +28,18 @@ fastify.register(require('fastify-file-upload'));
 fastify.register(require('fastify-boom'));
 fastify.register(require('fastify-helmet'));
 fastify.register(require('fastify-jwt'), {
-  secret: config.get('jwt_secret'),
+  secret: config.get('jwt_secret') || process.env.JWT_SECRET,
 });
 
 if (env === 'local') {
   fastify.register(require('fastify-cors'));
 }
 
+if (env === 'heroku') {
+  fastify.register(require('fastify-static'), {
+    root: '/home/node/app/static',
+  });
+}
 // Register API routes
 fastify.register(reportsRoutes, { prefix: '/api/reports' });
 fastify.register(projectsRoutes, { prefix: '/api/projects' });
@@ -66,7 +71,7 @@ addSchemas(fastify);
 // Mount cron jobs
 // mountCrons(fastify);
 
-fastify.listen(3000, '0.0.0.0', (err, address) => {
+fastify.listen(process.env.PORT || 3000, '0.0.0.0', (err, address) => {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
