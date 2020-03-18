@@ -21,9 +21,9 @@
   },
   "homepage": "https://github.com/faloker/purify#readme",
   "devDependencies": {
-    "cypress": "^3.8.3"
+    "cypress": "^4.2.0"
   },
   "dependencies": {
-    "mongoose": "^5.8.10"
+    "mongoose": "^5.9.5"
   }
 }
