@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/camelcase */
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/interfaces/user.interface';
@@ -11,7 +12,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOne({ username });
     if (
       user &&
       this.usersService.isSecretValid(pass, user.password, user.salt)
@@ -34,13 +35,35 @@ export class AuthService {
   }
 
   async login(user: User) {
-    const payload = { id: user._id };
+    const refresh_token = this.jwtService.sign(
+      { id: user._id, type: 'refresh_token' },
+      { expiresIn: '24h' },
+    );
+    await this.usersService.saveRefreshToken(user._id, refresh_token);
+
     return {
-      token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign({ id: user._id, type: 'access_token' }),
+      refresh_token,
     };
   }
 
   issueToken(user: User) {
-    return this.usersService.createToken(user)
+    return this.usersService.createToken(user);
+  }
+
+  async refreshToken(token: string) {
+    const { id, type } = await this.jwtService.verify(token);
+
+    if (type === 'refresh_token' && this.usersService.validateRefreshToken(id, token)) {
+      const refresh_token = this.jwtService.sign({ id, type: 'refresh_token' }, { expiresIn: '72h' });
+      await this.usersService.saveRefreshToken(id, refresh_token);
+
+      return {
+        access_token: this.jwtService.sign({ id, type: 'access_token' }),
+        refresh_token,
+      };
+    } else {
+      throw new Error('Invalid refresh token');
+    }
   }
 }
