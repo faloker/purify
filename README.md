@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
   <a href="https://github.com/faloker/purify">
-  <img src="web/src/assets/logo_trans copy.png" height="150" alt="purify"></a>
+  <img src="web/src/assets/logo_trans.png" height="150" alt="purify"></a>
   <br>
   Purify
   <br>
