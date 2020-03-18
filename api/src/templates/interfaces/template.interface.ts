@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-interface BodyField {
+export interface BodyField {
   key: string;
   type: string;
 }

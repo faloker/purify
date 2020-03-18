@@ -5,5 +5,5 @@ export interface Unit extends Document {
   readonly _id: string;
   readonly name: string;
   readonly slug: string;
-  readonly project: Project;
+  readonly project: string | Project;
 }
