@@ -15,7 +15,7 @@ import { ProjectsService } from './projects.service';
 import { GenericAuthGuard } from '../auth/generic-auth.guard';
 import { ProjectDto, GetStatsDto } from './dto/projects.dto';
 
-@Controller('api/projects')
+@Controller('projects')
 @UseGuards(GenericAuthGuard)
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}

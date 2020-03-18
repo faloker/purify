@@ -12,7 +12,7 @@ import { UnitsService } from './units.service';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import { GetUnitsDto, UnitDto, DeleteUnitDto } from './dto/units.dto';
 
-@Controller('api/units')
+@Controller('units')
 @UseGuards(GenericAuthGuard)
 export class UnitsController {
   constructor(private readonly unitsService: UnitsService) {}
