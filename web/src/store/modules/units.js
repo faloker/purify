@@ -19,13 +19,13 @@ const getters = {};
 
 const actions = {
   async [FETCH_UNITS]({ commit, rootState }) {
-    const { data } = await ApiService.query('units/', {
+    const { data } = await ApiService.query('units', {
       params: { project: rootState.projects.activeProject },
     });
     commit(SET_UNITS, data);
   },
   async [CREATE_UNIT]({ dispatch, rootState }, name) {
-    await ApiService.post('units/', {
+    await ApiService.post('units', {
       name,
       project: rootState.projects.activeProject,
     });

@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import ApiService from '@/common/api.service';
+import axios from 'axios';
 import {
   FETCH_PROJECTS,
   DELETE_PROJECT,
@@ -23,29 +23,29 @@ const getters = {};
 
 const actions = {
   async [FETCH_PROJECTS]({ commit }) {
-    const { data } = await ApiService.get('projects/');
+    const { data } = await axios.get('projects');
     commit(SET_PROJECTS, data);
   },
 
   async [FETCH_STATS]({ commit }, project) {
-    const { data } = await ApiService.query('projects/stats', {
+    const { data } = await axios.query('projects/stats', {
       params: { project },
     });
     commit(SET_STATS, data);
   },
 
   async [CREATE_PROJECT]({ dispatch }, payload) {
-    await ApiService.post('projects/', payload);
+    await axios.post('projects', payload);
     dispatch(FETCH_PROJECTS);
   },
 
   async [DELETE_PROJECT]({ dispatch }, id) {
-    await ApiService.delete(`/projects/${id}`);
+    await axios.delete(`/projects/${id}`);
     dispatch(FETCH_PROJECTS);
   },
 
   async [EDIT_PROJECT]({ dispatch }, { id, change }) {
-    await ApiService.patch(`/projects/${id}`, change);
+    await axios.patch(`/projects/${id}`, change);
     dispatch(FETCH_PROJECTS);
   },
 };

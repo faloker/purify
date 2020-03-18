@@ -1,12 +1,14 @@
 import Vue from 'vue';
 import axios from 'axios';
-import VueAxios from 'vue-axios';
 import Toasted from 'vue-toasted';
-import JwtService from './jwt.service';
+// eslint-disable-next-line import/no-cycle
+// import store from '../store';
+// eslint-disable-next-line import/no-cycle
+// import { router } from '../router';
+// import { REFRESH_TOKEN } from '../store/actions';
 
 const ApiService = {
   init() {
-    Vue.use(VueAxios, axios);
     Vue.use(Toasted, {
       duration: 3000,
       keepOnHover: true,
@@ -29,53 +31,51 @@ const ApiService = {
       },
     );
 
-    Vue.toasted.register(
-      'api_success',
-      payload => payload.msg,
-      {
-        type: 'success',
-        icon: 'check',
-      },
-    );
+    Vue.toasted.register('api_success', payload => payload.msg, {
+      type: 'success',
+      icon: 'check',
+    });
 
     if (process.env.NODE_ENV === 'local') {
-      Vue.axios.defaults.baseURL = 'http://localhost:3000/api';
+      axios.defaults.baseURL = 'http://localhost:3000/api';
     } else {
-      // set based on the nginx config
-      Vue.axios.defaults.baseURL = window.API_URL;
+      axios.defaults.baseURL = window.DOMAIN;
     }
 
-    Vue.axios.interceptors.response.use(
+    axios.interceptors.response.use(
       response => response,
       error => {
+        // if (error.response.status === 401) {
+        // router.push('welcome');
+        // }
         Vue.toasted.global.api_error(error);
         return Promise.reject(error);
       },
     );
   },
 
-  setHeader() {
-    Vue.axios.defaults.headers.common.Authorization = `Bearer ${JwtService.getToken()}`;
+  setHeader(token) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   },
 
   query(resource, params) {
-    return Vue.axios.get(resource, params);
+    return axios.get(resource, params);
   },
 
   get(resource) {
-    return Vue.axios.get(resource);
+    return axios.get(resource);
   },
 
   post(resource, params) {
-    return Vue.axios.post(resource, params);
+    return axios.post(resource, params);
   },
 
   patch(resource, params) {
-    return Vue.axios.patch(resource, params);
+    return axios.patch(resource, params);
   },
 
   delete(resource) {
-    return Vue.axios.delete(resource);
+    return axios.delete(resource);
   },
 };
 
@@ -87,7 +87,7 @@ export const ReportsService = {
   },
 
   applyTemplate(reportId, templateId) {
-    return ApiService.patch('reports/', reportId, templateId);
+    return ApiService.patch('reports', reportId, templateId);
   },
 
   getContent(reportId) {
@@ -95,7 +95,7 @@ export const ReportsService = {
   },
 
   fetchReportsByUnit(unitSlug) {
-    return ApiService.query('reports/', {
+    return ApiService.query('reports', {
       params: { unit: unitSlug },
     });
   },
@@ -103,10 +103,10 @@ export const ReportsService = {
 
 export const TemplatesService = {
   addTemplate(params) {
-    return ApiService.post('templates/', params);
+    return ApiService.post('templates', params);
   },
   fetchNames() {
-    return ApiService.get('templates/');
+    return ApiService.get('templates');
   },
 };
 
@@ -118,17 +118,17 @@ export const ProfileService = {
 
 export const IssuesService = {
   fetchIssuesByUnit(unitSlug) {
-    return ApiService.query('issues/', {
+    return ApiService.query('issues', {
       params: { unit: unitSlug },
     });
   },
 
   updateIssues(payload) {
-    return ApiService.patch('issues/', payload);
+    return ApiService.patch('issues', payload);
   },
 
   createTicket(id, payload) {
-    return ApiService.post(`issues/${id}/jira`, payload);
+    return ApiService.post(`issues/${id}/ticket`, payload);
   },
 
   postComment(id, comment) {
