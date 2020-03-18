@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -13,6 +15,20 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
+  const configService = app.get<ConfigService>(ConfigService);
+
+  app.register(require('fastify-file-upload'));
+  app.register(require('fastify-cookie'));
+
+  if (configService.get<string>('NODE_ENV') === 'local') {
+    app.register(require('fastify-cors'), {
+      credentials: true,
+      origin: 'http://localhost:8080',
+    });
+  }
+
+  app.setGlobalPrefix('api');
+
   app.useGlobalPipes(
     new ValidationPipe({
       forbidNonWhitelisted: true,
@@ -23,6 +39,9 @@ async function bootstrap() {
 
   app.use(helmet());
 
-  await app.listen(3000);
+  await app.listen(
+    Number(configService.get<number>('PORT')) || 3000,
+    '0.0.0.0',
+  );
 }
 bootstrap();
