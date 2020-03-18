@@ -4,7 +4,7 @@
       <v-col cols="3" class="mt-12">
         <v-row class="my-4" justify="center">
           <v-img
-            src="@/assets/logo_trans copy.png"
+            src="@/assets/logo_trans.png"
             max-width="110"
             max-height="110"
           ></v-img>
