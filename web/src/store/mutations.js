@@ -23,3 +23,5 @@ export const SET_CONTENT = 'setContent';
 export const SET_USER = 'setUser';
 
 export const SET_STATS = 'setStats';
+
+export const REFRESH_TASK = 'refreshTask';

@@ -22,7 +22,7 @@ export const LOGIN = 'login';
 export const LOGOUT = 'logout';
 export const REGISTER = 'register';
 export const UPDATE_USER = 'updateUser';
-export const CHECK_AUTH = 'checkAuth';
+export const REFRESH_TOKEN = 'refreshToken';
 
 export const FETCH_PROFILE = 'fetchProfile';
 
@@ -35,3 +35,4 @@ export const POST_COMMENT = 'postComment';
 export const FETCH_STATS = 'fetchStats';
 
 export const EDIT_PROJECT = 'editProject';
+export const AUTO_REFRESH = 'autoRefresh';

@@ -3,7 +3,6 @@ import Router from 'vue-router';
 
 import TheHeader from '@/components/TheHeader.vue';
 // import PersonalSettings from '@/components/PersonalSettings.vue';
-
 import Projects from '@/views/Projects.vue';
 import Units from '@/views/Units.vue';
 import Welcome from '@/views/Welcome.vue';
@@ -11,13 +10,12 @@ import Welcome from '@/views/Welcome.vue';
 import Dashboard from '@/views/Dashboard.vue';
 // import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import store from './store';
-import { CHECK_AUTH } from './store/actions';
+import { REFRESH_TOKEN } from './store/actions';
 
 Vue.use(Router);
 
 // eslint-disable-next-line import/prefer-default-export
 export const router = new Router({
-  // mode: 'history',
   routes: [
     {
       path: '/',
@@ -80,16 +78,16 @@ export const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  // redirect to login page if not logged in and trying to access a restricted page
-  // const publicPages = ['/welcome'];
-  // const authRequired = !publicPages.includes(to.path);
-  // const { isAuthenticated } = store.getters;
-
-  if (to.path !== '/welcome') {
-    store.dispatch(CHECK_AUTH).catch(() => next('/welcome'));
-  }
-
+  const { isAuthenticated } = store.getters;
   document.title = to.meta.title;
 
-  next();
+  if (to.path !== '/welcome' && !isAuthenticated) {
+    store.dispatch(REFRESH_TOKEN);
+  }
+
+  if (to.path !== '/welcome' && !isAuthenticated) {
+    next('/welcome');
+  } else {
+    next();
+  }
 });
