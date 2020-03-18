@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Model } from 'mongoose';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import { Injectable } from '@nestjs/common';
@@ -21,8 +22,8 @@ export class UsersService {
     return user.save();
   }
 
-  async findOne(username: string): Promise<User> {
-    return this.userModel.findOne({ username });
+  async findOne(condition: any): Promise<User> {
+    return this.userModel.findOne(condition);
   }
 
   genSecret(value: string, salt: string): string {
@@ -38,7 +39,27 @@ export class UsersService {
     const token = randomBytes(16).toString('hex');
     const secret = this.genSecret(token, user.salt);
 
-    await this.userModel.updateOne({ _id: user._id }, { $set: { token: secret } });
-    return { apikey: Buffer.from(`${user.username}:${token}`).toString('base64') };
+    await this.userModel.updateOne(
+      { _id: user._id },
+      { $set: { token: secret } },
+    );
+    return {
+      apikey: Buffer.from(`${user.username}:${token}`).toString('base64'),
+    };
+  }
+
+  async saveRefreshToken(userId: string, token: string) {
+    const user = await this.userModel.findOne({ _id: userId });
+    const secret = this.genSecret(token, user.salt);
+
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $set: { refresh_token: secret } },
+    );
+  }
+
+  async validateRefreshToken(userId: string, token: string) {
+    const user = await this.userModel.findOne({ _id: userId });
+    return this.isSecretValid(token, user.refresh_token, user.salt);
   }
 }
