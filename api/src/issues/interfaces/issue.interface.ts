@@ -1,5 +1,9 @@
 import { Document } from 'mongoose';
 import { Unit } from '../../units/interfaces/unit.interface';
+import { Ticket } from './ticket.interface';
+import { Template } from 'src/templates/interfaces/template.interface';
+import { Report } from 'src/reports/interfaces/report.interface';
+import { Comment } from 'src/issues/interfaces/comment.interface';
 
 export interface Issue extends Document {
   readonly _id: string;
@@ -8,12 +12,12 @@ export interface Issue extends Document {
   readonly is_fp: boolean;
   readonly dup_score: number;
   readonly risk: string;
-  readonly template: string;
-  readonly report: string;
-  readonly ticket: string;
+  readonly template: Template;
+  readonly report: Report;
+  readonly ticket: Ticket;
   readonly unit: Unit;
   readonly tags: string[];
-  readonly comments: string[];
+  readonly comments: Comment[];
   readonly created_at: Date;
   readonly updated_at: Date;
 }
