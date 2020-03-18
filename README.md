@@ -10,8 +10,18 @@
 <h4 align="center">All-in-one tool for managing vulnerability reports</h4>
 
 <p align="center">
+  <a href="https://purify-demo.herokuapp.com/">Demo</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/faloker/purify/releases">
     <img src="https://img.shields.io/github/release/faloker/purify.svg">
+  </a>
+  <a href="https://purify-demo.herokuapp.com">
+    <img src="https://heroku-badge.herokuapp.com/?app=purify-demo&style=flat&svg=1">
+  </a>
+    <a href="https://github.com/faloker/purify/releases">
+    <img alt="GitHub" src="https://img.shields.io/github/license/faloker/purify">
   </a>
 </p>
 
