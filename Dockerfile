@@ -30,7 +30,7 @@ RUN npm ci --only=production
 
 COPY --chown=node:node ./api/ .
 COPY --chown=node:node docker/web-entrypoint.sh .
-COPY --chown=node:node --from=build-api /api/lib ./lib
+COPY --chown=node:node --from=build-api /api/dist ./dist
 COPY --chown=node:node --from=build-static  /web/dist ./static
 
 RUN chmod +x web-entrypoint.sh

@@ -9,5 +9,5 @@ else
     PROTOCOL=http
 fi
 
-echo "window.API_URL = \"$PROTOCOL://$HOST:$PORT/api\";" > app/config.js
+echo "window.DOMAIN = \"$PROTOCOL://$HOST:$PORT/api\";" > app/config.js
 exec nginx -g "daemon off;"
