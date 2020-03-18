@@ -21,4 +21,6 @@ export const UserSchema = new Schema({
   password: String,
   token: String,
   salt: String,
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  refresh_token: String,
 });

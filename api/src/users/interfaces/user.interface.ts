@@ -8,4 +8,5 @@ export interface User extends Document {
   readonly password: string;
   readonly token: string;
   readonly salt: string;
+  readonly refresh_token: string;
 }
