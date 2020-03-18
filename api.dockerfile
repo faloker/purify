@@ -17,8 +17,8 @@ USER node
 RUN npm ci --only=production
 
 COPY --chown=node:node ./api/ .
-COPY --chown=node:node --from=build-api /api/lib ./lib
+COPY --chown=node:node --from=build-api /api/dist ./dist
 
 EXPOSE 3000
 
-CMD [ "node", "lib/index.js"]
+CMD [ "node", "dist/main.js"]

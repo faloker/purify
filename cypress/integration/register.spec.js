@@ -12,7 +12,7 @@ describe('Registration', () => {
     cy.contains('button', 'Sign Up').click()
     
     cy.contains('Login')
-    cy.contains('.toasted', 'User validation failed: email: is invalid').should(
+    cy.get('.toasted').should(
       'be.visible'
     )
   })
@@ -21,28 +21,28 @@ describe('Registration', () => {
     cy.get('#tab-register').click()
     cy.get('#user').should('be.visible').type('test')
     cy.get('#email').should('be.visible').type('test@test.test')
-    cy.get('#pass').should('be.visible').type('test')
+    cy.get('#pass').should('be.visible').type('testtest')
     cy.contains('button', 'Sign Up').click()
 
-    cy.contains('Projects')
+    cy.contains('Search')
   })
 
 
   it('Fails to register with the same credentials', () => {
-    cy.request('POST', 'http://localhost:8080/api/users/signup', { 
+    cy.request('POST', 'http://localhost:8080/api/auth/signup', { 
       email: 'test@test.test',
-      password: 'test',
+      password: 'testtest',
       username: 'test'
     })
 
     cy.get('#tab-register').click()
     cy.get('#user').should('be.visible').type('test')
     cy.get('#email').should('be.visible').type('test@test.test')
-    cy.get('#pass').should('be.visible').type('test')
+    cy.get('#pass').should('be.visible').type('testtest')
     cy.contains('button', 'Sign Up').click()
 
     cy.contains('Login')
-    cy.contains('.toasted', 'duplicate key error').should(
+    cy.get('.toasted').should(
       'be.visible'
     )
   })

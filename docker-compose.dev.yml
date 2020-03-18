@@ -15,7 +15,10 @@ services:
     depends_on:
       - mongo
     environment:
-      NODE_ENV: dev
+      NODE_ENV: local
+      JWT_SECRET: secret
+      MONGODB_URI: mongodb://mongo:27017/purify
+      DOMAIN: http://localhost.local
 
   nginx:
     build:

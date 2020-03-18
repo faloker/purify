@@ -25,29 +25,45 @@ export class AuthController {
   @Post()
   @UseGuards(LocalAuthGuard)
   async login(@Request() req, @Res() response) {
-    const tokens = await this.authService.login(req.user);
-    response
-      .setCookie('refresh_token', tokens.refresh_token, {
-        httpOnly: true,
-        domain: this.configService.get<string>('DOMAIN'),
-        path: '/',
-        secure: true,
-      })
-      .send({ token: tokens.access_token });
+    try {
+      const tokens = await this.authService.login(req.user);
+      response
+        .setCookie('refresh_token', tokens.refresh_token, {
+          httpOnly: true,
+          domain: this.configService.get<string>('DOMAIN'),
+          path: '/',
+          secure: true,
+        })
+        .send({ token: tokens.access_token });
+    } catch (err) {
+      response.code(400).send({
+        message: err,
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    }
   }
 
   @Post('signup')
   async register(@Body() createUserDto: CreateUserDto, @Res() response) {
-    const newUser = await this.usersService.createUser(createUserDto);
-    const tokens = await this.authService.login(newUser);
-    response
-      .setCookie('refresh_token', tokens.refresh_token, {
-        httpOnly: true,
-        domain: this.configService.get<string>('DOMAIN'),
-        path: '/',
-        secure: true,
-      })
-      .send({ token: tokens.access_token });
+    try {
+      const newUser = await this.usersService.createUser(createUserDto);
+      const tokens = await this.authService.login(newUser);
+      response
+        .setCookie('refresh_token', tokens.refresh_token, {
+          httpOnly: true,
+          domain: this.configService.get<string>('DOMAIN'),
+          path: '/',
+          secure: true,
+        })
+        .send({ token: tokens.access_token });
+    } catch (err) {
+      response.code(400).send({
+        message: err,
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    }
   }
 
   @Get('refresh_token')

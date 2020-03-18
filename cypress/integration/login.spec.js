@@ -5,18 +5,18 @@ describe('Login', () => {
   })
   
   it('Login with valid credentials', () => {
-    cy.request('POST', 'http://localhost:8080/api/users/signup', { 
+    cy.request('POST', 'http://localhost:8080/api/auth/signup', { 
       email: 'test@test.test',
-      password: 'test',
+      password: 'testtest',
       username: 'test'
     })
     
     cy.get('#tab-login').click()
     cy.get('#username').should('be.visible').type('test')
-    cy.get('#password').should('be.visible').type('test')
+    cy.get('#password').should('be.visible').type('testtest')
     cy.contains('button', 'Sign In').click()
     
-    cy.contains('Projects')
+    cy.contains('Search')
   })
       
   it('Unable to login with invalid credentials', () => {
@@ -26,7 +26,7 @@ describe('Login', () => {
     cy.contains('button', 'Sign In').click()
     
     cy.contains('Login')
-    cy.contains('.toasted', 'Username or password is invalid').should(
+    cy.get('.toasted').should(
       'be.visible'
     )
   })
