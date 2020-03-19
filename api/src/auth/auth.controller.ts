@@ -73,7 +73,12 @@ export class AuthController {
         req.cookies.refresh_token,
       );
       response
-        .setCookie('refresh_token', tokens.refresh_token, { httpOnly: true })
+        .setCookie('refresh_token', tokens.refresh_token, {
+          httpOnly: true,
+          domain: this.configService.get<string>('DOMAIN'),
+          path: '/',
+          secure: true,
+        })
         .send({ token: tokens.access_token });
     } catch (err) {
       response.code(401).send({
