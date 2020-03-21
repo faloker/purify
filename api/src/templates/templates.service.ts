@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { findBestMatch } from 'string-similarity';
 import { get, isArray, set } from 'lodash';
 import { Model } from 'mongoose';
 import { Report } from 'src/reports/interfaces/report.interface';
 import { Template } from './interfaces/template.interface';
-import { SaveTemplateDto } from './dto/templates.dto';
+import { IdParamDto, SaveTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 
 @Injectable()
@@ -159,5 +159,40 @@ export class TemplatesService {
     res.tags = [...new Set(res.tags)];
 
     return res;
+  }
+
+  async findAll() {
+    const templates = await this.templateModel.find();
+    const result = [];
+
+    for (const template of templates) {
+      const numberOfIsues = await this.issueModel.countDocuments({
+        template: template._id,
+      });
+      const numberOfReports = await this.reportModel.countDocuments({
+        template: template._id,
+      });
+
+      result.push({
+        template,
+        issues: numberOfIsues,
+        reports: numberOfReports,
+      });
+    }
+
+    return result;
+  }
+
+  async updateOne(templateId: string, template: EditTemplateBodyDto) {
+    const oldTemplate = await this.templateModel.findOne({ _id: templateId });
+    if (oldTemplate) {
+      return this.templateModel.updateOne({ _id: templateId }, template);
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  async deleteOne() {
+    throw new Error('Not implemented');
   }
 }

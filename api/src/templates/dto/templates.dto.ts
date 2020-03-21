@@ -46,3 +46,44 @@ export class SaveTemplateDto {
   @ArrayNotEmpty()
   readonly body_fields: BodyField[];
 }
+
+export class IdParamDto {
+  @IsString()
+  @IsNotEmpty()
+  readonly id: string;
+}
+
+export class EditTemplateBodyDto {
+  @IsString()
+  @IsNotEmpty()
+  readonly name: string;
+
+  @IsString()
+  readonly path_to_issues: string;
+
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly title_fields: string[];
+
+  // @IsArray()
+  // @ArrayNotEmpty()
+  // readonly compare_fields: string[];
+
+  // @IsArray()
+  // @ArrayNotEmpty()
+  // readonly merge_fields: string[];
+
+  @IsString()
+  @IsNotEmpty()
+  readonly title_pattern: string;
+
+  @IsString()
+  readonly subtitle_pattern: string;
+
+  @IsArray()
+  readonly tags: string[];
+
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly body_fields: BodyField[];
+}

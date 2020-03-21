@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Patch, Delete, Param } from '@nestjs/common';
 import { TemplatesService } from './templates.service';
-import { SaveTemplateDto } from './dto/templates.dto';
+import { IdParamDto, SaveTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 
 @Controller('templates')
@@ -14,7 +14,17 @@ export class TemplatesController {
   }
 
   @Get()
-  fetchNamesAndTags() {
-    return this.templatesService.fetchNamesAndTags();
+  findAll() {
+    return this.templatesService.findAll();
+  }  
+  
+  @Patch(':id')
+  updateOne(@Param() param: IdParamDto, @Body() template: EditTemplateBodyDto) {
+    return this.templatesService.updateOne(param.id, template);
+  }  
+  
+  @Delete(':id')
+  deleteOne() {
+    return this.templatesService.deleteOne();
   }
 }
