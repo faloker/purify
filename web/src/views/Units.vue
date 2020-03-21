@@ -99,7 +99,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-progress-linear
-                    background-color="blue-grey"
+                    background-color="blue lighten-4"
                     height="14"
                     color="primary"
                     striped
@@ -137,9 +137,12 @@
     <v-dialog v-model="confirmDialog" max-width="300">
       <v-card>
         <v-card-title>
-          <span class="title">Delete unit {{ unitToDelete.name }}?</span>
+          <span class="title">
+            Delete unit
+            <b>{{ unitToDelete.name }}</b>?
+          </span>
         </v-card-title>
-        <v-divider light></v-divider>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -211,7 +214,9 @@ export default {
   },
   mounted() {
     this.$store.commit(SET_ACTIVE_PROJECT, this.$route.params.slug);
-    this.$store.dispatch(FETCH_UNITS).then(() => { this.loading = false; });
+    this.$store.dispatch(FETCH_UNITS).then(() => {
+      this.loading = false;
+    });
 
     document.onkeydown = e => {
       // eslint-disable-next-line no-param-reassign
@@ -222,10 +227,7 @@ export default {
       ) {
         e.preventDefault();
         this.$refs.search.focus();
-      } else if (
-        e.keyCode === 67
-        && !this.dialog
-      ) {
+      } else if (e.keyCode === 67 && !this.dialog) {
         this.dialog = true;
       }
     };

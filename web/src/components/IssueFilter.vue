@@ -1,5 +1,5 @@
 <template>
-  <v-card outlined>
+  <v-card outlined color="#fafafa">
     <v-container fluid>
       <v-row>
         <v-col>
@@ -80,7 +80,7 @@
             dense
             multiple
             clearable
-            prepend-icon="fa-file"
+            prepend-icon="mdi-file"
             @input="$emit('templates', templates)"
           >
             <template v-slot:selection="data">

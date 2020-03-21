@@ -180,7 +180,7 @@ import { mapGetters } from 'vuex';
 import GroupActionBtn from '@/components/buttons/GroupActionButton.vue';
 import IssueDetails from '@/components/dialogs/IssueDetails.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
-import { matchPattern } from '@/common/utils.servive';
+import { matchPattern } from '@//utils/helpers';
 
 export default {
   name: 'IssuesList',

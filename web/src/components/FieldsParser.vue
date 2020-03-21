@@ -67,7 +67,7 @@
   </div>
 </template>
 <script>
-import { parseKey } from '@/common/utils.servive';
+import { parseKey } from '@//utils/helpers';
 
 export default {
   name: 'FieldsParser',

@@ -1,10 +1,6 @@
 <template>
   <div>
-    <v-dialog
-      v-model="stepper"
-      max-width="60%"
-      persistent
-    >
+    <v-dialog v-model="stepperDialog" max-width="60%">
       <v-stepper
         v-model="e6"
         non-linear
@@ -328,7 +324,7 @@
 <script>
 import VueJsonPretty from 'vue-json-pretty';
 import { mapGetters } from 'vuex';
-import { SAVE_TEMPLATE, FETCH_REPORTS, FETCH_CONTENT } from '@/store/actions';
+import { TEMPLATE_CREATE, FETCH_REPORTS, FETCH_CONTENT } from '@/store/actions';
 
 export default {
   name: 'StepperConfigurator',
@@ -368,8 +364,18 @@ export default {
   },
   computed: {
     ...mapGetters(['app', 'activeRelease', 'reportContent']),
+
     exampleIssue() {
       return this.reportContent[this.path_to_issues.replace('report.', '')];
+    },
+
+    stepperDialog: {
+      get() {
+        return this.stepper;
+      },
+      set(newValue) {
+        this.$emit('update:stepper', newValue);
+      },
     },
   },
   methods: {
@@ -385,7 +391,7 @@ export default {
       }
 
       this.$store
-        .dispatch(SAVE_TEMPLATE, {
+        .dispatch(TEMPLATE_CREATE, {
           path_to_issues: this.path_to_issues
             .replace('report.root.', '')
             .replace('[0]', '')
@@ -404,7 +410,7 @@ export default {
           this.loading = false;
           this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug);
 
-          this.$emit('update:stepper', false);
+          this.stepperDialog = false;
 
           this.e6 = 1;
           // eslint-disable-next-line no-multi-assign

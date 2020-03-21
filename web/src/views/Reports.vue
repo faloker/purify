@@ -141,7 +141,7 @@ export default {
   },
   methods: {
     openStepper(id) {
-      this.stepperDialog = !this.stepperDialog;
+      this.stepperDialog = true;
       this.reportId = id;
     },
     deleteReport(id) {

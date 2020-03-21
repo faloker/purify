@@ -7,7 +7,7 @@
   >
     <v-card>
       <v-toolbar
-        color="#33333d"
+        color="primary"
         dark
         dense
       >
@@ -19,12 +19,11 @@
           <v-icon>close</v-icon>
         </v-btn>
         <v-toolbar-title class="title">
-          Ticket editor
+          Ticket Editor
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items>
           <v-btn
-            color="primary"
             text
             @click="finisher = !finisher"
           >
@@ -135,7 +134,7 @@
 import j2md from 'jira2md';
 import VueSimpleMDE from 'vue-simplemde';
 import { CREATE_TICKET } from '@/store/actions';
-import { matchPattern, parseKey, getValue } from '@/common/utils.servive';
+import { matchPattern, parseKey, getValue } from '@//utils/helpers';
 
 export default {
   name: 'JiraTicketDialog',
@@ -219,4 +218,5 @@ export default {
 </script>
 
 <style>
+@import '~simplemde/dist/simplemde.min.css';
 </style>
