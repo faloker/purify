@@ -2,19 +2,11 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import TheHeader from '@/components/TheHeader.vue';
-// import PersonalSettings from '@/components/PersonalSettings.vue';
-import Projects from '@/views/Projects.vue';
-import Units from '@/views/Units.vue';
-import Welcome from '@/views/Welcome.vue';
-// import Profile from '@/views/Profile.vue';
-import Dashboard from '@/views/Dashboard.vue';
-// import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import store from './store';
 import { REFRESH_TOKEN } from './store/actions';
 
 Vue.use(Router);
 
-// eslint-disable-next-line import/prefer-default-export
 export const router = new Router({
   routes: [
     {
@@ -25,7 +17,7 @@ export const router = new Router({
       path: '/welcome',
       name: 'Welcome',
       components: {
-        default: Welcome,
+        default: () => import('@/views/Welcome.vue'),
       },
       meta: { title: 'Purify | Welcome' },
     },
@@ -33,16 +25,25 @@ export const router = new Router({
       path: '/projects',
       name: 'Projects',
       components: {
-        default: Projects,
+        default: () => import('@/views/Projects.vue'),
         header: TheHeader,
       },
       meta: { title: 'Purify | Projects' },
     },
     {
+      path: '/templates',
+      name: 'Templates',
+      components: {
+        default: () => import('@/views/Templates.vue'),
+        header: TheHeader,
+      },
+      meta: { title: 'Purify | Templates' },
+    },
+    {
       path: '/dashboard',
       name: 'Dashboard',
       components: {
-        default: Dashboard,
+        default: () => import('@/views/Dashboard.vue'),
         header: TheHeader,
       },
       meta: { title: 'Purify | Dashboard' },
@@ -51,7 +52,7 @@ export const router = new Router({
       path: '/project/:slug/units',
       name: 'Units',
       components: {
-        default: Units,
+        default: () => import('@/views/Units.vue'),
         header: TheHeader,
       },
       meta: { title: 'Purify | Units' },
@@ -79,7 +80,6 @@ export const router = new Router({
 
 router.beforeEach((to, from, next) => {
   const { isAuthenticated } = store.getters;
-  document.title = to.meta.title;
 
   if (to.path !== '/welcome' && !isAuthenticated) {
     store.dispatch(REFRESH_TOKEN);
@@ -88,6 +88,7 @@ router.beforeEach((to, from, next) => {
   if (to.path !== '/welcome' && !isAuthenticated) {
     next('/welcome');
   } else {
+    document.title = to.meta.title;
     next();
   }
 });
