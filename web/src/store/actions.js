@@ -7,7 +7,6 @@ export const CHANGE_PROJECT_NAME = 'changeProjectName';
 export const FETCH_REPORTS = 'fetchReports';
 export const REPORT_DELETE = 'reportDelete';
 
-export const SAVE_TEMPLATE = 'saveTemplate';
 export const FETCH_TEMPLATES_NAMES = 'fetchTemplatesNames';
 
 export const CREATE_UNIT = 'createUnit';
@@ -36,3 +35,9 @@ export const FETCH_STATS = 'fetchStats';
 
 export const EDIT_PROJECT = 'editProject';
 export const AUTO_REFRESH = 'autoRefresh';
+
+
+export const TEMPLATES_FETCH = 'templatesFetch';
+export const TEMPLATES_DELETE = 'templatesDelete';
+export const TEMPLATES_EDIT = 'templatesEdit';
+export const TEMPLATE_CREATE = 'templateCreate';

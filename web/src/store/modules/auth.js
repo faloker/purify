@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-shadow */
-import ApiService from '@/common/api.service';
-import axios from 'axios';
+import { login, signup, refreshToken } from '@/api/auth.service';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
-// import JwtService from '@/common/jwt.service';
 import {
   LOGIN,
   LOGOUT,
@@ -13,7 +11,10 @@ import {
   AUTO_REFRESH,
 } from '../actions';
 import {
-  SET_AUTH, PURGE_AUTH, SET_USER, REFRESH_TASK,
+  SET_AUTH,
+  PURGE_AUTH,
+  SET_USER,
+  REFRESH_TASK,
 } from '../mutations';
 
 const state = {
@@ -31,7 +32,7 @@ const getters = {
     return state.isAuthenticated;
   },
 
-  accessToken(state) {
+  token(state) {
     return state.user.token;
   },
 };
@@ -42,23 +43,21 @@ const actions = {
   },
 
   async [LOGIN]({ commit, dispatch }, credentials) {
-    const { data } = await axios.post('auth', credentials);
+    const { data } = await login(credentials);
 
     commit(SET_AUTH, data);
     dispatch(AUTO_REFRESH);
   },
 
   async [REGISTER]({ commit, dispatch }, credentials) {
-    const { data } = await axios.post('auth/signup', credentials);
+    const { data } = await signup(credentials);
 
     commit(SET_AUTH, data);
     dispatch(AUTO_REFRESH);
   },
 
   async [REFRESH_TOKEN]({ commit, dispatch }) {
-    const { data } = await axios.get('auth/refresh_token', {
-      withCredentials: true,
-    });
+    const { data } = await refreshToken();
 
     commit(SET_AUTH, data);
     dispatch(AUTO_REFRESH);
@@ -83,7 +82,6 @@ const mutations = {
   [SET_AUTH](state, data) {
     state.isAuthenticated = true;
     state.user = data;
-    ApiService.setHeader(data.token);
   },
 
   [SET_USER](state, user) {

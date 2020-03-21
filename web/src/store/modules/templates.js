@@ -1,13 +1,15 @@
 /* eslint-disable no-shadow */
-import ApiService from '@/common/api.service';
+import {
+  getTemplates,
+  deleteTemplate,
+  editTemplate,
+} from '@/api/templates.service';
 import {
   TEMPLATES_FETCH,
   TEMPLATES_DELETE,
   TEMPLATES_EDIT,
 } from '@/store/actions';
-import {
-  TEMPLATES_SET,
-} from '@/store/mutations';
+import { TEMPLATES_SET } from '@/store/mutations';
 
 const state = {
   templates: [],
@@ -17,17 +19,17 @@ const getters = {};
 
 const actions = {
   async [TEMPLATES_FETCH]({ commit }) {
-    const { data } = await ApiService.get('templates');
+    const { data } = await getTemplates();
     commit(TEMPLATES_SET, data);
   },
 
   async [TEMPLATES_DELETE]({ dispatch }, id) {
-    await ApiService.delete(`/templates/${id}`);
+    await deleteTemplate(id);
     dispatch(TEMPLATES_FETCH);
   },
 
   async [TEMPLATES_EDIT]({ dispatch }, { id, change }) {
-    await ApiService.patch(`/templates/${id}`, change);
+    await editTemplate(id, change);
     dispatch(TEMPLATES_FETCH);
   },
 };

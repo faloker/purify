@@ -8,6 +8,7 @@ import reports from './modules/reports';
 import units from './modules/units';
 import auth from './modules/auth';
 import profile from './modules/profile';
+import templates from './modules/templates';
 
 Vue.use(Vuex);
 
@@ -20,5 +21,6 @@ export default new Vuex.Store({
     reports,
     units,
     profile,
+    templates,
   },
 });

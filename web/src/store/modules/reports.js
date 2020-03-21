@@ -1,15 +1,13 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 /* eslint-disable no-shadow */
-import {
-  ReportsService,
-  TemplatesService,
-} from '@/common/api.service';
+import { getReports, deleteReport, getReportContent } from '@/api/reports.service';
+import { createTemplate } from '@/api/templates.service';
 import {
   FETCH_REPORTS,
   REPORT_DELETE,
-  SAVE_TEMPLATE,
+  TEMPLATE_CREATE,
   FETCH_CONTENT,
-  FETCH_TEMPLATES_NAMES,
+  // FETCH_TEMPLATES_NAMES,
 } from '../actions';
 import {
   SET_REPORTS,
@@ -36,27 +34,27 @@ const getters = {
 };
 
 const actions = {
-  async [FETCH_REPORTS]({ commit }, unit) {
-    const { data } = await ReportsService.fetchReportsByUnit(unit);
+  async [FETCH_REPORTS]({ commit }, unitSlug) {
+    const { data } = await getReports(unitSlug);
     commit(SET_REPORTS, data);
   },
 
   async [REPORT_DELETE]({ dispatch, rootState }, id) {
-    await ReportsService.deleteReport(id);
+    await deleteReport(id);
     dispatch(FETCH_REPORTS, rootState.units.activeUnit);
   },
 
-  async [SAVE_TEMPLATE](context, payload) {
-    await TemplatesService.addTemplate(payload);
+  async [TEMPLATE_CREATE](context, payload) {
+    await createTemplate(payload);
   },
 
-  async [FETCH_TEMPLATES_NAMES]({ commit }) {
-    const { data } = await TemplatesService.fetchNames();
-    commit(SET_TEMLATES_NAMES, data);
-  },
+  // async [FETCH_TEMPLATES_NAMES]({ commit }) {
+  //   const { data } = await TemplatesService.fetchNames();
+  //   commit(SET_TEMLATES_NAMES, data);
+  // },
 
   async [FETCH_CONTENT]({ commit }, reportId) {
-    const { data } = await ReportsService.getContent(reportId);
+    const { data } = await getReportContent(reportId);
     commit(SET_CONTENT, data);
   },
 };

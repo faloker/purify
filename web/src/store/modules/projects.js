@@ -1,5 +1,11 @@
 /* eslint-disable no-shadow */
-import axios from 'axios';
+import {
+  getProjects,
+  getStats,
+  createProject,
+  deleteProject,
+  editProject,
+} from '@/api/projects.service';
 import {
   FETCH_PROJECTS,
   DELETE_PROJECT,
@@ -7,11 +13,7 @@ import {
   FETCH_STATS,
   EDIT_PROJECT,
 } from '@/store/actions';
-import {
-  SET_PROJECTS,
-  SET_ACTIVE_PROJECT,
-  SET_STATS,
-} from '@/store/mutations';
+import { SET_PROJECTS, SET_ACTIVE_PROJECT, SET_STATS } from '@/store/mutations';
 
 const state = {
   projects: [],
@@ -23,29 +25,27 @@ const getters = {};
 
 const actions = {
   async [FETCH_PROJECTS]({ commit }) {
-    const { data } = await axios.get('projects');
+    const { data } = await getProjects();
     commit(SET_PROJECTS, data);
   },
 
   async [FETCH_STATS]({ commit }, project) {
-    const { data } = await axios.query('projects/stats', {
-      params: { project },
-    });
+    const { data } = await getStats(project);
     commit(SET_STATS, data);
   },
 
   async [CREATE_PROJECT]({ dispatch }, payload) {
-    await axios.post('projects', payload);
+    await createProject(payload);
     dispatch(FETCH_PROJECTS);
   },
 
   async [DELETE_PROJECT]({ dispatch }, id) {
-    await axios.delete(`/projects/${id}`);
+    await deleteProject(id);
     dispatch(FETCH_PROJECTS);
   },
 
   async [EDIT_PROJECT]({ dispatch }, { id, change }) {
-    await axios.patch(`/projects/${id}`, change);
+    await editProject(id, change);
     dispatch(FETCH_PROJECTS);
   },
 };

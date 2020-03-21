@@ -1,14 +1,7 @@
 /* eslint-disable no-shadow */
-import ApiService from '@/common/api.service';
-import {
-  FETCH_UNITS,
-  DELETE_UNIT,
-  CREATE_UNIT,
-} from '@/store/actions';
-import {
-  SET_UNITS,
-  SET_ACTIVE_UNIT,
-} from '@/store/mutations';
+import { getUnits, createUnit, deleteUnit } from '@/api/units.service';
+import { FETCH_UNITS, DELETE_UNIT, CREATE_UNIT } from '@/store/actions';
+import { SET_UNITS, SET_ACTIVE_UNIT } from '@/store/mutations';
 
 const state = {
   units: [],
@@ -19,20 +12,18 @@ const getters = {};
 
 const actions = {
   async [FETCH_UNITS]({ commit, rootState }) {
-    const { data } = await ApiService.query('units', {
-      params: { project: rootState.projects.activeProject },
-    });
+    const { data } = await getUnits(rootState.projects.activeProject);
     commit(SET_UNITS, data);
   },
   async [CREATE_UNIT]({ dispatch, rootState }, name) {
-    await ApiService.post('units', {
+    await createUnit({
       name,
       project: rootState.projects.activeProject,
     });
     dispatch(FETCH_UNITS, rootState.projects.activeProject);
   },
   async [DELETE_UNIT]({ dispatch, rootState }, id) {
-    await ApiService.delete(`units/${id}`);
+    await deleteUnit(id);
     dispatch(FETCH_UNITS, rootState.projects.activeProject);
   },
 };

@@ -1,9 +1,12 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 /* eslint-disable no-shadow */
-import { IssuesService } from '@/common/api.service';
 import {
-  SET_ISSUES,
-} from '../mutations';
+  getIssues,
+  updateIssues,
+  createTicket,
+  postComment,
+} from '@/api/issues.service';
+import { SET_ISSUES } from '../mutations';
 import {
   ISSUES_FETCH,
   ISSUE_UPDATE,
@@ -19,23 +22,23 @@ const getters = {};
 
 const actions = {
   async [ISSUES_FETCH]({ commit }, unit) {
-    const { data } = await IssuesService.fetchIssuesByUnit(unit);
+    const { data } = await getIssues(unit);
     commit(SET_ISSUES, data);
   },
 
   async [ISSUE_UPDATE]({ dispatch, rootState }, { ids, change }) {
-    await IssuesService.updateIssues({ ids, change });
+    await updateIssues({ ids, change });
     dispatch(ISSUES_FETCH, rootState.units.activeUnit);
   },
 
   async [CREATE_TICKET]({ dispatch, rootState }, { id, fields }) {
-    const { data } = await IssuesService.createTicket(id, fields);
+    const { data } = await createTicket(id, fields);
     dispatch(ISSUES_FETCH, rootState.units.activeUnit);
     return data;
   },
 
   async [POST_COMMENT]({ dispatch, rootState }, { id, comment }) {
-    const { data } = await IssuesService.postComment(id, comment);
+    const { data } = await postComment(id, comment);
     dispatch(ISSUES_FETCH, rootState.units.activeUnit);
     return data;
   },

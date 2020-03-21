@@ -25,3 +25,5 @@ export const SET_USER = 'setUser';
 export const SET_STATS = 'setStats';
 
 export const REFRESH_TASK = 'refreshTask';
+
+export const TEMPLATES_SET = 'templatesSet';
