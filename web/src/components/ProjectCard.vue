@@ -3,13 +3,13 @@
     <v-hover>
       <v-card
         slot-scope="{ hover }"
-        :class="`elevation-${hover ? 12 : 0}`"
-        outlined
+        :class="`elevation-${hover ? 12 : 3}`"
+        shaped
         class="mx-auto my-3"
         width="400"
       >
         <div class="px-3 pt-3">
-          <div class="text-center font-weight-light mb-2">
+          <div class="text-center font-weight-light mb-2 text-truncate">
             <v-btn
               text
               color="primary"
@@ -20,7 +20,7 @@
               {{ project.title }}
             </v-btn>
           </div>
-          <div class="text-center subheading font-weight-light grey--text">
+          <div class="text-center subheading font-weight-light grey--text text-truncate">
             {{ project.subtitle }}
           </div>
           <v-divider class="mt-2" light></v-divider>
@@ -28,7 +28,11 @@
             <v-row dense class="text-center">
               <v-col>
                 <p class="display-1 font-weight-black">
-                  {{ project.issues }}
+                  <countTo
+                    :start-val="0"
+                    :end-val="project.issues"
+                    :duration="2000"
+                  ></countTo>
                 </p>
                 <span class="subheading">
                   <v-icon class="mx-1" small>fa-bug</v-icon>Issues
@@ -36,7 +40,11 @@
               </v-col>
               <v-col>
                 <p class="display-1 font-weight-black">
-                  {{ project.tickets }}
+                  <countTo
+                    :start-val="0"
+                    :end-val="project.tickets"
+                    :duration="2000"
+                  ></countTo>
                 </p>
                 <span class="subheading">
                   <v-icon class="mx-1" small>mdi-cards</v-icon>Tickets
@@ -44,7 +52,11 @@
               </v-col>
               <v-col>
                 <p class="display-1 font-weight-black">
-                  {{ project.units }}
+                  <countTo
+                    :start-val="0"
+                    :end-val="project.units"
+                    :duration="2000"
+                  ></countTo>
                 </p>
                 <span class="subheading font-weight-medium">
                   <v-icon class="mx-1" small>mdi-folder</v-icon>Units
@@ -104,7 +116,7 @@
             </v-flex>
           </v-layout>
         </v-card-text>
-        <v-divider light></v-divider>
+        <v-divider dark></v-divider>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -128,9 +140,9 @@
     <v-dialog v-model="confirmDialog" max-width="300">
       <v-card>
         <v-card-title>
-          <span class="title">Delete project {{ project.title }}?</span>
+          <span class="title">Delete project <b>{{ project.title }}</b>?</span>
         </v-card-title>
-        <v-divider light></v-divider>
+        <v-divider dark></v-divider>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -148,9 +160,13 @@
 </template>
 <script>
 import { DELETE_PROJECT, EDIT_PROJECT } from '@/store/actions';
+import countTo from 'vue-count-to';
 
 export default {
   name: 'ProjectCard',
+  components: {
+    countTo,
+  },
   props: {
     project: {
       type: Object,
