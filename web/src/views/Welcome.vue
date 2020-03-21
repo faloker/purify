@@ -23,7 +23,7 @@
             </v-tab>
             <v-tabs-items v-model="tabs" class="mt-7">
               <v-tab-item>
-                <v-form>
+                <v-form class="grey-form">
                   <v-row>
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -61,7 +61,7 @@
                 </v-form>
               </v-tab-item>
               <v-tab-item>
-                <v-form>
+                <v-form class="grey-form">
                   <v-row>
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -153,4 +153,7 @@ export default {
 </script>
 
 <style scoped>
+.grey-form {
+  background-color: #fafafa;
+}
 </style>
