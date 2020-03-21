@@ -1,10 +1,9 @@
 <template>
   <div>
     <v-navigation-drawer
-      app
-      permanent
-      dark
-      expand-on-hover
+      v-model="drawer"
+      absolute
+      temporary
     >
       <!-- <v-list>
         <v-list-item class="px-2">
@@ -44,6 +43,14 @@
             <v-list-item-title>Dashboard</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item active-class="primary--text" :to="{ name: 'Templates' }">
+          <v-list-item-action>
+            <v-icon>mdi-file</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Templates</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <!-- <v-list-item
           active-class="primary--text"
           :to="{name: 'Settings'}"
@@ -62,9 +69,19 @@
       app
       flat
       hide-on-scroll
-      color="#33333d"
+      color="#1a73e8"
       dense
+      dark
     >
+      <!-- <template v-slot:extension>
+        <v-tabs align-with-title>
+          <v-tab>Tab 1</v-tab>
+          <v-tab>Tab 2</v-tab>
+          <v-tab>Tab 3</v-tab>
+        </v-tabs>
+      </template> -->
+      <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+      <v-toolbar-title>Purify</v-toolbar-title>
       <v-spacer></v-spacer>
       <!-- <v-btn icon>
         <v-badge
