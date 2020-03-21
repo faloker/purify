@@ -1,14 +1,13 @@
 import Vue from 'vue';
 import VuePageTransition from 'vue-page-transition';
+import { ToastedService } from '@/utils/toasted';
 import App from './App.vue';
 import { router } from './router';
 import store from './store';
-import ApiService from './common/api.service';
 import vuetify from './plugins/vuetify';
 
 Vue.config.productionTip = false;
-
-ApiService.init();
+ToastedService.init();
 Vue.use(VuePageTransition);
 
 new Vue({
