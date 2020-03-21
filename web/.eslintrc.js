@@ -6,6 +6,9 @@ module.exports = {
   extends: ['plugin:vue/recommended', '@vue/airbnb'],
   plugins: ['vuetify'],
   rules: {
+    'import/no-webpack-loader-syntax': 'off',
+    'import/no-cycle': 'off',
+    'import/prefer-default-export': 'off',
     'arrow-parens': ['error', 'as-needed'],
     'vue/html-self-closing': 'off',
     'vue/html-closing-bracket-spacing': 'off',
