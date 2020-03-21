@@ -66,13 +66,12 @@
         <v-row justify="center">
           <v-col>
             <v-btn
-              v-if="!issue.is_closed"
               class="mr-2"
-              color="quinary"
+              :color="issue.is_fp ? 'primary' : 'quinary'"
               outlined
               @click="updateIssue(issue, 'is_fp', !issue.is_fp)"
             >
-              Mark as false
+              {{ issue.is_fp ? "Mark as tp" : "Mark as fp" }}
             </v-btn>
             <v-btn
               outlined
@@ -163,7 +162,7 @@
         </v-row>
       </v-container>
     </v-card-title>
-    <v-container>
+    <v-container >
       <v-col v-for="field in issue.template.body_fields" :key="`id-${field.key}`">
         <fields-parser :ikey="field" :ivalue="getValue(issue.fields, field.key)" />
       </v-col>
@@ -176,8 +175,8 @@ import FieldsParser from '@/components/FieldsParser.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
-import { matchPattern, parseKey, getValue } from '@/common/utils.servive';
 import { ISSUE_UPDATE } from '@/store/actions';
+import { matchPattern, parseKey, getValue } from '@//utils/helpers';
 
 export default {
   name: 'IssueDetails',
