@@ -15,7 +15,15 @@ const state = {
   templates: [],
 };
 
-const getters = {};
+const getters = {
+  templatesNames(state) {
+    return [...new Set(state.templates.map(item => item.template.name))];
+  },
+
+  templatesTags(state) {
+    return [...new Set([].concat(...state.templates.map(item => item.template.tags)))];
+  },
+};
 
 const actions = {
   async [TEMPLATES_FETCH]({ commit }) {
