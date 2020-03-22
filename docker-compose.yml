@@ -13,8 +13,8 @@ services:
   api:
     image: faloker/purify-api
     restart: always
-    volumes:
-      - ./config.json:/home/node/app/lib/config/production.json
+    env_file:
+      - ./api/.env.example
     depends_on:
       - mongo
     environment:
