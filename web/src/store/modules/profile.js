@@ -1,32 +1,33 @@
 /* eslint-disable no-shadow */
-// import {
-//   FETCH_PROFILE,
-// } from '@/store/actions';
+import {
+  PROFILE_FETCH,
+} from '@/store/actions';
 import {
   SET_PROFILE,
 } from '@/store/mutations';
+import { currentUser } from '@/api/users.service';
 
 const state = {
-  profile: {},
+  user: {},
 };
 
 const getters = {
-  profile(state) {
-    return state.profile;
+  currentUser(state) {
+    return state.user;
   },
 };
 
 const actions = {
-  // async [FETCH_PROFILE]({ commit, rootState }) {
-  //   // const { data } = await ProfileService.get(rootState.auth.user.username);
-  //   // commit(SET_PROFILE, data.body.profile);
-  // },
+  async [PROFILE_FETCH]({ commit }) {
+    const { data } = await currentUser();
+    commit(SET_PROFILE, data);
+  },
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
 const mutations = {
   [SET_PROFILE](state, profile) {
-    state.profile = profile;
+    state.user = profile;
   },
 };
 

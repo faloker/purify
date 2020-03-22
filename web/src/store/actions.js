@@ -23,8 +23,6 @@ export const REGISTER = 'register';
 export const UPDATE_USER = 'updateUser';
 export const REFRESH_TOKEN = 'refreshToken';
 
-export const FETCH_PROFILE = 'fetchProfile';
-
 export const CREATE_TICKET = 'createTicket';
 
 export const FETCH_CONTENT = 'fetchContent';
@@ -41,3 +39,5 @@ export const TEMPLATES_FETCH = 'templatesFetch';
 export const TEMPLATES_DELETE = 'templatesDelete';
 export const TEMPLATES_EDIT = 'templatesEdit';
 export const TEMPLATE_CREATE = 'templateCreate';
+
+export const PROFILE_FETCH = 'profileFetch';

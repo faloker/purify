@@ -9,6 +9,7 @@ import {
   REGISTER,
   REFRESH_TOKEN,
   AUTO_REFRESH,
+  PROFILE_FETCH,
 } from '../actions';
 import {
   SET_AUTH,
@@ -24,10 +25,6 @@ const state = {
 };
 
 const getters = {
-  currentUser(state) {
-    return state.user;
-  },
-
   isAuthenticated(state) {
     return state.isAuthenticated;
   },
@@ -64,6 +61,8 @@ const actions = {
   },
 
   async [AUTO_REFRESH]({ state, dispatch, commit }) {
+    dispatch(PROFILE_FETCH);
+
     const { exp } = jwt_decode(state.user.token);
     const now = Date.now();
 
