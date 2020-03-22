@@ -141,26 +141,7 @@ export class TemplatesService {
       old: issues.length - newOnes,
     };
   }
-
-  async fetchNamesAndTags() {
-    const allTemplates = await this.templateModel.find({}, 'name tags');
-
-    const res = {
-      names: [],
-      tags: [],
-    };
-
-    for (const template of allTemplates) {
-      res.names.push(template.name);
-      res.tags = [...res.tags, ...template.tags];
-    }
-
-    res.names = [...new Set(res.names)];
-    res.tags = [...new Set(res.tags)];
-
-    return res;
-  }
-
+  
   async findAll() {
     const templates = await this.templateModel.find();
     const result = [];
