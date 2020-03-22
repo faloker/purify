@@ -53,19 +53,19 @@ The logic hierarchy of Purify is simple:
 To upload a report (assumed that you already created a project and unit) you need a token:
 
 ```
-http POST purify.host/api/users/token username="your_username" password="your_token"
+http POST https://purifyhost/api/auth/token username="user" password="pass"
 ```
 
 Now you can upload a report
 
 ```
-http -f POST purify.host/api/reports "x-auth-token:your_token" "unit=gitleaks-test" file@/path/to/gitleaks-report.json
+http -f POST https://purifyhost/api/reports "apikey=token" "unit=gitleaks-test" file@/path/to/gitleaks-report.json
 ```
 
 If you already created a template for such tool, you need to provide it, so report content will be parsed automatically
 
 ```
-http -f POST purify.host/api/reports "x-auth-token:your_token" "unit=gitleaks-test" "template=gitleaks" file@/path/to/gitleaks-report.json
+http -f POST https://purifyhost/api/reports "apikey=token" "unit=gitleaks-test" "template=gitleaks" file@/path/to/gitleaks-report.json
 ```
 
 
@@ -73,49 +73,11 @@ http -f POST purify.host/api/reports "x-auth-token:your_token" "unit=gitleaks-te
 
 Before deployment you may want to configure a few things in config files:
 
-**General config**
-```
-// Create config.json file with the following content
-//
-// Change enabled for smtp and jira to true and provide valid credentials if you want them to work
-// Reference for jira https://www.npmjs.com/package/jira-connector
-// Reference for smtp https://www.npmjs.com/package/nodemailer
-
-{
-  "database": {
-    "host": "mongo",
-    "port": 27017,
-    "user": "root",
-    "password": "example"
-  },
-  "jira": {
-    "enabled": false,
-    "values": {
-      "host": "example.jira.com",
-      "user": "user@example.com",
-      "api_key": "token"
-    }
-  },
-  "smtp": {
-    "enabled": false,
-    "values": {
-      "host": "smtp.example.com",
-      "port": 465,
-      "secure": true,
-      "auth": { "user": "user", "password": "password" },
-      "tls": { "rejectUnauthorized": false }
-    }
-  },
-  "logger": { "level": "warn" },
-  "jwt_secret": "some_random_string"
-}
-```
-
 **Docker**
 ```
 // purify/docker-compose.yml
 
-// change credentials to the same as in the config file
+// use local database if needed
 mongo:
 ...
 environment:
@@ -123,11 +85,11 @@ environment:
   MONGO_INITDB_ROOT_PASSWORD: example
 
 
-// update local path to the config file
+// update local path to the .env file (see api/.env.example)
 api:
 ...
-volumes:
-  - /path/to/config.json:/home/node/app/lib/config/production.json
+env_file:
+  - .env.custom
 
 
 // update local paths to certificate and key files
@@ -148,7 +110,7 @@ docker-compose up -d
 
 ## Built With
 
-* [Fastify](https://github.com/fastify/fastify) - The web framework used
+* [Nest](https://github.com/nestjs/nest) - The web framework used
 * [Vuetify](https://github.com/vuetifyjs/vuetify) - Material Component Framework for Vue
 
 ## License
