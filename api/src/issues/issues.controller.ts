@@ -19,8 +19,8 @@ export class IssuesController {
   }
 
   @Post(':id/ticket')
-  createTicket(@Param() param: IdParamDto, @Body() body: CreateTicketBodyDto) {
-    return this.issuesService.createJiraTicket(param.id, body.fields)
+  createTicket(@Param() param: IdParamDto, @Body() body: any) {
+    return this.issuesService.createJiraTicket(param.id, body)
   }
 
   @Post(':id/comment')

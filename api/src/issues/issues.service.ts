@@ -46,8 +46,8 @@ export class IssuesService {
     return this.issueModel.updateMany({ _id: { $in: ids } }, { $set: change });
   }
 
-  async createJiraTicket(issueId: string, fields: any) {
-    const jiraTicket = await this.jiraService.createIssue({ fields });
+  async createJiraTicket(issueId: string, issue: any) {
+    const jiraTicket = await this.jiraService.createIssue(issue);
     const settings = await this.jiraService.getSettings();
 
     const ticket = await new this.ticketModel({
