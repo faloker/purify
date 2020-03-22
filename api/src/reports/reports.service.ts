@@ -14,6 +14,7 @@ import { Report } from './interfaces/report.interface';
 import { UploadReportDto } from './dto/reports.dto';
 import { xmlToJson } from 'src/utils/converter';
 import { TemplatesService } from 'src/templates/templates.service';
+import { networkInterfaces } from 'os';
 
 @Injectable()
 export class ReportsService {
@@ -52,7 +53,8 @@ export class ReportsService {
         const template = await this.templateModel.findOne({
           name: uploadReportDto.template,
         });
-        return this.templatesService.apply(report, template);
+        const newReport = await this.templatesService.apply(report, template);
+        return { id: newReport._id, statistics: newReport.statistics };
       }
 
       return { id: report._id };
@@ -88,7 +90,7 @@ export class ReportsService {
     const report = await this.reportModel.findOne({ _id: reportId });
 
     const result = {};
-  
+
     function recur(obj, path) {
       if (Array.isArray(obj) && Object.keys(obj).length) {
         const len = Math.max(...obj.map(o => Object.keys(o).length), 0);
@@ -100,7 +102,7 @@ export class ReportsService {
             const len = Math.max(...value.map(o => Object.keys(o).length), 0);
             result[`${path}.${key}[0]`] = find(
               value,
-              k => Object.keys(k).length === len
+              k => Object.keys(k).length === len,
             );
           }
         } else if (isObject(value)) {
@@ -108,9 +110,9 @@ export class ReportsService {
         }
       });
     }
-  
+
     recur(report.content, 'root');
-  
+
     return result;
   }
 }
