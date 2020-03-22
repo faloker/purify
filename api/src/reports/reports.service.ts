@@ -14,7 +14,6 @@ import { Report } from './interfaces/report.interface';
 import { UploadReportDto } from './dto/reports.dto';
 import { xmlToJson } from 'src/utils/converter';
 import { TemplatesService } from 'src/templates/templates.service';
-import { networkInterfaces } from 'os';
 
 @Injectable()
 export class ReportsService {
@@ -53,8 +52,7 @@ export class ReportsService {
         const template = await this.templateModel.findOne({
           name: uploadReportDto.template,
         });
-        const newReport = await this.templatesService.apply(report, template);
-        return { id: newReport._id, statistics: newReport.statistics };
+        await this.templatesService.apply(report, template);
       }
 
       return { id: report._id };
