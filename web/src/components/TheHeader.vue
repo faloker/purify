@@ -79,9 +79,11 @@
           <v-tab>Tab 2</v-tab>
           <v-tab>Tab 3</v-tab>
         </v-tabs>
-      </template> -->
+      </template>-->
       <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-      <v-toolbar-title>Purify</v-toolbar-title>
+      <v-toolbar-title>
+        <b>Purify</b>
+      </v-toolbar-title>
       <v-spacer></v-spacer>
       <!-- <v-btn icon>
         <v-badge
@@ -96,7 +98,7 @@
       </v-btn>
       <v-avatar class="mx-2" size="36">
         <img :src="currentUser.image" alt="ava" />
-      </v-avatar> -->
+      </v-avatar>-->
       <!-- <v-toolbar-title>
         <span id="active-page-name" class="ml-4 font-weight-bold">{{ activePage }}</span>
       </v-toolbar-title>-->

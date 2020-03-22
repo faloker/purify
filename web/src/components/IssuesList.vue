@@ -42,7 +42,11 @@
       </v-row>
       <v-row align="center" justify="center">
         <v-col cols="12">
-          <v-list flat three-line>
+          <v-list
+            flat
+            three-line
+            class="elevation-1"
+          >
             <v-list-item-group v-model="selected" multiple>
               <template v-for="(item, index) in items">
                 <v-list-item
@@ -109,7 +113,7 @@
                         v-if="item.comments.length"
                         text
                         class="mt-2 mr-3"
-                        color="quaternary"
+                        color="secondary"
                         @click="openComments(item)"
                       >
                         <v-icon left small>

@@ -23,7 +23,7 @@
           <div class="text-center subheading font-weight-light grey--text text-truncate">
             {{ project.subtitle }}
           </div>
-          <v-divider class="mt-2" light></v-divider>
+          <v-divider class="mt-2"></v-divider>
           <v-container fluid>
             <v-row dense class="text-center">
               <v-col>
@@ -65,7 +65,7 @@
             </v-row>
           </v-container>
         </div>
-        <v-divider light></v-divider>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -116,7 +116,7 @@
             </v-flex>
           </v-layout>
         </v-card-text>
-        <v-divider dark></v-divider>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer />
           <v-btn

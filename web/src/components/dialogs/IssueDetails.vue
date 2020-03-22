@@ -112,7 +112,7 @@
             <v-btn
               outlined
               class="mr-2"
-              color="secondary"
+              color="quaternary"
               @click="editDialog = true"
             >
               <v-icon left>
@@ -122,7 +122,7 @@
             <v-btn
               outlined
               class="mr-2"
-              color="quaternary"
+              color="secondary"
               @click="commentDialog = true"
             >
               <v-icon :left="!!issue.comments.length" small>

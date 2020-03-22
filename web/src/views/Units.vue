@@ -46,7 +46,7 @@
                 </v-flex>
               </v-layout>
             </v-card-text>
-            <v-divider light></v-divider>
+            <v-divider></v-divider>
             <v-card-actions>
               <v-spacer />
               <v-btn
@@ -81,6 +81,7 @@
             :items="filtredItems"
             :items-per-page="5"
             :search="search"
+            class="elevation-1"
             item-key="_id"
           >
             <template v-slot:item.name="{ item }">

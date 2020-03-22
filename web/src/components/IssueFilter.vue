@@ -74,7 +74,7 @@
         <v-col>
           <v-autocomplete
             v-model="templates"
-            :items="templatesNamesAndTags.names"
+            :items="templatesNames"
             label="Template"
             chips
             dense
@@ -98,7 +98,7 @@
         <v-col>
           <v-autocomplete
             v-model="tags"
-            :items="templatesNamesAndTags.tags"
+            :items="templatesTags"
             label="Tags"
             chips
             dense
@@ -125,7 +125,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
-import { FETCH_TEMPLATES_NAMES } from '@/store/actions';
+import { TEMPLATES_FETCH } from '@/store/actions';
 
 export default {
   name: 'IssueFilter',
@@ -162,10 +162,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['templatesNamesAndTags']),
+    ...mapGetters(['templatesNames', 'templatesTags']),
   },
   mounted() {
-    this.$store.dispatch(FETCH_TEMPLATES_NAMES);
+    this.$store.dispatch(TEMPLATES_FETCH);
   },
   methods: {
     remove(item) {

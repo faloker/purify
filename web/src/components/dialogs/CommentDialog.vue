@@ -42,19 +42,24 @@
               small
             >
               <template v-slot:icon>
-                <v-avatar v-if="event.author.username === 'purify'">
-                  <img src="@/assets/logo_trans.png" />
-                </v-avatar>
-                <v-avatar v-else>
-                  <img :src="event.author.image" />
-                </v-avatar>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-avatar v-if="event.author.username === 'purify'" v-on="on">
+                      <img src="@/assets/logo_trans.png" />
+                    </v-avatar>
+                    <v-avatar v-else v-on="on">
+                      <img :src="event.author.image" />
+                    </v-avatar>
+                  </template>
+                  <span>{{ event.author.username }}</span>
+                </v-tooltip>
               </template>
               <v-row justify="space-between">
                 <v-col cols="7" v-text="event.text" />
                 <v-col
                   class="text-right"
                   cols="5"
-                  v-text="new Date(event.created_at).toDateString()"
+                  v-text="new Date(event.created_at).toLocaleDateString()"
                 />
               </v-row>
             </v-timeline-item>
@@ -97,7 +102,7 @@ export default {
     postComment() {
       if (this.input) {
         const comment = {
-          author: this.currentUser._id,
+          author: this.currentUser.id,
           text: this.input,
         };
 

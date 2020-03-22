@@ -35,6 +35,20 @@
             :search="search"
             item-key="_id"
           >
+            <template v-slot:item.created_at="{ item }">
+              <span
+                class="text-none mr-5"
+              >
+                {{ new Date(item.template.created_at).toLocaleDateString() }}
+              </span>
+            </template>
+            <template v-slot:item.updated_at="{ item }">
+              <span
+                class="text-none mr-5"
+              >
+                {{ new Date(item.template.updated_at).toLocaleDateString() }}
+              </span>
+            </template>
             <template v-slot:item.action="{ item }" class="text-center">
               <v-btn
                 text
@@ -96,7 +110,7 @@
             <v-icon>close</v-icon>
           </v-btn>
           <v-toolbar-title class="title">
-            Template Editor
+            <b>Template Editor</b>
           </v-toolbar-title>
           <v-spacer />
           <v-toolbar-items>
@@ -139,7 +153,7 @@ export default {
       headers: [
         {
           text: 'Name',
-          width: '30%',
+          width: '20%',
           align: 'center',
           value: 'template.name',
         },
@@ -154,6 +168,18 @@ export default {
           width: '15%',
           align: 'center',
           value: 'reports',
+        },
+        {
+          text: 'Created',
+          width: '15%',
+          align: 'center',
+          value: 'created_at',
+        },
+        {
+          text: 'Updated',
+          width: '15%',
+          align: 'center',
+          value: 'updated_at',
         },
         {
           text: 'Actions',

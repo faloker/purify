@@ -57,7 +57,7 @@
                 </v-row>
               </v-col>
             </v-card-text>
-            <v-divider light></v-divider>
+            <v-divider></v-divider>
             <v-card-actions>
               <v-spacer />
               <v-btn
