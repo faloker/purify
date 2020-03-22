@@ -27,7 +27,7 @@ export class AuthService {
       .toString()
       .split(':');
 
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOne({ username });
     if (user && this.usersService.isSecretValid(token, user.token, user.salt)) {
       return user;
     }
@@ -42,7 +42,10 @@ export class AuthService {
     await this.usersService.saveRefreshToken(user._id, refresh_token);
 
     return {
-      access_token: this.jwtService.sign({ id: user._id, type: 'access_token' }),
+      access_token: this.jwtService.sign({
+        id: user._id,
+        type: 'access_token',
+      }),
       refresh_token,
     };
   }
@@ -54,8 +57,14 @@ export class AuthService {
   async refreshToken(token: string) {
     const { id, type } = await this.jwtService.verify(token);
 
-    if (type === 'refresh_token' && this.usersService.validateRefreshToken(id, token)) {
-      const refresh_token = this.jwtService.sign({ id, type: 'refresh_token' }, { expiresIn: '72h' });
+    if (
+      type === 'refresh_token' &&
+      this.usersService.validateRefreshToken(id, token)
+    ) {
+      const refresh_token = this.jwtService.sign(
+        { id, type: 'refresh_token' },
+        { expiresIn: '72h' },
+      );
       await this.usersService.saveRefreshToken(id, refresh_token);
 
       return {
