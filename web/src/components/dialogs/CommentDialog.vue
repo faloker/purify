@@ -59,7 +59,7 @@
                 <v-col
                   class="text-right"
                   cols="5"
-                  v-text="new Date(event.created_at).toLocaleDateString()"
+                  v-text="formatDate(event.created_at)"
                 />
               </v-row>
             </v-timeline-item>
@@ -72,6 +72,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { POST_COMMENT } from '@/store/actions';
+import { formatDate } from '@/utils/helpers';
 
 export default {
   name: 'CommentDialog',
@@ -114,6 +115,8 @@ export default {
           });
       }
     },
+
+    formatDate,
   },
 };
 </script>

@@ -1,4 +1,5 @@
 import { get, capitalize, startCase } from 'lodash';
+import { formatDistance } from 'date-fns';
 
 export const matchPattern = (fields, template) => {
   let result = template;
@@ -18,3 +19,5 @@ export const parseKey = key => {
 };
 
 export const getValue = (fields, key) => get(fields, key);
+
+export const formatDate = date => `${formatDistance(new Date(date), new Date())} ago`;

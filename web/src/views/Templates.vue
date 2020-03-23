@@ -36,18 +36,10 @@
             item-key="_id"
           >
             <template v-slot:item.created_at="{ item }">
-              <span
-                class="text-none mr-5"
-              >
-                {{ new Date(item.template.created_at).toLocaleDateString() }}
-              </span>
+              <span class="text-none mr-5">{{ formatDate(item.template.created_at) }}</span>
             </template>
             <template v-slot:item.updated_at="{ item }">
-              <span
-                class="text-none mr-5"
-              >
-                {{ new Date(item.template.updated_at).toLocaleDateString() }}
-              </span>
+              <span class="text-none mr-5">{{ formatDate(item.template.updated_at) }}</span>
             </template>
             <template v-slot:item.action="{ item }" class="text-center">
               <v-btn
@@ -114,10 +106,7 @@
           </v-toolbar-title>
           <v-spacer />
           <v-toolbar-items>
-            <v-btn
-              text
-              @click="saveChanges()"
-            >
+            <v-btn text @click="saveChanges()">
               save
             </v-btn>
           </v-toolbar-items>
@@ -128,7 +117,6 @@
   </v-container>
 </template>
 <script>
-/* eslint-disable no-unused-vars */
 import { mapState } from 'vuex';
 import { toLower } from 'lodash';
 import {
@@ -137,6 +125,7 @@ import {
   TEMPLATES_DELETE,
 } from '@/store/actions';
 import TemplateEditor from '@/components/TemplateEditor.vue';
+import { formatDate } from '@/utils/helpers';
 
 export default {
   name: 'Templates',
@@ -219,12 +208,14 @@ export default {
         body_fields: rawTemplate.body_fields,
       };
 
-      this.$store.dispatch(TEMPLATES_EDIT, { id: rawTemplate._id, change: template }).then(() => {
-        this.dialog = false;
-        this.$toasted.global.api_success({
-          msg: 'Template updated successfully',
+      this.$store
+        .dispatch(TEMPLATES_EDIT, { id: rawTemplate._id, change: template })
+        .then(() => {
+          this.dialog = false;
+          this.$toasted.global.api_success({
+            msg: 'Template updated successfully',
+          });
         });
-      });
     },
 
     openEditor(item) {
@@ -248,6 +239,8 @@ export default {
           this.selectedTemplate = null;
         });
     },
+
+    formatDate,
   },
 };
 </script>
