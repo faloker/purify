@@ -22,6 +22,7 @@
           v-model="selectedUnit"
           :items="units"
           :disabled="!selectedProject"
+          :search-input.sync="unitSearch"
           clearable
           dense
           outlined
@@ -74,6 +75,7 @@ export default {
   components: { LineChart, DoughnutChart },
   data: () => ({
     loaded: false,
+    unitSearch: null,
     units: null,
     selectedUnit: null,
     selectedProject: null,
@@ -153,11 +155,13 @@ export default {
     fetchStats() {
       if (this.selectedProject) {
         this.$store.dispatch(FETCH_STATS, this.selectedProject).then(() => {
+          this.unitSearch = null;
           this.units = Object.keys(this.stats.units);
           this.setStats(this.stats.project);
         });
       }
     },
+
     setStats(entity) {
       this.issuesLineChartData = {
         datasets: [
@@ -202,6 +206,7 @@ export default {
         ],
       };
     },
+
     updateStats() {
       this.loaded = false;
       if (this.selectedUnit) {
