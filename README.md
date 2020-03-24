@@ -59,13 +59,13 @@ http POST https://purifyhost/api/auth/token username="user" password="pass"
 Now you can upload a report
 
 ```
-http -f POST https://purifyhost/api/reports "apikey=token" "unit=gitleaks-test" file@/path/to/gitleaks-report.json
+http -f POST https://purifyhost/api/reports "apikey: token" "unit=gitleaks-test" file@/path/to/gitleaks-report.json
 ```
 
 If you already created a template for such tool, you need to provide it, so report content will be parsed automatically
 
 ```
-http -f POST https://purifyhost/api/reports "apikey=token" "unit=gitleaks-test" "template=gitleaks" file@/path/to/gitleaks-report.json
+http -f POST https://purifyhost/api/reports "apikey: token" "unit=gitleaks-test" "template=gitleaks" file@/path/to/gitleaks-report.json
 ```
 
 
