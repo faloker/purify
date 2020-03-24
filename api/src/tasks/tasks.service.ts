@@ -53,8 +53,7 @@ export class TasksService {
 
         const comment = await new this.ticketModel({
           author: user._id,
-          text: 'Resolved in Jira with resolution Done',
-          date: Date.now(),
+          text: 'Resolved in Jira with a resolution equal to Done',
         }).save();
 
         await this.issueModel.updateOne(
