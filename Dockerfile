@@ -20,6 +20,8 @@ RUN npm run build
 FROM node:13-alpine as production-stage
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+RUN npm install -g migrate-mongo
+
 WORKDIR /home/node/app
 COPY ./api/package*.json ./
 
@@ -35,4 +37,4 @@ COPY --chown=node:node --from=build-static  /web/dist ./static
 
 RUN chmod +x web-entrypoint.sh
 
-CMD ./web-entrypoint.sh
+ENTRYPOINT ["./web-entrypoint.sh"]
