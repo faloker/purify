@@ -20,6 +20,7 @@ import { SmtpModule } from './smtp/smtp.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
+        dbName: configService.get<string>('DB_NAME'),
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
