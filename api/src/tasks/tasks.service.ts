@@ -5,10 +5,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { sub } from 'date-fns';
 import { Model } from 'mongoose';
 import { Issue } from 'src/issues/interfaces/issue.interface';
-import { JiraService } from 'src/jira/jira.service';
+import { JiraService } from 'src/plugins/jira/jira.service';
 import { User } from 'src/users/interfaces/user.interface';
 import { Ticket } from 'src/issues/interfaces/ticket.interface';
-import { SmtpService } from 'src/smtp/smtp.service';
+import { SmtpService } from 'src/plugins/smtp/smtp.service';
 
 @Injectable()
 export class TasksService {

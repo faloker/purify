@@ -6,7 +6,7 @@ import { IssuesService } from './issues.service';
 import { UnitSchema } from 'src/units/schemas/unit.schema';
 import { TicketSchema } from './schemas/ticket.schema';
 import { CommentSchema } from './schemas/comment.schema';
-import { JiraModule } from 'src/jira/jira.module';
+import { JiraModule } from 'src/plugins/jira/jira.module';
 
 @Module({
   imports: [

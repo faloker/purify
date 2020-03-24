@@ -10,9 +10,10 @@ import { IssuesModule } from './issues/issues.module';
 import { ReportsModule } from './reports/reports.module';
 import { TemplatesModule } from './templates/templates.module';
 import { TasksModule } from './tasks/tasks.module';
-import { JiraModule } from './jira/jira.module';
+import { JiraModule } from './plugins/jira/jira.module';
 import { SettingsModule } from './settings/settings.module';
-import { SmtpModule } from './smtp/smtp.module';
+import { SmtpModule } from './plugins/smtp/smtp.module';
+import { SlackModule } from './plugins/slack/slack.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { SmtpModule } from './smtp/smtp.module';
     JiraModule,
     SettingsModule,
     SmtpModule,
+    SlackModule,
   ],
   controllers: [],
   providers: [],

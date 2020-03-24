@@ -1,7 +1,10 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { SettingsService } from './settings.service';
-import { SaveJiraSettingsBodyDto } from './dto/jira.dto';
-import { SaveSMTPSettingsBodyDto } from './dto/smtp.dto';
+import {
+  JiraSettingsBodyDto,
+  SMTPSettingsBodyDto,
+  SlackSettingsBodyDto,
+} from './dto/settings.dto';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 
 @Controller('settings')
@@ -10,12 +13,17 @@ export class SettingsController {
   constructor(private settingsService: SettingsService) {}
 
   @Post('smtp')
-  saveSmtpSettings(@Body() body: SaveSMTPSettingsBodyDto) {
-    return this.settingsService.saveSmtpSettings(body)
+  saveSmtpSettings(@Body() body: SMTPSettingsBodyDto) {
+    return this.settingsService.saveSmtpSettings(body);
   }
 
   @Post('jira')
-  saveJiraSettings(@Body() body: SaveJiraSettingsBodyDto) {
-    return this.settingsService.saveJiraSettings(body)
+  saveJiraSettings(@Body() body: JiraSettingsBodyDto) {
+    return this.settingsService.saveJiraSettings(body);
+  }
+
+  @Post('slack')
+  saveSlackSettings(@Body() body: SlackSettingsBodyDto) {
+    return this.settingsService.saveSlackSettings(body);
   }
 }

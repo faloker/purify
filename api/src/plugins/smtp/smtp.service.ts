@@ -30,7 +30,7 @@ export class SmtpService {
     return createTransport(settings.config);
   }
 
-  async send(to: string[], from: string, subject: string, message: string) {
+  async sendMail(to: string[], from: string, subject: string, message: string) {
     const mail = {
       from,
       to,

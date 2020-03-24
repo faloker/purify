@@ -6,7 +6,7 @@ import { Unit } from 'src/units/interfaces/unit.interface';
 import { Ticket } from './interfaces/ticket.interface';
 import { Comment } from './interfaces/comment.interface';
 import { SaveCommentBodyDto } from './dto/issues.dto';
-import { JiraService } from 'src/jira/jira.service';
+import { JiraService } from 'src/plugins/jira/jira.service';
 
 @Injectable()
 export class IssuesService {
