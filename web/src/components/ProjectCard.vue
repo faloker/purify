@@ -20,7 +20,9 @@
               {{ project.title }}
             </v-btn>
           </div>
-          <div class="text-center subheading font-weight-light grey--text text-truncate">
+          <div
+            class="text-center subheading font-weight-light grey--text text-truncate"
+          >
             {{ project.subtitle }}
           </div>
           <v-divider class="mt-2"></v-divider>
@@ -101,6 +103,7 @@
                 dense
                 clearable
                 required
+                @keydown.enter="editProject"
               />
             </v-flex>
             <v-flex xs12>
@@ -112,6 +115,7 @@
                 outlined
                 hint="For example, a tech stack: django, react, e.t.c"
                 required
+                @keydown.enter="editProject"
               />
             </v-flex>
           </v-layout>
@@ -140,9 +144,12 @@
     <v-dialog v-model="confirmDialog" max-width="300">
       <v-card>
         <v-card-title>
-          <span class="title">Delete project <b>{{ project.title }}</b>?</span>
+          <span class="title">
+            Delete project
+            <b>{{ project.title }}</b>?
+          </span>
         </v-card-title>
-        <v-divider dark></v-divider>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -172,6 +179,10 @@ export default {
       type: Object,
       required: true,
     },
+    dialogs: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -181,15 +192,27 @@ export default {
       confirmDialog: false,
     };
   },
+  watch: {
+    // eslint-disable-next-line no-unused-vars
+    confirmDialog(newValue, oldValue) {
+      this.$emit('update:dialogs', newValue);
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    dialog(newValue, oldValue) {
+      this.$emit('update:dialogs', newValue);
+    },
+  },
   methods: {
     deleteProject() {
       this.$store.dispatch(DELETE_PROJECT, this.project._id).then(() => {
         this.confirmDialog = false;
         this.$toasted.global.api_success({
-          msg: `Project ${this.project.title} removed`,
+          msg: 'Project removed successfully',
         });
       });
     },
+
     editProject() {
       this.$store
         .dispatch(EDIT_PROJECT, {

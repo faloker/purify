@@ -42,6 +42,7 @@
                     dense
                     clearable
                     required
+                    @keydown.enter="createProject"
                   />
                 </v-row>
                 <v-row>
@@ -53,6 +54,7 @@
                     outlined
                     hint="For example, a tech stack: django, react, e.t.c"
                     required
+                    @keydown.enter="createProject"
                   />
                 </v-row>
               </v-col>
@@ -89,7 +91,7 @@
             type="card"
             width="400"
           >
-            <project-card :project="project" />
+            <project-card :project="project" :dialogs.sync="subDialogs" />
           </v-skeleton-loader>
         </v-col>
       </template>
@@ -103,6 +105,7 @@ import ProjectCard from '@/components/ProjectCard.vue';
 import { FETCH_PROJECTS, CREATE_PROJECT } from '@/store/actions';
 
 export default {
+  name: 'Projects',
   components: {
     ProjectCard,
   },
@@ -113,6 +116,7 @@ export default {
       dialog: false,
       projectSubtitle: '',
       projectTitle: '',
+      subDialogs: false,
     };
   },
   computed: {
@@ -120,30 +124,34 @@ export default {
       projects: state => state.projects.projects,
     }),
     filtredItems() {
-      return this.projects.filter(
-        item => toLower(item.title + item.subtitle).includes(toLower(this.search)),
-      );
+      return this.projects.filter(item => toLower(item.title + item.subtitle).includes(toLower(this.search)));
     },
   },
   mounted() {
-    this.$store.dispatch(FETCH_PROJECTS).then(() => { this.loading = false; });
+    this.$store.dispatch(FETCH_PROJECTS).then(() => {
+      this.loading = false;
+    });
 
-    // document.onkeydown = e => {
-    //   // eslint-disable-next-line no-param-reassign
-    //   e = e || window.event;
-    //   if (
-    //     e.keyCode === 191 // Forward Slash '/'
-    //     && e.target !== this.$refs.search.$refs.input
-    //   ) {
-    //     e.preventDefault();
-    //     this.$refs.search.focus();
-    //   } else if (
-    //     e.keyCode === 67
-    //     && e.target !== this.$refs.search.$refs.input
-    //   ) {
-    //     this.dialog = true;
-    //   }
-    // };
+    document.onkeydown = e => {
+      // eslint-disable-next-line no-param-reassign
+      e = e || window.event;
+      if (
+        e.keyCode === 191 // Forward Slash '/'
+        && !this.dialog
+        && !this.subDialogs
+        && e.target !== this.$refs.search.$refs.input
+      ) {
+        e.preventDefault();
+        this.$refs.search.focus();
+      } else if (
+        e.keyCode === 67
+        && !this.dialog
+        && !this.subDialogs
+        && e.target !== this.$refs.search.$refs.input
+      ) {
+        this.dialog = true;
+      }
+    };
   },
   methods: {
     createProject() {

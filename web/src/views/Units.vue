@@ -42,6 +42,7 @@
                     label="Unit name"
                     clearable
                     required
+                    @keydown.enter="createUnit"
                   />
                 </v-flex>
               </v-layout>
@@ -225,10 +226,17 @@ export default {
       if (
         e.keyCode === 191 // Forward Slash '/'
         && e.target !== this.$refs.search.$refs.input
+        && !this.dialog
+        && !this.confirmDialog
       ) {
         e.preventDefault();
         this.$refs.search.focus();
-      } else if (e.keyCode === 67 && !this.dialog) {
+      } else if (
+        e.keyCode === 67
+        && !this.dialog
+        && !this.confirmDialog
+        && e.target !== this.$refs.search.$refs.input
+      ) {
         this.dialog = true;
       }
     };
@@ -260,7 +268,7 @@ export default {
       this.$store.dispatch(DELETE_UNIT, id).then(() => {
         this.confirmDialog = false;
         this.$toasted.global.api_success({
-          msg: `Unit ${this.unitToDelete.name} removed`,
+          msg: 'Unit removed successfully',
         });
         this.unitToDelete = '';
       });
