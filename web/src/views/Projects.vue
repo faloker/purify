@@ -124,6 +124,7 @@ export default {
       projects: state => state.projects.projects,
     }),
     filtredItems() {
+      // eslint-disable-next-line max-len
       return this.projects.filter(item => toLower(item.title + item.subtitle).includes(toLower(this.search)));
     },
   },
