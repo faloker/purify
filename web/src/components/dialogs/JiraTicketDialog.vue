@@ -207,7 +207,7 @@ export default {
 
       if (ticket) {
         this.$toasted.global.api_success({
-          msg: `Jira ticket ${ticket.key} created`,
+          msg: 'Jira ticket created successfully',
         });
         this.$emit('update:issue', { ...this.issue, ticket });
         this.$emit('update:dialog', false);

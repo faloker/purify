@@ -234,7 +234,7 @@ export default {
         .then(() => {
           this.confirmDialog = false;
           this.$toasted.global.api_success({
-            msg: `Template ${this.selectedTemplate.template.name} removed`,
+            msg: 'Template removed successfully',
           });
           this.selectedTemplate = null;
         });
