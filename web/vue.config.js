@@ -1,4 +1,3 @@
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const config = {
@@ -9,7 +8,6 @@ const config = {
 if (process.env.NODE_ENV === 'production') {
   const configureWebpack = {
     plugins: [
-      new MomentLocalesPlugin(),
     // new BundleAnalyzerPlugin(),
     ],
     externals: {
