@@ -1,7 +1,3 @@
----
-description: All-in-one tool for managing vulnerability reports
----
-
 # Purify
 
 ## [Demo](https://purify-demo.herokuapp.com/)
