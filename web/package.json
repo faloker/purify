@@ -8,8 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "apexcharts": "^3.17.0",
     "axios": "^0.19.2",
-    "chart.js": "^2.9.3",
     "codemirror": "^5.52.2",
     "core-js": "^3.6.4",
     "date-fns": "^2.9.0",
@@ -17,9 +17,8 @@
     "jsonlint": "^1.6.3",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
     "vue": "^2.6.11",
-    "vue-chartjs": "^3.5.0",
+    "vue-apexcharts": "^1.5.2",
     "vue-count-to": "^1.0.13",
     "vue-json-pretty": "^1.6.3",
     "vue-page-transition": "^0.2.2",

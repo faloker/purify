@@ -34,30 +34,35 @@
     </v-row>
     <v-row>
       <v-col>
-        <template>
-          <p class="text-center headline">
-            Open vs Closed
-          </p>
-          <line-chart :chart-data="issuesLineChartData" />
-        </template>
+        <apexchart
+          width="550"
+          type="line"
+          style="position:relative; z-index:0;"
+          :options="issuesLineChartOptions"
+          :series="issuesLineChartSeries"
+        ></apexchart>
       </v-col>
+      <v-spacer></v-spacer>
       <v-col>
-        <template>
-          <p class="text-center headline">
-            Risks
-          </p>
-          <doughnut-chart id="doughnut-chart" :chart-data="DoughnutChartData" />
-        </template>
+        <apexchart
+          width="500"
+          type="donut"
+          style="position:relative; z-index:0;"
+          :options="riskDonutChartOptions"
+          :series="riskDonutChartSeries"
+        ></apexchart>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <template>
-          <p class="text-center headline">
-            Incoming reports
-          </p>
-          <line-chart :chart-data="reportsLineChartData" />
-        </template>
+        <div>
+          <apexchart
+            width="550"
+            type="line"
+            :options="reportsLineChartOptions"
+            :series="reportsLineChartSeries"
+          ></apexchart>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -65,24 +70,97 @@
 
 <script>
 import { mapState } from 'vuex';
-import LineChart from '@/components/charts/LineChart.vue';
-import DoughnutChart from '@/components/charts/DoughnutChart.vue';
 import { SET_ACTIVE_PAGE } from '@/store/mutations';
 import { FETCH_PROJECTS, FETCH_STATS } from '@/store/actions';
 
 export default {
   name: 'Dashboard',
-  components: { LineChart, DoughnutChart },
+  // eslint-disable-next-line vue/no-unused-components
   data: () => ({
-    loaded: false,
-    unitSearch: null,
-    units: null,
-    selectedUnit: null,
-    selectedProject: null,
-    issuesLineChartData: {},
-    DoughnutChartData: {},
-    reportsLineChartData: {},
-    labels: [
+    issuesLineChartOptions: {
+      chart: {
+        id: 'rvso-linechart',
+      },
+      stroke: {
+        curve: 'smooth',
+      },
+      xaxis: {
+        categories: [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
+        ],
+      },
+      colors: ['#FF6859', '#1EB980'],
+      title: {
+        text: 'Open vs Closed',
+        align: 'left',
+      },
+    },
+    issuesLineChartSeries: [
+      {
+        name: 'Open',
+        data: [],
+      },
+      {
+        name: 'Resolved',
+        data: [],
+      },
+    ],
+    reportsLineChartOptions: {
+      chart: {
+        id: 'reports-linechart',
+      },
+      title: {
+        text: 'Reports Volume',
+        align: 'left',
+      },
+      stroke: {
+        curve: 'smooth',
+      },
+      xaxis: {
+        categories: [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
+        ],
+      },
+    },
+    reportsLineChartSeries: [
+      {
+        name: 'Reports Volume',
+        data: [],
+      },
+    ],
+    riskDonutChartOptions: {
+      title: {
+        text: 'Risks',
+        align: 'left',
+      },
+      noData: { text: 'Waiting for input...' },
+      labels: ['Info', 'Low', 'Medium', 'High', 'Critical'],
+      colors: ['#72DEFF', '#1EB980', '#FFCF44', '#FF6859', '#D50000'],
+    },
+    riskDonutChartSeries: [],
+    months: [
       'January',
       'February',
       'March',
@@ -96,6 +174,11 @@ export default {
       'November',
       'December',
     ],
+    loaded: false,
+    unitSearch: null,
+    units: null,
+    selectedUnit: null,
+    selectedProject: null,
   }),
   computed: {
     ...mapState({
@@ -105,50 +188,6 @@ export default {
   },
   mounted() {
     this.$store.commit(SET_ACTIVE_PAGE, 'Dashboard');
-    this.issuesLineChartData = {
-      labels: this.labels,
-      datasets: [
-        {
-          label: 'Open',
-          borderColor: '#FF6859',
-          fill: false,
-          data: new Array(12).fill(0),
-        },
-        {
-          label: 'Closed',
-          borderColor: '#1EB980',
-          fill: false,
-          data: new Array(12).fill(0),
-        },
-      ],
-    };
-    this.DoughnutChartData = {
-      labels: ['Info', 'Low', 'Medium', 'High', 'Critical'],
-      datasets: [
-        {
-          backgroundColor: [
-            '#72DEFF',
-            '#1EB980',
-            '#FFCF44',
-            '#FF6859',
-            '#B15DFF',
-          ],
-          data: new Array(5).fill(0),
-        },
-      ],
-    };
-
-    this.reportsLineChartData = {
-      labels: this.labels,
-      datasets: [
-        {
-          label: 'Reports',
-          borderColor: '#1EB980',
-          fill: false,
-          data: new Array(12).fill(0),
-        },
-      ],
-    };
     this.$store.dispatch(FETCH_PROJECTS);
   },
   methods: {
@@ -163,48 +202,24 @@ export default {
     },
 
     setStats(entity) {
-      this.issuesLineChartData = {
-        datasets: [
-          {
-            label: 'Open',
-            borderColor: '#FF6859',
-            fill: false,
-            data: entity.open,
-          },
-          {
-            label: 'Closed',
-            borderColor: '#1EB980',
-            fill: false,
-            data: entity.closed,
-          },
-        ],
-      };
+      this.issuesLineChartSeries = [
+        {
+          name: 'Open',
+          data: entity.open,
+        },
+        {
+          name: 'Resolved',
+          data: entity.closed,
+        },
+      ];
 
-      this.DoughnutChartData = {
-        datasets: [
-          {
-            backgroundColor: [
-              '#72DEFF',
-              '#1EB980',
-              '#FFCF44',
-              '#FF6859',
-              '#B15DFF',
-            ],
-            data: entity.risks,
-          },
-        ],
-      };
+      this.riskDonutChartSeries = entity.risks;
 
-      this.reportsLineChartData = {
-        datasets: [
-          {
-            label: 'Reports',
-            borderColor: '#1EB980',
-            fill: false,
-            data: entity.reports,
-          },
-        ],
-      };
+      this.reportsLineChartSeries = [
+        {
+          data: entity.reports,
+        },
+      ];
     },
 
     updateStats() {
