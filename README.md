@@ -12,6 +12,9 @@
 <p align="center">
   <a href="https://purify-demo.herokuapp.com/">Demo</a>
 </p>
+<p align="center">
+  <a href="https://faloker.gitbook.io/purify-docs/">Docs</a>
+</p>
 
 <p align="center">
 <!--   <a href="https://github.com/faloker/purify/releases">
@@ -33,8 +36,8 @@ Purify is designed to analyze the report of **any tool**, if the report is in JS
 
 Collect all security findings in one place, review/validate/track them, collaborate, get notifications, export them into tracking systems \(e.g. Jira\) and so on.
 
-## Documentation
-TODO
+## Documentation (WIP)
+https://faloker.gitbook.io/purify-docs/
 
 
 
