@@ -22,7 +22,10 @@ export class JiraService {
 
     await jira.myself.getMyself();
 
-    const existingSettings = await this.jiraSettingsModel.findOne({ host, username });
+    const existingSettings = await this.jiraSettingsModel.findOne({
+      host,
+      username,
+    });
     if (existingSettings) {
       existingSettings.api_key = api_key;
       return existingSettings.save();
@@ -33,14 +36,19 @@ export class JiraService {
 
   async getJiraClient() {
     const settings = await this.jiraSettingsModel.findOne();
-    return new JiraClient({
-      host: settings.host,
-      basic_auth: {
-        base64: Buffer.from(
-          `${settings.username}:${settings.api_key}`,
-        ).toString('base64'),
-      },
-    });
+
+    if (settings) {
+      return new JiraClient({
+        host: settings.host,
+        basic_auth: {
+          base64: Buffer.from(
+            `${settings.username}:${settings.api_key}`,
+          ).toString('base64'),
+        },
+      });
+    } else {
+      return null;
+    }
   }
 
   async getSettings() {
@@ -49,8 +57,7 @@ export class JiraService {
 
   async getIssue(issueKey: string) {
     const jira = await this.getJiraClient();
-    const { fields } = await jira.issue.getIssue({ issueKey });
-    return fields;
+    return jira.issue.getIssue({ issueKey });
   }
 
   async createIssue(issue: any) {
