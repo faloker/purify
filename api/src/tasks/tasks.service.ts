@@ -7,17 +7,19 @@ import { Model } from 'mongoose';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { JiraService } from 'src/plugins/jira/jira.service';
 import { User } from 'src/users/interfaces/user.interface';
-import { Ticket } from 'src/issues/interfaces/ticket.interface';
+import { Comment } from 'src/issues/interfaces/comment.interface';
 import { SmtpService } from 'src/plugins/smtp/smtp.service';
+import { SlackService } from 'src/plugins/slack/slack.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectModel('Issue') private readonly issueModel: Model<Issue>,
     @InjectModel('User') private readonly userModel: Model<User>,
-    @InjectModel('Ticket') private readonly ticketModel: Model<Ticket>,
+    @InjectModel('Comment') private readonly commentModel: Model<Comment>,
     private jiraService: JiraService,
     private smtpService: SmtpService,
+    private slackService: SlackService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
@@ -37,6 +39,12 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_HOUR)
   async syncTickets() {
+    const jira = await this.jiraService.getJiraClient();
+
+    if (!jira) {
+      return null;
+    }
+
     const issues = await this.issueModel
       .find({ ticket: { $exists: true } })
       .populate('ticket');
@@ -51,10 +59,14 @@ export class TasksService {
       ) {
         const user = await this.userModel.findOne({ username: 'purify' });
 
-        const comment = await new this.ticketModel({
+        const comment = await new this.commentModel({
           author: user._id,
           text: 'Resolved in Jira with a resolution equal to Done',
         }).save();
+
+        await this.slackService.sendMsg(
+          `✅ Issue <${issue.ticket.link}|*${issue.ticket.key}*> was resolved in Jira with a resolution equal to *Done*!`,
+        );
 
         await this.issueModel.updateOne(
           { _id: issue._id },
