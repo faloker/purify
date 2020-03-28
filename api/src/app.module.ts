@@ -14,6 +14,7 @@ import { JiraModule } from './plugins/jira/jira.module';
 import { SettingsModule } from './settings/settings.module';
 import { SmtpModule } from './plugins/smtp/smtp.module';
 import { SlackModule } from './plugins/slack/slack.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { SlackModule } from './plugins/slack/slack.module';
       exclude: ['/api*'],
     }),
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     ProjectsModule,
