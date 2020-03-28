@@ -7,7 +7,7 @@ COPY ./web/ .
 RUN sed -i "/enbale_cdn/d" public/index.html 
 RUN npm run build
 
-FROM nginx as production-stage
+FROM nginx:alpine as production-stage
 
 ARG env=prod
 
