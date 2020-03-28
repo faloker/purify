@@ -5,15 +5,25 @@ import { get, isArray, set } from 'lodash';
 import { Model } from 'mongoose';
 import { Report } from 'src/reports/interfaces/report.interface';
 import { Template } from './interfaces/template.interface';
-import { IdParamDto, SaveTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
+import {
+  IdParamDto,
+  SaveTemplateDto,
+  EditTemplateBodyDto,
+} from './dto/templates.dto';
 import { Issue } from 'src/issues/interfaces/issue.interface';
+import { SlackService } from 'src/plugins/slack/slack.service';
+import { Unit } from 'src/units/interfaces/unit.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TemplatesService {
   constructor(
     @InjectModel('Report') private readonly reportModel: Model<Report>,
     @InjectModel('Template') private readonly templateModel: Model<Template>,
+    @InjectModel('Unit') private readonly unitsModel: Model<Unit>,
     @InjectModel('Issue') private readonly issueModel: Model<Issue>,
+    private readonly slackService: SlackService,
+    private readonly configService: ConfigService,
   ) {}
 
   async save(saveTemplateDto: SaveTemplateDto) {
@@ -136,12 +146,25 @@ export class TemplatesService {
       }
     }
 
+    if (newOnes > 0) {
+      const unit = await this.unitsModel.findOne({ _id: report.unit });
+      await this.slackService.sendMsg(
+        `🆕 You have *${newOnes}* new issues\n📄 Template: ${
+          template.name
+        }\n🗃️ Unit: ${
+          unit.name
+        }\n👀 Take a look at them <https://${this.configService.get<string>(
+          'DOMAIN',
+        )}/#/unit/${unit.slug}/issues|*here*>`,
+      );
+    }
+
     return {
       new: newOnes,
       old: issues.length - newOnes,
     };
   }
-  
+
   async findAll() {
     const templates = await this.templateModel.find();
     const result = [];
