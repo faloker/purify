@@ -30,6 +30,6 @@ jobs:
       env:
         CC_TEST_REPORTER_ID: 04813de6fa543be4690a43a1dd09a4561eaa6d2f421e715e78c2a013d7455e84
       with:
-        coverageCommand: npm run cy:run
+        coverageCommand: npm run cy:coverage
       
 
