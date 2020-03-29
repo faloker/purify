@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:test": "docker-compose -f docker-compose.test.yml up -d --build",
-    "start:coverage": "concurrently npm:start:db npm:start:client npm:start:server:coverage",
+    "start:test": "docker-compose -f docker-compose.test.yml up -d --build 1>/dev/null 2>&1 &",
+    "start:coverage": "concurrently npm:start:db npm:start:client npm:start:server:coverage 1>/dev/null 2>&1 &",
     "start:client": "cd web && npm test",
     "start:db": "docker run -d -p 27017:27017 --name test_mongo mongo",
     "start:server:coverage": "cd api && npm run start:coverage",
     "cy:verify": "cypress verify",
     "cy:version": "cypress version",
     "cy:open": "cypress open",
+    "cy:coverage": "wait-on http://localhost:8080/#/welcome && cypress run -C cypress.cover.json",
     "cy:run": "wait-on http://localhost:8080/#/welcome && cypress run"
   },
   "repository": {
