@@ -15,6 +15,7 @@ import { SettingsModule } from './settings/settings.module';
 import { SmtpModule } from './plugins/smtp/smtp.module';
 import { SlackModule } from './plugins/slack/slack.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -52,7 +53,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     SmtpModule,
     SlackModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

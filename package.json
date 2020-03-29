@@ -5,10 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "docker-compose -f docker-compose.dev.yml up -d --build",
+    "start:test": "docker-compose -f docker-compose.test.yml up -d --build",
+    "start:coverage": "concurrently npm:start:db npm:start:client npm:start:server:coverage",
+    "start:client": "cd web && npm test",
+    "start:db": "docker run -d -p 27017:27017 --name test_mongo mongo",
+    "start:server:coverage": "cd api && npm run start:coverage",
     "cy:verify": "cypress verify",
     "cy:version": "cypress version",
-    "cy:run": "cypress run"
+    "cy:open": "cypress open",
+    "cy:run": "wait-on http://localhost:8080/#/welcome && cypress run"
   },
   "repository": {
     "type": "git",
@@ -21,9 +26,22 @@
   },
   "homepage": "https://github.com/faloker/purify#readme",
   "devDependencies": {
-    "cypress": "^4.2.0"
+    "@cypress/code-coverage": "^1.14.0",
+    "babel-plugin-istanbul": "^6.0.0",
+    "cypress": "^4.2.0",
+    "istanbul-lib-coverage": "^3.0.0",
+    "nyc": "^15.0.0"
   },
   "dependencies": {
-    "mongoose": "^5.9.5"
+    "concurrently": "^5.1.0",
+    "mongoose": "^5.9.5",
+    "wait-on": "^4.0.1"
+  },
+  "nyc": {
+    "extension": [
+      ".js",
+      ".vue",
+      ".ts"
+    ]
   }
 }

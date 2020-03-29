@@ -1,15 +1,35 @@
 name: e2e tests
 on: [push]
 jobs:
-  cypress-run:
+  test:
     runs-on: ubuntu-16.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Install root dependencies
-        run: npm i
-      - name: Start server with docker-compose
-        run:  npm start
-      - name: Execute tests
-        run:  npm run cy:run
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: '13'
+    - name: Install root dependencies
+      run: npm i
+    - name: Start test server and db with docker-compose
+      run:  npm start:test
+    - name: Execute tests
+      run:  npm run cy:run
+  coverage:
+    needs: [ test ]
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: '13'
+    - name: Install root dependencies
+      run: npm i
+    - name: Start test server and db in dev mode
+      run:  npm start:coverage
+    - uses: paambaati/codeclimate-action@v2.5.2
+      env:
+        CC_TEST_REPORTER_ID: 04813de6fa543be4690a43a1dd09a4561eaa6d2f421e715e78c2a013d7455e84
+      with:
+        coverageCommand: npm run cy:run
+      
 

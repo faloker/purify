@@ -36,6 +36,7 @@
               <v-col>
                 <v-row>
                   <v-text-field
+                    id="project-title-input"
                     v-model="projectTitle"
                     label="Project title"
                     outlined
@@ -47,6 +48,7 @@
                 </v-row>
                 <v-row>
                   <v-text-field
+                    id="project-subtitle-input"
                     v-model="projectSubtitle"
                     label="Project short description"
                     clearable

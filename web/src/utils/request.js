@@ -4,9 +4,9 @@ import store from '../store';
 
 const service = axios.create({
   baseURL:
-    process.env.NODE_ENV === 'local'
-      ? 'http://localhost:3000/api'
-      : window.DOMAIN,
+    process.env.NODE_ENV === 'production'
+      ? window.DOMAIN
+      : 'http://localhost:3000/api',
   timeout: 5000,
 });
 
@@ -30,6 +30,5 @@ service.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
 
 export default service;
