@@ -23,7 +23,13 @@
   <a href="https://purify-demo.herokuapp.com">
     <img src="https://heroku-badge.herokuapp.com/?app=purify-demo&style=flat&svg=1">
   </a> -->
-    <a href="https://github.com/faloker/purify/releases">
+  <a href="https://codeclimate.com/github/faloker/purify/maintainability">
+     <img src="https://api.codeclimate.com/v1/badges/e92c8f0912d7d6ec1b65/maintainability" />
+  </a>
+  <a href="https://codeclimate.com/github/faloker/purify/test_coverage">
+    <img src="https://api.codeclimate.com/v1/badges/e92c8f0912d7d6ec1b65/test_coverage" />
+  </a>
+  <a href="https://github.com/faloker/purify/releases">
     <img alt="GitHub" src="https://img.shields.io/github/license/faloker/purify">
   </a>
 </p>
