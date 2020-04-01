@@ -23,7 +23,7 @@ export class TemplatesService {
     @InjectModel('Unit') private readonly unitsModel: Model<Unit>,
     @InjectModel('Issue') private readonly issueModel: Model<Issue>,
     private readonly slackService: SlackService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   async save(saveTemplateDto: SaveTemplateDto) {
@@ -56,93 +56,70 @@ export class TemplatesService {
     let newOnes = 0;
 
     const allIssuesInUnit = await this.issueModel.find({ unit: report.unit });
-
-    const issuesStringRepresentation = allIssuesInUnit.map(issue =>
-      JSON.stringify(Object.values(issue.fields)),
-    );
-
-    const fieldsToCompare = template.compare_fields;
-    // allIssuesInUnit = allIssuesInUnit.map((f) => JSON.stringify(f));
-
-    if (!issuesStringRepresentation.length) issuesStringRepresentation.push('');
-
     const allTemplateIssuesInUnit = await this.issueModel.find({
       unit: report.unit,
       template: template._id,
     });
 
     for (const issue of issues) {
-      const statistics = {};
-      let issueToUpdate: any = {};
-
-      if (allTemplateIssuesInUnit.length) {
-        for (const field of fieldsToCompare) {
-          const { bestMatch } = findBestMatch(
-            get(issue, field),
-            allTemplateIssuesInUnit.map(i => get(i.fields, field)),
-          );
-
-          bestMatch.rating *= 100;
-
-          if (bestMatch.rating > 95) {
-            statistics[field] = bestMatch;
-          }
-        }
+      // Do external comparison first to avoid duplicate issues between templates
+      let filteredUnitIssues = allIssuesInUnit;
+      for (const comparisonField of template.external_comparison_fields) {
+        filteredUnitIssues = filteredUnitIssues.filter(existingIssue =>
+          existingIssue.fields.includes(issue[comparisonField])
+        );
       }
 
-      if (Object.keys(statistics).length === fieldsToCompare.length) {
-        let issuesToFilter = allTemplateIssuesInUnit;
-
-        for (const fi of Object.keys(statistics)) {
-          issuesToFilter = issuesToFilter.filter(
-            di => get(di.fields, fi) === statistics[fi].target,
+      // There are no issues similar to the new one in the unit, move to the template comparison
+      if (filteredUnitIssues.length === 0) {
+        let filteredTemplateIssues = allTemplateIssuesInUnit;
+        for (const comparisonField of template.internal_comparison_fields) {
+          filteredTemplateIssues = filteredTemplateIssues.filter(
+            existingIssue =>
+              JSON.parse(existingIssue.fields)[comparisonField] ===
+              issue[comparisonField]
           );
         }
 
-        issueToUpdate = issuesToFilter.length ? issuesToFilter[0] : {};
+        // There is an issue similar to the new one
+        if (filteredTemplateIssues.length && template.merge_fields.length) {
+          const issueToUpdate = filteredTemplateIssues[0];
+          const oldIssue = JSON.parse(issueToUpdate.fields);
 
-        for (const field of template.merge_fields) {
-          let originalField = get(issueToUpdate.fields, field);
-          const newField = get(issue, field);
+          for (const field of template.merge_fields) {
+            let originalField = oldIssue[field];
+            const newField = issue[field];
 
-          if (originalField) {
-            if (
-              typeof originalField === 'string' &&
-              !originalField.includes(newField)
-            ) {
-              originalField += `\n${newField}`;
-            } else if (isArray(originalField)) {
-              originalField = [...new Set([...originalField, ...newField])];
+            if (originalField) {
+              if (
+                typeof originalField === 'string' &&
+                !originalField.includes(newField)
+              ) {
+                originalField += `\n${newField}`;
+              } else if (isArray(originalField)) {
+                originalField = [...new Set([...originalField, ...newField])];
+              }
             }
+
+            oldIssue[field] = originalField;
           }
 
-          set(issueToUpdate.fields, field, originalField);
+          await this.issueModel.updateOne(
+            { _id: issueToUpdate._id },
+            { $set: { fields: JSON.stringify(oldIssue) } }
+          );
+        } else {
+          const newIssue = await new this.issueModel({
+            unit: report.unit,
+            template: template._id,
+            fields: JSON.stringify(issue),
+            report: report._id,
+          }).save();
+
+          newOnes += 1;
+          allTemplateIssuesInUnit.push(newIssue);
+          allIssuesInUnit.push(newIssue);
         }
-        await this.issueModel.updateOne(
-          { _id: issueToUpdate._id },
-          issueToUpdate,
-        );
-      } else {
-        const { bestMatch } = findBestMatch(
-          JSON.stringify(Object.values(issue)),
-          issuesStringRepresentation,
-        );
-
-        const newIssue = await new this.issueModel({
-          unit: report.unit,
-          template: template._id,
-          fields: issue,
-          report: report._id,
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          dup_score: Math.round(bestMatch.rating * 100),
-        }).save();
-
-        newOnes += 1;
-
-        issuesStringRepresentation.push(
-          JSON.stringify(Object.values(newIssue.fields)),
-        );
-        allTemplateIssuesInUnit.push(newIssue);
       }
     }
 
@@ -154,8 +131,8 @@ export class TemplatesService {
         }\n🗃️ Unit: ${
           unit.name
         }\n👀 Take a look at them <https://${this.configService.get<string>(
-          'DOMAIN',
-        )}/#/unit/${unit.slug}/issues|*here*>`,
+          'DOMAIN'
+        )}/#/unit/${unit.slug}/issues|*here*>`
       );
     }
 
