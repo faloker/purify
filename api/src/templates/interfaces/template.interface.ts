@@ -11,7 +11,8 @@ export interface Template extends Document {
   readonly path_to_issues: string;
   readonly title_fields: string[];
   readonly body_fields: BodyField[];
-  readonly compare_fields: string[];
+  readonly internal_comparison_fields: string[];
+  readonly external_comparison_fields: string[];
   readonly merge_fields: string[];
   readonly title_pattern: string;
   readonly subtitle_pattern: string;

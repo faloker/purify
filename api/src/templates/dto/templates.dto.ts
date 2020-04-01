@@ -26,10 +26,13 @@ export class SaveTemplateDto {
 
   @IsArray()
   @ArrayNotEmpty()
-  readonly compare_fields: string[];
-
+  readonly external_comparison_fields: string[];  
+  
   @IsArray()
   @ArrayNotEmpty()
+  readonly internal_comparison_fields: string[];
+
+  @IsArray()
   readonly merge_fields: string[];
 
   @IsString()
