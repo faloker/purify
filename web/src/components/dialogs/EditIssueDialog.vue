@@ -26,9 +26,7 @@
   </v-card>
 </template>
 <script>
-import {
-  ISSUE_UPDATE,
-} from '@/store/actions';
+import { ISSUE_UPDATE } from '@/store/actions';
 
 export default {
   name: 'EditIssueDialog',
@@ -42,20 +40,18 @@ export default {
     rawIssue: null,
   }),
   mounted() {
-    this.rawIssue = JSON.stringify(this.issue);
+    this.rawIssue = JSON.stringify({ fields: this.issue.fields }, null, 2);
   },
   methods: {
     updateIssue() {
       const change = JSON.parse(this.rawIssue);
 
-      if (change.is_fp === 'true') {
-        change.is_closed = true;
-        this.issue.is_closed = true;
-      }
-
-      this.$store.dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change }).then(() => {
-        this.$emit('update:issue', change);
-      });
+      this.$store
+        .dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change })
+        .then(() => {
+          this.issue.fields = change.fields;
+          this.$emit('update:issue', this.issue);
+        });
     },
   },
 };
