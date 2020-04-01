@@ -15,7 +15,7 @@ export class IssuesService {
     @InjectModel('Unit') private readonly unitModel: Model<Unit>,
     @InjectModel('Comment') private readonly commentModel: Model<Comment>,
     @InjectModel('Ticket') private readonly ticketModel: Model<Ticket>,
-    private jiraService: JiraService,
+    private jiraService: JiraService
   ) {}
 
   async get(unitSlug: string) {
@@ -58,7 +58,7 @@ export class IssuesService {
 
     await this.issueModel.updateOne(
       { _id: issueId },
-      { $set: { ticket: ticket._id } },
+      { $set: { ticket: ticket._id } }
     );
 
     return ticket;
@@ -69,7 +69,7 @@ export class IssuesService {
 
     await this.issueModel.updateOne(
       { _id: issueId },
-      { $push: { comments: comment._id } },
+      { $push: { comments: comment._id } }
     );
 
     const createdComment = await this.commentModel
