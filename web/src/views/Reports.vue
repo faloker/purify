@@ -27,6 +27,8 @@
         <v-data-table
           :headers="headers"
           item-key="_id"
+          :sort-by="['created_at']"
+          :sort-desc="[true]"
           :items="reports"
           :search="search"
           :items-per-page="5"
