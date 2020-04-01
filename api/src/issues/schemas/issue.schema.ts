@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export const IssueSchema = new Schema(
   {
     _id: { type: String, default: uuidv4 },
-    fields: Object,
+    fields: String,
     is_closed: { type: Boolean, default: false },
     is_fp: { type: Boolean, default: false },
     dup_score: Number,
