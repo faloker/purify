@@ -182,11 +182,11 @@
           :complete="e6 > 6"
           step="6"
         >
-          Select field(s) that will be used to detect duplicates
+          Select field(s) to detect duplicates and merge candidates at the template level
         </v-stepper-step>
         <v-stepper-content step="6">
           <vue-json-pretty
-            v-model="compare_fields"
+            v-model="internal_comparison_fields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -196,7 +196,7 @@
             :highlight-selected-node="false"
           />
           <v-btn
-            :disabled="!compare_fields.length"
+            :disabled="!internal_comparison_fields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
@@ -212,13 +212,15 @@
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step :complete="e6 > 7" step="7">
-          Select field(s) that will be merged if the issues look the same (based on duplication
-          score)
+        <v-stepper-step
+          :complete="e6 > 7"
+          step="7"
+        >
+          Select field(s) to detect duplicates at the unit level
         </v-stepper-step>
         <v-stepper-content step="7">
           <vue-json-pretty
-            v-model="merge_fields"
+            v-model="external_comparison_fields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -228,7 +230,7 @@
             :highlight-selected-node="false"
           />
           <v-btn
-            :disabled="!merge_fields.length"
+            :disabled="!external_comparison_fields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
@@ -244,10 +246,43 @@
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step step="8">
-          Give a name for this template
+        <v-stepper-step
+          :complete="e6 > 8"
+          step="8"
+        >
+          Select field(s) to merge if issues look the same at the template level (optional)
         </v-stepper-step>
         <v-stepper-content step="8">
+          <vue-json-pretty
+            v-model="merge_fields"
+            :deep="2"
+            :path="'issue'"
+            :selectable-type="'multiple'"
+            :path-selectable="(path, data) => path !== 'issue'"
+            :data="exampleIssue"
+            :show-select-controller="true"
+            :highlight-selected-node="false"
+          />
+          <v-btn
+            color="primary"
+            class="mr-2 mt-3"
+            outlined
+            @click="e6 = 9"
+          >
+            Next
+          </v-btn>
+          <v-btn
+            class="mr-2 mt-3"
+            outlined
+            @click="e6 = 7"
+          >
+            Go back
+          </v-btn>
+        </v-stepper-content>
+        <v-stepper-step step="9">
+          Give a name for this template
+        </v-stepper-step>
+        <v-stepper-content step="9">
           <v-text-field
             v-model="name"
             class="tname"
@@ -279,7 +314,7 @@
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 7"
+            @click="e6 = 8"
           >
             Go back
           </v-btn>
@@ -348,7 +383,8 @@ export default {
       name: '',
       loading: false,
       merge_fields: [],
-      compare_fields: [],
+      internal_comparison_fields: [],
+      external_comparison_fields: [],
       title_pattern: '',
       subtitle_pattern: '',
       tags: [],
@@ -404,7 +440,8 @@ export default {
           body_fields: this.body_fields,
           merge_fields: this.merge_fields.map(i => i.replace('issue.', '')),
           title_fields: this.title_fields.map(i => i.replace('issue.', '')),
-          compare_fields: this.compare_fields.map(i => i.replace('issue.', '')),
+          internal_comparison_fields: this.internal_comparison_fields.map(i => i.replace('issue.', '')),
+          external_comparison_fields: this.external_comparison_fields.map(i => i.replace('issue.', '')),
         })
         .then(() => {
           this.loading = false;
@@ -417,7 +454,7 @@ export default {
           this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
           this.type_body_fields = {};
           // eslint-disable-next-line no-multi-assign
-          this.tags = this.compare_fields = [];
+          this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
           // eslint-disable-next-line no-multi-assign
           this.merge_fields = this.title_fields = this.body_fields = [];
         });
