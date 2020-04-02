@@ -38,12 +38,14 @@
 
 The goal of Purify to be an easy-in-use and efficient tool to simplify a workflow of managing vulnerabilities delivered from various tools.
 
-Purify is designed to analyze the report of **any tool**, if the report is in JSON or XML format. This means you don't need any special plug-ins to process reports from your selection of tools.
+Purify is designed to analyze the report of **any tool**, if the report is in JSON or XML format. This means you don't need any special plug-ins to process reports from your selection of tools. 
 
-Collect all security findings in one place, review/validate/track them, collaborate, get notifications, export them into tracking systems \(e.g. Jira\) and so on.
+Purify is able to remove duplicate results among various vulnerability scanners or tools. In addition, it can combine several results of the same tool based on some fields and it is fully configurable (no coding required). Purify does all this work to reduce the headache of the analyst.
+
+Collect all security findings in one place, review/validate/track them, collaborate, get notifications(Slack), export them into tracking systems(Jira) and so on.
 
 ## Documentation (WIP)
-https://faloker.gitbook.io/purify/
+https://faloker.gitbook.io/purify
 
 
 
