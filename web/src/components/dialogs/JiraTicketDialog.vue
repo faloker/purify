@@ -134,7 +134,7 @@
 import j2md from 'jira2md';
 import VueSimpleMDE from 'vue-simplemde';
 import { CREATE_TICKET } from '@/store/actions';
-import { matchPattern, parseKey, getValue } from '@//utils/helpers';
+import { matchPattern, prepareMarkdown } from '@//utils/helpers';
 
 export default {
   name: 'JiraTicketDialog',
@@ -172,12 +172,7 @@ export default {
   },
   computed: {
     preparedMarkdown() {
-      let result = '';
-      for (const field of this.issue.template.body_fields) {
-        result += `## ${this.parseKey(field.key)}\n`;
-        result += `${this.getValue(this.issue.fields, field.key)}\n\n`;
-      }
-      return result;
+      return this.prepareMarkdown(this.issue);
     },
     summary() {
       return this.matchPattern(
@@ -188,8 +183,7 @@ export default {
   },
   methods: {
     matchPattern,
-    parseKey,
-    getValue,
+    prepareMarkdown,
     async createTicket() {
       const payload = {};
       payload.project = { key: this.selectedProject };
