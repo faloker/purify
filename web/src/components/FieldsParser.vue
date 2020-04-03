@@ -2,30 +2,30 @@
   <div>
     <template v-if="isPrintable(ivalue)">
       <div class="headline font-weight-bold">
-        {{ parseKey(ikey.key) }}
+        {{ parseKey(fieldKey) }}
       </div>
       <v-divider class="my-1" />
-      <p v-if="ikey.type === 'text'" style="white-space: pre-line;">
+      <p v-if="fieldType === 'text'" style="white-space: pre-line;">
         {{ ivalue }}
       </p>
       <div
-        v-if="ikey.type === 'html'"
+        v-if="fieldType === 'html'"
         style="white-space: pre-line;"
         v-html="ivalue"
       >
         {{ ivalue }}
       </div>
-      <div v-if="ikey.type === 'base64'" style="white-space: pre-line;">
+      <div v-if="fieldType === 'base64'" style="white-space: pre-line;">
         {{ decodeValue(ivalue) }}
       </div>
     </template>
     <template v-else-if="Array.isArray(ivalue)">
       <template v-if="isPrintable(ivalue[0])">
         <div class="headline font-weight-bold">
-          {{ parseKey(ikey.key) }}
+          {{ parseKey(fieldKey) }}
         </div>
         <v-divider class="my-1" />
-        <ul :id="`list-${ikey.key}`" class="ml-2 my-3">
+        <ul :id="`list-${fieldKey}`" class="ml-2 my-3">
           <li
             v-for="(item, index) in ivalue"
             :key="`ai-${index}`"
@@ -37,24 +37,22 @@
       </template>
       <template v-else-if="typeof ivalue[0] === 'object'">
         <div class="headline font-weight-bold">
-          {{ parseKey(ikey.key) }}
+          {{ parseKey(fieldKey) }}
         </div>
         <v-divider class="my-1" />
-        <v-expansion-panel>
+        <v-expansion-panels>
           <!-- eslint-disable-next-line vue/valid-v-for -->
-          <v-expansion-panel-content v-for="item in ivalue" :key="`${Math.random()}`">
-            <template v-slot:header>
-              <div class="title">
-                Item
-              </div>
-            </template>
-            <v-card v-for="k in Object.keys(item)" :key="`sk-${k}`">
-              <v-card-text>
+          <v-expansion-panel v-for="(item, index) in ivalue" :key="`${Math.random()}`">
+            <v-expansion-panel-header class="title font-weight-bold">
+              # {{ index }}
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <div v-for="k in Object.keys(item)" :key="`sk-${k}`">
                 <fields-parser :ikey="k" :ivalue="item[k]" />
-              </v-card-text>
-            </v-card>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
+              </div>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </template>
     </template>
     <template v-else-if="typeof ivalue === 'object'">
@@ -67,11 +65,20 @@
   </div>
 </template>
 <script>
-import { parseKey } from '@//utils/helpers';
+import { parseKey } from '@/utils/helpers';
 
 export default {
   name: 'FieldsParser',
-  props: ['ikey', 'ivalue', 'level'],
+  props: ['ikey', 'ivalue'],
+  computed: {
+    fieldKey() {
+      return this.ikey.key || this.ikey;
+    },
+
+    fieldType() {
+      return this.ikey.type || 'text';
+    },
+  },
   methods: {
     parseKey,
     isPrintable(obj) {
