@@ -66,7 +66,7 @@ export class TemplatesService {
       let filteredUnitIssues = allIssuesInUnit;
       for (const comparisonField of template.external_comparison_fields) {
         filteredUnitIssues = filteredUnitIssues.filter(existingIssue =>
-          existingIssue.fields.includes(issue[comparisonField])
+          existingIssue.fields.includes(get(issue, comparisonField))
         );
       }
 
@@ -76,8 +76,8 @@ export class TemplatesService {
         for (const comparisonField of template.internal_comparison_fields) {
           filteredTemplateIssues = filteredTemplateIssues.filter(
             existingIssue =>
-              JSON.parse(existingIssue.fields)[comparisonField] ===
-              issue[comparisonField]
+              get(JSON.parse(existingIssue.fields), comparisonField) ===
+              get(issue, comparisonField)
           );
         }
 
@@ -87,8 +87,8 @@ export class TemplatesService {
           const oldIssue = JSON.parse(issueToUpdate.fields);
 
           for (const field of template.merge_fields) {
-            let originalField = oldIssue[field];
-            const newField = issue[field];
+            let originalField = get(oldIssue, field);
+            const newField = get(issue, field);
 
             if (originalField) {
               if (
@@ -101,7 +101,7 @@ export class TemplatesService {
               }
             }
 
-            oldIssue[field] = originalField;
+            set(oldIssue, field, originalField);
           }
 
           await this.issueModel.updateOne(
