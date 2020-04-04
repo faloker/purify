@@ -82,11 +82,13 @@ router.beforeEach((to, from, next) => {
   const { isAuthenticated } = store.getters;
 
   if (to.path !== '/welcome' && !isAuthenticated) {
-    store.dispatch(REFRESH_TOKEN);
-  }
-
-  if (to.path !== '/welcome' && !isAuthenticated) {
-    next('/welcome');
+    store.dispatch(REFRESH_TOKEN).then(() => {
+      document.title = to.meta.title;
+      next();
+    }).catch(() => {
+      document.title = 'Purify | Welcome';
+      next('/welcome');
+    });
   } else {
     document.title = to.meta.title;
     next();
