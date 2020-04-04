@@ -40,7 +40,11 @@
           {{ parseKey(fieldKey) }}
         </div>
         <v-divider class="my-1" />
-        <v-expansion-panels>
+        <v-expansion-panels
+          multiple
+          focusable
+          hover
+        >
           <!-- eslint-disable-next-line vue/valid-v-for -->
           <v-expansion-panel v-for="(item, index) in ivalue" :key="`${Math.random()}`">
             <v-expansion-panel-header class="title font-weight-bold">
