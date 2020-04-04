@@ -40,16 +40,16 @@ export default {
     rawIssue: null,
   }),
   mounted() {
-    this.rawIssue = JSON.stringify({ fields: this.issue.fields }, null, 2);
+    this.rawIssue = JSON.stringify(this.issue.fields, null, 2);
   },
   methods: {
     updateIssue() {
-      const change = JSON.parse(this.rawIssue);
+      const change = { fields: this.rawIssue };
 
       this.$store
         .dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change })
         .then(() => {
-          this.issue.fields = change.fields;
+          this.issue.fields = JSON.parse(change.fields);
           this.$emit('update:issue', this.issue);
         });
     },
