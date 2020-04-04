@@ -206,6 +206,8 @@ export default {
         subtitle_pattern: rawTemplate.subtitle_pattern,
         tags: rawTemplate.tags,
         body_fields: rawTemplate.body_fields,
+        internal_comparison_fields: rawTemplate.internal_comparison_fields,
+        external_comparison_fields: rawTemplate.external_comparison_fields,
       };
 
       this.$store
