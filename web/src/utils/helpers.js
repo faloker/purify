@@ -5,7 +5,7 @@ export const matchPattern = (fields, pattern) => {
   let result = pattern;
   const matches = pattern
     // eslint-disable-next-line no-useless-escape
-    .match(/[a-zA-Z0-9\.\[\]]+/gm);
+    .match(/[a-zA-Z0-9\_\.\[\]]+/gm);
 
   for (let match of matches) {
     if (match.startsWith('[') && match.endsWith(']')) {
@@ -65,7 +65,7 @@ const parseField = (field, fieldValue) => {
           mkdwn += parseField(key, element[key]);
         }
 
-        mkdwn += '</p></details>';
+        mkdwn += '</p></details>\n\n';
       }
     } else if (typeof fieldValue === 'object') {
       for (const key of Object.keys(fieldValue)) {
