@@ -11,7 +11,7 @@ const removeAttribute = (value, parentElement) => {
 };
 
 export function xmlToJson(data) {
-  JSON.parse(
+  return JSON.parse(
     xml2json(data, {
       compact: true,
       spaces: 4,
