@@ -19,7 +19,7 @@
           <v-icon>close</v-icon>
         </v-btn>
         <v-toolbar-title class="title">
-          Ticket Editor
+          <b>Ticket Editor</b>
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items>
