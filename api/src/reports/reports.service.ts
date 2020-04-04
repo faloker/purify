@@ -45,7 +45,7 @@ export class ReportsService {
     if (unit) {
       const report = await new this.reportModel({
         unit: unit._id,
-        content: data,
+        content: JSON.stringify(data),
       }).save();
 
       if (uploadReportDto.template) {
@@ -109,7 +109,7 @@ export class ReportsService {
       });
     }
 
-    recur(report.content, 'root');
+    recur(JSON.parse(report.content), 'root');
 
     return result;
   }
