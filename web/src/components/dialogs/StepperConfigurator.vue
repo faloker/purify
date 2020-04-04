@@ -216,11 +216,11 @@
           :complete="e6 > 7"
           step="7"
         >
-          Select field(s) to detect duplicates at the unit level
+          Select field(s) to merge if issues look the same at the template level (optional)
         </v-stepper-step>
         <v-stepper-content step="7">
           <vue-json-pretty
-            v-model="external_comparison_fields"
+            v-model="merge_fields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -230,7 +230,6 @@
             :highlight-selected-node="false"
           />
           <v-btn
-            :disabled="!external_comparison_fields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
@@ -250,11 +249,11 @@
           :complete="e6 > 8"
           step="8"
         >
-          Select field(s) to merge if issues look the same at the template level (optional)
+          Select field(s) to detect duplicates at the unit level
         </v-stepper-step>
         <v-stepper-content step="8">
           <vue-json-pretty
-            v-model="merge_fields"
+            v-model="external_comparison_fields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -264,6 +263,7 @@
             :highlight-selected-node="false"
           />
           <v-btn
+            :disabled="!external_comparison_fields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
@@ -457,6 +457,8 @@ export default {
           this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
           // eslint-disable-next-line no-multi-assign
           this.merge_fields = this.title_fields = this.body_fields = [];
+        }).catch(() => {
+          this.loading = false;
         });
     },
 
