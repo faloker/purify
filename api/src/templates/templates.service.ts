@@ -39,10 +39,11 @@ export class TemplatesService {
 
   async apply(report: Report, template: Template) {
     const rep = report;
+    const content = JSON.parse(report.content);
     const issues =
       template.path_to_issues !== ''
-        ? get(report.content, template.path_to_issues)
-        : report.content;
+        ? get(content, template.path_to_issues)
+        : content;
 
     const stat = await this.saveIssues(issues, template, report);
 
@@ -66,7 +67,7 @@ export class TemplatesService {
       let filteredUnitIssues = allIssuesInUnit;
       for (const comparisonField of template.external_comparison_fields) {
         filteredUnitIssues = filteredUnitIssues.filter(existingIssue =>
-          existingIssue.fields.includes(get(issue, comparisonField))
+          existingIssue.fields.toLowerCase().includes(get(issue, comparisonField).toLowerCase())
         );
       }
 
@@ -93,7 +94,7 @@ export class TemplatesService {
             if (originalField) {
               if (
                 typeof originalField === 'string' &&
-                !originalField.includes(newField)
+                !originalField.toLowerCase().includes(newField.toLowerCase())
               ) {
                 originalField += `\n${newField}`;
               } else if (isArray(originalField)) {
