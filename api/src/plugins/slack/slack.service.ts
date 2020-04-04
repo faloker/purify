@@ -8,7 +8,7 @@ import { SlackSettings } from './interfaces/slack.interface';
 export class SlackService {
   constructor(
     @InjectModel('SlackSettings')
-    private readonly slackSettingsModel: Model<SlackSettings>,
+    private readonly slackSettingsModel: Model<SlackSettings>
   ) {}
 
   async saveSettings(webhook: string) {
@@ -29,11 +29,18 @@ export class SlackService {
 
   async getSlackClient() {
     const settings = await this.slackSettingsModel.findOne();
-    return new IncomingWebhook(settings.webhook);
+
+    if (settings) {
+      return new IncomingWebhook(settings.webhook);
+    } else {
+      return null;
+    }
   }
 
   async sendMsg(text: string) {
     const client = await this.getSlackClient();
-    await client.send({ text });
+    if (client) {
+      await client.send({ text });
+    }
   }
 }
