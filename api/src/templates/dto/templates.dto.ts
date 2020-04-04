@@ -68,13 +68,13 @@ export class EditTemplateBodyDto {
   @ArrayNotEmpty()
   readonly title_fields: string[];
 
-  // @IsArray()
-  // @ArrayNotEmpty()
-  // readonly compare_fields: string[];
-
-  // @IsArray()
-  // @ArrayNotEmpty()
-  // readonly merge_fields: string[];
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly external_comparison_fields: string[];  
+  
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly internal_comparison_fields: string[];
 
   @IsString()
   @IsNotEmpty()
