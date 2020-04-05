@@ -52,7 +52,8 @@ export class JiraService {
   }
 
   async getSettings() {
-    return this.jiraSettingsModel.findOne();
+    const settings = await this.jiraSettingsModel.findOne();
+    return settings ? settings : null;
   }
 
   async getIssue(issueKey: string) {

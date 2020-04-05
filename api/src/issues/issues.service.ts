@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Issue } from './interfaces/issue.interface';
@@ -47,21 +52,30 @@ export class IssuesService {
   }
 
   async createJiraTicket(issueId: string, issue: any) {
-    const jiraTicket = await this.jiraService.createIssue(issue);
     const settings = await this.jiraService.getSettings();
 
-    const ticket = await new this.ticketModel({
-      type: 'jira',
-      link: `https://${settings.host}/browse/${jiraTicket.key}`,
-      key: jiraTicket.key,
-    }).save();
+    if (settings) {
+      const jiraTicket = await this.jiraService
+        .createIssue(issue)
+        .catch(err => {
+          throw new BadRequestException(JSON.stringify(JSON.parse(err).body));
+        });
 
-    await this.issueModel.updateOne(
-      { _id: issueId },
-      { $set: { ticket: ticket._id } }
-    );
+      const ticket = await new this.ticketModel({
+        type: 'jira',
+        link: `https://${settings.host}/browse/${jiraTicket.key}`,
+        key: jiraTicket.key,
+      }).save();
 
-    return ticket;
+      await this.issueModel.updateOne(
+        { _id: issueId },
+        { $set: { ticket: ticket._id } }
+      );
+
+      return ticket;
+    } else {
+      throw new NotImplementedException('Jira is not configured');
+    }
   }
 
   async saveComment(issueId: string, saveCommentBodyDto: SaveCommentBodyDto) {

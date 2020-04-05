@@ -23,10 +23,7 @@
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items>
-          <v-btn
-            text
-            @click="finisher = !finisher"
-          >
+          <v-btn text @click="finisher = !finisher">
             next
             <v-icon class="ml-2">
               mdi-chevron-right
@@ -203,7 +200,7 @@ export default {
         this.$toasted.global.api_success({
           msg: 'Jira ticket created successfully',
         });
-        this.$emit('update:issue', { ...this.issue, ticket });
+        this.issue.ticket = ticket;
         this.$emit('update:dialog', false);
       }
     },
