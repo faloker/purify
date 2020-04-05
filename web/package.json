@@ -9,7 +9,7 @@
     "test": "BABEL_ENV=test vue-cli-service serve"
   },
   "dependencies": {
-    "apexcharts": "^3.17.0",
+    "apexcharts": "^3.18.0",
     "axios": "^0.19.2",
     "codemirror": "^5.52.2",
     "core-js": "^3.6.4",
@@ -19,7 +19,7 @@
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",
     "vue": "^2.6.11",
-    "vue-apexcharts": "^1.5.2",
+    "vue-apexcharts": "^1.5.3",
     "vue-count-to": "^1.0.13",
     "vue-json-pretty": "^1.6.3",
     "vue-page-transition": "^0.2.2",
