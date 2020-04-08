@@ -2,7 +2,7 @@ import {
   Controller,
   Post,
   UseGuards,
-  HttpCode,
+  HttpStatus,
   Request,
   Get,
   Res,
@@ -19,59 +19,43 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   @Post()
   @UseGuards(LocalAuthGuard)
   async login(@Request() req, @Res() response) {
-    try {
-      const tokens = await this.authService.login(req.user);
-      response
-        .setCookie('refresh_token', tokens.refresh_token, {
-          httpOnly: true,
-          domain: this.configService.get<string>('DOMAIN'),
-          path: '/',
-          secure: true,
-        })
-        .send({ token: tokens.access_token });
-    } catch (err) {
-      response.code(400).send({
-        message: err,
-        error: 'Bad Request',
-        statusCode: 400,
-      });
-    }
+    const tokens = await this.authService.login(req.user);
+    response
+      .setCookie('refresh_token', tokens.refresh_token, {
+        httpOnly: true,
+        domain: this.configService.get<string>('DOMAIN'),
+        path: '/',
+        secure: true,
+      })
+      .send({ token: tokens.access_token });
   }
 
   @Post('signup')
   async register(@Body() createUserDto: CreateUserDto, @Res() response) {
-    try {
-      const newUser = await this.usersService.createUser(createUserDto);
-      const tokens = await this.authService.login(newUser);
-      response
-        .setCookie('refresh_token', tokens.refresh_token, {
-          httpOnly: true,
-          domain: this.configService.get<string>('DOMAIN'),
-          path: '/',
-          secure: true,
-        })
-        .send({ token: tokens.access_token });
-    } catch (err) {
-      response.code(400).send({
-        message: err,
-        error: 'Bad Request',
-        statusCode: 400,
-      });
-    }
+    const newUser = await this.usersService.createUser(createUserDto);
+    const tokens = await this.authService.login(newUser);
+    response
+      .setCookie('refresh_token', tokens.refresh_token, {
+        httpOnly: true,
+        domain: this.configService.get<string>('DOMAIN'),
+        path: '/',
+        secure: true,
+      })
+      .send({ token: tokens.access_token });
   }
 
   @Get('refresh_token')
   async refreshToken(@Request() req, @Res() response) {
-    try {
-      const tokens = await this.authService.refreshToken(
-        req.cookies.refresh_token,
-      );
+    const token = req.cookies.refresh_token;
+
+    if (token) {
+      const tokens = await this.authService.refreshToken(token);
       response
         .setCookie('refresh_token', tokens.refresh_token, {
           httpOnly: true,
@@ -80,10 +64,10 @@ export class AuthController {
           secure: true,
         })
         .send({ token: tokens.access_token });
-    } catch (err) {
-      response.code(401).send({
-        error: 'Unauthorized',
-        statusCode: 401,
+    } else {
+      response.code(HttpStatus.UNAUTHORIZED).send({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'No active session. Login again.',
       });
     }
   }
