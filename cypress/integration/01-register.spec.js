@@ -26,6 +26,6 @@ describe('Registration', () => {
 
     cy.contains('Login');
 
-    cy.get('.toasted').should('be.visible');
+    cy.get('.toasted').should('be.visible').contains('already exists');
   });
 });

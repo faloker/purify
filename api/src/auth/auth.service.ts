@@ -8,7 +8,7 @@ import { User } from '../users/interfaces/user.interface';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -37,7 +37,7 @@ export class AuthService {
   async login(user: User) {
     const refresh_token = this.jwtService.sign(
       { id: user._id, type: 'refresh_token' },
-      { expiresIn: '24h' },
+      { expiresIn: '24h' }
     );
     await this.usersService.saveRefreshToken(user._id, refresh_token);
 
@@ -63,7 +63,7 @@ export class AuthService {
     ) {
       const refresh_token = this.jwtService.sign(
         { id, type: 'refresh_token' },
-        { expiresIn: '72h' },
+        { expiresIn: '72h' }
       );
       await this.usersService.saveRefreshToken(id, refresh_token);
 

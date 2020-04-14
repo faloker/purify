@@ -162,11 +162,11 @@ export default {
         title: this.projectTitle,
         subtitle: this.projectSubtitle,
       };
-      this.$store.dispatch(CREATE_PROJECT, payload);
-
-      this.projectTitle = '';
-      this.projectSubtitle = '';
-      this.dialog = false;
+      this.$store.dispatch(CREATE_PROJECT, payload).then(() => {
+        this.projectTitle = '';
+        this.projectSubtitle = '';
+        this.dialog = false;
+      });
     },
     onEsc() {
       this.$refs.search.blur();
