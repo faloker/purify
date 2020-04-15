@@ -9,7 +9,7 @@ describe('Deleting projects', () => {
       cy.get('.delete-btn').click();
     })
 
-    cy.contains('Delete project another-project?').should('be.visible');
+    cy.contains('Delete project').should('be.visible');
 
     cy.get('.confirm-delete-btn').click();
 
