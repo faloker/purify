@@ -16,23 +16,27 @@ import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
+  cookieConfig: any;
+
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService
-  ) {}
+  ) {
+    this.cookieConfig = {
+      httpOnly: true,
+      domain: this.configService.get<string>('DOMAIN'),
+      path: '/',
+      secure: this.configService.get<string>('SECURE') === 'true',
+    };
+  }
 
   @Post()
   @UseGuards(LocalAuthGuard)
   async login(@Request() req, @Res() response) {
     const tokens = await this.authService.login(req.user);
     response
-      .setCookie('refresh_token', tokens.refresh_token, {
-        httpOnly: true,
-        domain: this.configService.get<string>('DOMAIN'),
-        path: '/',
-        secure: true,
-      })
+      .setCookie('refresh_token', tokens.refresh_token, this.cookieConfig)
       .send({ token: tokens.access_token });
   }
 
@@ -41,12 +45,7 @@ export class AuthController {
     const newUser = await this.usersService.createUser(createUserDto);
     const tokens = await this.authService.login(newUser);
     response
-      .setCookie('refresh_token', tokens.refresh_token, {
-        httpOnly: true,
-        domain: this.configService.get<string>('DOMAIN'),
-        path: '/',
-        secure: true,
-      })
+      .setCookie('refresh_token', tokens.refresh_token, this.cookieConfig)
       .send({ token: tokens.access_token });
   }
 
@@ -57,12 +56,7 @@ export class AuthController {
     if (token) {
       const tokens = await this.authService.refreshToken(token);
       response
-        .setCookie('refresh_token', tokens.refresh_token, {
-          httpOnly: true,
-          domain: this.configService.get<string>('DOMAIN'),
-          path: '/',
-          secure: true,
-        })
+        .setCookie('refresh_token', tokens.refresh_token, this.cookieConfig)
         .send({ token: tokens.access_token });
     } else {
       response.code(HttpStatus.UNAUTHORIZED).send({

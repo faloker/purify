@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:test": "docker-compose -f docker-compose.tests.yml up -d --build 1>/dev/null 2>&1 &",
+    "start:test": "docker-compose -f docker-compose.tests.yml up -d --build",
     "start:coverage": "concurrently npm:start:db npm:start:client npm:start:server:coverage 1>/dev/null 2>&1 &",
     "start:client": "cd web && npm i && npm test",
     "start:db": "docker run -d -p 27017:27017 --name test_mongo mongo",
