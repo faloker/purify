@@ -2,6 +2,8 @@
   <div>
     <v-hover>
       <v-card
+        :id="`project-card-${project.slug}`"
+        :key="project._id"
         slot-scope="{ hover }"
         :class="`elevation-${hover ? 12 : 3}`"
         shaped
@@ -71,6 +73,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
+            class="edit-btn"
             color="primary"
             text
             @click="dialog = true"
@@ -78,6 +81,7 @@
             Edit
           </v-btn>
           <v-btn
+            class="delete-btn"
             color="tertiary"
             text
             @click="confirmDialog = true"
@@ -97,6 +101,7 @@
           <v-layout wrap>
             <v-flex xs12>
               <v-text-field
+                id="project-title-edit-input"
                 v-model="title"
                 label="Project title"
                 outlined
@@ -108,6 +113,7 @@
             </v-flex>
             <v-flex xs12>
               <v-text-field
+                id="project-subtitle-edit-input"
                 v-model="subtitle"
                 label="Project short description"
                 clearable
@@ -153,6 +159,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
+            class="confirm-delete-btn"
             color="tertiary"
             text
             @click="deleteProject"
