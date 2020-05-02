@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "NODE_ENV=local vue-cli-service serve",
+    "serve": "cross-env NODE_ENV=local vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "BABEL_ENV=test vue-cli-service serve"
+    "test": "cross-env BABEL_ENV=test vue-cli-service serve"
   },
   "dependencies": {
     "apexcharts": "^3.18.0",
