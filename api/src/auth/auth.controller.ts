@@ -79,6 +79,6 @@ export class AuthController {
   @UseGuards(GenericAuthGuard)
   async logout(@Request() req, @Res() response) {
     await this.authService.removeRefreshToken(req.user.id);
-    response.clearCookie('refresh_token').send('bye')
+    response.clearCookie('refresh_token', this.cookieConfig).send('bye')
   }
 }
