@@ -28,6 +28,7 @@ export class AuthController {
       domain: this.configService.get<string>('DOMAIN'),
       path: '/',
       secure: this.configService.get<string>('SECURE') === 'true',
+      sameSite: 'lax',
     };
   }
 
