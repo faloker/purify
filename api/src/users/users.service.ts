@@ -62,4 +62,11 @@ export class UsersService {
     const user = await this.userModel.findOne({ _id: userId });
     return this.isSecretValid(token, user.refresh_token, user.salt);
   }
+
+  async removeRefreshToken(userId: string) {
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $set: { refresh_token: '' } },
+    );
+  }
 }

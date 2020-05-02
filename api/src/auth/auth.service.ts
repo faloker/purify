@@ -75,4 +75,8 @@ export class AuthService {
       throw new Error('Invalid refresh token');
     }
   }
+
+  async removeRefreshToken(userId: string) {
+    await this.usersService.removeRefreshToken(userId);
+  }
 }
