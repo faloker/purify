@@ -89,6 +89,8 @@ router.beforeEach((to, from, next) => {
       document.title = 'Purify | Welcome';
       next('/welcome');
     });
+  } else if (to.path === '/welcome' && isAuthenticated) {
+    next(false);
   } else {
     document.title = to.meta.title;
     next();
