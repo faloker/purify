@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-shadow */
-import { login, signup, refreshToken } from '@/api/auth.service';
+import {
+  login, signup, refreshToken, logout,
+} from '@/api/auth.service';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
 import {
@@ -12,10 +14,7 @@ import {
   PROFILE_FETCH,
 } from '../actions';
 import {
-  SET_AUTH,
-  PURGE_AUTH,
-  SET_USER,
-  REFRESH_TASK,
+  SET_AUTH, PURGE_AUTH, SET_USER, REFRESH_TASK,
 } from '../mutations';
 
 const state = {
@@ -35,7 +34,8 @@ const getters = {
 };
 
 const actions = {
-  [LOGOUT]({ commit }) {
+  async [LOGOUT]({ commit }) {
+    await logout();
     commit(PURGE_AUTH);
   },
 

@@ -1,4 +1,4 @@
-describe('Projects', () => {
+describe('Project creation', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/#/welcome');
     cy.login('test', 'testtest');
