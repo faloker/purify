@@ -55,14 +55,14 @@
           transition="slide-y-transition"
         >
           <template v-slot:activator="{ on }">
-            <v-btn icon>
+            <v-btn id="btn-mini-profile" icon>
               <v-avatar size="40" v-on="on">
                 <img :src="currentUser.image" alt="ava" />
               </v-avatar>
             </v-btn>
           </template>
 
-          <v-card>
+          <v-card id="menu-mini-profile">
             <v-list>
               <v-list-item>
                 <v-list-item-avatar>
@@ -75,7 +75,11 @@
                 </v-list-item-content>
 
                 <v-list-item-action>
-                  <v-btn icon @click="killSession">
+                  <v-btn
+                    id="btn-logout"
+                    icon
+                    @click="killSession"
+                  >
                     <v-icon>mdi-exit-to-app</v-icon>
                   </v-btn>
                 </v-list-item-action>
