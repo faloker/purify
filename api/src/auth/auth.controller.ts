@@ -7,12 +7,14 @@ import {
   Get,
   Res,
   Body,
+  Delete,
 } from '@nestjs/common';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
+import { GenericAuthGuard } from './generic-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +30,7 @@ export class AuthController {
       domain: this.configService.get<string>('DOMAIN'),
       path: '/',
       secure: this.configService.get<string>('SECURE') === 'true',
+      sameSite: 'lax',
     };
   }
 
@@ -70,5 +73,12 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async issueToken(@Request() req) {
     return this.authService.issueToken(req.user);
+  }
+
+  @Delete()
+  @UseGuards(GenericAuthGuard)
+  async logout(@Request() req, @Res() response) {
+    await this.authService.removeRefreshToken(req.user.id);
+    response.clearCookie('refresh_token').send('bye')
   }
 }

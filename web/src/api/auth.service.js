@@ -17,3 +17,8 @@ export const refreshToken = () => request({
   method: 'get',
   withCredentials: true,
 });
+
+export const logout = () => request({
+  url: 'auth',
+  method: 'delete',
+});
