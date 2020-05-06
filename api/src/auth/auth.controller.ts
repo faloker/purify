@@ -8,13 +8,14 @@ import {
   Res,
   Body,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { GenericAuthGuard } from './generic-auth.guard';
+import { CredentialsAuthGuard } from './credentials-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -35,18 +36,25 @@ export class AuthController {
   }
 
   @Post()
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(CredentialsAuthGuard)
   async login(@Request() req, @Res() response) {
     const tokens = await this.authService.login(req.user);
+
     response
       .setCookie('refresh_token', tokens.refresh_token, this.cookieConfig)
+      .code(200)
       .send({ token: tokens.access_token });
   }
 
   @Post('signup')
   async register(@Body() createUserDto: CreateUserDto, @Res() response) {
+    if (this.configService.get<string>('ALLOW_REGISTRATION') === 'false') {
+      throw new BadRequestException('Registration is disabled for this installation');
+    }
+  
     const newUser = await this.usersService.createUser(createUserDto);
     const tokens = await this.authService.login(newUser);
+
     response
       .setCookie('refresh_token', tokens.refresh_token, this.cookieConfig)
       .send({ token: tokens.access_token });
@@ -58,6 +66,7 @@ export class AuthController {
 
     if (token) {
       const tokens = await this.authService.refreshToken(token);
+
       response
         .setCookie('refresh_token', tokens.refresh_token, this.cookieConfig)
         .send({ token: tokens.access_token });
@@ -70,7 +79,7 @@ export class AuthController {
   }
 
   @Post('token')
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(CredentialsAuthGuard)
   async issueToken(@Request() req) {
     return this.authService.issueToken(req.user);
   }
@@ -79,6 +88,6 @@ export class AuthController {
   @UseGuards(GenericAuthGuard)
   async logout(@Request() req, @Res() response) {
     await this.authService.removeRefreshToken(req.user.id);
-    response.clearCookie('refresh_token', this.cookieConfig).send('bye')
+    response.clearCookie('refresh_token', this.cookieConfig).send('bye');
   }
 }

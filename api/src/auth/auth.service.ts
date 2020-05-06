@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/interfaces/user.interface';
@@ -12,14 +12,34 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne({ username });
+    const user = await this.usersService.findOne({ username, type: 'local' });
+
     if (
       user &&
       this.usersService.isSecretValid(pass, user.password, user.salt)
     ) {
       return user;
+    } else {
+      return null;
     }
-    return null;
+  }
+
+  async validateADUser(user: any): Promise<any> {
+    const entity = await this.usersService.findOne({
+      username: user.uid,
+      type: 'ldap',
+    });
+
+    if (!entity) {
+      return this.usersService.createUser({
+        username: user.uid,
+        password: 'fakefake',
+        email: user.mail,
+        type: 'ldap',
+      });
+    } else {
+      return entity;
+    }
   }
 
   async validateAPIKey(apikey: string): Promise<any> {
