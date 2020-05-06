@@ -4,22 +4,19 @@ import { pbkdf2Sync, randomBytes } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './interfaces/user.interface';
-import { CreateUserDto, LoginUserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
-  async createUser(CreateUserDto: CreateUserDto): Promise<User> {
+  async createUser(user: any): Promise<User> {
     const salt = randomBytes(16).toString('hex');
-    const user = new this.userModel({
-      ...CreateUserDto,
-      image: `https://api.adorable.io/avatars/285/${CreateUserDto.username}.png`,
+    return new this.userModel({
+      ...user,
+      image: `https://api.adorable.io/avatars/285/${user.username}.png`,
       salt,
-      password: this.genSecret(CreateUserDto.password, salt),
-    });
-
-    return user.save();
+      password: this.genSecret(user.password, salt),
+    }).save();;
   }
 
   async findOne(condition: any): Promise<User> {
