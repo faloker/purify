@@ -21,4 +21,9 @@ export const UserSchema = new Schema({
   salt: String,
   // eslint-disable-next-line @typescript-eslint/camelcase
   refresh_token: String,
+  type: {
+    type: String,
+    enum: ['local', 'ldap'],
+    default: 'local',
+  },
 });

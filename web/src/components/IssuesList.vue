@@ -215,7 +215,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['activePage', 'currentUser']),
+    ...mapGetters(['currentUser']),
     items() {
       return this.rawItems.filter(
         (item, index) => index >= (this.page - 1) * this.pageSize

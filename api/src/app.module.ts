@@ -16,6 +16,8 @@ import { SmtpModule } from './plugins/smtp/smtp.module';
 import { SlackModule } from './plugins/slack/slack.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
+import { SystemModule } from './system/system.module';
+import Joi = require('@hapi/joi');
 
 @Module({
   imports: [
@@ -38,7 +40,30 @@ import { AppController } from './app.controller';
       rootPath: '/home/node/app/static',
       exclude: ['/api*'],
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('local', 'production')
+          .default('local'),
+        MONGODB_URI: Joi.string().required(),
+        DB_NAME: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        DOMAIN: Joi.string().required(),
+        SECURE: Joi.string()
+          .valid('true', 'false')
+          .default('true'),
+        ALLOW_REGISTRATION: Joi.string()
+          .valid('true', 'false')
+          .default('true'),
+        USE_LDAP: Joi.string()
+          .valid('true', 'false')
+          .default('false'),
+      }),
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: false,
+      },
+    }),
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
@@ -52,6 +77,7 @@ import { AppController } from './app.controller';
     SettingsModule,
     SmtpModule,
     SlackModule,
+    SystemModule,
   ],
   controllers: [AppController],
   providers: [],

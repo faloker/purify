@@ -3,7 +3,7 @@ import Router from 'vue-router';
 
 import TheHeader from '@/components/TheHeader.vue';
 import store from './store';
-import { REFRESH_TOKEN } from './store/actions';
+import { REFRESH_TOKEN, FETCH_SYSTEM_SETUP } from './store/actions';
 
 Vue.use(Router);
 
@@ -80,6 +80,8 @@ export const router = new Router({
 
 router.beforeEach((to, from, next) => {
   const { isAuthenticated } = store.getters;
+
+  store.dispatch(FETCH_SYSTEM_SETUP);
 
   if (to.path !== '/welcome' && !isAuthenticated) {
     store.dispatch(REFRESH_TOKEN).then(() => {
