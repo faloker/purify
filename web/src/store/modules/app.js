@@ -1,24 +1,29 @@
 /* eslint-disable no-shadow */
-import { SET_ACTIVE_PAGE } from '../mutations';
+import { SET_CONFIG } from '../mutations';
+import { getSystemSetup } from '../../api/system.service';
+import { FETCH_SYSTEM_SETUP } from '../actions';
 
 const state = {
-  view: null,
+  setup: {},
 };
 
 const getters = {
-  activePage(state) {
-    return state.view;
+  systemSetup(state) {
+    return state.setup;
   },
 };
 
 const actions = {
-
+  async [FETCH_SYSTEM_SETUP]({ commit }) {
+    const { data } = await getSystemSetup();
+    commit(SET_CONFIG, data);
+  },
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
 const mutations = {
-  [SET_ACTIVE_PAGE](state, activeView) {
-    state.view = activeView;
+  [SET_CONFIG](state, config) {
+    state.setup = config;
   },
 };
 
