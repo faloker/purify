@@ -81,19 +81,27 @@
             >
               {{ issue.is_closed ? "Open" : "Resolve" }}
             </v-btn>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <span v-on="on">
+                  <v-btn
+                    v-if="!issue.ticket"
+                    outlined
+                    :disabled="!systemSetup.jira"
+                    class="mr-2"
+                    color="senary"
+                    @click="ticketDialog = !ticketDialog"
+                  >
+                    <v-icon color="senary" left>
+                      mdi-jira
+                    </v-icon>Create Ticket
+                  </v-btn>
+                </span>
+              </template>
+              <span>Set up Jira to create a ticket</span>
+            </v-tooltip>
             <v-btn
-              v-if="!issue.ticket"
-              outlined
-              class="mr-2"
-              color="senary"
-              @click="ticketDialog = !ticketDialog"
-            >
-              <v-icon color="senary" left>
-                mdi-jira
-              </v-icon>Create Ticket
-            </v-btn>
-            <v-btn
-              v-else
+              v-if="issue.ticket"
               outlined
               class="mx-2"
               color="senary"
@@ -162,7 +170,7 @@
         </v-row>
       </v-container>
     </v-card-title>
-    <v-container >
+    <v-container>
       <v-col v-for="field in issue.template.body_fields" :key="`id-${field.key}`">
         <fields-parser :ikey="field" :ivalue="getValue(issue.fields, field.key)" />
       </v-col>
@@ -171,6 +179,7 @@
 </template>
 <script>
 /* eslint-disable no-restricted-syntax */
+import { mapState } from 'vuex';
 import FieldsParser from '@/components/FieldsParser.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
@@ -204,6 +213,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      systemSetup: state => state.app.setup,
+    }),
     preparedMarkdown() {
       let result = '';
       for (const field of this.issue.template.body_fields) {
