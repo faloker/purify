@@ -70,7 +70,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { SET_ACTIVE_PAGE } from '@/store/mutations';
 import { FETCH_PROJECTS, FETCH_STATS } from '@/store/actions';
 
 export default {
@@ -187,7 +186,6 @@ export default {
     }),
   },
   mounted() {
-    this.$store.commit(SET_ACTIVE_PAGE, 'Dashboard');
     this.$store.dispatch(FETCH_PROJECTS);
   },
   methods: {

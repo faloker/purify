@@ -10,8 +10,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
 export default {
   name: 'App',
   components: {
@@ -19,9 +17,6 @@ export default {
   data: () => ({
     drawer: null,
   }),
-  computed: {
-    ...mapGetters(['activePage']),
-  },
 };
 </script>
 
