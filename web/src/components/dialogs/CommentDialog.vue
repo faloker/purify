@@ -10,7 +10,7 @@
           <v-timeline-item class="mb-7" large>
             <template v-slot:icon>
               <v-avatar>
-                <img :src="currentUser.image" />
+                <img :src="currentUser.image">
               </v-avatar>
             </template>
             <v-text-field
@@ -45,10 +45,10 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-avatar v-if="event.author.username === 'purify'" v-on="on">
-                      <img src="@/assets/logo_trans.png" />
+                      <img src="@/assets/logo_trans.png">
                     </v-avatar>
                     <v-avatar v-else v-on="on">
-                      <img :src="event.author.image" />
+                      <img :src="event.author.image">
                     </v-avatar>
                   </template>
                   <span>{{ event.author.username }}</span>
@@ -107,12 +107,10 @@ export default {
           text: this.input,
         };
 
-        this.$store
-          .dispatch(POST_COMMENT, { id: this.issue._id, comment })
-          .then(doc => {
-            this.issue.comments.push(doc);
-            this.input = null;
-          });
+        this.$store.dispatch(POST_COMMENT, { id: this.issue._id, comment }).then((doc) => {
+          this.issue.comments.push(doc);
+          this.input = null;
+        });
       }
     },
 

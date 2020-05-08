@@ -394,7 +394,7 @@ export default {
       type_body_fields: {},
       report: false,
       rules: {
-        min: v => v.length >= 3 || 'Min 3 symbols',
+        min: (v) => v.length >= 3 || 'Min 3 symbols',
       },
     };
   },
@@ -438,10 +438,14 @@ export default {
           subtitle_pattern: this.subtitle_pattern,
           tags: this.tags,
           body_fields: this.body_fields,
-          merge_fields: this.merge_fields.map(i => i.replace('issue.', '')),
-          title_fields: this.title_fields.map(i => i.replace('issue.', '')),
-          internal_comparison_fields: this.internal_comparison_fields.map(i => i.replace('issue.', '')),
-          external_comparison_fields: this.external_comparison_fields.map(i => i.replace('issue.', '')),
+          merge_fields: this.merge_fields.map((i) => i.replace('issue.', '')),
+          title_fields: this.title_fields.map((i) => i.replace('issue.', '')),
+          internal_comparison_fields: this.internal_comparison_fields.map((i) =>
+            i.replace('issue.', '')
+          ),
+          external_comparison_fields: this.external_comparison_fields.map((i) =>
+            i.replace('issue.', '')
+          ),
         })
         .then(() => {
           this.loading = false;
@@ -450,14 +454,12 @@ export default {
           this.stepperDialog = false;
 
           this.e6 = 1;
-          // eslint-disable-next-line no-multi-assign
           this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
           this.type_body_fields = {};
-          // eslint-disable-next-line no-multi-assign
           this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
-          // eslint-disable-next-line no-multi-assign
           this.merge_fields = this.title_fields = this.body_fields = [];
-        }).catch(() => {
+        })
+        .catch(() => {
           this.loading = false;
         });
     },
