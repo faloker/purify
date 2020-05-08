@@ -124,7 +124,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['activePage', 'currentUser']),
+    ...mapGetters(['currentUser']),
   },
   methods: {
     killSession() {

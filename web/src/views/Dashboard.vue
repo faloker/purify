@@ -40,9 +40,9 @@
           style="position:relative; z-index:0;"
           :options="issuesLineChartOptions"
           :series="issuesLineChartSeries"
-        ></apexchart>
+        />
       </v-col>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-col>
         <apexchart
           width="500"
@@ -50,7 +50,7 @@
           style="position:relative; z-index:0;"
           :options="riskDonutChartOptions"
           :series="riskDonutChartSeries"
-        ></apexchart>
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -61,7 +61,7 @@
             type="line"
             :options="reportsLineChartOptions"
             :series="reportsLineChartSeries"
-          ></apexchart>
+          />
         </div>
       </v-col>
     </v-row>
@@ -70,7 +70,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { SET_ACTIVE_PAGE } from '@/store/mutations';
 import { FETCH_PROJECTS, FETCH_STATS } from '@/store/actions';
 
 export default {
@@ -182,12 +181,11 @@ export default {
   }),
   computed: {
     ...mapState({
-      projects: state => state.projects.projects,
-      stats: state => state.projects.stats,
+      projects: (state) => state.projects.projects,
+      stats: (state) => state.projects.stats,
     }),
   },
   mounted() {
-    this.$store.commit(SET_ACTIVE_PAGE, 'Dashboard');
     this.$store.dispatch(FETCH_PROJECTS);
   },
   methods: {

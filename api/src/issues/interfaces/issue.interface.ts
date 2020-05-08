@@ -10,6 +10,7 @@ export interface Issue extends Document {
   fields: string;
   readonly is_closed: boolean;
   readonly is_fp: boolean;
+  readonly is_risk_accepted: boolean;
   readonly dup_score: number;
   readonly risk: string;
   readonly template: Template;

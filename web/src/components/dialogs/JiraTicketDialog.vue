@@ -172,10 +172,7 @@ export default {
       return this.prepareMarkdown(this.issue);
     },
     summary() {
-      return this.matchPattern(
-        this.issue.fields,
-        this.issue.template.title_pattern,
-      );
+      return this.matchPattern(this.issue.fields, this.issue.template.title_pattern);
     },
   },
   methods: {

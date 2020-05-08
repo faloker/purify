@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export const FETCH_PROJECTS = 'fetchProjects';
 export const DELETE_PROJECT = 'deleteProject';
 export const CREATE_PROJECT = 'createProject';
@@ -34,10 +33,11 @@ export const FETCH_STATS = 'fetchStats';
 export const EDIT_PROJECT = 'editProject';
 export const AUTO_REFRESH = 'autoRefresh';
 
-
 export const TEMPLATES_FETCH = 'templatesFetch';
 export const TEMPLATES_DELETE = 'templatesDelete';
 export const TEMPLATES_EDIT = 'templatesEdit';
 export const TEMPLATE_CREATE = 'templateCreate';
 
 export const PROFILE_FETCH = 'profileFetch';
+
+export const FETCH_SYSTEM_SETUP = 'fetchSystemSetup';

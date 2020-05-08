@@ -10,18 +10,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
 export default {
   name: 'App',
-  components: {
-  },
+  components: {},
   data: () => ({
     drawer: null,
   }),
-  computed: {
-    ...mapGetters(['activePage']),
-  },
 };
 </script>
 
@@ -32,5 +26,4 @@ export default {
 .router-link-active {
   color: #2c3e50;
 }
-
 </style>

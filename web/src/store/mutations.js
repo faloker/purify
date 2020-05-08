@@ -1,5 +1,4 @@
-/* eslint-disable import/prefer-default-export */
-export const SET_ACTIVE_PAGE = 'setActivePage';
+export const SET_CONFIG = 'setConfig';
 
 export const SET_PROJECTS = 'setProjects';
 export const SET_ACTIVE_PROJECT = 'setActiveProject';

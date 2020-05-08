@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
-export const currentUser = async () =>
+export const getSystemSetup = () =>
   request({
-    url: 'users/current_user',
+    url: 'system/setup',
     method: 'get',
   });

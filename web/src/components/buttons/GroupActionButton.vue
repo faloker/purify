@@ -20,9 +20,7 @@
   </div>
 </template>
 <script>
-import {
-  ISSUE_UPDATE,
-} from '@/store/actions';
+import { ISSUE_UPDATE } from '@/store/actions';
 
 export default {
   name: 'GroupActionButton',
@@ -40,7 +38,9 @@ export default {
   methods: {
     updateIssues(items, field, value) {
       const change = {};
-      if (field === 'is_fp') { change.is_closed = true; }
+      if (field === 'is_fp') {
+        change.is_closed = true;
+      }
       change[field] = value;
       this.$store.dispatch(ISSUE_UPDATE, { ids: items, change });
     },

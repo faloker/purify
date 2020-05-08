@@ -1,21 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-shadow */
-import {
-  login, signup, refreshToken, logout,
-} from '@/api/auth.service';
+import { login, signup, refreshToken, logout } from '@/api/auth.service';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
-import {
-  LOGIN,
-  LOGOUT,
-  REGISTER,
-  REFRESH_TOKEN,
-  AUTO_REFRESH,
-  PROFILE_FETCH,
-} from '../actions';
-import {
-  SET_AUTH, PURGE_AUTH, SET_USER, REFRESH_TASK,
-} from '../mutations';
+import { LOGIN, LOGOUT, REGISTER, REFRESH_TOKEN, AUTO_REFRESH, PROFILE_FETCH } from '../actions';
+import { SET_AUTH, PURGE_AUTH, SET_USER, REFRESH_TASK } from '../mutations';
 
 const state = {
   user: {},
@@ -69,10 +58,7 @@ const actions = {
     let timeUntilRefresh = exp * 1000 - now;
     timeUntilRefresh -= 120000;
 
-    const refreshTask = setTimeout(
-      () => dispatch(REFRESH_TOKEN),
-      timeUntilRefresh,
-    );
+    const refreshTask = setTimeout(() => dispatch(REFRESH_TOKEN), timeUntilRefresh);
     commit(REFRESH_TASK, refreshTask);
   },
 };

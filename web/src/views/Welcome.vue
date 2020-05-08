@@ -7,7 +7,7 @@
             src="@/assets/logo_trans.png"
             max-width="110"
             max-height="110"
-          ></v-img>
+          />
         </v-row>
         <v-row>
           <v-tabs
@@ -18,14 +18,18 @@
             <v-tab id="tab-login" class="title text-none">
               Login
             </v-tab>
-            <v-tab id="tab-register" class="title text-none">
+            <v-tab
+              v-if="systemSetup.registration"
+              id="tab-register"
+              class="title text-none"
+            >
               Register
             </v-tab>
             <v-tabs-items v-model="tabs" class="mt-7">
               <v-tab-item>
                 <v-form class="grey-form">
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="username"
                       v-model="username"
@@ -33,10 +37,10 @@
                       prepend-icon="accessibility_new"
                       required
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="password"
                       v-model="password"
@@ -45,7 +49,7 @@
                       type="password"
                       prepend-icon="lock"
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row justify="center">
                     <v-btn
@@ -53,7 +57,9 @@
                       outlined
                       type="submit"
                       color="primary"
-                      @click.prevent="login"
+                      :loading="loading"
+                      :disabled="loading"
+                      @click.prevent="login()"
                     >
                       Sign In
                     </v-btn>
@@ -63,7 +69,7 @@
               <v-tab-item>
                 <v-form class="grey-form">
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="user"
                       v-model="username"
@@ -71,10 +77,10 @@
                       prepend-icon="accessibility_new"
                       required
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="email"
                       v-model="email"
@@ -82,10 +88,10 @@
                       required
                       prepend-icon="alternate_email"
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="pass"
                       v-model="password"
@@ -94,7 +100,7 @@
                       type="password"
                       prepend-icon="lock"
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row justify="center">
                     <v-btn
@@ -102,7 +108,9 @@
                       outlined
                       type="submit"
                       color="primary"
-                      @click.prevent="register"
+                      :loading="loading"
+                      :disabled="loading"
+                      @click.prevent="register()"
                     >
                       Sign Up
                     </v-btn>
@@ -118,6 +126,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { REGISTER, LOGIN } from '@/store/actions';
 
 export default {
@@ -128,25 +137,43 @@ export default {
       username: '',
       email: '',
       password: '',
+      loading: false,
     };
+  },
+  computed: {
+    ...mapState({
+      systemSetup: (state) => state.app.setup,
+    }),
   },
   methods: {
     register() {
+      this.loading = true;
       this.$store
         .dispatch(REGISTER, {
           email: this.email,
           password: this.password,
           username: this.username,
         })
-        .then(() => this.$router.push({ name: 'Projects' }));
+        .then(() => {
+          this.$router.push({ name: 'Projects' });
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
     login() {
+      this.loading = true;
       this.$store
         .dispatch(LOGIN, {
           username: this.username,
           password: this.password,
         })
-        .then(() => this.$router.push({ name: 'Projects' }));
+        .then(() => {
+          this.$router.push({ name: 'Projects' });
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
   },
 };

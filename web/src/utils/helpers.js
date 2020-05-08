@@ -17,21 +17,18 @@ export const matchPattern = (fields, pattern) => {
   return result;
 };
 
-export const parseKey = key => {
-  const res = key.includes('.')
-    ? key.match(/\.[^.]+$/)[0].replace('.', '')
-    : key;
+export const parseKey = (key) => {
+  const res = key.includes('.') ? key.match(/\.[^.]+$/)[0].replace('.', '') : key;
   return capitalize(startCase(res));
 };
 
 export const getValue = (fields, key) => get(fields, key);
 
-export const formatDate = date => `${formatDistance(new Date(date), new Date())} ago`;
+export const formatDate = (date) => `${formatDistance(new Date(date), new Date())} ago`;
 
-const isPrintable = obj => ['string', 'boolean', 'number'].includes(typeof obj);
+const isPrintable = (obj) => ['string', 'boolean', 'number'].includes(typeof obj);
 
-const decodeValue = str => atob(str);
-
+const decodeValue = (str) => atob(str);
 
 const parseField = (field, fieldValue) => {
   let mkdwn = '';
@@ -77,7 +74,7 @@ const parseField = (field, fieldValue) => {
   return mkdwn;
 };
 
-export const prepareMarkdown = issue => {
+export const prepareMarkdown = (issue) => {
   let result = '';
 
   for (const field of issue.template.body_fields) {

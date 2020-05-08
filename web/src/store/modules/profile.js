@@ -1,10 +1,6 @@
 /* eslint-disable no-shadow */
-import {
-  PROFILE_FETCH,
-} from '@/store/actions';
-import {
-  SET_PROFILE,
-} from '@/store/mutations';
+import { PROFILE_FETCH } from '@/store/actions';
+import { SET_PROFILE } from '@/store/mutations';
 import { currentUser } from '@/api/users.service';
 
 const state = {

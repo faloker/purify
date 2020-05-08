@@ -65,35 +65,70 @@
         </v-row>
         <v-row justify="center">
           <v-col>
-            <v-btn
-              class="mr-2"
-              :color="issue.is_fp ? 'primary' : 'quinary'"
-              outlined
-              @click="updateIssue(issue, 'is_fp', !issue.is_fp)"
+            <v-menu
+              v-if="!issue.is_closed"
+              transition="slide-y-transition"
+              bottom
             >
-              {{ issue.is_fp ? "Mark as tp" : "Mark as fp" }}
-            </v-btn>
-            <v-btn
-              outlined
-              class="mr-2"
-              :color="issue.is_closed ? 'primary' : 'tertiary'"
-              @click="updateIssue(issue, 'is_closed', !issue.is_closed)"
-            >
-              {{ issue.is_closed ? "Open" : "Resolve" }}
-            </v-btn>
-            <v-btn
-              v-if="!issue.ticket"
-              outlined
-              class="mr-2"
-              color="senary"
-              @click="ticketDialog = !ticketDialog"
-            >
-              <v-icon color="senary" left>
-                mdi-jira
-              </v-icon>Create Ticket
-            </v-btn>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  class="mr-2"
+                  color="tertiary"
+                  outlined
+                  v-on="on"
+                >
+                  Resolution
+                  <v-icon right>
+                    mdi-chevron-down
+                  </v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <!-- eslint-disable-next-line max-len -->
+                <v-list-item key="switch-resolution" @click="updateIssue(issue, 'is_closed', true)">
+                  <v-list-item-title>Resolved</v-list-item-title>
+                </v-list-item>
+                <v-list-item key="switch-as-fp" @click="updateIssue(issue, 'is_fp', true)">
+                  <v-list-item-title>False Positive</v-list-item-title>
+                </v-list-item>
+                <!-- eslint-disable-next-line max-len -->
+                <v-list-item
+                  key="switch-risk-accepted"
+                  @click="updateIssue(issue, 'is_risk_accepted', true)"
+                >
+                  <v-list-item-title>Accepted Risk</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
             <v-btn
               v-else
+              outlined
+              class="mr-2"
+              color="primary"
+              @click="updateIssue(issue, 'is_closed', false)"
+            >
+              Reopen
+            </v-btn>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <span v-on="on">
+                  <v-btn
+                    v-if="!issue.ticket"
+                    outlined
+                    :disabled="!systemSetup.jira"
+                    class="mr-2"
+                    color="senary"
+                    @click="ticketDialog = !ticketDialog"
+                  >
+                    <v-icon color="senary" left>mdi-jira</v-icon>
+                    Create Ticket
+                  </v-btn>
+                </span>
+              </template>
+              <span>Set up Jira to create a ticket</span>
+            </v-tooltip>
+            <v-btn
+              v-if="issue.ticket"
               outlined
               class="mx-2"
               color="senary"
@@ -149,20 +184,9 @@
             />
           </v-col>
         </v-row>
-        <v-row class="ml-2">
-          <!-- <v-row>
-              <span>Duplication scope</span>
-              <span
-                class="display-1 font-weight-bold ml-3"
-              >
-                {{ issue.dup_score }}
-              </span>
-            </v-row>
-          </v-col>-->
-        </v-row>
       </v-container>
     </v-card-title>
-    <v-container >
+    <v-container>
       <v-col v-for="field in issue.template.body_fields" :key="`id-${field.key}`">
         <fields-parser :ikey="field" :ivalue="getValue(issue.fields, field.key)" />
       </v-col>
@@ -171,6 +195,7 @@
 </template>
 <script>
 /* eslint-disable no-restricted-syntax */
+import { mapState } from 'vuex';
 import FieldsParser from '@/components/FieldsParser.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
@@ -201,9 +226,18 @@ export default {
       riskDialog: false,
       commentDialog: false,
       risk: 'Medium',
+      items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ],
     };
   },
   computed: {
+    ...mapState({
+      systemSetup: (state) => state.app.setup,
+    }),
     preparedMarkdown() {
       let result = '';
       for (const field of this.issue.template.body_fields) {
@@ -222,13 +256,24 @@ export default {
     },
     updateIssue(item, field, value) {
       const change = {};
-      if (field === 'is_fp') {
+      if (field !== 'is_closed') {
         change.is_closed = true;
-        this.issue.is_closed = true;
+      } else if (value === false) {
+        change.is_fp = false;
+        change.is_risk_accepted = false;
       }
+
       change[field] = value;
-      this.issue[field] = value;
-      this.$store.dispatch(ISSUE_UPDATE, { ids: [item._id], change });
+
+      this.$store.dispatch(ISSUE_UPDATE, { ids: [item._id], change }).then(() => {
+        if (field !== 'is_closed') {
+          this.issue.is_closed = true;
+        } else if (value === false) {
+          this.issue.is_fp = false;
+          this.issue.is_risk_accepted = false;
+        }
+        this.issue[field] = value;
+      });
     },
     genColor() {
       switch (this.issue.risk) {

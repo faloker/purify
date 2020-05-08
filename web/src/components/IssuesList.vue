@@ -30,14 +30,14 @@
         <v-col cols="3">
           <group-action-btn class="px-3" :items="selected" />
         </v-col>
-        <v-spacer></v-spacer>
+        <v-spacer />
 
         <v-col cols="1">
           <v-select
             v-model="pageSize"
             :items="sizes"
             label="Issues per page"
-          ></v-select>
+          />
         </v-col>
       </v-row>
       <v-row align="center" justify="center">
@@ -79,6 +79,21 @@
                       <v-list-item-title>
                         <!-- <div class="text-truncate"> -->
                         {{ matchPattern(item.fields, item.template.title_pattern) }}
+                        <v-chip
+                          v-if="item.is_closed"
+                          class="ml-2"
+                          small
+                        >
+                          <span v-if="item.is_fp">
+                            False Positive
+                          </span>
+                          <span v-else-if="item.is_risk_accepted">
+                            Accepted Risk
+                          </span>
+                          <span v-else>
+                            Resolved
+                          </span>
+                        </v-chip>
                         <!-- </div> -->
                       </v-list-item-title>
                       <v-list-item-subtitle>
@@ -215,11 +230,11 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['activePage', 'currentUser']),
+    ...mapGetters(['currentUser']),
     items() {
       return this.rawItems.filter(
-        (item, index) => index >= (this.page - 1) * this.pageSize
-            && index < this.page * this.pageSize,
+        (item, index) =>
+          index >= (this.page - 1) * this.pageSize && index < this.page * this.pageSize
       );
     },
     allSelected() {
@@ -248,7 +263,7 @@ export default {
       if (this.allSelected) {
         this.selected = [];
       } else {
-        this.selected = this.items.map(i => i._id);
+        this.selected = this.items.map((i) => i._id);
       }
     },
     openIssue(item) {
