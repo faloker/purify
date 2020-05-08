@@ -47,7 +47,7 @@
                 </v-flex>
               </v-layout>
             </v-card-text>
-            <v-divider></v-divider>
+            <v-divider />
             <v-card-actions>
               <v-spacer />
               <v-btn
@@ -144,7 +144,7 @@
             <b>{{ unitToDelete.name }}</b>?
           </span>
         </v-card-title>
-        <v-divider></v-divider>
+        <v-divider />
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -208,10 +208,10 @@ export default {
   },
   computed: {
     ...mapState({
-      units: state => state.units.units,
+      units: (state) => state.units.units,
     }),
     filtredItems() {
-      return this.units.filter(item => toLower(item.name).includes(toLower(this.search)));
+      return this.units.filter((item) => toLower(item.name).includes(toLower(this.search)));
     },
   },
   mounted() {
@@ -220,22 +220,22 @@ export default {
       this.loading = false;
     });
 
-    document.onkeydown = e => {
+    document.onkeydown = (e) => {
       // eslint-disable-next-line no-param-reassign
       e = e || window.event;
       if (
-        e.keyCode === 191 // Forward Slash '/'
-        && e.target !== this.$refs.search.$refs.input
-        && !this.dialog
-        && !this.confirmDialog
+        e.keyCode === 191 && // Forward Slash '/'
+        e.target !== this.$refs.search.$refs.input &&
+        !this.dialog &&
+        !this.confirmDialog
       ) {
         e.preventDefault();
         this.$refs.search.focus();
       } else if (
-        e.keyCode === 67
-        && !this.dialog
-        && !this.confirmDialog
-        && e.target !== this.$refs.search.$refs.input
+        e.keyCode === 67 &&
+        !this.dialog &&
+        !this.confirmDialog &&
+        e.target !== this.$refs.search.$refs.input
       ) {
         this.dialog = true;
       }

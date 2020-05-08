@@ -1,18 +1,8 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 /* eslint-disable no-shadow */
-import {
-  getIssues,
-  updateIssues,
-  createTicket,
-  postComment,
-} from '@/api/issues.service';
+import { getIssues, updateIssues, createTicket, postComment } from '@/api/issues.service';
 import { SET_ISSUES } from '../mutations';
-import {
-  ISSUES_FETCH,
-  ISSUE_UPDATE,
-  CREATE_TICKET,
-  POST_COMMENT,
-} from '../actions';
+import { ISSUES_FETCH, ISSUE_UPDATE, CREATE_TICKET, POST_COMMENT } from '../actions';
 
 const state = {
   issues: [],

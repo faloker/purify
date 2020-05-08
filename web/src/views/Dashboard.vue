@@ -40,9 +40,9 @@
           style="position:relative; z-index:0;"
           :options="issuesLineChartOptions"
           :series="issuesLineChartSeries"
-        ></apexchart>
+        />
       </v-col>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-col>
         <apexchart
           width="500"
@@ -50,7 +50,7 @@
           style="position:relative; z-index:0;"
           :options="riskDonutChartOptions"
           :series="riskDonutChartSeries"
-        ></apexchart>
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -61,7 +61,7 @@
             type="line"
             :options="reportsLineChartOptions"
             :series="reportsLineChartSeries"
-          ></apexchart>
+          />
         </div>
       </v-col>
     </v-row>
@@ -181,8 +181,8 @@ export default {
   }),
   computed: {
     ...mapState({
-      projects: state => state.projects.projects,
-      stats: state => state.projects.stats,
+      projects: (state) => state.projects.projects,
+      stats: (state) => state.projects.stats,
     }),
   },
   mounted() {

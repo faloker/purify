@@ -6,24 +6,6 @@
       type="table-tbody"
     >
       <v-card flat>
-        <!-- <v-flex
-        xs3
-        xl2
-      >
-        <v-card-title>
-          <v-text-field
-            v-model="search"
-            solo
-          >
-            <v-template slot="label">
-              <v-icon style="vertical-align: middle">
-                search
-              </v-icon>
-              Search for report
-            </v-template>
-          </v-text-field>
-        </v-card-title>
-        </v-flex>-->
         <v-data-table
           :headers="headers"
           item-key="_id"
@@ -132,7 +114,7 @@ export default {
   },
   computed: {
     ...mapState({
-      reports: state => state.reports.reports,
+      reports: (state) => state.reports.reports,
     }),
   },
   mounted() {
@@ -146,6 +128,7 @@ export default {
       this.stepperDialog = true;
       this.reportId = id;
     },
+
     deleteReport(id) {
       this.$store.dispatch(REPORT_DELETE, id);
     },

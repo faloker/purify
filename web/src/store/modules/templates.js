@@ -1,14 +1,6 @@
 /* eslint-disable no-shadow */
-import {
-  getTemplates,
-  deleteTemplate,
-  editTemplate,
-} from '@/api/templates.service';
-import {
-  TEMPLATES_FETCH,
-  TEMPLATES_DELETE,
-  TEMPLATES_EDIT,
-} from '@/store/actions';
+import { getTemplates, deleteTemplate, editTemplate } from '@/api/templates.service';
+import { TEMPLATES_FETCH, TEMPLATES_DELETE, TEMPLATES_EDIT } from '@/store/actions';
 import { TEMPLATES_SET } from '@/store/mutations';
 
 const state = {
@@ -17,11 +9,11 @@ const state = {
 
 const getters = {
   templatesNames(state) {
-    return [...new Set(state.templates.map(item => item.template.name))];
+    return [...new Set(state.templates.map((item) => item.template.name))];
   },
 
   templatesTags(state) {
-    return [...new Set([].concat(...state.templates.map(item => item.template.tags)))];
+    return [...new Set([].concat(...state.templates.map((item) => item.template.tags)))];
   },
 };
 
