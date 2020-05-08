@@ -79,6 +79,21 @@
                       <v-list-item-title>
                         <!-- <div class="text-truncate"> -->
                         {{ matchPattern(item.fields, item.template.title_pattern) }}
+                        <v-chip
+                          v-if="item.is_closed"
+                          class="ml-2"
+                          small
+                        >
+                          <span v-if="item.is_fp">
+                            False Positive
+                          </span>
+                          <span v-else-if="item.is_risk_accepted">
+                            Accepted Risk
+                          </span>
+                          <span v-else>
+                            Resolved
+                          </span>
+                        </v-chip>
                         <!-- </div> -->
                       </v-list-item-title>
                       <v-list-item-subtitle>

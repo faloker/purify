@@ -8,6 +8,7 @@ export const IssueSchema = new Schema(
     fields: String,
     is_closed: { type: Boolean, default: false },
     is_fp: { type: Boolean, default: false },
+    is_risk_accepted: { type: Boolean, default: false },
     dup_score: Number,
     risk: {
       type: String,
