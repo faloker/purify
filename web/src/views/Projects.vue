@@ -61,7 +61,7 @@
                 </v-row>
               </v-col>
             </v-card-text>
-            <v-divider></v-divider>
+            <v-divider />
             <v-card-actions>
               <v-spacer />
               <v-btn
@@ -123,11 +123,14 @@ export default {
   },
   computed: {
     ...mapState({
-      projects: state => state.projects.projects,
+      projects: (state) => state.projects.projects,
     }),
+
     filtredItems() {
       // eslint-disable-next-line max-len
-      return this.projects.filter(item => toLower(item.title + item.subtitle).includes(toLower(this.search)));
+      return this.projects.filter((item) =>
+        toLower(item.title + item.subtitle).includes(toLower(this.search))
+      );
     },
   },
   mounted() {
@@ -135,22 +138,22 @@ export default {
       this.loading = false;
     });
 
-    document.onkeydown = e => {
+    document.onkeydown = (e) => {
       // eslint-disable-next-line no-param-reassign
       e = e || window.event;
       if (
-        e.keyCode === 191 // Forward Slash '/'
-        && !this.dialog
-        && !this.subDialogs
-        && e.target !== this.$refs.search.$refs.input
+        e.keyCode === 191 && // Forward Slash '/'
+        !this.dialog &&
+        !this.subDialogs &&
+        e.target !== this.$refs.search.$refs.input
       ) {
         e.preventDefault();
         this.$refs.search.focus();
       } else if (
-        e.keyCode === 67
-        && !this.dialog
-        && !this.subDialogs
-        && e.target !== this.$refs.search.$refs.input
+        e.keyCode === 67 &&
+        !this.dialog &&
+        !this.subDialogs &&
+        e.target !== this.$refs.search.$refs.input
       ) {
         this.dialog = true;
       }
@@ -168,6 +171,7 @@ export default {
         this.dialog = false;
       });
     },
+
     onEsc() {
       this.$refs.search.blur();
     },

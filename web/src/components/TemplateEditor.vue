@@ -13,8 +13,6 @@ import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/lint/lint';
 import 'codemirror/addon/lint/json-lint';
 
-
-// eslint-disable-next-line import/no-extraneous-dependencies
 require('script-loader!jsonlint');
 
 export default {
@@ -44,7 +42,7 @@ export default {
     });
 
     this.jsonEditor.setValue(JSON.stringify(this.value, null, 2));
-    this.jsonEditor.on('change', cm => {
+    this.jsonEditor.on('change', (cm) => {
       this.$emit('changed', cm.getValue());
       this.$emit('input', cm.getValue());
     });
@@ -62,7 +60,7 @@ export default {
 </script>
 
 <style scoped>
-.json-editor{
+.json-editor {
   height: 100%;
   position: relative;
 }
@@ -70,10 +68,10 @@ export default {
   height: auto;
   min-height: 300px;
 }
-.json-editor >>> .CodeMirror-scroll{
+.json-editor >>> .CodeMirror-scroll {
   min-height: 300px;
 }
 .json-editor >>> .cm-s-rubyblue span.cm-string {
-  color: #F08047;
+  color: #f08047;
 }
 </style>

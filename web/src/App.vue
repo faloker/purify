@@ -12,8 +12,7 @@
 <script>
 export default {
   name: 'App',
-  components: {
-  },
+  components: {},
   data: () => ({
     drawer: null,
   }),
@@ -27,5 +26,4 @@ export default {
 .router-link-active {
   color: #2c3e50;
 }
-
 </style>

@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-col>
         <v-text-field
           id="search"
@@ -19,7 +19,7 @@
           </template>
         </v-text-field>
       </v-col>
-      <v-spacer></v-spacer>
+      <v-spacer />
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -68,7 +68,7 @@
         <v-card-title>
           <span class="title">Delete template?</span>
         </v-card-title>
-        <v-divider></v-divider>
+        <v-divider />
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -119,11 +119,7 @@
 <script>
 import { mapState } from 'vuex';
 import { toLower } from 'lodash';
-import {
-  TEMPLATES_FETCH,
-  TEMPLATES_EDIT,
-  TEMPLATES_DELETE,
-} from '@/store/actions';
+import { TEMPLATES_FETCH, TEMPLATES_EDIT, TEMPLATES_DELETE } from '@/store/actions';
 import TemplateEditor from '@/components/TemplateEditor.vue';
 import { formatDate } from '@/utils/helpers';
 
@@ -182,12 +178,14 @@ export default {
   },
   computed: {
     ...mapState({
-      templates: state => state.templates.templates,
+      templates: (state) => state.templates.templates,
     }),
 
     filtredItems() {
       // eslint-disable-next-line max-len
-      return this.templates.filter(item => toLower(item.template.name).includes(toLower(this.search)));
+      return this.templates.filter((item) =>
+        toLower(item.template.name).includes(toLower(this.search))
+      );
     },
   },
   mounted() {
@@ -210,14 +208,12 @@ export default {
         external_comparison_fields: rawTemplate.external_comparison_fields,
       };
 
-      this.$store
-        .dispatch(TEMPLATES_EDIT, { id: rawTemplate._id, change: template })
-        .then(() => {
-          this.dialog = false;
-          this.$toasted.global.api_success({
-            msg: 'Template updated successfully',
-          });
+      this.$store.dispatch(TEMPLATES_EDIT, { id: rawTemplate._id, change: template }).then(() => {
+        this.dialog = false;
+        this.$toasted.global.api_success({
+          msg: 'Template updated successfully',
         });
+      });
     },
 
     openEditor(item) {
@@ -231,15 +227,13 @@ export default {
     },
 
     deleteTemplate() {
-      this.$store
-        .dispatch(TEMPLATES_DELETE, this.selectedTemplate.template._id)
-        .then(() => {
-          this.confirmDialog = false;
-          this.$toasted.global.api_success({
-            msg: 'Template removed successfully',
-          });
-          this.selectedTemplate = null;
+      this.$store.dispatch(TEMPLATES_DELETE, this.selectedTemplate.template._id).then(() => {
+        this.confirmDialog = false;
+        this.$toasted.global.api_success({
+          msg: 'Template removed successfully',
         });
+        this.selectedTemplate = null;
+      });
     },
 
     formatDate,

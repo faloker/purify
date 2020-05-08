@@ -9,11 +9,7 @@ import {
   FETCH_CONTENT,
   // FETCH_TEMPLATES_NAMES,
 } from '../actions';
-import {
-  SET_REPORTS,
-  SET_CONTENT,
-  SET_TEMLATES_NAMES,
-} from '../mutations';
+import { SET_REPORTS, SET_CONTENT, SET_TEMLATES_NAMES } from '../mutations';
 
 const state = {
   reports: [],

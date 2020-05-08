@@ -25,17 +25,6 @@
         </v-col>
         <v-col>
           <v-select
-            v-model="fp_status"
-            :items="['Yes', 'No']"
-            label="False Positive"
-            prepend-icon="thumbs_up_down"
-            clearable
-            dense
-            @input="$emit('fp_status', fp_status)"
-          />
-        </v-col>
-        <v-col>
-          <v-select
             v-model="closed_status"
             :items="['Yes', 'No']"
             label="Resolved"
@@ -43,6 +32,17 @@
             clearable
             dense
             @input="$emit('closed_status', closed_status)"
+          />
+        </v-col>
+        <v-col>
+          <v-select
+            v-model="resolution"
+            :items="['Resolved', 'False Positive', 'Accepted Risk']"
+            label="Resolution Status"
+            prepend-icon="thumbs_up_down"
+            clearable
+            dense
+            @input="$emit('resolution', resolution)"
           />
         </v-col>
         <v-col>
@@ -131,7 +131,7 @@ export default {
   name: 'IssueFilter',
   data() {
     return {
-      fp_status: 'No',
+      resolution: '',
       search_term: '',
       ticket_status: '',
       closed_status: 'No',

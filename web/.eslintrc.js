@@ -3,29 +3,37 @@ module.exports = {
   env: {
     node: true,
   },
-  extends: ['plugin:vue/recommended', '@vue/airbnb'],
+  extends: ['plugin:vue/recommended', 'plugin:prettier-vue/recommended'],
   plugins: ['vuetify'],
-  rules: {
-    'import/no-webpack-loader-syntax': 'off',
-    'import/no-cycle': 'off',
-    'import/prefer-default-export': 'off',
-    'arrow-parens': ['error', 'as-needed'],
-    'vue/html-self-closing': 'off',
-    'vue/html-closing-bracket-spacing': 'off',
-    'vue/max-attributes-per-line': ['error', {
-      singleline: 2,
-      multiline: {
-        max: 1,
-        allowFirstLine: false,
+  settings: {
+    'prettier-vue': {
+      SFCBlocks: {
+        template: false,
+        script: true,
+        style: true,
       },
-    }],
-    'no-underscore-dangle': 'off',
-    'no-restricted-syntax': 'off',
-    'vuetify/no-deprecated-classes': 'error',
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+
+      usePrettierrc: true,
+
+      fileInfoOptions: {
+        ignorePath: '.testignore',
+        withNodeModules: false,
+      },
+    },
+  },
+  rules: {
+    'vue/max-attributes-per-line': [
+          'error',
+          {
+            singleline: 2,
+            multiline: {
+              max: 1,
+              allowFirstLine: false,
+            },
+          },
+        ],
   },
   parserOptions: {
     parser: 'babel-eslint',
-  },
+  }
 };

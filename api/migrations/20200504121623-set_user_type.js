@@ -9,6 +9,8 @@ module.exports = {
   },
 
   async down(db, client) {
-    await db.collection('users').updateMany({ type: { $exists: true } }, { $unset: { type: '' } });
+    await db
+      .collection('users')
+      .updateMany({ type: { $exists: true } }, { $unset: { type: '' } });
   },
 };

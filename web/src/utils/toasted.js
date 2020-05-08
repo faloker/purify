@@ -13,7 +13,7 @@ export const ToastedService = {
 
     Vue.toasted.register(
       'api_error',
-      err => {
+      (err) => {
         if (err.response) {
           return err.response.data.message;
         }
@@ -22,10 +22,10 @@ export const ToastedService = {
       {
         type: 'error',
         icon: 'times',
-      },
+      }
     );
 
-    Vue.toasted.register('api_success', payload => payload.msg, {
+    Vue.toasted.register('api_success', (payload) => payload.msg, {
       type: 'success',
       icon: 'check',
     });

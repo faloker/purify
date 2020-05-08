@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export const SET_CONFIG = 'setConfig';
 
 export const SET_PROJECTS = 'setProjects';

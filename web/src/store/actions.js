@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export const FETCH_PROJECTS = 'fetchProjects';
 export const DELETE_PROJECT = 'deleteProject';
 export const CREATE_PROJECT = 'createProject';

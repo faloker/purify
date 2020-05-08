@@ -7,7 +7,7 @@
             src="@/assets/logo_trans.png"
             max-width="110"
             max-height="110"
-          ></v-img>
+          />
         </v-row>
         <v-row>
           <v-tabs
@@ -29,7 +29,7 @@
               <v-tab-item>
                 <v-form class="grey-form">
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="username"
                       v-model="username"
@@ -37,10 +37,10 @@
                       prepend-icon="accessibility_new"
                       required
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="password"
                       v-model="password"
@@ -49,7 +49,7 @@
                       type="password"
                       prepend-icon="lock"
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row justify="center">
                     <v-btn
@@ -69,7 +69,7 @@
               <v-tab-item>
                 <v-form class="grey-form">
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="user"
                       v-model="username"
@@ -77,10 +77,10 @@
                       prepend-icon="accessibility_new"
                       required
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="email"
                       v-model="email"
@@ -88,10 +88,10 @@
                       required
                       prepend-icon="alternate_email"
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-text-field
                       id="pass"
                       v-model="password"
@@ -100,7 +100,7 @@
                       type="password"
                       prepend-icon="lock"
                     />
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                   </v-row>
                   <v-row justify="center">
                     <v-btn
@@ -142,7 +142,7 @@ export default {
   },
   computed: {
     ...mapState({
-      systemSetup: state => state.app.setup,
+      systemSetup: (state) => state.app.setup,
     }),
   },
   methods: {

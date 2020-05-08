@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <issue-filter
-        @fp_status="updateFPStatus"
+        @resolution="resolutionStatus = $event"
         @risk_level="risk = $event"
         @ticket_status="updateTicketStatus"
         @search_term="search = $event"
@@ -40,7 +40,7 @@ export default {
   },
   data() {
     return {
-      fp: false,
+      resolutionStatus: '',
       ticket: '',
       closed: false,
       search: '',
@@ -52,43 +52,52 @@ export default {
   },
   computed: {
     ...mapState({
-      issues: state => state.issues.issues,
+      issues: (state) => state.issues.issues,
     }),
     filtredIssues() {
       let issuesToDisplay = this.issues;
 
-      issuesToDisplay = this.timeback || ''
-        ? issuesToDisplay.filter(
-          i => new Date(i.created_at) > sub(new Date(), { days: this.timeback }),
-        )
-        : issuesToDisplay.sort(
-          (a, b) => compareDesc(Date.parse(a.created_at), Date.parse(b.created_at)),
+      issuesToDisplay =
+        this.timeback || ''
+          ? issuesToDisplay.filter(
+              (i) => new Date(i.created_at) > sub(new Date(), { days: this.timeback })
+            )
+          : issuesToDisplay.sort((a, b) =>
+              compareDesc(Date.parse(a.created_at), Date.parse(b.created_at))
+            );
+
+      if (this.resolutionStatus === 'Resolved') {
+        issuesToDisplay = issuesToDisplay.filter(
+          (i) => i.is_risk_accepted === false && i.is_fp === false
         );
+      } else if (this.resolutionStatus === 'Accepted Risk') {
+        issuesToDisplay = issuesToDisplay.filter((i) => i.is_risk_accepted === true);
+      } else if (this.resolutionStatus === 'False Positive') {
+        issuesToDisplay = issuesToDisplay.filter((i) => i.is_fp === true);
+      }
 
-      issuesToDisplay = this.fp !== ''
-        ? issuesToDisplay.filter(i => i.is_fp === this.fp)
-        : issuesToDisplay;
+      issuesToDisplay =
+        this.closed !== ''
+          ? issuesToDisplay.filter((i) => i.is_closed === this.closed)
+          : issuesToDisplay;
 
-      issuesToDisplay = this.closed !== ''
-        ? issuesToDisplay.filter(i => i.is_closed === this.closed)
-        : issuesToDisplay;
+      issuesToDisplay =
+        this.risk || '' ? issuesToDisplay.filter((i) => i.risk === this.risk) : issuesToDisplay;
 
-      issuesToDisplay = this.risk || ''
-        ? issuesToDisplay.filter(i => i.risk === this.risk)
-        : issuesToDisplay;
+      issuesToDisplay =
+        this.ticket !== ''
+          ? issuesToDisplay.filter((i) => !!i.ticket === this.ticket)
+          : issuesToDisplay;
 
-      issuesToDisplay = this.ticket !== ''
-        ? issuesToDisplay.filter(i => !!i.ticket === this.ticket)
-        : issuesToDisplay;
-
-      issuesToDisplay = this.search || ''
-        ? issuesToDisplay.filter(i => JSON.stringify(i.fields)
-          .toLowerCase()
-          .includes(this.search.toLowerCase()))
-        : issuesToDisplay;
+      issuesToDisplay =
+        this.search || ''
+          ? issuesToDisplay.filter((i) =>
+              JSON.stringify(i.fields).toLowerCase().includes(this.search.toLowerCase())
+            )
+          : issuesToDisplay;
 
       issuesToDisplay = this.templates.length
-        ? issuesToDisplay.filter(i => this.templates.includes(i.template.name))
+        ? issuesToDisplay.filter((i) => this.templates.includes(i.template.name))
         : issuesToDisplay;
 
       return issuesToDisplay;
@@ -96,17 +105,16 @@ export default {
   },
   mounted() {
     this.$store.commit(SET_ACTIVE_UNIT, this.$route.params.slug);
+
     this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug).then(() => {
       this.loading = false;
     });
   },
   methods: {
-    updateFPStatus(textStatus) {
-      this.fp = textStatus ? textStatus === 'Yes' : '';
-    },
     updateTicketStatus(textStatus) {
       this.ticket = textStatus ? textStatus === 'Yes' : '';
     },
+
     updateClosedStatus(textStatus) {
       this.closed = textStatus ? textStatus === 'Yes' : '';
     },
