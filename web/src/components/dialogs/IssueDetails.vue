@@ -30,7 +30,7 @@
                 </v-card-title>
                 <v-card-text>
                   <v-select
-                    v-model="risk"
+                    v-model="issue.risk"
                     :items="severities"
                     label="How bad is it?"
                     outlined
@@ -43,7 +43,7 @@
                   <v-btn
                     color="green darken-1"
                     text
-                    @click="updateIssue(issue, 'risk', risk)"
+                    @click="updateIssue(issue, 'risk', issue.risk)"
                   >
                     Confirm
                   </v-btn>
@@ -256,9 +256,9 @@ export default {
     },
     updateIssue(item, field, value) {
       const change = {};
-      if (field !== 'is_closed') {
+      if (['is_fp', 'is_risk_accepted'].includes(field)) {
         change.is_closed = true;
-      } else if (value === false) {
+      } else if (field === 'is_closed' && value === false) {
         change.is_fp = false;
         change.is_risk_accepted = false;
       }
@@ -266,13 +266,17 @@ export default {
       change[field] = value;
 
       this.$store.dispatch(ISSUE_UPDATE, { ids: [item._id], change }).then(() => {
-        if (field !== 'is_closed') {
+        if (['is_fp', 'is_risk_accepted'].includes(field)) {
           this.issue.is_closed = true;
-        } else if (value === false) {
+        } else if (field === 'is_closed' && value === false) {
           this.issue.is_fp = false;
           this.issue.is_risk_accepted = false;
         }
         this.issue[field] = value;
+
+        if (field === 'risk') {
+          this.riskDialog = false;
+        }
       });
     },
     genColor() {
