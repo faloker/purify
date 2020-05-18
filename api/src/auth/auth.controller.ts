@@ -65,15 +65,22 @@ export class AuthController {
     const token = req.cookies.refresh_token;
 
     if (token) {
-      const tokens = await this.authService.refreshToken(token);
+      try {
+        const tokens = await this.authService.refreshToken(token);
 
-      response
-        .setCookie('refresh_token', tokens.refresh_token, this.cookieConfig)
-        .send({ token: tokens.access_token });
+        response
+          .setCookie('refresh_token', tokens.refresh_token, this.cookieConfig)
+          .send({ token: tokens.access_token });
+      } catch (err) {
+        response.code(HttpStatus.UNAUTHORIZED).send({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized',
+        });
+      }
     } else {
       response.code(HttpStatus.UNAUTHORIZED).send({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'No active session. Login again.',
+        message: 'Unauthorized',
       });
     }
   }
