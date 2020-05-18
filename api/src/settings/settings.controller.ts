@@ -6,7 +6,10 @@ import {
   SlackSettingsBodyDto,
 } from './dto/settings.dto';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('settings')
 @Controller('settings')
 @UseGuards(GenericAuthGuard)
 export class SettingsController {

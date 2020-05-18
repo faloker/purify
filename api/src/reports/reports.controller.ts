@@ -2,7 +2,11 @@ import { Controller, Post, Request, Get, Delete, Req, Body, Param, Query, UseGua
 import { ReportsService } from './reports.service';
 import { DeleteReportDto, GetReportsDto, GetReportContentDto } from './dto/reports.dto';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
+import { ApiTags, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiSecurity('api_key', ['apikey'])
+@ApiTags('reports')
 @Controller('reports')
 @UseGuards(GenericAuthGuard)
 export class ReportsController {
@@ -19,12 +23,12 @@ export class ReportsController {
   }
 
   @Get(':id/content')
-  getContent(@Param() getReportContentDto: GetReportContentDto) {
-    return this.reportsService.getContent(getReportContentDto.id)
+  getContent(@Param('id') id: string) {
+    return this.reportsService.getContent(id)
   }
 
   @Delete(':id')
-  deleteReport(@Param() deleteReportDto: DeleteReportDto) {
-    return this.reportsService.delete(deleteReportDto.id)
+  deleteReport(@Param('id') id: string) {
+    return this.reportsService.delete(id)
   }
 }

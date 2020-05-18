@@ -11,10 +11,14 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { GenericAuthGuard } from '../auth/generic-auth.guard';
 import { ProjectDto, GetStatsDto } from './dto/projects.dto';
 
+@ApiBearerAuth()
+@ApiSecurity('api_key', ['apikey'])
+@ApiTags('projects')
 @Controller('projects')
 @UseGuards(GenericAuthGuard)
 export class ProjectsController {
@@ -31,17 +35,17 @@ export class ProjectsController {
   }
 
   @Patch(':id')
-  editProject(@Param() params, @Body() projectDto: ProjectDto) {
-    return this.projectsService.edit(params.id, projectDto);
+  editProject(@Param('id') id: string, @Body() projectDto: ProjectDto) {
+    return this.projectsService.edit(id, projectDto);
   }
 
   @Delete(':id')
-  deleteProject(@Param() params) {
-    return this.projectsService.delete(params.id);
+  deleteProject(@Param('id') id: string) {
+    return this.projectsService.delete(id);
   }
 
   @Get('stats')
   getStats(@Query() query: GetStatsDto) {
-    return this.projectsService.getStats(query.project)
+    return this.projectsService.getStats(query.project);
   }
 }

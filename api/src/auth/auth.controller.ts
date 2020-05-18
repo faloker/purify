@@ -16,7 +16,9 @@ import { CreateUserDto } from 'src/users/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { GenericAuthGuard } from './generic-auth.guard';
 import { CredentialsAuthGuard } from './credentials-auth.guard';
+import { ApiTags, ApiBody, ApiExcludeEndpoint } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   cookieConfig: any;
@@ -36,6 +38,16 @@ export class AuthController {
   }
 
   @Post()
+  @ApiBody({
+    description: 'Returns JWT token for authorization flow.',
+    schema: {
+      type: 'object',
+      properties: {
+        username: { type: 'string' },
+        password: { type: 'string' },
+      },
+    },
+  })
   @UseGuards(CredentialsAuthGuard)
   async login(@Request() req, @Res() response) {
     const tokens = await this.authService.login(req.user);
@@ -49,9 +61,11 @@ export class AuthController {
   @Post('signup')
   async register(@Body() createUserDto: CreateUserDto, @Res() response) {
     if (this.configService.get<string>('ALLOW_REGISTRATION') === 'false') {
-      throw new BadRequestException('Registration is disabled for this installation');
+      throw new BadRequestException(
+        'Registration is disabled for this installation'
+      );
     }
-  
+
     const newUser = await this.usersService.createUser(createUserDto);
     const tokens = await this.authService.login(newUser);
 
@@ -61,6 +75,7 @@ export class AuthController {
   }
 
   @Get('refresh_token')
+  @ApiExcludeEndpoint()
   async refreshToken(@Request() req, @Res() response) {
     const token = req.cookies.refresh_token;
 
@@ -86,12 +101,23 @@ export class AuthController {
   }
 
   @Post('token')
+  @ApiBody({
+    description: 'Creates and returns API token for the current user.',
+    schema: {
+      type: 'object',
+      properties: {
+        username: { type: 'string' },
+        password: { type: 'string' },
+      },
+    },
+  })
   @UseGuards(CredentialsAuthGuard)
   async issueToken(@Request() req) {
     return this.authService.issueToken(req.user);
   }
 
   @Delete()
+  @ApiExcludeEndpoint()
   @UseGuards(GenericAuthGuard)
   async logout(@Request() req, @Res() response) {
     await this.authService.removeRefreshToken(req.user.id);

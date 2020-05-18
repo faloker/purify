@@ -11,7 +11,11 @@ import {
 import { UnitsService } from './units.service';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import { GetUnitsDto, UnitDto, DeleteUnitDto } from './dto/units.dto';
+import { ApiTags, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiSecurity('api_key', ['apikey'])
+@ApiTags('units')
 @Controller('units')
 @UseGuards(GenericAuthGuard)
 export class UnitsController {
@@ -28,7 +32,7 @@ export class UnitsController {
   }
 
   @Delete(':id')
-  deleteProject(@Param() params: DeleteUnitDto) {
-    return this.unitsService.delete(params.id);
+  deleteProject(@Param('id') id: string) {
+    return this.unitsService.delete(id);
   }
 }
