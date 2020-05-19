@@ -1,8 +1,25 @@
-import { Controller, Post, Body, Get, UseGuards, Patch, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Patch,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { TemplatesService } from './templates.service';
-import { IdParamDto, SaveTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
+import {
+  IdParamDto,
+  SaveTemplateDto,
+  EditTemplateBodyDto,
+} from './dto/templates.dto';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
+import { ApiTags, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiSecurity('api_key', ['apikey'])
+@ApiTags('templates')
 @Controller('templates')
 @UseGuards(GenericAuthGuard)
 export class TemplatesController {
@@ -10,19 +27,19 @@ export class TemplatesController {
 
   @Post()
   saveTemplate(@Body() template: SaveTemplateDto) {
-    return this.templatesService.save(template)
+    return this.templatesService.save(template);
   }
 
   @Get()
   findAll() {
     return this.templatesService.findAll();
-  }  
-  
+  }
+
   @Patch(':id')
-  updateOne(@Param() param: IdParamDto, @Body() template: EditTemplateBodyDto) {
-    return this.templatesService.updateOne(param.id, template);
-  }  
-  
+  updateOne(@Param('id') id: string, @Body() template: EditTemplateBodyDto) {
+    return this.templatesService.updateOne(id, template);
+  }
+
   @Delete(':id')
   deleteOne() {
     return this.templatesService.deleteOne();

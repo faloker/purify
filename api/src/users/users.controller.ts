@@ -4,23 +4,20 @@ import {
   Post,
   Body,
   UseGuards,
-  HttpCode,
   Request,
-  Req,
-  forwardRef,
-  Inject,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
-import { User } from './interfaces/user.interface';
 import { GenericAuthGuard } from '../auth/generic-auth.guard';
+import { ApiTags, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiSecurity('api_key', ['apikey'])
+@ApiTags('users')
 @Controller('users')
 @UseGuards(GenericAuthGuard)
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
