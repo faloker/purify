@@ -276,15 +276,15 @@ export default {
     },
     genColor(risk) {
       switch (risk) {
-        case 'Info':
+        case 'info':
           return 'light-blue lighten-3';
-        case 'Low':
+        case 'low':
           return 'blue';
-        case 'Medium':
+        case 'medium':
           return 'orange';
-        case 'High':
+        case 'high':
           return 'red darken-2';
-        case 'Critical':
+        case 'critical':
           return 'red darken-4';
         default:
           return 'grey';

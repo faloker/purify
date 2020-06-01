@@ -30,7 +30,7 @@
                 </v-card-title>
                 <v-card-text>
                   <v-select
-                    v-model="issue.risk"
+                    v-model="risk"
                     :items="severities"
                     label="How bad is it?"
                     outlined
@@ -43,7 +43,7 @@
                   <v-btn
                     color="green darken-1"
                     text
-                    @click="updateIssue(issue, 'risk', issue.risk)"
+                    @click="updateIssue(issue, 'risk', risk)"
                   >
                     Confirm
                   </v-btn>
@@ -120,8 +120,7 @@
                     color="senary"
                     @click="ticketDialog = !ticketDialog"
                   >
-                    <v-icon color="senary" left>mdi-jira</v-icon>
-                    Create Ticket
+                    <v-icon color="senary" left>mdi-jira</v-icon>Create Ticket
                   </v-btn>
                 </span>
               </template>
@@ -222,16 +221,10 @@ export default {
     return {
       ticketDialog: false,
       editDialog: false,
-      severities: ['Info', 'Low', 'Medium', 'High', 'Critical'],
+      severities: ['info', 'low', 'medium', 'high', 'critical'],
       riskDialog: false,
       commentDialog: false,
-      risk: 'Medium',
-      items: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' },
-      ],
+      risk: '',
     };
   },
   computed: {
@@ -249,11 +242,15 @@ export default {
   },
   methods: {
     matchPattern,
+
     parseKey,
+
     getValue,
+
     isPrintable(obj) {
       return ['string', 'boolean', 'number'].includes(typeof obj);
     },
+
     updateIssue(item, field, value) {
       const change = {};
       if (['is_fp', 'is_risk_accepted'].includes(field)) {
@@ -279,17 +276,18 @@ export default {
         }
       });
     },
+
     genColor() {
       switch (this.issue.risk) {
-        case 'Info':
+        case 'info':
           return 'light-blue lighten-3';
-        case 'Low':
+        case 'low':
           return 'blue';
-        case 'Medium':
+        case 'medium':
           return 'orange';
-        case 'High':
+        case 'high':
           return 'red darken-2';
-        case 'Critical':
+        case 'critical':
           return 'red darken-4';
         default:
           return 'grey';

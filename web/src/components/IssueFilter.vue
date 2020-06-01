@@ -171,7 +171,7 @@ export default {
           value: '7',
         },
       ],
-      severities: ['Info', 'Low', 'Medium', 'High', 'Critical'],
+      severities: ['info', 'low', 'medium', 'high', 'critical'],
     };
   },
   computed: {
