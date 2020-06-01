@@ -12,8 +12,8 @@ export const IssueSchema = new Schema(
     dup_score: Number,
     risk: {
       type: String,
-      default: 'Medium',
-      enum: ['Low', 'Info', 'Medium', 'High', 'Critical'],
+      default: 'medium',
+      enum: ['low', 'info', 'medium', 'high', 'critical'],
     },
     template: { type: String, ref: 'Template' },
     report: { type: String, ref: 'Report' },
@@ -22,5 +22,5 @@ export const IssueSchema = new Schema(
     tags: [{ type: String }],
     comments: [{ type: String, ref: 'Comment' }],
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );
