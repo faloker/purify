@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import {
   Injectable,
   NotFoundException,
@@ -10,8 +11,9 @@ import { Issue } from './interfaces/issue.interface';
 import { Unit } from 'src/units/interfaces/unit.interface';
 import { Ticket } from './interfaces/ticket.interface';
 import { Comment } from './interfaces/comment.interface';
-import { SaveCommentBodyDto } from './dto/issues.dto';
+import { SaveCommentBodyDto, GetIssuesQueryDto } from './dto/issues.dto';
 import { JiraService } from 'src/plugins/jira/jira.service';
+import { matchPattern } from 'src/utils/converter';
 
 @Injectable()
 export class IssuesService {
@@ -23,26 +25,72 @@ export class IssuesService {
     private jiraService: JiraService
   ) {}
 
-  async get(unitSlug: string) {
-    const unit = await this.unitModel.findOne({ slug: unitSlug });
+  async get(params: GetIssuesQueryDto) {
+    const unit = await this.unitModel.findOne({ slug: params.unit });
+    const options: any = {};
 
     if (!unit) {
       throw new NotFoundException();
+    } else {
+      options.unit = unit._id;
     }
 
-    const issues = await this.issueModel
-      .find({ unit: unit._id })
-      .populate('template', [
-        'title_pattern',
-        'body_fields',
-        'subtitle_pattern',
-        'name',
-      ])
-      .populate('ticket')
-      .populate({
-        path: 'comments',
-        populate: { path: 'author', select: 'username image' },
-      });
+    if (params.closed) {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      options.is_closed = params.closed === 'true' ? true : false;
+    }
+
+    if (params.ticket) {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      options.ticket = { $exists: params.ticket === 'true' ? true : false };
+    }
+
+    if (params.risks) {
+      options.risk = { $in: params.risks.split(',') };
+    }
+
+    let issues: any = [];
+
+    if (params.verbose && params.verbose === 'false') {
+      const rawIssues = await this.issueModel
+        .find(options)
+        .populate('template', ['title_pattern', 'subtitle_pattern'])
+        .populate('ticket');
+
+      for (const issue of rawIssues) {
+        issues.push({
+          _id: issue._id,
+          is_closed: issue.is_closed,
+          is_fp: issue.is_fp,
+          is_risk_accepted: issue.is_risk_accepted,
+          title: matchPattern(
+            JSON.parse(issue.fields),
+            issue.template.title_pattern
+          ),
+          subtitle: matchPattern(
+            JSON.parse(issue.fields),
+            issue.template.subtitle_pattern
+          ),
+          risk: issue.risk,
+          created_at: issue.created_at,
+          ticket: issue.ticket,
+        });
+      }
+    } else {
+      issues = await this.issueModel
+        .find(options)
+        .populate('template', [
+          'title_pattern',
+          'body_fields',
+          'subtitle_pattern',
+          'name',
+        ])
+        .populate('ticket')
+        .populate({
+          path: 'comments',
+          populate: { path: 'author', select: 'username image' },
+        });
+    }
 
     return issues;
   }

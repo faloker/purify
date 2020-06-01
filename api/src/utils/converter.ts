@@ -1,4 +1,5 @@
 import { xml2json } from 'xml-js';
+import { get } from 'lodash';
 
 const removeAttribute = (value, parentElement) => {
   try {
@@ -8,6 +9,22 @@ const removeAttribute = (value, parentElement) => {
   } catch (e) {
     console.log(e);
   }
+};
+
+export const matchPattern = (fields, pattern) => {
+  let result = pattern;
+  const matches = pattern
+    // eslint-disable-next-line no-useless-escape
+    .match(/[a-zA-Z0-9\_\.\[\]]+/gm);
+
+  for (let match of matches) {
+    if (match.startsWith('[') && match.endsWith(']')) {
+      match = match.replace(/^\[/, '').replace(/]$/, '');
+    }
+    result = result.replace(match, get(fields, match));
+  }
+
+  return result;
 };
 
 export function xmlToJson(data) {
@@ -20,4 +37,4 @@ export function xmlToJson(data) {
       cdataFn: removeAttribute,
     })
   );
-};
+}

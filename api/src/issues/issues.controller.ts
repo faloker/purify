@@ -1,6 +1,19 @@
-import { Controller, Get, Query, Post, Body, Patch, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { IssuesService } from './issues.service';
-import { GetIssuesQueryDto, UpdateIssuesBodyDto, CreateTicketBodyDto, IdParamDto, SaveCommentBodyDto } from './dto/issues.dto';
+import {
+  GetIssuesQueryDto,
+  UpdateIssuesBodyDto,
+  SaveCommentBodyDto,
+} from './dto/issues.dto';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 
@@ -14,21 +27,21 @@ export class IssuesController {
 
   @Get()
   getIssues(@Query() query: GetIssuesQueryDto) {
-    return this.issuesService.get(query.unit);
+    return this.issuesService.get(query);
   }
 
   @Patch()
   updateIssues(@Body() body: UpdateIssuesBodyDto) {
-    return this.issuesService.updateMany(body.ids, body.change)
+    return this.issuesService.updateMany(body.ids, body.change);
   }
 
   @Post(':id/ticket')
   createTicket(@Param('id') id: string, @Body() body: any) {
-    return this.issuesService.createJiraTicket(id, body)
+    return this.issuesService.createJiraTicket(id, body);
   }
 
   @Post(':id/comment')
   saveComment(@Param('id') id: string, @Body() comment: SaveCommentBodyDto) {
-    return this.issuesService.saveComment(id, comment)
+    return this.issuesService.saveComment(id, comment);
   }
 }

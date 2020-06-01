@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row justify="center" align="center">
       <issue-filter
         @resolution="resolutionStatus = $event"
         @risk_level="risk = $event"
@@ -12,7 +12,7 @@
       />
     </v-row>
     <v-row justify="center" align="center">
-      <v-col cols="12">
+      <v-col cols="10">
         <v-skeleton-loader
           :loading="loading"
           transition="scale-transition"
@@ -47,7 +47,7 @@ export default {
       templates: [],
       timeback: '',
       loading: true,
-      risk: '',
+      risk: [],
     };
   },
   computed: {
@@ -81,8 +81,9 @@ export default {
           ? issuesToDisplay.filter((i) => i.is_closed === this.closed)
           : issuesToDisplay;
 
-      issuesToDisplay =
-        this.risk || '' ? issuesToDisplay.filter((i) => i.risk === this.risk) : issuesToDisplay;
+      issuesToDisplay = this.risk.length
+        ? issuesToDisplay.filter((i) => this.risk.includes(i.risk))
+        : issuesToDisplay;
 
       issuesToDisplay =
         this.ticket !== ''

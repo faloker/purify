@@ -14,17 +14,6 @@
         </v-col>
         <v-col>
           <v-select
-            v-model="risk_level"
-            :items="severities"
-            prepend-icon="fa-bug"
-            label="Risk"
-            clearable
-            dense
-            @input="$emit('risk_level', risk_level)"
-          />
-        </v-col>
-        <v-col>
-          <v-select
             v-model="closed_status"
             :items="['Yes', 'No']"
             label="Resolved"
@@ -72,6 +61,30 @@
       </v-row>
       <v-row>
         <v-col>
+          <v-select
+            v-model="risk_level"
+            :items="severities"
+            prepend-icon="fa-bug"
+            label="Risk"
+            clearable
+            multiple
+            chips
+            dense
+            @input="$emit('risk_level', risk_level)"
+          >
+            <template v-slot:selection="data">
+              <v-chip
+                :input-value="data.selected"
+                close
+                class="chip--select-multi"
+                @click:close="remove(risk_level, data.item)"
+              >
+                {{ data.item }}
+              </v-chip>
+            </template>
+          </v-select>
+        </v-col>
+        <v-col>
           <v-autocomplete
             v-model="templates"
             :items="templatesNames"
@@ -88,7 +101,7 @@
                 :input-value="data.selected"
                 close
                 class="chip--select-multi"
-                @click:close="remove(data.item)"
+                @click:close="remove(templates, data.item)"
               >
                 {{ data.item }}
               </v-chip>
@@ -137,7 +150,7 @@ export default {
       closed_status: 'No',
       startDate: '',
       endDate: '',
-      risk_level: '',
+      risk_level: [],
       model: null,
       menu2: false,
       menu3: false,
@@ -168,9 +181,9 @@ export default {
     this.$store.dispatch(TEMPLATES_FETCH);
   },
   methods: {
-    remove(item) {
-      const index = this.templates.indexOf(item);
-      if (index >= 0) this.templates.splice(index, 1);
+    remove(array, item) {
+      const index = array.indexOf(item);
+      if (index >= 0) array.splice(index, 1);
     },
   },
 };
