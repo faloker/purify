@@ -4,7 +4,7 @@
       <v-row
         no-gutters
         align="center"
-        justify="start"
+        justify="center"
       >
         <v-col cols="1">
           <v-tooltip top>
@@ -180,9 +180,12 @@
       </v-dialog>
     </template>
     <template v-else>
-      <v-row>
-        <v-col cols="12">
-          <span class="headline grey--text mx-5">No issues to display</span>
+      <v-row
+        align="center"
+        justify="center"
+      >
+        <v-col cols="3">
+          <span class="headline grey--text">No issues to display</span>
         </v-col>
       </v-row>
     </template>
