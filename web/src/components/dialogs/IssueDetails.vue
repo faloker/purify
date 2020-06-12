@@ -21,7 +21,7 @@
               </v-tooltip>
             </v-row>
             <v-row justify="center">
-              <span>{{ issue.risk }}</span>
+              <span class="text-capitalize">{{ issue.risk }}</span>
             </v-row>
             <v-dialog v-model="riskDialog" max-width="300">
               <v-card>
@@ -66,7 +66,7 @@
         <v-row justify="center">
           <v-col>
             <v-menu
-              v-if="!issue.is_closed"
+              v-if="issue.status === 'open'"
               transition="slide-y-transition"
               bottom
             >
@@ -85,16 +85,22 @@
               </template>
               <v-list>
                 <!-- eslint-disable-next-line max-len -->
-                <v-list-item key="switch-resolution" @click="updateIssue(issue, 'is_closed', true)">
+                <v-list-item
+                  key="switch-resolution"
+                  @click="updateIssue(issue, 'resolution', 'resolved')"
+                >
                   <v-list-item-title>Resolved</v-list-item-title>
                 </v-list-item>
-                <v-list-item key="switch-as-fp" @click="updateIssue(issue, 'is_fp', true)">
+                <v-list-item
+                  key="switch-as-fp"
+                  @click="updateIssue(issue, 'resolution', 'false positive')"
+                >
                   <v-list-item-title>False Positive</v-list-item-title>
                 </v-list-item>
                 <!-- eslint-disable-next-line max-len -->
                 <v-list-item
                   key="switch-risk-accepted"
-                  @click="updateIssue(issue, 'is_risk_accepted', true)"
+                  @click="updateIssue(issue, 'resolution', 'accepted risk')"
                 >
                   <v-list-item-title>Accepted Risk</v-list-item-title>
                 </v-list-item>
@@ -105,7 +111,7 @@
               outlined
               class="mr-2"
               color="primary"
-              @click="updateIssue(issue, 'is_closed', false)"
+              @click="updateIssue(issue, 'status', 'open')"
             >
               Reopen
             </v-btn>
@@ -253,21 +259,19 @@ export default {
 
     updateIssue(item, field, value) {
       const change = {};
-      if (['is_fp', 'is_risk_accepted'].includes(field)) {
-        change.is_closed = true;
-      } else if (field === 'is_closed' && value === false) {
-        change.is_fp = false;
-        change.is_risk_accepted = false;
+      if (field === 'resolution') {
+        change.status = 'closed';
+      } else if (field === 'status') {
+        change.resolution = 'none';
       }
 
       change[field] = value;
 
       this.$store.dispatch(ISSUE_UPDATE, { ids: [item._id], change }).then(() => {
-        if (['is_fp', 'is_risk_accepted'].includes(field)) {
-          this.issue.is_closed = true;
-        } else if (field === 'is_closed' && value === false) {
-          this.issue.is_fp = false;
-          this.issue.is_risk_accepted = false;
+        if (field === 'resolution') {
+          this.issue.status = 'closed';
+        } else if (field === 'status') {
+          this.resolution = 'none';
         }
         this.issue[field] = value;
 
@@ -286,7 +290,7 @@ export default {
         case 'medium':
           return 'orange';
         case 'high':
-          return 'red darken-2';
+          return 'red';
         case 'critical':
           return 'red darken-4';
         default:

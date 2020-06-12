@@ -13,9 +13,6 @@ const getters = {};
 const actions = {
   async [ISSUES_FETCH]({ commit }, unit) {
     const { data } = await getIssues(unit);
-    for (const issue of data) {
-      issue.fields = JSON.parse(issue.fields);
-    }
     commit(SET_ISSUES, data);
   },
 
