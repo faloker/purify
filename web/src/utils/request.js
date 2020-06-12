@@ -10,7 +10,6 @@ const service = axios.create({
 service.interceptors.request.use(
   (config) => {
     if (store.getters.token) {
-      // eslint-disable-next-line no-param-reassign
       config.headers.Authorization = `Bearer ${store.getters.token}`;
     }
     return config;
