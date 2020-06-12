@@ -52,7 +52,7 @@ export class UnitsService {
         const numOfReports = await this.reportModel.countDocuments({ unit: { $eq: unit } });
         const numberOfClosedTickets = await this.issueModel.countDocuments({
           unit: { $eq: unit },
-          is_closed: true,
+          status: 'closed',
         });
         const numberOfAllTickets = await this.issueModel.countDocuments({
           unit: { $eq: unit },

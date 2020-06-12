@@ -19,13 +19,13 @@ export class GetIssuesQueryDto {
   readonly unit: string;
 
   @ApiPropertyOptional({
-    type: Boolean,
     description: 'Filter by issue status.',
+    enum: ['open', 'closed']
   })
   @IsString()
-  @IsIn(['true', 'false'])
+  @IsIn(['open', 'closed'])
   @IsOptional()
-  readonly closed?: string;
+  readonly status?: string;
 
   @ApiPropertyOptional({
     type: Boolean,
@@ -42,16 +42,6 @@ export class GetIssuesQueryDto {
   @IsOptional()
   @IsString()
   readonly risks?: string;
-
-  @ApiPropertyOptional({
-    type: Boolean,
-    description: 'Include addtional fields, such as comments and template.',
-    default: 'true',
-  })
-  @IsString()
-  @IsIn(['true', 'false'])
-  @IsOptional()
-  readonly verbose?: string;
 }
 
 export class UpdateIssuesBodyDto {

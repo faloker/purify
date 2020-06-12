@@ -8,10 +8,8 @@ import { Comment } from 'src/issues/interfaces/comment.interface';
 export interface Issue extends Document {
   readonly _id: string;
   fields: string;
-  readonly is_closed: boolean;
-  readonly is_fp: boolean;
-  readonly is_risk_accepted: boolean;
-  readonly dup_score: number;
+  readonly status: string;
+  readonly resolution: string;
   readonly risk: string;
   readonly template: Template;
   readonly report: Report;
