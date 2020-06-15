@@ -27,3 +27,9 @@ export const postComment = (id, comment) =>
     method: 'post',
     data: comment,
   });
+
+export const getComments = (issueId) =>
+  request({
+    url: `issues/${issueId}/comments`,
+    method: 'get',
+  });

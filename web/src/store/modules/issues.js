@@ -1,11 +1,18 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 /* eslint-disable no-shadow */
-import { getIssues, updateIssues, createTicket, postComment } from '@/api/issues.service';
-import { SET_ISSUES } from '../mutations';
-import { ISSUES_FETCH, ISSUE_UPDATE, CREATE_TICKET, POST_COMMENT } from '../actions';
+import {
+  getIssues,
+  updateIssues,
+  createTicket,
+  postComment,
+  getComments,
+} from '@/api/issues.service';
+import { SET_ISSUES, SET_COMMENTS } from '../mutations';
+import { ISSUES_FETCH, ISSUE_UPDATE, CREATE_TICKET, POST_COMMENT, GET_COMMENTS } from '../actions';
 
 const state = {
   issues: [],
+  comments: [],
 };
 
 const getters = {};
@@ -27,16 +34,24 @@ const actions = {
     return data;
   },
 
-  async [POST_COMMENT]({ dispatch, rootState }, { id, comment }) {
-    const { data } = await postComment(id, comment);
-    dispatch(ISSUES_FETCH, rootState.units.activeUnit);
-    return data;
+  async [POST_COMMENT]({ dispatch, rootState }, { issueId, comment }) {
+    const { data } = await postComment(issueId, comment);
+    dispatch(GET_COMMENTS, issueId);
+  },
+
+  async [GET_COMMENTS]({ commit }, issueId) {
+    const { data } = await getComments(issueId);
+    commit(SET_COMMENTS, data);
   },
 };
 
 const mutations = {
   [SET_ISSUES](state, issues) {
     state.issues = issues;
+  },
+
+  [SET_COMMENTS](state, comments) {
+    state.comments = comments;
   },
 };
 

@@ -140,4 +140,12 @@ export class IssuesService {
 
     return createdComment;
   }
+
+  async getComments(issueId: string) {
+    const issue = await this.issueModel.findOne({ _id: issueId }).populate({
+      path: 'comments',
+      populate: { path: 'author', select: 'username image' },
+    });;
+    return issue.comments;
+  }
 }

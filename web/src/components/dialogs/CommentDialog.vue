@@ -70,35 +70,43 @@
   </v-dialog>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import { POST_COMMENT } from '@/store/actions';
 import { formatDate } from '@/utils/helpers';
 
 export default {
   name: 'CommentDialog',
   props: {
-    issue: {
-      type: Object,
+    issueId: {
+      type: String,
       required: true,
-      default: () => {},
+      default: () => '',
     },
     dialog: {
       required: true,
       type: Boolean,
     },
   },
+
   data() {
     return {
       commentDialog: false,
       input: null,
     };
   },
+
   computed: {
     ...mapGetters(['currentUser']),
+
+    ...mapState({
+      issueComments: (state) => state.issues.comments,
+    }),
+
     timeline() {
-      return this.issue.comments ? this.issue.comments.slice().reverse() : [];
+      return this.issueComments ? this.issueComments.slice().reverse() : [];
     },
   },
+
   methods: {
     postComment() {
       if (this.input) {
@@ -107,8 +115,7 @@ export default {
           text: this.input,
         };
 
-        this.$store.dispatch(POST_COMMENT, { id: this.issue._id, comment }).then((doc) => {
-          this.issue.comments.push(doc);
+        this.$store.dispatch(POST_COMMENT, { issueId: this.issueId, comment }).then(() => {
           this.input = null;
         });
       }

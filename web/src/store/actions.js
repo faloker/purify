@@ -27,6 +27,7 @@ export const CREATE_TICKET = 'createTicket';
 export const FETCH_CONTENT = 'fetchContent';
 
 export const POST_COMMENT = 'postComment';
+export const GET_COMMENTS = 'getComments';
 
 export const FETCH_STATS = 'fetchStats';
 
