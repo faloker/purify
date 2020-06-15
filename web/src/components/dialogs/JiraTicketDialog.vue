@@ -23,7 +23,7 @@
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items>
-          <v-btn text @click="finisher = !finisher">
+          <v-btn text @click="openFinisher">
             next
             <v-icon class="ml-2">
               mdi-chevron-right
@@ -129,15 +129,18 @@
 
 <script>
 import j2md from 'jira2md';
+import { mapGetters } from 'vuex';
 import VueSimpleMDE from 'vue-simplemde';
 import { CREATE_TICKET } from '@/store/actions';
 import { matchPattern, prepareMarkdown } from '@//utils/helpers';
 
 export default {
   name: 'JiraTicketDialog',
+
   components: {
     'vue-simplemde': VueSimpleMDE,
   },
+
   props: {
     issue: {
       required: true,
@@ -148,36 +151,42 @@ export default {
       type: Boolean,
     },
   },
-  data() {
-    return {
-      content: '',
-      finisher: false,
-      configs: {
-        spellChecker: false, // disable spell check
-      },
-      // summary: this.matchPattern(this.issue.fields, this.issue.template.title_pattern),
-      issuesTypes: ['Bug', 'Task'],
-      projects: [{ key: 'DEV' }],
-      components: [{ name: 'kek' }],
-      assignee: [{ name: 'DDDDD' }, { name: 'Jon Doe' }],
-      selectedIssueType: '',
-      selectedProject: '',
-      selectedAssignee: { name: 'Jon Doe' },
-      selectedComponents: [],
-      labels: [],
-    };
-  },
+
+  data: () => ({
+    content: '',
+    finisher: false,
+    configs: {
+      spellChecker: false, // disable spell check
+    },
+    summary: '',
+    issuesTypes: ['Bug', 'Task'],
+    projects: [{ key: 'DEV' }],
+    components: [{ name: 'kek' }],
+    assignee: [{ name: 'DDDDD' }, { name: 'Jon Doe' }],
+    selectedIssueType: '',
+    selectedProject: '',
+    selectedAssignee: { name: 'Jon Doe' },
+    selectedComponents: [],
+    labels: [],
+  }),
+
   computed: {
-    preparedMarkdown() {
-      return this.prepareMarkdown(this.issue);
+    ...mapGetters(['findTemplateByName']),
+
+    issueTemplate() {
+      return this.findTemplateByName(this.issue.template).template;
     },
-    summary() {
-      return this.matchPattern(this.issue.fields, this.issue.template.title_pattern);
+
+    preparedMarkdown() {
+      return this.prepareMarkdown(this.issue, this.issueTemplate);
     },
   },
+
   methods: {
     matchPattern,
+
     prepareMarkdown,
+
     async createTicket() {
       const payload = {};
       payload.project = { key: this.selectedProject };
@@ -200,6 +209,11 @@ export default {
         this.issue.ticket = ticket;
         this.$emit('update:dialog', false);
       }
+    },
+
+    openFinisher() {
+      this.summary = this.issue.title;
+      this.finisher = true;
     },
   },
 };
