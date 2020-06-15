@@ -11,10 +11,10 @@
     >
       <v-container>
         <v-row align="start">
-          <template v-if="!searchBar">
-            <strong class="text--secondary pl-1">{{ name }}</strong>
-            <v-spacer />
-            <!-- <v-btn
+          <!-- <template v-if="!searchBar"> -->
+          <strong class="text--secondary pl-1">{{ name }}</strong>
+          <v-spacer />
+          <!-- <v-btn
               icon
               @click="openSearch"
             >
@@ -22,7 +22,7 @@
                 fa-search
               </v-icon>
             </v-btn>-->
-          </template>
+          <!-- </template> -->
           <!-- <v-autocomplete
             v-else
             v-model="search"
