@@ -6,7 +6,7 @@
         align="center"
         justify="center"
       >
-        <v-col cols="1">
+        <v-div>
           <v-tooltip top>
             <template v-slot:activator="{ on }">
               <v-checkbox
@@ -21,15 +21,13 @@
             <span v-if="!allSelected">Select All</span>
             <span v-else>Select None</span>
           </v-tooltip>
-        </v-col>
+        </v-div>
         <v-divider
           light
-          class="my-3"
+          class="ma-3"
           vertical
         />
-        <v-col cols="3">
-          <group-action-btn class="px-3" :items="selected" />
-        </v-col>
+        <group-action-btn :items="selected" />
         <v-spacer />
 
         <v-col cols="1">
@@ -180,7 +178,7 @@
     </template>
     <comment-dialog
       :key="`ilcd-${selectedIssue._id}`"
-      :issue.sync="selectedIssue"
+      :issue-id="selectedIssue._id"
       :dialog.sync="commentDialog"
     />
   </v-container>
@@ -188,6 +186,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { GET_COMMENTS } from '@/store/actions';
 import GroupActionBtn from '@/components/buttons/GroupActionButton.vue';
 import IssueDetails from '@/components/dialogs/IssueDetails.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
@@ -195,11 +194,13 @@ import { matchPattern } from '@//utils/helpers';
 
 export default {
   name: 'IssuesList',
+
   components: {
     GroupActionBtn,
     IssueDetails,
     CommentDialog,
   },
+
   props: {
     rawItems: {
       type: Array,
@@ -207,6 +208,7 @@ export default {
       default: () => [],
     },
   },
+
   data() {
     return {
       page: 1,
@@ -221,6 +223,7 @@ export default {
       selectedIssue: {},
     };
   },
+
   computed: {
     ...mapGetters(['currentUser']),
     items() {
@@ -233,24 +236,27 @@ export default {
       return this.selected.length === this.pageSize;
     },
   },
+
   watch: {
-    // eslint-disable-next-line no-unused-vars
     rawItems(newItems, oldItems) {
       this.page = 1;
     },
-    // eslint-disable-next-line no-unused-vars
     pageSize(newValue, oldValue) {
       this.page = 1;
     },
   },
+
   methods: {
     matchPattern,
+
     nextPage() {
       if (this.page * this.pageSize < this.rawItems.length) this.page += 1;
     },
+
     prevPage() {
       if (this.page > 1) this.page -= 1;
     },
+
     selectAll() {
       if (this.allSelected) {
         this.selected = [];
@@ -258,14 +264,21 @@ export default {
         this.selected = this.items.map((i) => i._id);
       }
     },
+
     openIssue(item) {
-      this.dialog = true;
-      this.selectedIssue = item;
+      this.$store.dispatch(GET_COMMENTS, item._id).then(() => {
+        this.dialog = true;
+        this.selectedIssue = item;
+      });
     },
+
     openComments(item) {
-      this.commentDialog = true;
-      this.selectedIssue = item;
+      this.$store.dispatch(GET_COMMENTS, item._id).then(() => {
+        this.commentDialog = true;
+        this.selectedIssue = item;
+      });
     },
+
     genColor(risk) {
       switch (risk) {
         case 'info':

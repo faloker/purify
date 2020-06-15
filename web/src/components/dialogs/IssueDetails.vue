@@ -54,12 +54,12 @@
           <v-divider class="my-3 mx-3" vertical />
           <v-col class="ml-2" cols="9">
             <v-row class="headline">
-              {{ matchPattern(issue.fields, issue.template.title_pattern) }}
+              {{ issue.title }}
             </v-row>
             <v-row
               class="title grey--text font-weight-light my-2"
             >
-              {{ matchPattern(issue.fields, issue.template.subtitle_pattern) }}
+              {{ issue.subtitle }}
             </v-row>
           </v-col>
         </v-row>
@@ -165,10 +165,10 @@
               color="secondary"
               @click="commentDialog = true"
             >
-              <v-icon :left="!!issue.comments.length" small>
+              <v-icon :left="!!issueComments.length" small>
                 mdi-comment-text-multiple
               </v-icon>
-              <span v-if="issue.comments.length">{{ issue.comments.length }}</span>
+              <span v-if="issueComments.length">{{ issueComments.length }}</span>
             </v-btn>
             <v-dialog
               :key="`edit-dialog-${issue._id}`"
@@ -184,7 +184,7 @@
             />
             <comment-dialog
               :key="`idcd-${issue._id}`"
-              :issue.sync="issue"
+              :issue-id.sync="issue._id"
               :dialog.sync="commentDialog"
             />
           </v-col>
@@ -192,7 +192,7 @@
       </v-container>
     </v-card-title>
     <v-container>
-      <v-col v-for="field in issue.template.body_fields" :key="`id-${field.key}`">
+      <v-col v-for="field in issueTemplate.body_fields" :key="`id-${field.key}`">
         <fields-parser :ikey="field" :ivalue="getValue(issue.fields, field.key)" />
       </v-col>
     </v-container>
@@ -200,7 +200,7 @@
 </template>
 <script>
 /* eslint-disable no-restricted-syntax */
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import FieldsParser from '@/components/FieldsParser.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
@@ -210,12 +210,14 @@ import { matchPattern, parseKey, getValue } from '@//utils/helpers';
 
 export default {
   name: 'IssueDetails',
+
   components: {
     JiraTicketDialog,
     FieldsParser,
     CommentDialog,
     EditIssueDialog,
   },
+
   props: {
     issue: {
       type: Object,
@@ -223,6 +225,7 @@ export default {
       default: () => {},
     },
   },
+
   data() {
     return {
       ticketDialog: false,
@@ -233,19 +236,29 @@ export default {
       risk: '',
     };
   },
+
   computed: {
     ...mapState({
       systemSetup: (state) => state.app.setup,
+      issueComments: (state) => state.issues.comments,
     }),
+
+    ...mapGetters(['findTemplateByName']),
+
     preparedMarkdown() {
       let result = '';
-      for (const field of this.issue.template.body_fields) {
+      for (const field of this.issueTemplate.body_fields) {
         result += `## ${this.parseKey(field.key)}\n`;
         result += `${this.getValue(this.issue.fields, field.key)}\n\n`;
       }
       return result;
     },
+
+    issueTemplate() {
+      return this.findTemplateByName(this.issue.template).template;
+    },
   },
+
   methods: {
     matchPattern,
 
@@ -300,4 +313,3 @@ export default {
   },
 };
 </script>
-<style></style>
