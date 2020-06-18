@@ -21,11 +21,15 @@ export class UnitsService {
   async create(unit: UnitDto) {
     const project = await this.projectModel.findOne({ slug: unit.project });
 
-    return new this.unitModel({
-      name: unit.name,
-      project: project._id,
-      slug: `${unit.project}-${slug(unit.name)}`,
-    }).save();
+    if (project) {
+      return new this.unitModel({
+        name: unit.name,
+        project: project._id,
+        slug: `${unit.project}-${slug(unit.name)}`,
+      }).save();
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   async delete(id: string) {
