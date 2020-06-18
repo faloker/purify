@@ -25,7 +25,7 @@ async function bootstrap() {
   if (configService.get<string>('NODE_ENV') === 'local') {
     app.register(require('fastify-cors'), {
       credentials: true,
-      origin: 'http://localhost:8080',
+      origin: '*',
     });
   }
 
