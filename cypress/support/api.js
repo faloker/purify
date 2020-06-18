@@ -1,7 +1,7 @@
 Cypress.Commands.add(
   'apiCreateUser',
   (username = 'test', email = 'test@example.com', password = 'testtest') => {
-    cy.request('POST', 'http://localhost:3000/api/auth/signup', {
+    cy.request('POST', `${Cypress.env('apiUrl')}/api/auth/signup`, {
       username,
       email,
       password,
@@ -14,7 +14,7 @@ Cypress.Commands.add(
   (jwtToken, title = 'test title', subtitle = 'test desc') => {
     cy.request({
       method: 'POST',
-      url: 'http://localhost:3000/api/projects',
+      url: `${Cypress.env('apiUrl')}/api/projects`,
       body: {
         title,
         subtitle,
@@ -31,7 +31,7 @@ Cypress.Commands.add(
   (jwtToken, name = 'unit') => {
     cy.request({
       method: 'POST',
-      url: 'http://localhost:3000/api/units',
+      url: `${Cypress.env('apiUrl')}/api/units`,
       body: {
         name,
         project: 'test-title',

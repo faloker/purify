@@ -2,7 +2,7 @@ describe('Deleting units', () => {
   before(() => {
     cy.task('flush:db');
     
-    cy.request('POST', 'http://localhost:3000/api/auth/signup', {
+    cy.request('POST', `${Cypress.env('apiUrl')}/api/auth/signup`, {
       username: 'test',
       email: 'test@example.com',
       password: 'testtest',

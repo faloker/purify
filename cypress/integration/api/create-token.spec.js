@@ -5,7 +5,7 @@ describe('Request API token', () => {
   });
 
   it('Request API token with valid credentials', () => {
-    cy.request('POST', 'http://localhost:3000/api/auth/token', {
+    cy.request('POST', `${Cypress.env('apiUrl')}/api/auth/token`, {
       username: 'test',
       password: 'testtest',
     })
@@ -18,7 +18,7 @@ describe('Request API token', () => {
   it('Unable to get API token with invalid credentials', () => {
     cy.request({
       method: 'POST',
-      url: 'http://localhost:3000/api/auth/token',
+      url: `${Cypress.env('apiUrl')}/api/auth/token`,
       body: {
         username: 'test',
         password: 'test',

@@ -1,5 +1,5 @@
 Cypress.Commands.add('login', (username = 'test', password = 'testtest') => {
-  cy.visit('http://localhost:8080/#/welcome');
+  cy.visit(`${Cypress.env('webUrl')}/#/welcome`);
   cy.get('#tab-login').click();
 
   cy.get('#username').type(username);
@@ -9,7 +9,7 @@ Cypress.Commands.add('login', (username = 'test', password = 'testtest') => {
 });
 
 Cypress.Commands.add('register', (username, email, password) => {
-  cy.visit('http://localhost:8080/#/welcome');
+  cy.visit(`${Cypress.env('webUrl')}/#/welcome`);
   cy.get('#tab-register').click();
 
   cy.get('#user').type(username);
