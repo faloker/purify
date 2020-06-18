@@ -36,6 +36,7 @@
               <v-layout wrap>
                 <v-flex xs12>
                   <v-text-field
+                    id="unit-name-input"
                     v-model="unitName"
                     outlined
                     dense
