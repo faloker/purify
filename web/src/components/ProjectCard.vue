@@ -2,7 +2,6 @@
   <div>
     <v-hover>
       <v-card
-        :id="`project-card-${project.slug}`"
         :key="project._id"
         slot-scope="{ hover }"
         :class="`elevation-${hover ? 12 : 3}`"
