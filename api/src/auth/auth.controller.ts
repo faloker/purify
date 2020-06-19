@@ -30,7 +30,6 @@ export class AuthController {
   ) {
     this.cookieConfig = {
       httpOnly: true,
-      domain: this.configService.get<string>('DOMAIN'),
       path: '/',
       secure: this.configService.get<string>('SECURE') === 'true',
       sameSite: 'lax',

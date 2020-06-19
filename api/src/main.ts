@@ -40,15 +40,10 @@ async function bootstrap() {
   );
   app.use(helmet());
 
-  const apiSeverUrl = `${
-    configService.get<string>('SECURE') === 'true' ? 'https' : 'http'
-  }://${configService.get<string>('DOMAIN')}`;
-
   const options = new DocumentBuilder()
     .setTitle('Purify API')
     .setDescription('The Purify API description')
     .setVersion('0.2.0')
-    .addServer(apiSeverUrl)
     .addBearerAuth()
     .addApiKey({
       type: 'apiKey',
