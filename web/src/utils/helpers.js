@@ -74,10 +74,10 @@ const parseField = (field, fieldValue) => {
   return mkdwn;
 };
 
-export const prepareMarkdown = (issue) => {
+export const prepareMarkdown = (issue, template) => {
   let result = '';
 
-  for (const field of issue.template.body_fields) {
+  for (const field of template.body_fields) {
     result += parseField(field, getValue(issue.fields, field.key));
   }
 

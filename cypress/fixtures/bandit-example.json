@@ -1,0 +1,83 @@
+{
+  "errors": [],
+  "generated_at": "2018-07-23T03:55:10Z",
+  "metrics": {
+    "/Users/kekw/thefuck/thefuck/ui.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 74,
+      "nosec": 0
+    },
+    "/Users/kekw/thefuck/thefuck/utils.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 236,
+      "nosec": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 766,
+      "CONFIDENCE.LOW": 1,
+      "CONFIDENCE.MEDIUM": 8,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 3,
+      "SEVERITY.LOW": 764,
+      "SEVERITY.MEDIUM": 8,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 10541,
+      "nosec": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 #!/usr/bin/env python\n2 from subprocess import call\n3 import os\n",
+      "filename": "/Users/kekw/thefuck/release.py",
+      "issue_confidence": "HIGH",
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with call module.",
+      "line_number": 2,
+      "line_range": [
+        2
+      ],
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "11     \"\"\"Get custom npm scripts.\"\"\"\n12     proc = Popen(['npm', 'run-script'], stdout=PIPE)\n13     should_yeild = False\n",
+      "filename": "/Users/kekw/thefuck/thefuck/specific/npm.py",
+      "issue_confidence": "HIGH",
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "2 import os\n3 import pickle\n4 import re\n",
+      "filename": "/Users/kekw/thefuck/thefuck/utils.py",
+      "issue_confidence": "HIGH",
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with pickle module.",
+      "line_number": 3,
+      "line_range": [
+        3
+      ],
+      "test_id": "B403",
+      "test_name": "blacklist"
+    }
+  ]
+}

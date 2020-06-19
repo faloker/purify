@@ -81,7 +81,9 @@ export const router = new Router({
 router.beforeEach((to, from, next) => {
   const { isAuthenticated } = store.getters;
 
-  store.dispatch(FETCH_SYSTEM_SETUP);
+  if (to.path === '/welcome') {
+    store.dispatch(FETCH_SYSTEM_SETUP);
+  }
 
   if (to.path !== '/welcome' && !isAuthenticated) {
     store

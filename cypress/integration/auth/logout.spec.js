@@ -1,10 +1,11 @@
 describe('Logout', () => {
-  beforeEach(() => {
-    cy.visit('http://localhost:8080/#/welcome');
+  before(() => {
+    cy.task('flush:db');
+    cy.apiCreateUser();
   });
-
+  
   it('Do logout', () => {
-    cy.login('test', 'testtest');
+    cy.login();
     cy.contains('Search');
 
     cy.get('#btn-mini-profile').click();

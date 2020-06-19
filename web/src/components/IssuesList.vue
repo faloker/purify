@@ -6,7 +6,7 @@
         align="center"
         justify="center"
       >
-        <v-col cols="1">
+        <v-div>
           <v-tooltip top>
             <template v-slot:activator="{ on }">
               <v-checkbox
@@ -21,15 +21,13 @@
             <span v-if="!allSelected">Select All</span>
             <span v-else>Select None</span>
           </v-tooltip>
-        </v-col>
+        </v-div>
         <v-divider
           light
-          class="my-3"
+          class="ma-3"
           vertical
         />
-        <v-col cols="3">
-          <group-action-btn class="px-3" :items="selected" />
-        </v-col>
+        <group-action-btn :items="selected" />
         <v-spacer />
 
         <v-col cols="1">
@@ -78,27 +76,19 @@
                     <v-list-item-content @click="openIssue(item)">
                       <v-list-item-title>
                         <!-- <div class="text-truncate"> -->
-                        {{ matchPattern(item.fields, item.template.title_pattern) }}
+                        {{ item.title }}
                         <v-chip
-                          v-if="item.is_closed"
+                          v-if="item.status === 'closed'"
                           class="ml-2"
                           small
                         >
-                          <span v-if="item.is_fp">
-                            False Positive
-                          </span>
-                          <span v-else-if="item.is_risk_accepted">
-                            Accepted Risk
-                          </span>
-                          <span v-else>
-                            Resolved
-                          </span>
+                          <span class="text-capitalize">{{ item.resolution }}</span>
                         </v-chip>
                         <!-- </div> -->
                       </v-list-item-title>
                       <v-list-item-subtitle>
                         <!-- <div class="text-truncate"> -->
-                        {{ matchPattern(item.fields, item.template.subtitle_pattern) }}
+                        {{ item.subtitle }}
                         <!-- </div> -->
                       </v-list-item-subtitle>
                     </v-list-item-content>
@@ -125,7 +115,7 @@
                     </v-list-item-action>
                     <v-list-item-action>
                       <v-btn
-                        v-if="item.comments.length"
+                        v-if="item.totalComments"
                         text
                         class="mt-2 mr-3"
                         color="secondary"
@@ -134,7 +124,7 @@
                         <v-icon left small>
                           mdi-comment-text-multiple
                         </v-icon>
-                        <span>{{ item.comments.length }}</span>
+                        <span>{{ item.totalComments }}</span>
                       </v-btn>
                     </v-list-item-action>
                   </template>
@@ -180,10 +170,7 @@
       </v-dialog>
     </template>
     <template v-else>
-      <v-row
-        align="center"
-        justify="center"
-      >
+      <v-row align="center" justify="center">
         <v-col cols="3">
           <span class="headline grey--text">No issues to display</span>
         </v-col>
@@ -191,7 +178,7 @@
     </template>
     <comment-dialog
       :key="`ilcd-${selectedIssue._id}`"
-      :issue.sync="selectedIssue"
+      :issue-id="selectedIssue._id"
       :dialog.sync="commentDialog"
     />
   </v-container>
@@ -199,6 +186,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { GET_COMMENTS } from '@/store/actions';
 import GroupActionBtn from '@/components/buttons/GroupActionButton.vue';
 import IssueDetails from '@/components/dialogs/IssueDetails.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
@@ -206,11 +194,13 @@ import { matchPattern } from '@//utils/helpers';
 
 export default {
   name: 'IssuesList',
+
   components: {
     GroupActionBtn,
     IssueDetails,
     CommentDialog,
   },
+
   props: {
     rawItems: {
       type: Array,
@@ -218,6 +208,7 @@ export default {
       default: () => [],
     },
   },
+
   data() {
     return {
       page: 1,
@@ -232,6 +223,7 @@ export default {
       selectedIssue: {},
     };
   },
+
   computed: {
     ...mapGetters(['currentUser']),
     items() {
@@ -244,24 +236,27 @@ export default {
       return this.selected.length === this.pageSize;
     },
   },
+
   watch: {
-    // eslint-disable-next-line no-unused-vars
     rawItems(newItems, oldItems) {
       this.page = 1;
     },
-    // eslint-disable-next-line no-unused-vars
     pageSize(newValue, oldValue) {
       this.page = 1;
     },
   },
+
   methods: {
     matchPattern,
+
     nextPage() {
       if (this.page * this.pageSize < this.rawItems.length) this.page += 1;
     },
+
     prevPage() {
       if (this.page > 1) this.page -= 1;
     },
+
     selectAll() {
       if (this.allSelected) {
         this.selected = [];
@@ -269,14 +264,21 @@ export default {
         this.selected = this.items.map((i) => i._id);
       }
     },
+
     openIssue(item) {
-      this.dialog = true;
-      this.selectedIssue = item;
+      this.$store.dispatch(GET_COMMENTS, item._id).then(() => {
+        this.dialog = true;
+        this.selectedIssue = item;
+      });
     },
+
     openComments(item) {
-      this.commentDialog = true;
-      this.selectedIssue = item;
+      this.$store.dispatch(GET_COMMENTS, item._id).then(() => {
+        this.commentDialog = true;
+        this.selectedIssue = item;
+      });
     },
+
     genColor(risk) {
       switch (risk) {
         case 'info':
@@ -286,7 +288,7 @@ export default {
         case 'medium':
           return 'orange';
         case 'high':
-          return 'red darken-2';
+          return 'red';
         case 'critical':
           return 'red darken-4';
         default:
