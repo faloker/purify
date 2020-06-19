@@ -39,62 +39,64 @@
       </v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-card outlined>
-          <v-container class="mb-1">
-            <v-row justify="start" align="start">
-              <v-col cols="2">
-                <strong class="text--secondary pl-1">Text search</strong>
-                <v-autocomplete
-                  id="search"
-                  ref="search"
-                  v-model="search_term"
-                  class="pt-2"
-                  :items="keywords"
-                  :search-input.sync="search"
-                  outlined
-                  dense
-                  hide-no-data
-                  clearable
-                  @keydown.esc="onEsc"
-                >
-                  <template slot="label">
-                    <v-icon style="vertical-align: middle">
-                      search
-                    </v-icon>Press &quot;/&quot; to focus
-                  </template>
-                </v-autocomplete>
-              </v-col>
-              <v-divider class="mx-3" vertical />
-              <filter-option
-                :items="statusFilterItems"
-                name="Status"
-                :selection.sync="selectedStatuses"
-              />
-              <v-divider class="mx-3" vertical />
-              <filter-option
-                :items="riskFilterItems"
-                name="Risk"
-                :selection.sync="selectedRisks"
-              />
-              <v-divider class="mx-3" vertical />
-              <filter-option
-                :items="templateFilterItems"
-                name="Template"
-                :selection.sync="selectedTemplates"
-              />
-              <v-divider class="mx-3" vertical />
-              <filter-option
-                :items="resolutionFilterItems"
-                name="Resolution"
-                :selection.sync="selectedResolutions"
-              />
-              <v-divider class="mx-3" vertical />
-              <filter-option
-                :items="ticketFilterItems"
-                name="Ticket"
-                :selection.sync="selectedTicketStatus"
-              />
-            </v-row>
-          </v-container>
+          <v-row
+            class="ma-1"
+            justify="start"
+            align="start"
+          >
+            <v-col cols="2">
+              <strong class="text--secondary pl-1">Text search</strong>
+              <v-autocomplete
+                id="search"
+                ref="search"
+                v-model="search_term"
+                class="pt-2"
+                :items="keywords"
+                :search-input.sync="search"
+                outlined
+                dense
+                hide-no-data
+                clearable
+                @keydown.esc="onEsc"
+              >
+                <template slot="label">
+                  <v-icon style="vertical-align: middle">
+                    search
+                  </v-icon>Press &quot;/&quot; to focus
+                </template>
+              </v-autocomplete>
+            </v-col>
+            <v-divider class="mx-2" vertical />
+            <filter-option
+              :items="statusFilterItems"
+              name="Status"
+              :selection.sync="selectedStatuses"
+            />
+            <v-divider class="mx-2" vertical />
+            <filter-option
+              :items="riskFilterItems"
+              name="Risk"
+              :selection.sync="selectedRisks"
+            />
+            <v-divider class="mx-2" vertical />
+            <filter-option
+              :items="templateFilterItems"
+              name="Template"
+              :selection.sync="selectedTemplates"
+            />
+            <v-divider class="mx-2" vertical />
+            <filter-option
+              :items="resolutionFilterItems"
+              name="Resolution"
+              :selection.sync="selectedResolutions"
+            />
+            <v-divider class="mx-2" vertical />
+            <filter-option
+              :items="ticketFilterItems"
+              name="Ticket"
+              :selection.sync="selectedTicketStatus"
+            />
+          </v-row>
         </v-card>
       </v-expansion-panel-content>
     </v-expansion-panel>
@@ -298,3 +300,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.sheet-class {
+  width: 800px;
+  overflow-x: auto;
+}
+</style>
