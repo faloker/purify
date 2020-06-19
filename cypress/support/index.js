@@ -1,31 +1,3 @@
-// ***********************************************************
-// This example support/index.js is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
-
-// Import commands.js using ES2015 syntax:
-import './commands'
-import '@cypress/code-coverage/support'
-
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
-// before(() => {
-//   cy.exec('').its('code').should('eq', 0)
-// })
-// after(() => {
-//   cy.exec('echo 0').its('code').should('eq', 0)
-// })
-
-// after(() => {
-//   cy.exec('task stop').its('code').should('eq', 0)
-// })
+import './commands';
+import './api';
+import '@cypress/code-coverage/support';

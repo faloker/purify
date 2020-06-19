@@ -6,14 +6,20 @@ export const IssueSchema = new Schema(
   {
     _id: { type: String, default: uuidv4 },
     fields: String,
-    is_closed: { type: Boolean, default: false },
-    is_fp: { type: Boolean, default: false },
-    is_risk_accepted: { type: Boolean, default: false },
-    dup_score: Number,
+    status: {
+      type: String,
+      enum: ['open', 'closed'],
+      default: 'open',
+    },
+    resolution: {
+      type: String,
+      enum: ['false positive', 'accepted risk', 'resolved', 'none'],
+      default: 'none',
+    },
     risk: {
       type: String,
-      default: 'Medium',
-      enum: ['Low', 'Info', 'Medium', 'High', 'Critical'],
+      default: 'medium',
+      enum: ['low', 'info', 'medium', 'high', 'critical'],
     },
     template: { type: String, ref: 'Template' },
     report: { type: String, ref: 'Report' },
@@ -22,5 +28,5 @@ export const IssueSchema = new Schema(
     tags: [{ type: String }],
     comments: [{ type: String, ref: 'Comment' }],
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );

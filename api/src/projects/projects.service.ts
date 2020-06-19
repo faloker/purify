@@ -14,7 +14,7 @@ export class ProjectsService {
     @InjectModel('Project') private readonly projectModel: Model<Project>,
     @InjectModel('Unit') private readonly unitModel: Model<Unit>,
     @InjectModel('Issue') private readonly issueModel: Model<Issue>,
-    @InjectModel('Report') private readonly reportModel: Model<Report>,
+    @InjectModel('Report') private readonly reportModel: Model<Report>
   ) {}
 
   async getAll() {
@@ -81,15 +81,15 @@ export class ProjectsService {
   async getStatisticsForUnit(unit: string) {
     const uploadedReports = await this.reportModel.find(
       { unit },
-      '_id created_at',
+      '_id created_at'
     );
     let issues = await this.issueModel.find(
       { unit },
-      '_id is_closed is_fp created_at risk',
+      '_id status resolution created_at risk'
     );
 
     issues = issues.filter(
-      issue => issue.created_at.getFullYear() === new Date().getFullYear(),
+      issue => issue.created_at.getFullYear() === new Date().getFullYear()
     );
 
     const open = new Array(12).fill(0);
@@ -98,22 +98,25 @@ export class ProjectsService {
     const risks = new Array(5).fill(0);
 
     const openIssues = groupBy(
-      issues.filter(issue => !issue.is_closed),
-      issue => issue.created_at.getMonth(),
+      issues.filter(issue => issue.status === 'open'),
+      issue => issue.created_at.getMonth()
     );
 
     const reportsByDate = groupBy(uploadedReports, report =>
-      report.created_at.getMonth(),
+      report.created_at.getMonth()
     );
 
     const closedIssues = groupBy(
-      issues.filter(issue => issue.is_closed && !issue.is_fp),
-      issue => issue.created_at.getMonth(),
+      issues.filter(
+        issue =>
+          issue.status === 'closed' && issue.resolution !== 'false positive'
+      ),
+      issue => issue.created_at.getMonth()
     );
 
     const issuesRisks = groupBy(
-      issues.filter(issue => !issue.is_fp),
-      issue => issue.risk,
+      issues.filter(issue => issue.resolution !== 'false positive'),
+      issue => issue.risk
     );
 
     for (const key of Object.keys(openIssues)) {
@@ -130,19 +133,19 @@ export class ProjectsService {
 
     for (const key of Object.keys(issuesRisks)) {
       switch (key) {
-        case 'Info':
+        case 'info':
           risks[0] = get(issuesRisks, key).length;
           break;
-        case 'Low':
+        case 'low':
           risks[1] = get(issuesRisks, key).length;
           break;
-        case 'Medium':
+        case 'medium':
           risks[2] = get(issuesRisks, key).length;
           break;
-        case 'High':
+        case 'high':
           risks[3] = get(issuesRisks, key).length;
           break;
-        case 'Critical':
+        case 'critical':
           risks[4] = get(issuesRisks, key).length;
           break;
         default:
@@ -164,7 +167,7 @@ export class ProjectsService {
     if (project) {
       const units = await this.unitModel.find(
         { project: project._id },
-        '_id name',
+        '_id name'
       );
 
       const unitsStat = {};

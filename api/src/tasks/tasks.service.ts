@@ -25,7 +25,7 @@ export class TasksService {
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
   async dailyReport() {
     const issues = await this.issueModel.find({
-      is_closed: false,
+      status: 'open',
       created_at: { $gt: sub(new Date(), { hours: 24 }) },
     });
 
@@ -55,7 +55,7 @@ export class TasksService {
       if (
         fields.resolution &&
         fields.resolution.name === 'Done' &&
-        !issue.is_closed
+        issue.status === 'open'
       ) {
         const user = await this.userModel.findOne({ username: 'purify' });
 
@@ -72,7 +72,7 @@ export class TasksService {
           { _id: issue._id },
           {
             $push: { comments: comment._id },
-            is_closed: true,
+            status: 'closed',
           },
         );
       }

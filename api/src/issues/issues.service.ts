@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import {
   Injectable,
   NotFoundException,
@@ -10,8 +11,9 @@ import { Issue } from './interfaces/issue.interface';
 import { Unit } from 'src/units/interfaces/unit.interface';
 import { Ticket } from './interfaces/ticket.interface';
 import { Comment } from './interfaces/comment.interface';
-import { SaveCommentBodyDto } from './dto/issues.dto';
+import { SaveCommentBodyDto, GetIssuesQueryDto } from './dto/issues.dto';
 import { JiraService } from 'src/plugins/jira/jira.service';
+import { matchPattern } from 'src/utils/converter';
 
 @Injectable()
 export class IssuesService {
@@ -23,26 +25,72 @@ export class IssuesService {
     private jiraService: JiraService
   ) {}
 
-  async get(unitSlug: string) {
-    const unit = await this.unitModel.findOne({ slug: unitSlug });
+  async get(params: GetIssuesQueryDto) {
+    const unit = await this.unitModel.findOne({ slug: params.unit });
+    const options: any = {};
 
     if (!unit) {
       throw new NotFoundException();
+    } else {
+      options.unit = unit._id;
     }
 
-    const issues = await this.issueModel
-      .find({ unit: unit._id })
-      .populate('template', [
-        'title_pattern',
-        'body_fields',
-        'subtitle_pattern',
-        'name',
-      ])
+    if (params.status) {
+      options.status = params.status;
+    }
+
+    if (params.ticket) {
+      options.ticket = { $exists: params.ticket === 'true' ? true : false };
+    }
+
+    if (params.risks) {
+      options.risk = { $in: params.risks.split(',').map(r => r.toLowerCase()) };
+    }
+
+    const issues: any = [];
+
+    const rawIssues = await this.issueModel
+      .find(options)
+      .populate('template', ['title_pattern', 'subtitle_pattern', 'name'])
       .populate('ticket')
-      .populate({
-        path: 'comments',
-        populate: { path: 'author', select: 'username image' },
+      .populate('comments');
+
+    for (const issue of rawIssues) {
+      issues.push({
+        _id: issue._id,
+        fields: JSON.parse(issue.fields),
+        status: issue.status,
+        resolution: issue.resolution,
+        title: matchPattern(
+          JSON.parse(issue.fields),
+          issue.template.title_pattern
+        ),
+        subtitle: matchPattern(
+          JSON.parse(issue.fields),
+          issue.template.subtitle_pattern
+        ),
+        template: issue.template.name,
+        risk: issue.risk,
+        created_at: issue.created_at,
+        ticket: issue.ticket,
+        totalComments: issue.comments.length,
       });
+    }
+    // } else {
+    //   issues = await this.issueModel
+    //     .find(options)
+    //     .populate('template', [
+    //       'title_pattern',
+    //       'body_fields',
+    //       'subtitle_pattern',
+    //       'name',
+    //     ])
+    //     .populate('ticket')
+    //     .populate({
+    //       path: 'comments',
+    //       populate: { path: 'author', select: 'username image' },
+    //     });
+    // }
 
     return issues;
   }
@@ -91,5 +139,13 @@ export class IssuesService {
       .populate('author', ['username', 'image']);
 
     return createdComment;
+  }
+
+  async getComments(issueId: string) {
+    const issue = await this.issueModel.findOne({ _id: issueId }).populate({
+      path: 'comments',
+      populate: { path: 'author', select: 'username image' },
+    });;
+    return issue.comments;
   }
 }

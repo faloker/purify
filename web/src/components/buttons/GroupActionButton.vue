@@ -10,7 +10,7 @@
           color="red"
           :disabled="!items.length"
           v-on="on"
-          @click="updateIssues(items, 'is_fp', true)"
+          @click="updateIssues(items, 'resolution', 'false positive')"
         >
           <v-icon>thumb_down</v-icon>
         </v-btn>
@@ -38,8 +38,8 @@ export default {
   methods: {
     updateIssues(items, field, value) {
       const change = {};
-      if (field === 'is_fp') {
-        change.is_closed = true;
+      if (field === 'resolution') {
+        change.status = 'closed';
       }
       change[field] = value;
       this.$store.dispatch(ISSUE_UPDATE, { ids: items, change });

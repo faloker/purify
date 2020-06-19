@@ -8,12 +8,11 @@ const state = {
 };
 
 const getters = {
-  templatesNames(state) {
-    return [...new Set(state.templates.map((item) => item.template.name))];
-  },
-
-  templatesTags(state) {
-    return [...new Set([].concat(...state.templates.map((item) => item.template.tags)))];
+  // templatesTags(state) {
+  //   return [...new Set([].concat(...state.templates.map((item) => item.template.tags)))];
+  // },
+  findTemplateByName: (state) => (name) => {
+    return state.templates.find((item) => item.template.name === name);
   },
 };
 
@@ -34,7 +33,6 @@ const actions = {
   },
 };
 
-/* eslint no-param-reassign: ["error", { "props": false }] */
 const mutations = {
   [TEMPLATES_SET](state, templates) {
     state.templates = templates;

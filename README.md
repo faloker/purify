@@ -44,7 +44,7 @@ Purify is able to remove duplicate results among various vulnerability scanners 
 
 Collect all security findings in one place, review/validate/track them, collaborate, get notifications(Slack), export them into tracking systems(Jira) and so on.
 
-## Documentation (WIP)
+## Documentation
 https://faloker.gitbook.io/purify
 
 
