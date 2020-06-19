@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid style="width: 90%">
     <v-row justify="center" align="center">
       <issue-filter
         :keywords="keywordsList"
