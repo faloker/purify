@@ -6,7 +6,7 @@
         align="center"
         justify="center"
       >
-        <v-div>
+        <div>
           <v-tooltip top>
             <template v-slot:activator="{ on }">
               <v-checkbox
@@ -21,7 +21,7 @@
             <span v-if="!allSelected">Select All</span>
             <span v-else>Select None</span>
           </v-tooltip>
-        </v-div>
+        </div>
         <v-divider
           light
           class="ma-3"
