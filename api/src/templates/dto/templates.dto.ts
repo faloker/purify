@@ -5,6 +5,7 @@ import {
   MinLength,
   IsArray,
   ArrayNotEmpty,
+  IsUUID,
 } from 'class-validator';
 import { BodyField } from '../interfaces/template.interface';
 import { ApiProperty } from '@nestjs/swagger';
@@ -19,10 +20,14 @@ export class SaveTemplateDto {
   @IsString()
   @IsNotEmpty()
   readonly report: string;
-  
+
   @ApiProperty()
   @IsString()
   readonly path_to_issues: string;
+
+  @ApiProperty()
+  @IsString()
+  readonly risk_field?: string;
 
   @ApiProperty()
   @IsArray()
@@ -32,8 +37,8 @@ export class SaveTemplateDto {
   @ApiProperty()
   @IsArray()
   @ArrayNotEmpty()
-  readonly external_comparison_fields: string[];  
-  
+  readonly external_comparison_fields: string[];
+
   @ApiProperty()
   @IsArray()
   @ArrayNotEmpty()
@@ -64,7 +69,7 @@ export class SaveTemplateDto {
 
 export class IdParamDto {
   @ApiProperty()
-  @IsString()
+  @IsUUID('4')
   @IsNotEmpty()
   readonly id: string;
 }
@@ -87,8 +92,8 @@ export class EditTemplateBodyDto {
   @ApiProperty()
   @IsArray()
   @ArrayNotEmpty()
-  readonly external_comparison_fields: string[];  
-  
+  readonly external_comparison_fields: string[];
+
   @ApiProperty()
   @IsArray()
   @ArrayNotEmpty()

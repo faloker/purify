@@ -36,8 +36,8 @@ export class TemplatesController {
   }
 
   @Patch(':id')
-  updateOne(@Param('id') id: string, @Body() template: EditTemplateBodyDto) {
-    return this.templatesService.updateOne(id, template);
+  updateOne(@Param() params: IdParamDto, @Body() template: EditTemplateBodyDto) {
+    return this.templatesService.updateOne(params.id, template);
   }
 
   @Delete(':id')
