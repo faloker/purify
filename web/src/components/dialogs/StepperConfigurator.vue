@@ -68,10 +68,43 @@
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step :complete="e6 > 3" step="3">
-          Add patterns to display title and subtitle
+        <v-stepper-step
+          :complete="e6 > 3"
+          step="3"
+        >
+          Which field represent the severity of the finding? (optional)
         </v-stepper-step>
         <v-stepper-content step="3">
+          <vue-json-pretty
+            v-model="risk_field"
+            :deep="2"
+            :path="'issue'"
+            :selectable-type="'single'"
+            :path-selectable="(path, data) => path !== 'issue'"
+            :data="exampleIssue"
+            :show-select-controller="true"
+            :highlight-selected-node="false"
+          />
+          <v-btn
+            class="mx-2 mt-3"
+            outlined
+            color="primary"
+            @click="e6 = 4"
+          >
+            Next
+          </v-btn>
+          <v-btn
+            class="mx-2 mt-3"
+            outlined
+            @click="e6 = 2"
+          >
+            Go back
+          </v-btn>
+        </v-stepper-content>
+        <v-stepper-step :complete="e6 > 4" step="4">
+          Add patterns to display title and subtitle
+        </v-stepper-step>
+        <v-stepper-content step="4">
           <v-combobox
             v-model="title_pattern"
             label="Pattern for a title"
@@ -92,22 +125,22 @@
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 4"
+            @click="e6 = 5"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 2"
+            @click="e6 = 3"
           >
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step :complete="e6 > 4" step="4">
+        <v-stepper-step :complete="e6 > 5" step="5">
           Which fields will be in issue body?
         </v-stepper-step>
-        <v-stepper-content step="4">
+        <v-stepper-content step="5">
           <vue-json-pretty
             v-model="body_fields"
             :deep="2"
@@ -123,22 +156,22 @@
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 5"
+            @click="e6 = 6"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 3"
+            @click="e6 = 4"
           >
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step :complete="e6 > 5" step="5">
+        <v-stepper-step :complete="e6 > 6" step="6">
           Select types of fields in issue body
         </v-stepper-step>
-        <v-stepper-content step="5">
+        <v-stepper-content step="6">
           <template v-for="item in body_fields">
             <div :key="item" class="my-2">
               <span class="subtitle-1">{{ item }}</span>
@@ -166,40 +199,6 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 6"
-          >
-            Next
-          </v-btn>
-          <v-btn
-            class="mr-2 mt-3"
-            outlined
-            @click="e6 = 4"
-          >
-            Go back
-          </v-btn>
-        </v-stepper-content>
-        <v-stepper-step
-          :complete="e6 > 6"
-          step="6"
-        >
-          Select field(s) to detect duplicates and merge candidates at the template level
-        </v-stepper-step>
-        <v-stepper-content step="6">
-          <vue-json-pretty
-            v-model="internal_comparison_fields"
-            :deep="2"
-            :path="'issue'"
-            :selectable-type="'multiple'"
-            :path-selectable="(path, data) => path !== 'issue'"
-            :data="exampleIssue"
-            :show-select-controller="true"
-            :highlight-selected-node="false"
-          />
-          <v-btn
-            :disabled="!internal_comparison_fields.length"
-            color="primary"
-            class="mr-2 mt-3"
-            outlined
             @click="e6 = 7"
           >
             Next
@@ -216,11 +215,11 @@
           :complete="e6 > 7"
           step="7"
         >
-          Select field(s) to merge if issues look the same at the template level (optional)
+          Select field(s) to detect duplicates and merge candidates at the template level
         </v-stepper-step>
         <v-stepper-content step="7">
           <vue-json-pretty
-            v-model="merge_fields"
+            v-model="internal_comparison_fields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -230,6 +229,7 @@
             :highlight-selected-node="false"
           />
           <v-btn
+            :disabled="!internal_comparison_fields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
@@ -249,11 +249,11 @@
           :complete="e6 > 8"
           step="8"
         >
-          Select field(s) to detect duplicates at the unit level
+          Select field(s) to merge if issues look the same at the template level (optional)
         </v-stepper-step>
         <v-stepper-content step="8">
           <vue-json-pretty
-            v-model="external_comparison_fields"
+            v-model="merge_fields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -263,7 +263,6 @@
             :highlight-selected-node="false"
           />
           <v-btn
-            :disabled="!external_comparison_fields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
@@ -279,10 +278,44 @@
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step step="9">
-          Give a name for this template
+        <v-stepper-step
+          :complete="e6 > 9"
+          step="9"
+        >
+          Select field(s) to detect duplicates at the unit level
         </v-stepper-step>
         <v-stepper-content step="9">
+          <vue-json-pretty
+            v-model="external_comparison_fields"
+            :deep="2"
+            :path="'issue'"
+            :selectable-type="'multiple'"
+            :path-selectable="(path, data) => path !== 'issue'"
+            :data="exampleIssue"
+            :show-select-controller="true"
+            :highlight-selected-node="false"
+          />
+          <v-btn
+            :disabled="!external_comparison_fields.length"
+            color="primary"
+            class="mr-2 mt-3"
+            outlined
+            @click="e6 = 10"
+          >
+            Next
+          </v-btn>
+          <v-btn
+            class="mr-2 mt-3"
+            outlined
+            @click="e6 = 8"
+          >
+            Go back
+          </v-btn>
+        </v-stepper-content>
+        <v-stepper-step step="10">
+          Give a name for this template
+        </v-stepper-step>
+        <v-stepper-content step="10">
           <v-text-field
             v-model="name"
             class="tname"
@@ -314,7 +347,7 @@
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 8"
+            @click="e6 = 9"
           >
             Go back
           </v-btn>
@@ -391,6 +424,7 @@ export default {
       path_to_issues: '',
       title_fields: [],
       body_fields: [],
+      risk_field: '',
       type_body_fields: {},
       report: false,
       rules: {
@@ -438,6 +472,7 @@ export default {
           subtitle_pattern: this.subtitle_pattern,
           tags: this.tags,
           body_fields: this.body_fields,
+          risk_field: this.risk_field.replace('issue.', ''),
           merge_fields: this.merge_fields.map((i) => i.replace('issue.', '')),
           title_fields: this.title_fields.map((i) => i.replace('issue.', '')),
           internal_comparison_fields: this.internal_comparison_fields.map((i) =>
