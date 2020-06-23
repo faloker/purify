@@ -67,7 +67,9 @@ export class TemplatesService {
       let filteredUnitIssues = allIssuesInUnit;
       for (const comparisonField of template.external_comparison_fields) {
         filteredUnitIssues = filteredUnitIssues.filter(existingIssue =>
-          existingIssue.fields.toLowerCase().includes(get(issue, comparisonField).toLowerCase())
+          existingIssue.fields
+            .toLowerCase()
+            .includes(get(issue, comparisonField).toLowerCase())
         );
       }
 
@@ -110,8 +112,17 @@ export class TemplatesService {
             { $set: { fields: JSON.stringify(oldIssue) } }
           );
         } else {
+          let risk = get(issue, template.risk_field, '').toLowerCase();
+
+          if (risk === 'negligible') {
+            risk = 'info';
+          }
+
           const newIssue = await new this.issueModel({
             unit: report.unit,
+            risk: ['low', 'medium', 'high', 'critical', 'info'].includes(risk)
+              ? risk
+              : 'medium',
             template: template._id,
             fields: JSON.stringify(issue),
             report: report._id,

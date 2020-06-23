@@ -7,6 +7,7 @@ export const TemplateSchema = new Schema(
     _id: { type: String, default: uuidv4 },
     name: { type: String, unique: true },
     path_to_issues: String,
+    risk_field: String,
     title_fields: Array,
     internal_comparison_fields: Array,
     external_comparison_fields: Array,
@@ -16,5 +17,5 @@ export const TemplateSchema = new Schema(
     subtitle_pattern: String,
     tags: [{ type: String }],
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );
