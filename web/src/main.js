@@ -14,6 +14,9 @@ Vue.use(VueApexCharts);
 
 Vue.component('apexchart', VueApexCharts);
 
+Vue.prototype.API_URL =
+  process.env.NODE_ENV === 'production' ? window.DOMAIN : 'http://localhost:3000/api';
+
 new Vue({
   store,
   router,

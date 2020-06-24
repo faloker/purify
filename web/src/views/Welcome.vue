@@ -71,9 +71,7 @@
                       outlined
                       type="submit"
                       color="quinary"
-                      :loading="loading"
-                      :disabled="loading"
-                      @click.prevent="samlLogin()"
+                      :href="`${API_URL}/auth/saml`"
                     >
                       Or Login with SSO
                     </v-btn>
@@ -190,11 +188,6 @@ export default {
         .catch(() => {
           this.loading = false;
         });
-    },
-
-    async samlLogin() {
-      this.loading = true;
-      await initSAML();
     },
   },
 };

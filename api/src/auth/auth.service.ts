@@ -53,9 +53,9 @@ export class AuthService {
 
     if (!entity) {
       return this.usersService.createUser({
-        username: this.configService.get<string>('SAML_USERNAME_FIELD_NAME'),
+        username: user[this.configService.get<string>('SAML_USERNAME_FIELD_NAME')],
         password: randomBytes(16).toString('hex'),
-        email: this.configService.get<string>('SAML_EMAIL_FIELD_NAME'),
+        email: user[this.configService.get<string>('SAML_EMAIL_FIELD_NAME')],
         type: 'saml',
       });
     } else {

@@ -15,7 +15,7 @@ export class MongoExceptionFilter implements ExceptionFilter {
 
     switch (exception.code) {
       case 11000:
-        response.code(status).send({
+        response.status(status).send({
           statusCode: status,
           message: `${exception.errmsg.match(/\{\s.+\s\}/g)[0]} already exists`
         });
