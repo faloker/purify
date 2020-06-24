@@ -42,3 +42,5 @@ export const TEMPLATE_CREATE = 'templateCreate';
 export const PROFILE_FETCH = 'profileFetch';
 
 export const FETCH_SYSTEM_SETUP = 'fetchSystemSetup';
+
+export const SAML_LOGIN = 'samlLogin';
