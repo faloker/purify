@@ -52,7 +52,12 @@ export class ReportsService {
         const template = await this.templateModel.findOne({
           name: uploadReportDto.template,
         });
-        await this.templatesService.apply(report, template);
+
+        if (template) {
+          await this.templatesService.apply(report, template);
+        } else {
+          throw new NotFoundException();
+        }
       }
 
       return { id: report._id };
