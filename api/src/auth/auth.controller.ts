@@ -77,7 +77,7 @@ export class AuthController {
   @Get('refresh_token')
   @ApiExcludeEndpoint()
   async refreshToken(@Request() req, @Res() response) {
-    if (req.cookies.hasOwnProperty('refresh_token')) {
+    if (req.cookies) {
       try {
         const tokens = await this.authService.refreshToken(
           req.cookies.refresh_token
