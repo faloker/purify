@@ -58,6 +58,9 @@ import Joi = require('@hapi/joi');
         USE_LDAP: Joi.string()
           .valid('true', 'false')
           .default('false'),
+        USE_SSO: Joi.string()
+          .valid('true', 'false')
+          .default('false'),
       }),
       validationOptions: {
         allowUnknown: true,

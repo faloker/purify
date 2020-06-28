@@ -64,6 +64,18 @@
                       Sign In
                     </v-btn>
                   </v-row>
+                  <v-row justify="center">
+                    <v-btn
+                      v-if="systemSetup.saml"
+                      class="mt-3"
+                      outlined
+                      type="submit"
+                      color="quinary"
+                      :href="`${API_URL}/auth/saml`"
+                    >
+                      Or Login with SSO
+                    </v-btn>
+                  </v-row>
                 </v-form>
               </v-tab-item>
               <v-tab-item>
@@ -128,6 +140,7 @@
 <script>
 import { mapState } from 'vuex';
 import { REGISTER, LOGIN } from '@/store/actions';
+import { initSAML } from '@/api/auth.service';
 
 export default {
   name: 'Welcome',
@@ -161,6 +174,7 @@ export default {
           this.loading = false;
         });
     },
+
     login() {
       this.loading = true;
       this.$store

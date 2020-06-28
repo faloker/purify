@@ -3,7 +3,15 @@
 import { login, signup, refreshToken, logout } from '@/api/auth.service';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
-import { LOGIN, LOGOUT, REGISTER, REFRESH_TOKEN, AUTO_REFRESH, PROFILE_FETCH } from '../actions';
+import {
+  LOGIN,
+  LOGOUT,
+  REGISTER,
+  REFRESH_TOKEN,
+  AUTO_REFRESH,
+  PROFILE_FETCH,
+  SAML_LOGIN,
+} from '../actions';
 import { SET_AUTH, PURGE_AUTH, SET_USER, REFRESH_TASK } from '../mutations';
 
 const state = {
@@ -60,6 +68,11 @@ const actions = {
 
     const refreshTask = setTimeout(() => dispatch(REFRESH_TOKEN), timeUntilRefresh);
     commit(REFRESH_TASK, refreshTask);
+  },
+
+  async [SAML_LOGIN]({ dispatch, commit }, data) {
+    commit(SET_AUTH, data);
+    dispatch(AUTO_REFRESH);
   },
 };
 

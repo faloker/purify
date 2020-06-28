@@ -3,7 +3,7 @@ import Router from 'vue-router';
 
 import TheHeader from '@/components/TheHeader.vue';
 import store from './store';
-import { REFRESH_TOKEN, FETCH_SYSTEM_SETUP } from './store/actions';
+import { REFRESH_TOKEN, FETCH_SYSTEM_SETUP, SAML_LOGIN } from './store/actions';
 
 Vue.use(Router);
 
@@ -75,6 +75,10 @@ export const router = new Router({
       },
       meta: { title: 'Purify | Reports' },
     },
+    {
+      path: '/saml/login/:token',
+      name: 'SAML Login',
+    },
   ],
 });
 
@@ -83,6 +87,12 @@ router.beforeEach((to, from, next) => {
 
   if (to.path === '/welcome') {
     store.dispatch(FETCH_SYSTEM_SETUP);
+  }
+
+  if (to.name === 'SAML Login') {
+    store.dispatch(SAML_LOGIN, { token: atob(to.params.token) });
+    store.dispatch(FETCH_SYSTEM_SETUP);
+    next('/projects');
   }
 
   if (to.path !== '/welcome' && !isAuthenticated) {
@@ -96,7 +106,7 @@ router.beforeEach((to, from, next) => {
         document.title = 'Purify | Welcome';
         next('/welcome');
       });
-  } else if (to.path === '/welcome' && isAuthenticated) {
+  } else if ((to.path === '/welcome' || to.name === 'SAML Login') && isAuthenticated) {
     next(false);
   } else {
     document.title = to.meta.title;

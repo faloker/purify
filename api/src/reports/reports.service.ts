@@ -25,10 +25,10 @@ export class ReportsService {
     private readonly templatesService: TemplatesService,
   ) {}
 
-  async save(uploadReportDto: UploadReportDto) {
+  async save(uploadReportDto: UploadReportDto, file: any) {
     const unitSlug = uploadReportDto.unit;
-    const fileName: string = uploadReportDto.file.name;
-    const rawData: any = uploadReportDto.file.data.toString('utf8');
+    const fileName: string = file.originalname;
+    const rawData: any = file.buffer.toString('utf8');
 
     let data = null;
 
@@ -52,7 +52,12 @@ export class ReportsService {
         const template = await this.templateModel.findOne({
           name: uploadReportDto.template,
         });
-        await this.templatesService.apply(report, template);
+
+        if (template) {
+          await this.templatesService.apply(report, template);
+        } else {
+          throw new NotFoundException();
+        }
       }
 
       return { id: report._id };
