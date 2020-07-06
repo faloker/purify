@@ -1,15 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { findBestMatch } from 'string-similarity';
 import { get, isArray, set } from 'lodash';
 import { Model } from 'mongoose';
 import { Report } from 'src/reports/interfaces/report.interface';
 import { Template } from './interfaces/template.interface';
-import {
-  IdParamDto,
-  SaveTemplateDto,
-  EditTemplateBodyDto,
-} from './dto/templates.dto';
+import { SaveTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { SlackService } from 'src/plugins/slack/slack.service';
 import { Unit } from 'src/units/interfaces/unit.interface';
@@ -40,10 +35,14 @@ export class TemplatesService {
   async apply(report: Report, template: Template) {
     const rep = report;
     const content = JSON.parse(report.content);
-    const issues =
+    let issues =
       template.path_to_issues !== ''
         ? get(content, template.path_to_issues)
         : content;
+
+    if (report.type === 'oneshot') {
+      issues = [issues];
+    }
 
     const stat = await this.saveIssues(issues, template, report);
 
