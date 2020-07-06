@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import cors = require('cors');
-import cookieParser = require('cookie-parser')
+import cookieParser = require('cookie-parser');
 import * as helmet from 'helmet';
 import { AppModule } from './app.module';
 import { MongoExceptionFilter } from './filters/mongo-exception.filter';
@@ -30,7 +30,7 @@ async function bootstrap() {
   );
 
   app.use(helmet());
-  app.use(cookieParser())
+  app.use(cookieParser());
 
   const options = new DocumentBuilder()
     .setTitle('Purify API')

@@ -19,7 +19,11 @@ import {
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import { ReportsService } from 'src/reports/reports.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileUploadDto, UnitSlugDto, UnitAndTemplateSlugsDto } from './dto/upload.dto';
+import {
+  FileUploadDto,
+  UnitSlugDto,
+  UnitAndTemplateSlugsDto,
+} from './dto/upload.dto';
 
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
@@ -71,10 +75,7 @@ export class UploadController {
     type: FileUploadDto,
   })
   @UseInterceptors(FileInterceptor('file'))
-  saveReport(
-    @UploadedFile() file,
-    @Param() unitSlugDto: UnitSlugDto
-  ) {
+  saveReport(@UploadedFile() file, @Param() unitSlugDto: UnitSlugDto) {
     return this.reportsService.save(file, unitSlugDto.unitSlug);
   }
 

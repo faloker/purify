@@ -6,6 +6,6 @@ import { ReportsModule } from 'src/reports/reports.module';
 @Module({
   imports: [ReportsModule],
   controllers: [UploadController],
-  providers: [UploadService]
+  providers: [UploadService],
 })
 export class UploadModule {}

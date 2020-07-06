@@ -17,6 +17,7 @@ import { SlackModule } from './plugins/slack/slack.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { SystemModule } from './system/system.module';
+import { UploadModule } from './upload/upload.module';
 import Joi = require('@hapi/joi');
 
 @Module({
@@ -81,6 +82,7 @@ import Joi = require('@hapi/joi');
     SmtpModule,
     SlackModule,
     SystemModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [],
