@@ -14,9 +14,10 @@ import { TemplatesModule } from 'src/templates/templates.module';
     MongooseModule.forFeature([{ name: 'Issue', schema: IssueSchema }]),
     MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
     MongooseModule.forFeature([{ name: 'Template', schema: TemplateSchema }]),
-    TemplatesModule
+    TemplatesModule,
   ],
   controllers: [ReportsController],
   providers: [ReportsService],
+  exports: [ReportsService],
 })
 export class ReportsModule {}

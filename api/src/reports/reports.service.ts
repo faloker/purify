@@ -11,7 +11,6 @@ import { Template } from 'src/templates/interfaces/template.interface';
 import { Unit } from 'src/units/interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { Report } from './interfaces/report.interface';
-import { UploadReportDto } from './dto/reports.dto';
 import { xmlToJson } from 'src/utils/converter';
 import { TemplatesService } from 'src/templates/templates.service';
 
@@ -22,11 +21,10 @@ export class ReportsService {
     @InjectModel('Unit') private readonly unitModel: Model<Unit>,
     @InjectModel('Issue') private readonly issueModel: Model<Issue>,
     @InjectModel('Report') private readonly reportModel: Model<Report>,
-    private readonly templatesService: TemplatesService,
+    private readonly templatesService: TemplatesService
   ) {}
 
-  async save(uploadReportDto: UploadReportDto, file: any) {
-    const unitSlug = uploadReportDto.unit;
+  async save(file: any, unitSlug: string, templateName = '') {
     const fileName: string = file.originalname;
     const rawData: any = file.buffer.toString('utf8');
 
@@ -45,24 +43,57 @@ export class ReportsService {
     if (unit) {
       const report = await new this.reportModel({
         unit: unit._id,
+        type: 'file',
         content: JSON.stringify(data),
       }).save();
 
-      if (uploadReportDto.template) {
+      if (templateName) {
         const template = await this.templateModel.findOne({
-          name: uploadReportDto.template,
+          name: templateName,
         });
 
         if (template) {
           await this.templatesService.apply(report, template);
         } else {
-          throw new NotFoundException();
+          throw new NotFoundException('No such template');
         }
       }
 
       return { id: report._id };
     } else {
-      throw new NotFoundException();
+      throw new NotFoundException('No such unit');
+    }
+  }
+
+  async saveOneshot(body: any, unitSlug: string, templateName = '') {
+    const unit = await this.unitModel.findOne({ slug: unitSlug });
+
+    if (!Object.keys(body).length) {
+      throw new BadRequestException('Request body is not valid JSON');
+    }
+
+    if (unit) {
+      const report = await new this.reportModel({
+        unit: unit._id,
+        type: 'oneshot',
+        content: JSON.stringify(body),
+      }).save();
+
+      if (templateName) {
+        const template = await this.templateModel.findOne({
+          name: templateName,
+        });
+
+        if (template) {
+          await this.templatesService.apply(report, template);
+        } else {
+          throw new NotFoundException('No such template');
+        }
+      }
+
+      return { id: report._id };
+    } else {
+      throw new NotFoundException('No such unit');
     }
   }
 
@@ -94,6 +125,10 @@ export class ReportsService {
 
     const result = {};
 
+    if (report.type === 'oneshot') {
+      return JSON.parse(report.content);
+    }
+
     function recur(obj, path) {
       if (Array.isArray(obj) && Object.keys(obj).length) {
         const len = Math.max(...obj.map(o => Object.keys(o).length), 0);
@@ -105,7 +140,7 @@ export class ReportsService {
             const len = Math.max(...value.map(o => Object.keys(o).length), 0);
             result[`${path}.${key}[0]`] = find(
               value,
-              k => Object.keys(k).length === len,
+              k => Object.keys(k).length === len
             );
           }
         } else if (isObject(value)) {
