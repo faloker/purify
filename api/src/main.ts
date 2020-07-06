@@ -43,14 +43,6 @@ async function bootstrap() {
       in: 'header',
       description: 'API Key for external calls',
     })
-    .addTag('projects')
-    .addTag('reports')
-    .addTag('issues')
-    .addTag('templates')
-    .addTag('units')
-    .addTag('users')
-    .addTag('auth')
-    .addTag('settings')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);
