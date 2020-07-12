@@ -31,7 +31,7 @@ describe('Deleting units', () => {
       cy.contains('dast').should('not.be.visible');
     })
 
-    cy.get('.toasted').should('be.visible').contains('Unit removed successfully');
+    cy.get('.toasted').should('be.visible').contains('Deleted successfully');
   });
   
 });
