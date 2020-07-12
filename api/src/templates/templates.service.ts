@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { get, isArray, set } from 'lodash';
 import { Model } from 'mongoose';
 import * as slugify from 'slug';
+
 import { Report } from 'src/reports/interfaces/report.interface';
 import { Template } from './interfaces/template.interface';
 import { CreateTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { SlackService } from 'src/plugins/slack/slack.service';
 import { Unit } from 'src/units/interfaces/unit.interface';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TemplatesService {
@@ -22,10 +23,10 @@ export class TemplatesService {
     private readonly configService: ConfigService
   ) {}
 
-  async save(CreateTemplateDto: CreateTemplateDto) {
-    const template = await new this.templateModel(CreateTemplateDto).save();
+  async save(createTemplateDto: CreateTemplateDto) {
+    const template = await new this.templateModel(createTemplateDto).save();
     const report = await this.reportModel.findOne({
-      _id: CreateTemplateDto.report,
+      _id: createTemplateDto.report,
     });
 
     await this.apply(report, template);

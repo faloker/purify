@@ -2,8 +2,10 @@ import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { groupBy, get } from 'lodash';
+import * as slugify from 'slug';
+
 import { Project } from './interfaces/project.interface';
-import { ProjectDto } from './dto/projects.dto';
+import { CreateProjectDto, EditProjectDto } from './dto/projects.dto';
 import { Unit } from 'src/units/interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { Report } from 'src/reports/interfaces/report.interface';
@@ -44,29 +46,31 @@ export class ProjectsService {
     return result;
   }
 
-  async create(project: ProjectDto): Promise<Project> {
+  async create(project: CreateProjectDto) {
     return new this.projectModel(project).save();
   }
 
-  async edit(id: string, change: ProjectDto): Promise<Project> {
-    const project = await this.projectModel.findOne({ _id: id });
+  async edit(slug: string, fields: EditProjectDto) {
+    const project = await this.projectModel.findOne({ slug });
+    const change: any = fields;
 
     if (project) {
-      project.title = change.title;
-      project.subtitle = change.subtitle;
-      return project.save();
+      if (project.title !== fields.title) {
+        change.slug = slugify(fields.title);
+      }
+
+      await this.projectModel.updateOne({ slug }, change);
+      return this.projectModel.findOne({ slug });
     } else {
-      throw new NotFoundException();
+      throw new NotFoundException('No such project');
     }
   }
 
-  async delete(id: string) {
-    const project = await this.projectModel.findOne({ _id: id });
+  async delete(slug: string) {
+    const project = await this.projectModel.findOne({ slug });
 
-    if (!project) {
-      throw new NotFoundException();
-    } else {
-      const units = await this.unitModel.find({ project: id }, '_id');
+    if (project) {
+      const units = await this.unitModel.find({ project: project._id }, '_id');
 
       if (units.length) {
         this.reportModel.deleteMany({ unit: { $in: units } });
@@ -74,15 +78,14 @@ export class ProjectsService {
         this.unitModel.deleteMany({ _id: { $in: units } });
       }
 
-      return this.projectModel.deleteOne({ _id: id });
+      await this.projectModel.deleteOne({ slug });
+    } else {
+      throw new NotFoundException('No such project');
     }
   }
 
   async getStatisticsForUnit(unit: string) {
-    const uploadedReports = await this.reportModel.find(
-      { unit },
-      '_id created_at'
-    );
+    const uploadedReports = await this.reportModel.find({ unit }, '_id created_at');
     let issues = await this.issueModel.find(
       { unit },
       '_id status resolution created_at risk'
@@ -108,8 +111,7 @@ export class ProjectsService {
 
     const closedIssues = groupBy(
       issues.filter(
-        issue =>
-          issue.status === 'closed' && issue.resolution !== 'false positive'
+        issue => issue.status === 'closed' && issue.resolution !== 'false positive'
       ),
       issue => issue.created_at.getMonth()
     );
@@ -165,12 +167,9 @@ export class ProjectsService {
     const project = await this.projectModel.findOne({ slug });
 
     if (project) {
-      const units = await this.unitModel.find(
-        { project: project._id },
-        '_id name'
-      );
+      const units = await this.unitModel.find({ project: project._id }, '_id name');
 
-      const unitsStat = {};
+      const unitsStat = [];
       const projectStat = {
         open: new Array(12).fill(0),
         closed: new Array(12).fill(0),
@@ -180,13 +179,18 @@ export class ProjectsService {
 
       if (units.length) {
         for (const unit of units) {
-          unitsStat[unit.name] = await this.getStatisticsForUnit(unit._id);
+          const data = await this.getStatisticsForUnit(unit._id);
 
-          for (const key of Object.keys(unitsStat[unit.name])) {
-            const arr = get(unitsStat[unit.name], key);
+          unitsStat.push({
+            name: unit.name,
+            data,
+          });
+
+          Object.keys(data).forEach(key => {
+            const arr = data[key];
             const updated = projectStat[key].map((a, i) => a + arr[i]);
             projectStat[key] = updated;
-          }
+          });
         }
       }
 
@@ -195,7 +199,7 @@ export class ProjectsService {
         units: unitsStat,
       };
     } else {
-      throw new NotFoundException();
+      throw new NotFoundException('No such project');
     }
   }
 }
