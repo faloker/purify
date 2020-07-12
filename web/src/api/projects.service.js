@@ -6,11 +6,10 @@ export const getProjects = () =>
     method: 'get',
   });
 
-export const getStats = (project) =>
+export const getStats = (slug) =>
   request({
-    url: 'projects/stats',
+    url: `projects/${slug}/stats`,
     method: 'get',
-    params: { project },
   });
 
 export const createProject = (data) =>
@@ -20,15 +19,15 @@ export const createProject = (data) =>
     data,
   });
 
-export const deleteProject = (id) =>
+export const deleteProject = (slug) =>
   request({
-    url: `projects/${id}`,
+    url: `projects/${slug}`,
     method: 'delete',
   });
 
-export const editProject = (id, change) =>
+export const editProject = (slug, change) =>
   request({
-    url: `projects/${id}`,
+    url: `projects/${slug}`,
     method: 'patch',
     data: change,
   });

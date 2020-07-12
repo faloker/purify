@@ -71,22 +71,22 @@
         </v-skeleton-loader>
       </v-col>
     </v-row>
-    <v-dialog v-model="confirmDialog" max-width="300">
+    <v-dialog v-model="confirmDialog" max-width="350">
       <v-card>
         <v-card-title>
-          <span>Delete template 
-            <v-chip
-              label
+          Delete template 
+          <v-chip
+            label
+            class="ml-2"
+          >
+            <span
+              class="d-inline-block text-truncate"
+              style="max-width: 150px;"
             >
-              <span
-                class="d-inline-block text-truncate"
-                style="max-width: 100px;"
-              >
-                {{ selectedTemplate.name }}
-              </span>
-            </v-chip>
-            ?
-          </span>
+              {{ selectedTemplate.name }}
+            </span>
+          </v-chip>
+          ?
         </v-card-title>
         <v-divider />
         <v-card-actions>
@@ -239,7 +239,7 @@ export default {
           this.selectedTemplate = {};
 
           this.$toasted.global.api_success({
-            msg: 'Update successfull',
+            msg: 'Edited successfully',
           });
         });
     },
@@ -266,7 +266,7 @@ export default {
         this.selectedTemplate = {};
 
         this.$toasted.global.api_success({
-          msg: 'Delete successfull',
+          msg: 'Deleted successfully',
         });
       });
     },
