@@ -24,14 +24,16 @@ export default {
       jsonEditor: false,
     };
   },
+
   watch: {
     value(value) {
       const editorValue = this.jsonEditor.getValue();
       if (value !== editorValue) {
-        this.jsonEditor.setValue(JSON.stringify(this.value, null, 2));
+        this.jsonEditor.setValue(this.value);
       }
     },
   },
+
   mounted() {
     this.jsonEditor = CodeMirror.fromTextArea(this.$refs.textarea, {
       lineNumbers: true,
@@ -41,20 +43,18 @@ export default {
       lint: true,
     });
 
-    this.jsonEditor.setValue(JSON.stringify(this.value, null, 2));
+    this.jsonEditor.setValue(this.value);
+
     this.jsonEditor.on('change', (cm) => {
       this.$emit('changed', cm.getValue());
       this.$emit('input', cm.getValue());
     });
   },
+
   methods: {
     getValue() {
       return this.jsonEditor.getValue();
     },
-
-    // async getContent(reportId) {
-    //   await this.$store.dispatch(FETCH_CONTENT, reportId);
-    // },
   },
 };
 </script>

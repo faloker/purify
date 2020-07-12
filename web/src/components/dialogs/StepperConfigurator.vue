@@ -176,7 +176,7 @@
             <div :key="item" class="my-2">
               <span class="subtitle-1">{{ item }}</span>
               <v-btn-toggle
-                v-model="type_body_fields[item]"
+                v-model="body_fields_types[item]"
                 color="primary"
                 group
               >
@@ -195,7 +195,7 @@
             </div>
           </template>
           <v-btn
-            :disabled="Object.keys(type_body_fields).length !== body_fields.length"
+            :disabled="Object.keys(body_fields_types).length !== body_fields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
@@ -409,9 +409,10 @@ export default {
       required: true,
     },
   },
+
   data() {
     return {
-      stepperModel: this.report.type === 'file' ? 1 : 2,
+      stepperModel: 1,
       name: '',
       loading: false,
       merge_fields: [],
@@ -424,13 +425,14 @@ export default {
       title_fields: [],
       body_fields: [],
       risk_field: '',
-      type_body_fields: {},
+      body_fields_types: {},
       reportDialog: false,
       rules: {
         min: (v) => v.length >= 3 || 'Min 3 symbols',
       },
     };
   },
+
   computed: {
     ...mapGetters(['app', 'activeRelease', 'reportContent']),
 
@@ -451,15 +453,26 @@ export default {
       },
     },
   },
+
+  watch: {
+    stepper(newValue, oldValue) {
+      this.stepperModel = this.report.type === 'file' ? 1 : 2;
+      this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
+      this.body_fields_types = {};
+      this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
+      this.merge_fields = this.title_fields = this.body_fields = [];
+    },
+  },
+
   methods: {
     saveTemplate() {
       this.loading = true;
 
       this.body_fields = [];
-      for (const key of Object.keys(this.type_body_fields)) {
+      for (const key of Object.keys(this.body_fields_types)) {
         this.body_fields.push({
           key: key.replace('issue.', ''),
-          type: this.type_body_fields[key],
+          type: this.body_fields_types[key],
         });
       }
 
@@ -488,14 +501,7 @@ export default {
         .then(() => {
           this.loading = false;
           this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug);
-
           this.stepperDialog = false;
-
-          this.stepperModel = 1;
-          this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
-          this.type_body_fields = {};
-          this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
-          this.merge_fields = this.title_fields = this.body_fields = [];
         })
         .catch(() => {
           this.loading = false;
