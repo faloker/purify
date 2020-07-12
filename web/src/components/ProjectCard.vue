@@ -18,7 +18,12 @@
               class="text-none title"
               :to="{name: 'Units', params: { slug: project.slug }}"
             >
-              {{ project.title }}
+              <span
+                class="d-inline-block text-truncate"
+                style="max-width: 300px;"
+              >
+                {{ project.title }}
+              </span>
             </v-btn>
           </div>
           <div
@@ -146,13 +151,22 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="confirmDialog" max-width="300">
+    <v-dialog v-model="confirmDialog" max-width="350">
       <v-card>
         <v-card-title>
-          <span class="title">
-            Delete project
-            <b>{{ project.title }}</b>?
-          </span>
+          Delete project
+          <v-chip
+            label
+            class="ml-2"
+          >
+            <span
+              class="d-inline-block text-truncate"
+              style="max-width: 150px;"
+            >
+              {{ project.title }}
+            </span>
+          </v-chip>
+          ?
         </v-card-title>
         <v-divider />
         <v-card-actions>
