@@ -2,9 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { get, isArray, set } from 'lodash';
 import { Model } from 'mongoose';
+import * as slugify from 'slug';
 import { Report } from 'src/reports/interfaces/report.interface';
 import { Template } from './interfaces/template.interface';
-import { SaveTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
+import { CreateTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { SlackService } from 'src/plugins/slack/slack.service';
 import { Unit } from 'src/units/interfaces/unit.interface';
@@ -21,24 +22,22 @@ export class TemplatesService {
     private readonly configService: ConfigService
   ) {}
 
-  async save(saveTemplateDto: SaveTemplateDto) {
-    const template = await new this.templateModel(saveTemplateDto).save();
+  async save(CreateTemplateDto: CreateTemplateDto) {
+    const template = await new this.templateModel(CreateTemplateDto).save();
     const report = await this.reportModel.findOne({
-      _id: saveTemplateDto.report,
+      _id: CreateTemplateDto.report,
     });
 
     await this.apply(report, template);
 
-    return { id: template._id };
+    return template;
   }
 
   async apply(report: Report, template: Template) {
     const rep = report;
     const content = JSON.parse(report.content);
     let issues =
-      template.path_to_issues !== ''
-        ? get(content, template.path_to_issues)
-        : content;
+      template.path_to_issues !== '' ? get(content, template.path_to_issues) : content;
 
     if (report.type === 'oneshot') {
       issues = [issues];
@@ -137,9 +136,7 @@ export class TemplatesService {
     if (newOnes > 0) {
       const unit = await this.unitsModel.findOne({ _id: report.unit });
       await this.slackService.sendMsg(
-        `🆕 You have *${newOnes}* new issues\n📄 Template: ${
-          template.name
-        }\n🗃️ Unit: ${
+        `🆕 You have *${newOnes}* new issues\n📄 Template: ${template.name}\n🗃️ Unit: ${
           unit.name
         }\n👀 Take a look at them <https://${this.configService.get<string>(
           'DOMAIN'
@@ -175,16 +172,36 @@ export class TemplatesService {
     return result;
   }
 
-  async updateOne(templateId: string, template: EditTemplateBodyDto) {
-    const oldTemplate = await this.templateModel.findOne({ _id: templateId });
+  async updateOne(slug: string, template: EditTemplateBodyDto) {
+    const oldTemplate = await this.templateModel.findOne({ slug });
+
     if (oldTemplate) {
-      return this.templateModel.updateOne({ _id: templateId }, template);
+      if (oldTemplate.name !== template.name) {
+        template.slug = slugify(template.name);
+      }
+
+      await this.templateModel.updateOne({ slug }, template);
+      return this.templateModel.findOne({ slug });
     } else {
-      throw new NotFoundException();
+      throw new NotFoundException('No such template');
     }
   }
 
-  async deleteOne() {
-    throw new Error('Not implemented');
+  async deleteOne(slug: string) {
+    const template = await this.templateModel.findOne({ slug });
+
+    if (template) {
+      await this.issueModel.updateMany(
+        { template: template._id },
+        { $unset: { template: '' } }
+      );
+      await this.reportModel.updateMany(
+        { template: template._id },
+        { $unset: { template: '' } }
+      );
+      await this.templateModel.deleteOne({ slug });
+    } else {
+      throw new NotFoundException('No such template');
+    }
   }
 }

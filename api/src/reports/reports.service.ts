@@ -24,7 +24,7 @@ export class ReportsService {
     private readonly templatesService: TemplatesService
   ) {}
 
-  async save(file: any, unitSlug: string, templateName = '') {
+  async save(file: any, unitSlug: string, templateSlug = '') {
     const fileName: string = file.originalname;
     const rawData: any = file.buffer.toString('utf8');
 
@@ -47,9 +47,9 @@ export class ReportsService {
         content: JSON.stringify(data),
       }).save();
 
-      if (templateName) {
+      if (templateSlug) {
         const template = await this.templateModel.findOne({
-          name: templateName,
+          slug: templateSlug,
         });
 
         if (template) {
@@ -65,7 +65,7 @@ export class ReportsService {
     }
   }
 
-  async saveOneshot(body: any, unitSlug: string, templateName = '') {
+  async saveOneshot(body: any, unitSlug: string, templateSlug = '') {
     const unit = await this.unitModel.findOne({ slug: unitSlug });
 
     if (!Object.keys(body).length) {
@@ -79,9 +79,9 @@ export class ReportsService {
         content: JSON.stringify(body),
       }).save();
 
-      if (templateName) {
+      if (templateSlug) {
         const template = await this.templateModel.findOne({
-          name: templateName,
+          slug: templateSlug,
         });
 
         if (template) {
