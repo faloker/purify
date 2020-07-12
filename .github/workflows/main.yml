@@ -27,7 +27,7 @@ jobs:
     - name: Start test server and db in dev mode
       run:  npm run start:coverage
       env:
-        DB_NAME: test
+        DB_NAME: nest
         JWT_SECRET: secret
         MONGODB_URI: mongodb://localhost:27017
         DOMAIN: localhost
