@@ -31,6 +31,7 @@ jobs:
         JWT_SECRET: secret
         MONGODB_URI: mongodb://localhost:27017
         DOMAIN: localhost
+        SAML_IDP_CERT_ONELINE: xx
     - uses: paambaati/codeclimate-action@v2.5.2
       env:
         CC_TEST_REPORTER_ID: 04813de6fa543be4690a43a1dd09a4561eaa6d2f421e715e78c2a013d7455e84
