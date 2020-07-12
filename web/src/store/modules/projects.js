@@ -39,13 +39,13 @@ const actions = {
     dispatch(FETCH_PROJECTS);
   },
 
-  async [DELETE_PROJECT]({ dispatch }, id) {
-    await deleteProject(id);
+  async [DELETE_PROJECT]({ dispatch }, slug) {
+    await deleteProject(slug);
     dispatch(FETCH_PROJECTS);
   },
 
-  async [EDIT_PROJECT]({ dispatch }, { id, change }) {
-    await editProject(id, change);
+  async [EDIT_PROJECT]({ dispatch }, { slug, change }) {
+    await editProject(slug, change);
     dispatch(FETCH_PROJECTS);
   },
 };

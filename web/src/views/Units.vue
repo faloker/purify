@@ -269,7 +269,7 @@ export default {
       this.$store.dispatch(DELETE_UNIT, id).then(() => {
         this.confirmDialog = false;
         this.$toasted.global.api_success({
-          msg: 'Unit removed successfully',
+          msg: 'Removed successfully',
         });
         this.unitToDelete = '';
       });

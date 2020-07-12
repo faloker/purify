@@ -26,7 +26,7 @@
           >
             {{ project.subtitle }}
           </div>
-          <v-divider class="mt-2"></v-divider>
+          <v-divider class="mt-2" />
           <v-container fluid>
             <v-row dense class="text-center">
               <v-col>
@@ -35,7 +35,7 @@
                     :start-val="0"
                     :end-val="project.issues"
                     :duration="2000"
-                  ></countTo>
+                  />
                 </p>
                 <span class="subheading">
                   <v-icon class="mx-1" small>fa-bug</v-icon>Issues
@@ -47,7 +47,7 @@
                     :start-val="0"
                     :end-val="project.tickets"
                     :duration="2000"
-                  ></countTo>
+                  />
                 </p>
                 <span class="subheading">
                   <v-icon class="mx-1" small>mdi-cards</v-icon>Tickets
@@ -59,7 +59,7 @@
                     :start-val="0"
                     :end-val="project.units"
                     :duration="2000"
-                  ></countTo>
+                  />
                 </p>
                 <span class="subheading font-weight-medium">
                   <v-icon class="mx-1" small>mdi-folder</v-icon>Units
@@ -68,7 +68,7 @@
             </v-row>
           </v-container>
         </div>
-        <v-divider></v-divider>
+        <v-divider />
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -125,7 +125,7 @@
             </v-flex>
           </v-layout>
         </v-card-text>
-        <v-divider></v-divider>
+        <v-divider />
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -154,7 +154,7 @@
             <b>{{ project.title }}</b>?
           </span>
         </v-card-title>
-        <v-divider></v-divider>
+        <v-divider />
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -211,10 +211,10 @@ export default {
   },
   methods: {
     deleteProject() {
-      this.$store.dispatch(DELETE_PROJECT, this.project._id).then(() => {
+      this.$store.dispatch(DELETE_PROJECT, this.project.slug).then(() => {
         this.confirmDialog = false;
         this.$toasted.global.api_success({
-          msg: 'Project removed successfully',
+          msg: 'Deleted successfully',
         });
       });
     },
@@ -222,11 +222,14 @@ export default {
     editProject() {
       this.$store
         .dispatch(EDIT_PROJECT, {
-          id: this.project._id,
+          slug: this.project.slug,
           change: { title: this.title, subtitle: this.subtitle },
         })
         .then(() => {
           this.dialog = false;
+          this.$toasted.global.api_success({
+            msg: 'Edited successfully',
+          });
         });
     },
   },

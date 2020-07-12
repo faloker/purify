@@ -239,7 +239,7 @@ export default {
           this.selectedTemplate = {};
 
           this.$toasted.global.api_success({
-            msg: 'Update successfull',
+            msg: 'Edited successfully',
           });
         });
     },
@@ -266,7 +266,7 @@ export default {
         this.selectedTemplate = {};
 
         this.$toasted.global.api_success({
-          msg: 'Delete successfull',
+          msg: 'Deleted successfully',
         });
       });
     },

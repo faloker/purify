@@ -20,7 +20,7 @@
         <v-autocomplete
           id="unitSearch"
           v-model="selectedUnit"
-          :items="units"
+          :items="unitsNames"
           :disabled="!selectedProject"
           :search-input.sync="unitSearch"
           clearable
@@ -175,7 +175,7 @@ export default {
     ],
     loaded: false,
     unitSearch: null,
-    units: null,
+    unitsNames: null,
     selectedUnit: null,
     selectedProject: null,
   }),
@@ -193,7 +193,7 @@ export default {
       if (this.selectedProject) {
         this.$store.dispatch(FETCH_STATS, this.selectedProject).then(() => {
           this.unitSearch = null;
-          this.units = Object.keys(this.stats.units);
+          this.unitsNames = this.stats.units.map((unit) => unit.name);
           this.setStats(this.stats.project);
         });
       }
@@ -223,7 +223,7 @@ export default {
     updateStats() {
       this.loaded = false;
       if (this.selectedUnit) {
-        this.setStats(this.stats.units[this.selectedUnit]);
+        this.setStats(this.stats.units.filter((u) => u.name === this.selectedUnit)[0].data);
       } else {
         this.setStats(this.stats.project);
       }
