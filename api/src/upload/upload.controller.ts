@@ -15,15 +15,12 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import { ReportsService } from 'src/reports/reports.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  FileUploadDto,
-  UnitSlugDto,
-  UnitAndTemplateSlugsDto,
-} from './dto/upload.dto';
+import { FileUploadDto, UnitSlugDto, UnitAndTemplateSlugsDto } from './dto/upload.dto';
 
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
@@ -34,23 +31,17 @@ export class UploadController {
   constructor(private reportsService: ReportsService) {}
 
   @Post('oneshot/:unitSlug')
-  @ApiCreatedResponse({
-    description: 'The object has been successfully uploaded.',
-  })
-  @ApiNotFoundResponse({
-    description: 'No such unit.',
-  })
+  @ApiOperation({ summary: 'Upload the object to the unit by slug' })
+  @ApiCreatedResponse({ description: 'Upload successfull ' })
+  @ApiNotFoundResponse({ description: 'No such unit' })
   saveOneshot(@Body() body: any, @Param() unitSlugDto: UnitSlugDto) {
     return this.reportsService.saveOneshot(body, unitSlugDto.unitSlug);
   }
 
   @Post('oneshot/:unitSlug/:templateSlug')
-  @ApiCreatedResponse({
-    description: 'The object has been successfully uploaded.',
-  })
-  @ApiNotFoundResponse({
-    description: 'No such unit or template.',
-  })
+  @ApiOperation({ summary: 'Upload the object to the unit and apply the template' })
+  @ApiCreatedResponse({ description: 'Upload successfull' })
+  @ApiNotFoundResponse({ description: 'No such unit or template' })
   saveOneshotWithTemplate(
     @Body() body: any,
     @Param() unitAndTemplateSlugsDto: UnitAndTemplateSlugsDto
@@ -63,12 +54,9 @@ export class UploadController {
   }
 
   @Post('file/:unitSlug')
-  @ApiCreatedResponse({
-    description: 'The report has been successfully uploaded.',
-  })
-  @ApiNotFoundResponse({
-    description: 'No such unit.',
-  })
+  @ApiOperation({ summary: 'Upload the file to the unit by slug' })
+  @ApiCreatedResponse({ description: 'Upload successfull' })
+  @ApiNotFoundResponse({ description: 'No such unit' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'The file to upload',
@@ -80,12 +68,9 @@ export class UploadController {
   }
 
   @Post('file/:unitSlug/:templateSlug')
-  @ApiCreatedResponse({
-    description: 'The report has been successfully uploaded.',
-  })
-  @ApiNotFoundResponse({
-    description: 'No such unit or template.',
-  })
+  @ApiOperation({ summary: 'Upload the file to the unit and apply the template' })
+  @ApiCreatedResponse({ description: 'Upload successfull' })
+  @ApiNotFoundResponse({ description: 'No such unit or template' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'The file to upload',

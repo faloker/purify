@@ -27,8 +27,8 @@ const actions = {
     dispatch(TEMPLATES_FETCH);
   },
 
-  async [TEMPLATES_EDIT]({ dispatch }, { id, change }) {
-    await editTemplate(id, change);
+  async [TEMPLATES_EDIT]({ dispatch }, { slug, change }) {
+    await editTemplate(slug, change);
     dispatch(TEMPLATES_FETCH);
   },
 };
