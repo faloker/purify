@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -38,6 +39,8 @@ export class ProjectsService {
         title: project.title,
         subtitle: project.subtitle,
         slug: project.slug,
+        created_at: project.created_at,
+        updated_at: project.updated_at,
         units: units.length,
         issues: numberOfIsues,
         tickets: numberOfTickets,
@@ -198,6 +201,44 @@ export class ProjectsService {
         project: projectStat,
         units: unitsStat,
       };
+    } else {
+      throw new NotFoundException('No such project');
+    }
+  }
+
+  async getUnits(slug: string) {
+    const project = await this.projectModel.findOne({ slug });
+
+    if (project) {
+      const units = await this.unitModel.find({ project: project._id });
+      const result = [];
+
+      for (const unit of units) {
+        const numOfReports = await this.reportModel.countDocuments({
+          unit: { $eq: unit },
+        });
+        const numberOfClosedTickets = await this.issueModel.countDocuments({
+          unit: { $eq: unit },
+          status: 'closed',
+        });
+        const numberOfAllTickets = await this.issueModel.countDocuments({
+          unit: { $eq: unit },
+        });
+
+        result.push({
+          _id: unit._id,
+          name: unit.name,
+          slug: unit.slug,
+          project: unit.project,
+          created_at: unit.created_at,
+          updated_at: unit.updated_at,
+          reports: numOfReports,
+          closed_tickets: numberOfClosedTickets,
+          tickets: numberOfAllTickets,
+        });
+      }
+
+      return result;
     } else {
       throw new NotFoundException('No such project');
     }

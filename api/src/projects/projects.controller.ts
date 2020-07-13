@@ -5,11 +5,9 @@ import {
   Body,
   UseGuards,
   HttpCode,
-  Request,
   Patch,
   Param,
   Delete,
-  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -31,6 +29,7 @@ import {
   Project,
 } from './dto/projects.dto';
 import { Project as IProject } from './interfaces/project.interface';
+import { UnitList } from 'src/units/dto/units.dto';
 
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
@@ -92,5 +91,15 @@ export class ProjectsController {
   @ApiNotFoundResponse({ description: 'No such project' })
   getStats(@Param('slug') slug: string) {
     return this.projectsService.getStats(slug);
+  }
+
+  @Get(':slug/units')
+  @ApiOperation({ summary: 'List units in project' })
+  @ApiOkResponse({
+    description: 'List of units',
+    type: [UnitList],
+  })
+  getUnits(@Param('slug') slug: string) {
+    return this.projectsService.getUnits(slug);
   }
 }
