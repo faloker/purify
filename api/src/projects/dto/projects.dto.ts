@@ -19,8 +19,7 @@ export class Project extends CreateProjectDto {
   readonly updated_at: Date;
 }
 
-export class ProjectList {
-  readonly project: Project;
+export class ProjectList extends Project {
   readonly issues: number;
   readonly units: number;
   readonly tickets: number;

@@ -22,8 +22,8 @@ const actions = {
     });
     dispatch(FETCH_UNITS, rootState.projects.activeProject);
   },
-  async [DELETE_UNIT]({ dispatch, rootState }, id) {
-    await deleteUnit(id);
+  async [DELETE_UNIT]({ dispatch, rootState }, slug) {
+    await deleteUnit(slug);
     dispatch(FETCH_UNITS, rootState.projects.activeProject);
   },
 };

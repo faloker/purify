@@ -77,13 +77,13 @@
           Delete template 
           <v-chip
             label
-            class="ml-2"
+            class="mx-1"
           >
             <span
               class="d-inline-block text-truncate"
               style="max-width: 150px;"
             >
-              {{ selectedTemplate.name }}
+              <b>{{ selectedTemplate.name }}</b>
             </span>
           </v-chip>
           ?
@@ -94,6 +94,7 @@
           <v-btn
             color="tertiary"
             text
+            block
             @click="deleteTemplate()"
           >
             Confirm

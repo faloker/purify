@@ -6,4 +6,6 @@ export interface Unit extends Document {
   readonly name: string;
   readonly slug: string;
   readonly project: string | Project;
+  readonly created_at: Date;
+  readonly updated_at: Date;
 }

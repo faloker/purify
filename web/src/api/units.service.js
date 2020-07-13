@@ -2,9 +2,8 @@ import request from '@/utils/request';
 
 export const getUnits = (project) =>
   request({
-    url: 'units',
+    url: `projects/${project}/units`,
     method: 'get',
-    params: { project },
   });
 
 export const createUnit = (data) =>
@@ -14,8 +13,8 @@ export const createUnit = (data) =>
     data,
   });
 
-export const deleteUnit = (id) =>
+export const deleteUnit = (slug) =>
   request({
-    url: `units/${id}`,
+    url: `units/${slug}`,
     method: 'delete',
   });

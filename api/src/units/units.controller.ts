@@ -1,17 +1,26 @@
 import {
-  Controller,
   Get,
   Post,
   Body,
-  UseGuards,
   Param,
-  Delete,
   Query,
+  Delete,
+  HttpCode,
+  UseGuards,
+  Controller,
 } from '@nestjs/common';
 import { UnitsService } from './units.service';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
-import { GetUnitsDto, UnitDto } from './dto/units.dto';
-import { ApiTags, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
+import { CreateUnitDto, Unit } from './dto/units.dto';
+import {
+  ApiTags,
+  ApiSecurity,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiNoContentResponse,
+} from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
@@ -21,18 +30,22 @@ import { ApiTags, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 export class UnitsController {
   constructor(private readonly unitsService: UnitsService) {}
 
-  @Get()
-  getUnits(@Query() query: GetUnitsDto) {
-    return this.unitsService.get(query.project);
-  }
-
   @Post()
-  createUnit(@Body() unit: UnitDto) {
-    return this.unitsService.create(unit);
+  @ApiOperation({ summary: 'Create unit' })
+  @ApiCreatedResponse({
+    description: 'Created successfully',
+    type: Unit,
+  })
+  createUnit(@Body() createUnitDto: CreateUnitDto) {
+    return this.unitsService.create(createUnitDto);
   }
 
-  @Delete(':id')
-  deleteUnit(@Param('id') id: string) {
-    return this.unitsService.delete(id);
+  @Delete(':slug')
+  @ApiOperation({ summary: 'Delete unit by slug' })
+  @ApiNoContentResponse({ description: 'Delete successful' })
+  @ApiNotFoundResponse({ description: 'No such unit' })
+  @HttpCode(204)
+  deleteUnit(@Param('slug') slug: string) {
+    return this.unitsService.delete(slug);
   }
 }

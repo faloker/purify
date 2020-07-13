@@ -1,28 +1,24 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
-export class UnitDto {
-  @ApiProperty()
+export class CreateUnitDto {
   @IsString()
   @MinLength(3)
   readonly name: string;
 
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   readonly project: string;
 }
 
-export class GetUnitsDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly project: string;
+export class Unit extends CreateUnitDto {
+  readonly _id: string;
+  readonly slug: string;
+  readonly created_at: Date;
+  readonly updated_at: Date;
 }
 
-export class DeleteUnitDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly id: string;
+export class UnitList extends Unit {
+  readonly reports: number;
+  readonly tickets: number;
+  readonly closed_tickets: number;
 }
