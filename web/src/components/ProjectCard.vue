@@ -157,13 +157,13 @@
           Delete project
           <v-chip
             label
-            class="ml-2"
+            class="mx-1"
           >
             <span
               class="d-inline-block text-truncate"
               style="max-width: 150px;"
             >
-              {{ project.title }}
+              <b>{{ project.title }}</b>
             </span>
           </v-chip>
           ?
@@ -175,6 +175,7 @@
             class="confirm-delete-btn"
             color="tertiary"
             text
+            block
             @click="deleteProject"
           >
             Delete
