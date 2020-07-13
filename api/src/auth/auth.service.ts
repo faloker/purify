@@ -3,11 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/interfaces/user.interface';
+import { randomBytes } from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService
   ) {}
 
@@ -33,9 +36,28 @@ export class AuthService {
     if (!entity) {
       return this.usersService.createUser({
         username: user.uid,
-        password: 'fakefake',
+        password: randomBytes(16).toString('hex'),
         email: user.mail,
         type: 'ldap',
+      });
+    } else {
+      return entity;
+    }
+  }
+
+  async validateSAMLUser(user: any): Promise<any> {
+    const entity = await this.usersService.findOne({
+      email: user.email,
+      type: 'saml',
+    });
+
+    if (!entity) {
+      return this.usersService.createUser({
+        username:
+          user[this.configService.get<string>('SAML_USERNAME_FIELD_NAME')],
+        password: randomBytes(16).toString('hex'),
+        email: user[this.configService.get<string>('SAML_EMAIL_FIELD_NAME')],
+        type: 'saml',
       });
     } else {
       return entity;
@@ -57,7 +79,7 @@ export class AuthService {
   async login(user: User) {
     const refresh_token = this.jwtService.sign(
       { id: user._id, type: 'refresh_token' },
-      { expiresIn: '24h' }
+      { expiresIn: '72h' }
     );
     await this.usersService.saveRefreshToken(user._id, refresh_token);
 

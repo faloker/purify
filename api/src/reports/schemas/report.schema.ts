@@ -9,6 +9,10 @@ export const ReportSchema = new Schema(
     statistics: Object,
     unit: { type: String, ref: 'Unit' },
     template: { type: String, ref: 'Template' },
+    type: {
+      type: String,
+      enum: ['file', 'oneshot'],
+    },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );

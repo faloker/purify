@@ -5,7 +5,7 @@
       transition="scale-transition"
       type="table-tbody"
     >
-      <v-card flat>
+      <v-card outlined>
         <v-data-table
           :headers="headers"
           item-key="_id"
@@ -26,9 +26,9 @@
               outlined
               rounded
               class="text-none"
-              @click="openStepper(item._id)"
+              @click="openStepper(item)"
             >
-              <v-icon>add</v-icon>Apply template
+              <v-icon>add</v-icon>Create template
             </v-btn>
             <v-chip
               v-else
@@ -60,7 +60,7 @@
             Your search for "{{ search }}" found no results.
           </v-alert>
         </v-data-table>
-        <stepper :stepper.sync="stepperDialog" :report-id="reportId" />
+        <stepper :stepper.sync="stepperDialog" :report="report" />
       </v-card>
     </v-skeleton-loader>
   </v-container>
@@ -68,7 +68,7 @@
 <script>
 import { mapState } from 'vuex';
 import Stepper from '@/components/dialogs/StepperConfigurator.vue';
-import { FETCH_REPORTS, REPORT_DELETE } from '@/store/actions';
+import { FETCH_REPORTS, REPORT_DELETE, FETCH_CONTENT } from '@/store/actions';
 import { SET_ACTIVE_UNIT } from '@/store/mutations';
 
 export default {
@@ -81,7 +81,7 @@ export default {
       loading: true,
       stepperDialog: false,
       reportContent: {},
-      reportId: '',
+      report: {},
       headers: [
         { text: 'Date', value: 'created_at', width: '21%' },
         {
@@ -124,13 +124,19 @@ export default {
     });
   },
   methods: {
-    openStepper(id) {
-      this.stepperDialog = true;
-      this.reportId = id;
+    openStepper(item) {
+      this.$store.dispatch(FETCH_CONTENT, item._id).then(() => {
+        this.report = item;
+        this.stepperDialog = true;
+      });
     },
 
     deleteReport(id) {
-      this.$store.dispatch(REPORT_DELETE, id);
+      this.$store.dispatch(REPORT_DELETE, id).then(() => {
+        this.$toasted.global.api_success({
+          msg: 'Deleted successfully',
+        });
+      });
     },
   },
 };

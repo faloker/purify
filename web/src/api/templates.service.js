@@ -13,15 +13,15 @@ export const getTemplates = () =>
     method: 'get',
   });
 
-export const deleteTemplate = (id) =>
+export const deleteTemplate = (slug) =>
   request({
-    url: `templates/${id}`,
+    url: `templates/${slug}`,
     method: 'delete',
   });
 
-export const editTemplate = (id, template) =>
+export const editTemplate = (slug, template) =>
   request({
-    url: `templates/${id}`,
+    url: `templates/${slug}`,
     method: 'patch',
     data: template,
   });

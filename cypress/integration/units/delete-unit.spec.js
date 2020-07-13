@@ -23,7 +23,7 @@ describe('Deleting units', () => {
 
     cy.get('.fa-times').click();
     cy.get('.v-dialog').should('be.visible').within(() => {
-      cy.contains('Delete unit dast?').should('be.visible');
+      cy.contains('Delete unit').should('be.visible');
       cy.contains('button', 'Delete').click();
     })
 
@@ -31,7 +31,7 @@ describe('Deleting units', () => {
       cy.contains('dast').should('not.be.visible');
     })
 
-    cy.get('.toasted').should('be.visible').contains('Unit removed successfully');
+    cy.get('.toasted').should('be.visible').contains('Deleted successfully');
   });
   
 });

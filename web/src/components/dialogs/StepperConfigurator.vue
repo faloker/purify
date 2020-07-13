@@ -2,12 +2,12 @@
   <div>
     <v-dialog v-model="stepperDialog" max-width="60%">
       <v-stepper
-        v-model="e6"
+        v-model="stepperModel"
         non-linear
         vertical
       >
         <v-stepper-step
-          :complete="e6 > 1"
+          :complete="stepperModel > 1 || report.type === 'oneshot'"
           step="1"
         >
           Select the array with the findings. You can view an example finding object in an array.
@@ -16,7 +16,7 @@
           <v-btn
             class="mx-2"
             outlined
-            @click="getContent(reportId)"
+            @click="getContent(report._id)"
           >
             View report
           </v-btn>
@@ -25,7 +25,7 @@
             :disabled="!path_to_issues"
             outlined
             color="primary"
-            @click="e6 = 2"
+            @click="stepperModel = 2"
           >
             Next
           </v-btn>
@@ -35,7 +35,7 @@
           </v-card-text>
         </v-stepper-content>
         <v-stepper-step
-          :complete="e6 > 2"
+          :complete="stepperModel > 2"
           step="2"
         >
           Which fields will be in issue title and subtitle?
@@ -56,20 +56,20 @@
             outlined
             :disabled="!title_fields.length"
             color="primary"
-            @click="e6 = 3"
+            @click="stepperModel = 3"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 1"
+            @click="stepperModel = 1"
           >
             Go back
           </v-btn>
         </v-stepper-content>
         <v-stepper-step
-          :complete="e6 > 3"
+          :complete="stepperModel > 3"
           step="3"
         >
           Which field represent the severity of the finding? (optional)
@@ -89,19 +89,19 @@
             class="mx-2 mt-3"
             outlined
             color="primary"
-            @click="e6 = 4"
+            @click="stepperModel = 4"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 2"
+            @click="stepperModel = 2"
           >
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step :complete="e6 > 4" step="4">
+        <v-stepper-step :complete="stepperModel > 4" step="4">
           Add patterns to display title and subtitle
         </v-stepper-step>
         <v-stepper-content step="4">
@@ -125,19 +125,19 @@
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 5"
+            @click="stepperModel = 5"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 3"
+            @click="stepperModel = 3"
           >
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step :complete="e6 > 5" step="5">
+        <v-stepper-step :complete="stepperModel > 5" step="5">
           Which fields will be in issue body?
         </v-stepper-step>
         <v-stepper-content step="5">
@@ -156,19 +156,19 @@
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 6"
+            @click="stepperModel = 6"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="e6 = 4"
+            @click="stepperModel = 4"
           >
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step :complete="e6 > 6" step="6">
+        <v-stepper-step :complete="stepperModel > 6" step="6">
           Select types of fields in issue body
         </v-stepper-step>
         <v-stepper-content step="6">
@@ -176,7 +176,7 @@
             <div :key="item" class="my-2">
               <span class="subtitle-1">{{ item }}</span>
               <v-btn-toggle
-                v-model="type_body_fields[item]"
+                v-model="body_fields_types[item]"
                 color="primary"
                 group
               >
@@ -195,24 +195,24 @@
             </div>
           </template>
           <v-btn
-            :disabled="Object.keys(type_body_fields).length !== body_fields.length"
+            :disabled="Object.keys(body_fields_types).length !== body_fields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 7"
+            @click="stepperModel = 7"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 5"
+            @click="stepperModel = 5"
           >
             Go back
           </v-btn>
         </v-stepper-content>
         <v-stepper-step
-          :complete="e6 > 7"
+          :complete="stepperModel > 7"
           step="7"
         >
           Select field(s) to detect duplicates and merge candidates at the template level
@@ -233,20 +233,20 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 8"
+            @click="stepperModel = 8"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 6"
+            @click="stepperModel = 6"
           >
             Go back
           </v-btn>
         </v-stepper-content>
         <v-stepper-step
-          :complete="e6 > 8"
+          :complete="stepperModel > 8"
           step="8"
         >
           Select field(s) to merge if issues look the same at the template level (optional)
@@ -266,20 +266,20 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 9"
+            @click="stepperModel = 9"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 7"
+            @click="stepperModel = 7"
           >
             Go back
           </v-btn>
         </v-stepper-content>
         <v-stepper-step
-          :complete="e6 > 9"
+          :complete="stepperModel > 9"
           step="9"
         >
           Select field(s) to detect duplicates at the unit level
@@ -300,14 +300,14 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 10"
+            @click="stepperModel = 10"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 8"
+            @click="stepperModel = 8"
           >
             Go back
           </v-btn>
@@ -347,7 +347,7 @@
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="e6 = 9"
+            @click="stepperModel = 9"
           >
             Go back
           </v-btn>
@@ -355,7 +355,7 @@
       </v-stepper>
     </v-dialog>
     <v-dialog
-      v-model="report"
+      v-model="reportDialog"
       persistent
       scrollable
       max-width="60%"
@@ -379,7 +379,7 @@
             color="green"
             outlined
             block
-            @click="report = false"
+            @click="reportDialog = false"
           >
             Confirm
           </v-btn>
@@ -404,15 +404,15 @@ export default {
       required: true,
       type: Boolean,
     },
-    reportId: {
-      type: String,
+    report: {
+      type: Object,
       required: true,
     },
   },
+
   data() {
     return {
-      e6: 1,
-      arrs: {},
+      stepperModel: 1,
       name: '',
       loading: false,
       merge_fields: [],
@@ -425,18 +425,23 @@ export default {
       title_fields: [],
       body_fields: [],
       risk_field: '',
-      type_body_fields: {},
-      report: false,
+      body_fields_types: {},
+      reportDialog: false,
       rules: {
         min: (v) => v.length >= 3 || 'Min 3 symbols',
       },
     };
   },
+
   computed: {
     ...mapGetters(['app', 'activeRelease', 'reportContent']),
 
     exampleIssue() {
-      return this.reportContent[this.path_to_issues.replace('report.', '')];
+      if (this.report.type === 'file') {
+        return this.reportContent[this.path_to_issues.replace('report.', '')];
+      } else {
+        return this.reportContent;
+      }
     },
 
     stepperDialog: {
@@ -448,15 +453,26 @@ export default {
       },
     },
   },
+
+  watch: {
+    stepper(newValue, oldValue) {
+      this.stepperModel = this.report.type === 'file' ? 1 : 2;
+      this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
+      this.body_fields_types = {};
+      this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
+      this.merge_fields = this.title_fields = this.body_fields = [];
+    },
+  },
+
   methods: {
     saveTemplate() {
       this.loading = true;
 
       this.body_fields = [];
-      for (const key of Object.keys(this.type_body_fields)) {
+      for (const key of Object.keys(this.body_fields_types)) {
         this.body_fields.push({
           key: key.replace('issue.', ''),
-          type: this.type_body_fields[key],
+          type: this.body_fields_types[key],
         });
       }
 
@@ -466,7 +482,7 @@ export default {
             .replace('report.root.', '')
             .replace('[0]', '')
             .replace('report.root', ''),
-          report: this.reportId,
+          report: this.report._id,
           name: this.name,
           title_pattern: this.title_pattern,
           subtitle_pattern: this.subtitle_pattern,
@@ -485,14 +501,7 @@ export default {
         .then(() => {
           this.loading = false;
           this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug);
-
           this.stepperDialog = false;
-
-          this.e6 = 1;
-          this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
-          this.type_body_fields = {};
-          this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
-          this.merge_fields = this.title_fields = this.body_fields = [];
         })
         .catch(() => {
           this.loading = false;
@@ -500,8 +509,7 @@ export default {
     },
 
     async getContent(reportId) {
-      await this.$store.dispatch(FETCH_CONTENT, reportId);
-      this.report = true;
+      this.reportDialog = true;
     },
   },
 };

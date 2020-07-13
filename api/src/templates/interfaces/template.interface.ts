@@ -7,6 +7,7 @@ export interface BodyField {
 
 export interface Template extends Document {
   readonly _id: string;
+  readonly slug: string;
   readonly name: string;
   readonly path_to_issues: string;
   readonly title_fields: string[];
@@ -18,4 +19,6 @@ export interface Template extends Document {
   readonly title_pattern: string;
   readonly subtitle_pattern: string;
   readonly tags: string[];
+  readonly created_at: Date;
+  readonly updated_at: Date;
 }

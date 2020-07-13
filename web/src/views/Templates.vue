@@ -35,6 +35,14 @@
             :search="search"
             item-key="_id"
           >
+            <template v-slot:item.template.name="{ item }">
+              <span
+                class="d-inline-block text-truncate"
+                style="max-width: 130px;"
+              >
+                {{ item.template.name }}
+              </span>
+            </template>
             <template v-slot:item.created_at="{ item }">
               <span class="text-none mr-5">{{ formatDate(item.template.created_at) }}</span>
             </template>
@@ -63,10 +71,22 @@
         </v-skeleton-loader>
       </v-col>
     </v-row>
-    <v-dialog v-model="confirmDialog" max-width="300">
+    <v-dialog v-model="confirmDialog" max-width="350">
       <v-card>
         <v-card-title>
-          <span class="title">Delete template?</span>
+          Delete template 
+          <v-chip
+            label
+            class="mx-1"
+          >
+            <span
+              class="d-inline-block text-truncate"
+              style="max-width: 150px;"
+            >
+              <b>{{ selectedTemplate.name }}</b>
+            </span>
+          </v-chip>
+          ?
         </v-card-title>
         <v-divider />
         <v-card-actions>
@@ -74,16 +94,17 @@
           <v-btn
             color="tertiary"
             text
+            block
             @click="deleteTemplate()"
           >
-            Delete
+            Confirm
           </v-btn>
           <v-spacer />
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog
-      v-model="dialog"
+      v-model="editorDialog"
       fullscreen
       hide-overlay
       transition="dialog-bottom-transition"
@@ -97,7 +118,7 @@
           <v-btn
             icon
             dark
-            @click="dialog = false"
+            @click="closeEditor"
           >
             <v-icon>close</v-icon>
           </v-btn>
@@ -111,7 +132,7 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <template-editor ref="templateEditor" v-model="selectedTemplate" />
+        <template-editor ref="templateEditor" v-model="editedTemplate" />
       </v-card>
     </v-dialog>
   </v-container>
@@ -133,8 +154,9 @@ export default {
       search: '',
       loading: true,
       confirmDialog: false,
-      dialog: false,
+      editorDialog: false,
       selectedTemplate: {},
+      editedTemplate: {},
       headers: [
         {
           text: 'Name',
@@ -159,12 +181,14 @@ export default {
           width: '15%',
           align: 'center',
           value: 'created_at',
+          sortable: false,
         },
         {
           text: 'Updated',
           width: '15%',
           align: 'center',
           value: 'updated_at',
+          sortable: false,
         },
         {
           text: 'Actions',
@@ -195,7 +219,8 @@ export default {
   },
   methods: {
     saveChanges() {
-      const rawTemplate = JSON.parse(this.selectedTemplate);
+      const rawTemplate = JSON.parse(this.editedTemplate);
+
       const template = {
         name: rawTemplate.name,
         path_to_issues: rawTemplate.path_to_issues,
@@ -208,31 +233,42 @@ export default {
         external_comparison_fields: rawTemplate.external_comparison_fields,
       };
 
-      this.$store.dispatch(TEMPLATES_EDIT, { id: rawTemplate._id, change: template }).then(() => {
-        this.dialog = false;
-        this.$toasted.global.api_success({
-          msg: 'Template updated successfully',
+      this.$store
+        .dispatch(TEMPLATES_EDIT, { slug: this.selectedTemplate.slug, change: template })
+        .then(() => {
+          this.editorDialog = false;
+          this.selectedTemplate = {};
+
+          this.$toasted.global.api_success({
+            msg: 'Edited successfully',
+          });
         });
-      });
     },
 
     openEditor(item) {
-      this.dialog = true;
+      this.editorDialog = true;
       this.selectedTemplate = item.template;
+      this.editedTemplate = JSON.stringify(item.template, null, 2);
+    },
+
+    closeEditor() {
+      this.editorDialog = false;
+      this.selectedTemplate = {};
     },
 
     openConfirmationDialog(item) {
       this.confirmDialog = true;
-      this.selectedTemplate = item;
+      this.selectedTemplate = item.template;
     },
 
     deleteTemplate() {
-      this.$store.dispatch(TEMPLATES_DELETE, this.selectedTemplate.template._id).then(() => {
+      this.$store.dispatch(TEMPLATES_DELETE, this.selectedTemplate.slug).then(() => {
         this.confirmDialog = false;
+        this.selectedTemplate = {};
+
         this.$toasted.global.api_success({
-          msg: 'Template removed successfully',
+          msg: 'Deleted successfully',
         });
-        this.selectedTemplate = null;
       });
     },
 

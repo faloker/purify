@@ -23,7 +23,7 @@ export const UserSchema = new Schema({
   refresh_token: String,
   type: {
     type: String,
-    enum: ['local', 'ldap'],
+    enum: ['local', 'ldap', 'saml'],
     default: 'local',
   },
 });

@@ -61,14 +61,8 @@ export class IssuesService {
         fields: JSON.parse(issue.fields),
         status: issue.status,
         resolution: issue.resolution,
-        title: matchPattern(
-          JSON.parse(issue.fields),
-          issue.template.title_pattern
-        ),
-        subtitle: matchPattern(
-          JSON.parse(issue.fields),
-          issue.template.subtitle_pattern
-        ),
+        title: matchPattern(JSON.parse(issue.fields), issue.template.title_pattern),
+        subtitle: matchPattern(JSON.parse(issue.fields), issue.template.subtitle_pattern),
         template: issue.template.name,
         risk: issue.risk,
         created_at: issue.created_at,
@@ -76,21 +70,6 @@ export class IssuesService {
         totalComments: issue.comments.length,
       });
     }
-    // } else {
-    //   issues = await this.issueModel
-    //     .find(options)
-    //     .populate('template', [
-    //       'title_pattern',
-    //       'body_fields',
-    //       'subtitle_pattern',
-    //       'name',
-    //     ])
-    //     .populate('ticket')
-    //     .populate({
-    //       path: 'comments',
-    //       populate: { path: 'author', select: 'username image' },
-    //     });
-    // }
 
     return issues;
   }
@@ -103,11 +82,9 @@ export class IssuesService {
     const settings = await this.jiraService.getSettings();
 
     if (settings) {
-      const jiraTicket = await this.jiraService
-        .createIssue(issue)
-        .catch(err => {
-          throw new BadRequestException(JSON.stringify(JSON.parse(err).body));
-        });
+      const jiraTicket = await this.jiraService.createIssue(issue).catch(err => {
+        throw new BadRequestException(JSON.stringify(JSON.parse(err).body));
+      });
 
       const ticket = await new this.ticketModel({
         type: 'jira',
@@ -115,10 +92,7 @@ export class IssuesService {
         key: jiraTicket.key,
       }).save();
 
-      await this.issueModel.updateOne(
-        { _id: issueId },
-        { $set: { ticket: ticket._id } }
-      );
+      await this.issueModel.updateOne({ _id: issueId }, { $set: { ticket: ticket._id } });
 
       return ticket;
     } else {
@@ -145,7 +119,7 @@ export class IssuesService {
     const issue = await this.issueModel.findOne({ _id: issueId }).populate({
       path: 'comments',
       populate: { path: 'author', select: 'username image' },
-    });;
+    });
     return issue.comments;
   }
 }

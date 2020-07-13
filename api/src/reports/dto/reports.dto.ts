@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  IsJSON,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UploadReportDto {

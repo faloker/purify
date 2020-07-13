@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export const TemplateSchema = new Schema(
   {
     _id: { type: String, default: uuidv4 },
+    slug: { type: String, unique: true },
     name: { type: String, unique: true },
     path_to_issues: String,
     risk_field: String,

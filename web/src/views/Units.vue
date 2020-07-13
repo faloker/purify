@@ -94,7 +94,12 @@
                 class="text-none mr-5"
                 :to="{ name: 'Issues', params: { slug: item.slug } }"
               >
-                {{ item.name }}
+                <span
+                  class="d-inline-block text-truncate"
+                  style="max-width: 130px;"
+                >
+                  {{ item.name }}
+                </span>
               </v-btn>
             </template>
 
@@ -105,12 +110,12 @@
                     background-color="blue lighten-4"
                     height="14"
                     color="primary"
-                    striped
+                    rounded
                     :value="calcProgress(item)"
                     v-on="on"
                   />
                 </template>
-                <span>{{ item.closed_tickets_len }} / {{ item.tickets_len }}</span>
+                <span>{{ item.closed_tickets }} / {{ item.tickets }}</span>
               </v-tooltip>
             </template>
             <template v-slot:item.reports="{ item }">
@@ -137,13 +142,22 @@
         </v-skeleton-loader>
       </v-col>
     </v-row>
-    <v-dialog v-model="confirmDialog" max-width="300">
+    <v-dialog v-model="confirmDialog" max-width="350">
       <v-card>
         <v-card-title>
-          <span class="title">
-            Delete unit
-            <b>{{ unitToDelete.name }}</b>?
-          </span>
+          Delete unit
+          <v-chip
+            label
+            class="mx-1"
+          >
+            <span
+              class="d-inline-block text-truncate"
+              style="max-width: 150px;"
+            >
+              <b>{{ unitToDelete.name }}</b>
+            </span>
+          </v-chip>
+          ?
         </v-card-title>
         <v-divider />
         <v-card-actions>
@@ -151,7 +165,8 @@
           <v-btn
             color="tertiary"
             text
-            @click="deleteUnit(unitToDelete._id)"
+            block
+            @click="deleteUnit(unitToDelete.slug)"
           >
             Delete
           </v-btn>
@@ -257,7 +272,7 @@ export default {
       this.$refs.search.blur();
     },
     calcProgress(item) {
-      return (item.closed_tickets_len / item.tickets_len) * 100;
+      return (item.closed_tickets / item.tickets) * 100;
     },
 
     openConfirmationDialog(item) {
@@ -265,11 +280,11 @@ export default {
       this.unitToDelete = item;
     },
 
-    deleteUnit(id) {
-      this.$store.dispatch(DELETE_UNIT, id).then(() => {
+    deleteUnit(slug) {
+      this.$store.dispatch(DELETE_UNIT, slug).then(() => {
         this.confirmDialog = false;
         this.$toasted.global.api_success({
-          msg: 'Unit removed successfully',
+          msg: 'Deleted successfully',
         });
         this.unitToDelete = '';
       });

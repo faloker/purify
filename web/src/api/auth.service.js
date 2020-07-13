@@ -26,3 +26,9 @@ export const logout = () =>
     url: 'auth',
     method: 'delete',
   });
+
+export const initSAML = () =>
+  request({
+    url: 'auth/saml',
+    method: 'get',
+  });
