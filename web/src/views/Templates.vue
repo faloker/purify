@@ -129,25 +129,28 @@
           <v-toolbar-items>
             <v-btn text @click="saveChanges()">
               save
+              <v-icon right>
+                save
+              </v-icon>
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <template-editor ref="templateEditor" v-model="editedTemplate" />
+        <editor ref="TemplateEditor" v-model="editedTemplate" />
       </v-card>
     </v-dialog>
   </v-container>
 </template>
 <script>
+import { TEMPLATES_FETCH, TEMPLATES_EDIT, TEMPLATES_DELETE } from '@/store/actions';
 import { mapState } from 'vuex';
 import { toLower } from 'lodash';
-import { TEMPLATES_FETCH, TEMPLATES_EDIT, TEMPLATES_DELETE } from '@/store/actions';
-import TemplateEditor from '@/components/TemplateEditor.vue';
 import { formatDate } from '@/utils/helpers';
+import Editor from '@/components/Editor.vue';
 
 export default {
   name: 'Templates',
   components: {
-    TemplateEditor,
+    Editor,
   },
   data() {
     return {
@@ -219,22 +222,10 @@ export default {
   },
   methods: {
     saveChanges() {
-      const rawTemplate = JSON.parse(this.editedTemplate);
-
-      const template = {
-        name: rawTemplate.name,
-        path_to_issues: rawTemplate.path_to_issues,
-        title_fields: rawTemplate.title_fields,
-        title_pattern: rawTemplate.title_pattern,
-        subtitle_pattern: rawTemplate.subtitle_pattern,
-        tags: rawTemplate.tags,
-        body_fields: rawTemplate.body_fields,
-        internal_comparison_fields: rawTemplate.internal_comparison_fields,
-        external_comparison_fields: rawTemplate.external_comparison_fields,
-      };
+      const { updated_at, created_at, _id, __v, ...fields } = JSON.parse(this.editedTemplate);
 
       this.$store
-        .dispatch(TEMPLATES_EDIT, { slug: this.selectedTemplate.slug, change: template })
+        .dispatch(TEMPLATES_EDIT, { slug: this.selectedTemplate.slug, change: fields })
         .then(() => {
           this.editorDialog = false;
           this.selectedTemplate = {};

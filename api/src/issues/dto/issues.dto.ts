@@ -3,10 +3,10 @@ import {
   IsString,
   IsArray,
   ArrayNotEmpty,
-  IsObject,
   IsUUID,
   IsOptional,
   IsIn,
+  IsObject,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -20,7 +20,7 @@ export class GetIssuesQueryDto {
 
   @ApiPropertyOptional({
     description: 'Filter by issue status.',
-    enum: ['open', 'closed']
+    enum: ['open', 'closed'],
   })
   @IsString()
   @IsIn(['open', 'closed'])
@@ -45,12 +45,10 @@ export class GetIssuesQueryDto {
 }
 
 export class UpdateIssuesBodyDto {
-  @ApiProperty()
   @IsArray()
   @ArrayNotEmpty()
   readonly ids: string[];
 
-  @ApiProperty()
   @IsObject()
   readonly change: any;
 }
