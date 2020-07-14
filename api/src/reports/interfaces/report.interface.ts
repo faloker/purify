@@ -15,3 +15,8 @@ export interface Report extends Document {
   readonly created_at: Date;
   readonly updated_at: Date;
 }
+
+export enum ReportType {
+  ONESHOT = 'oneshot',
+  FILE = 'file',
+}
