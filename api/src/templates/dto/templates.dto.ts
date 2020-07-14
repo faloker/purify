@@ -75,6 +75,14 @@ export class EditTemplateBodyDto {
   @ArrayNotEmpty()
   readonly internal_comparison_fields: string[];
 
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly merge_fields: string[];
+
+  @IsString()
+  @IsOptional()
+  readonly risk_field: string;
+
   @IsString()
   @IsNotEmpty()
   readonly title_pattern: string;
