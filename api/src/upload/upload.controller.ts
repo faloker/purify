@@ -20,7 +20,11 @@ import {
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import { ReportsService } from 'src/reports/reports.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileUploadDto, UnitSlugDto, UnitAndTemplateSlugsDto } from './dto/upload.dto';
+import {
+  FileUploadDto,
+  UnitSlugDto,
+  UnitAndTemplateSlugsDto,
+} from './dto/upload.dto';
 
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
@@ -39,7 +43,9 @@ export class UploadController {
   }
 
   @Post('oneshot/:unitSlug/:templateSlug')
-  @ApiOperation({ summary: 'Upload the object to the unit and apply the template' })
+  @ApiOperation({
+    summary: 'Upload the object to the unit and apply the template',
+  })
   @ApiCreatedResponse({ description: 'Upload successfull' })
   @ApiNotFoundResponse({ description: 'No such unit or template' })
   saveOneshotWithTemplate(
@@ -68,7 +74,9 @@ export class UploadController {
   }
 
   @Post('file/:unitSlug/:templateSlug')
-  @ApiOperation({ summary: 'Upload the file to the unit and apply the template' })
+  @ApiOperation({
+    summary: 'Upload the file to the unit and apply the template',
+  })
   @ApiCreatedResponse({ description: 'Upload successfull' })
   @ApiNotFoundResponse({ description: 'No such unit or template' })
   @ApiConsumes('multipart/form-data')

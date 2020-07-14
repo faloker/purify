@@ -38,7 +38,9 @@ export class TemplatesService {
     const rep = report;
     const content = JSON.parse(report.content);
     let issues =
-      template.path_to_issues !== '' ? get(content, template.path_to_issues) : content;
+      template.path_to_issues !== ''
+        ? get(content, template.path_to_issues)
+        : content;
 
     if (report.type === 'oneshot') {
       issues = [issues];
@@ -137,7 +139,9 @@ export class TemplatesService {
     if (newOnes > 0) {
       const unit = await this.unitsModel.findOne({ _id: report.unit });
       await this.slackService.sendMsg(
-        `🆕 You have *${newOnes}* new issues\n📄 Template: ${template.name}\n🗃️ Unit: ${
+        `🆕 You have *${newOnes}* new issues\n📄 Template: ${
+          template.name
+        }\n🗃️ Unit: ${
           unit.name
         }\n👀 Take a look at them <https://${this.configService.get<string>(
           'DOMAIN'

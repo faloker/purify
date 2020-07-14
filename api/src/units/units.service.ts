@@ -19,7 +19,9 @@ export class UnitsService {
   ) {}
 
   async create(createUnitDto: CreateUnitDto) {
-    const project = await this.projectModel.findOne({ slug: createUnitDto.project });
+    const project = await this.projectModel.findOne({
+      slug: createUnitDto.project,
+    });
 
     if (project) {
       return new this.unitModel({

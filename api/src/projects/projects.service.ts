@@ -88,7 +88,10 @@ export class ProjectsService {
   }
 
   async getStatisticsForUnit(unit: string) {
-    const uploadedReports = await this.reportModel.find({ unit }, '_id created_at');
+    const uploadedReports = await this.reportModel.find(
+      { unit },
+      '_id created_at'
+    );
     let issues = await this.issueModel.find(
       { unit },
       '_id status resolution created_at risk'
@@ -114,7 +117,8 @@ export class ProjectsService {
 
     const closedIssues = groupBy(
       issues.filter(
-        issue => issue.status === 'closed' && issue.resolution !== 'false positive'
+        issue =>
+          issue.status === 'closed' && issue.resolution !== 'false positive'
       ),
       issue => issue.created_at.getMonth()
     );
@@ -170,7 +174,10 @@ export class ProjectsService {
     const project = await this.projectModel.findOne({ slug });
 
     if (project) {
-      const units = await this.unitModel.find({ project: project._id }, '_id name');
+      const units = await this.unitModel.find(
+        { project: project._id },
+        '_id name'
+      );
 
       const unitsStat = [];
       const projectStat = {
