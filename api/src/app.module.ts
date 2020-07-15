@@ -62,6 +62,8 @@ import Joi = require('@hapi/joi');
         USE_SSO: Joi.string()
           .valid('true', 'false')
           .default('false'),
+        SAML_IDP_CERT_ONELINE: Joi.string()
+          .default('xxx'),
       }),
       validationOptions: {
         allowUnknown: true,
