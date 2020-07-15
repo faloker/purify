@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Schema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import { slugify } from '../../db/plugins';
 
-export const TemplateSchema = new Schema(
+const TemplateSchema = new Schema(
   {
     _id: { type: String, default: uuidv4 },
     slug: { type: String, unique: true },
@@ -20,3 +21,7 @@ export const TemplateSchema = new Schema(
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );
+
+TemplateSchema.plugin(slugify);
+
+export { TemplateSchema };

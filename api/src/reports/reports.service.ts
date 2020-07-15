@@ -10,7 +10,7 @@ import { find, forOwn, isObject } from 'lodash';
 import { Template } from 'src/templates/interfaces/template.interface';
 import { Unit } from 'src/units/interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
-import { Report } from './interfaces/report.interface';
+import { Report, ReportType } from './interfaces/report.interface';
 import { xmlToJson } from 'src/utils/converter';
 import { TemplatesService } from 'src/templates/templates.service';
 
@@ -25,6 +25,10 @@ export class ReportsService {
   ) {}
 
   async save(file: any, unitSlug: string, templateSlug = '') {
+    if (!file) {
+      throw new BadRequestException('Nothing to save, file was not provided');
+    }
+
     const fileName: string = file.originalname;
     const rawData: any = file.buffer.toString('utf8');
 
@@ -38,63 +42,19 @@ export class ReportsService {
       throw new NotAcceptableException('Unsupported format');
     }
 
-    const unit = await this.unitModel.findOne({ slug: unitSlug });
-
-    if (unit) {
-      const report = await new this.reportModel({
-        unit: unit._id,
-        type: 'file',
-        content: JSON.stringify(data),
-      }).save();
-
-      if (templateSlug) {
-        const template = await this.templateModel.findOne({
-          slug: templateSlug,
-        });
-
-        if (template) {
-          await this.templatesService.apply(report, template);
-        } else {
-          throw new NotFoundException('No such template');
-        }
-      }
-
-      return { id: report._id };
-    } else {
-      throw new NotFoundException('No such unit');
-    }
+    return this.saveReport(ReportType.FILE, data, unitSlug, templateSlug);
   }
 
   async saveOneshot(body: any, unitSlug: string, templateSlug = '') {
-    const unit = await this.unitModel.findOne({ slug: unitSlug });
-
     if (!Object.keys(body).length) {
       throw new BadRequestException('Request body is not valid JSON');
+    } else if (Array.isArray(body)) {
+      throw new BadRequestException(
+        'Request body should be a single JSON object'
+      );
     }
 
-    if (unit) {
-      const report = await new this.reportModel({
-        unit: unit._id,
-        type: 'oneshot',
-        content: JSON.stringify(body),
-      }).save();
-
-      if (templateSlug) {
-        const template = await this.templateModel.findOne({
-          slug: templateSlug,
-        });
-
-        if (template) {
-          await this.templatesService.apply(report, template);
-        } else {
-          throw new NotFoundException('No such template');
-        }
-      }
-
-      return { id: report._id };
-    } else {
-      throw new NotFoundException('No such unit');
-    }
+    return this.saveReport(ReportType.ONESHOT, body, unitSlug, templateSlug);
   }
 
   async delete(reportId: string) {
@@ -152,5 +112,38 @@ export class ReportsService {
     recur(JSON.parse(report.content), 'root');
 
     return result;
+  }
+
+  async saveReport(
+    type: ReportType,
+    data: any,
+    unitSlug: string,
+    templateSlug = ''
+  ) {
+    const unit = await this.unitModel.findOne({ slug: unitSlug });
+
+    if (unit) {
+      const report = await new this.reportModel({
+        unit: unit._id,
+        type: type,
+        content: JSON.stringify(data),
+      }).save();
+
+      if (templateSlug) {
+        const template = await this.templateModel.findOne({
+          slug: templateSlug,
+        });
+
+        if (template) {
+          await this.templatesService.apply(report, template);
+        } else {
+          throw new NotFoundException('No such template');
+        }
+      }
+
+      return this.reportModel.findOne({ _id: report._id }, '-content');
+    } else {
+      throw new NotFoundException('No such unit');
+    }
   }
 }

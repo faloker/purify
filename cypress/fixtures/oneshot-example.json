@@ -1,0 +1,13 @@
+{
+  "code": "2 import os\n3 import pickle\n4 import re\n",
+  "filename": "/Users/kekw/thefuck/thefuck/utils.py",
+  "issue_confidence": "HIGH",
+  "issue_severity": "LOW",
+  "issue_text": "Consider possible security implications associated with pickle module.",
+  "line_number": 3,
+  "line_range": [
+    3
+  ],
+  "test_id": "B403",
+  "test_name": "blacklist"
+}
