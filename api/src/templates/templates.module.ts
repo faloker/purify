@@ -8,20 +8,10 @@ import { IssueSchema } from 'src/issues/schemas/issue.schema';
 import { SlackModule } from 'src/plugins/slack/slack.module';
 import { UnitSchema } from 'src/units/schemas/unit.schema';
 import { ConfigModule } from '@nestjs/config';
-import { slugify } from '../db/plugins';
 
 @Module({
   imports: [
-    MongooseModule.forFeatureAsync([
-      {
-        name: 'Template',
-        useFactory: () => {
-          const schema = TemplateSchema;
-          schema.plugin(slugify);
-          return schema;
-        },
-      },
-    ]),
+    MongooseModule.forFeature([{ name: 'Template', schema: TemplateSchema }]),
     MongooseModule.forFeature([{ name: 'Report', schema: ReportSchema }]),
     MongooseModule.forFeature([{ name: 'Issue', schema: IssueSchema }]),
     MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
