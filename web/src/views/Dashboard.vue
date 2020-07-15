@@ -12,7 +12,7 @@
           clearable
           dense
           outlined
-          label="Select a project"
+          label="Select project"
           @input="fetchStats()"
         />
       </v-col>
@@ -26,7 +26,7 @@
           clearable
           dense
           outlined
-          label="Select a unit"
+          label="Select unit"
           @input="updateStats()"
         />
       </v-col>
