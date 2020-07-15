@@ -5,7 +5,7 @@ import { get, isArray, set } from 'lodash';
 import { Model } from 'mongoose';
 import * as slugify from 'slug';
 
-import { Report } from 'src/reports/interfaces/report.interface';
+import { Report, ReportType } from 'src/reports/interfaces/report.interface';
 import { Template } from './interfaces/template.interface';
 import { CreateTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
 import { Issue } from 'src/issues/interfaces/issue.interface';
@@ -37,13 +37,15 @@ export class TemplatesService {
   async apply(report: Report, template: Template) {
     const rep = report;
     const content = JSON.parse(report.content);
-    let issues =
-      template.path_to_issues !== ''
-        ? get(content, template.path_to_issues)
-        : content;
+    let issues: any = [];
 
-    if (report.type === 'oneshot') {
-      issues = [issues];
+    if (report.type === ReportType.ONESHOT) {
+      issues = [content];
+    } else {
+      issues =
+        template.path_to_issues !== ''
+          ? get(content, template.path_to_issues)
+          : content;
     }
 
     const stat = await this.saveIssues(issues, template, report);
