@@ -19,7 +19,7 @@ describe('Project creation', () => {
   it('Unable to create project with the same name', () => {
     cy.createProject('kkek', 'kekekke');
 
-    cy.get('.toasted').should('be.visible').contains('already exists');
+    cy.get('.v-snack__content').should('be.visible').contains('already exists');
     cy.contains('New project').should('be.visible');
   });
 
