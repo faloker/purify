@@ -58,7 +58,7 @@
                       type="submit"
                       color="primary"
                       :loading="loading"
-                      :disabled="loading"
+                      :disabled="!password || !username"
                       @click.prevent="login()"
                     >
                       Sign In
@@ -121,7 +121,7 @@
                       type="submit"
                       color="primary"
                       :loading="loading"
-                      :disabled="loading"
+                      :disabled="!email || !password || !username"
                       @click.prevent="register()"
                     >
                       Sign Up
