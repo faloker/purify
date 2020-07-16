@@ -28,3 +28,5 @@ export const REFRESH_TASK = 'refreshTask';
 export const TEMPLATES_SET = 'templatesSet';
 
 export const SET_COMMENTS = 'setComments';
+
+export const SHOW_MESSAGE = 'showMessage';
