@@ -25,7 +25,6 @@
     "vue-page-transition": "^0.2.2",
     "vue-router": "^3.1.6",
     "vue-simplemde": "^1.0.4",
-    "vue-toasted": "^1.1.27",
     "vuetify": "^2.2.15",
     "vuex": "^3.1.2"
   },

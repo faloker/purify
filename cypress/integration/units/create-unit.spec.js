@@ -30,7 +30,7 @@ describe('Unit creation', () => {
   it('Unable to create unit with the same name', () => {
     cy.createUnit('dast');
 
-    cy.get('.toasted').should('be.visible').contains('already exists');
+    cy.get('.v-snack__content').should('be.visible').contains('already exists');
     cy.get('.v-dialog').should('be.visible');
   });
 });

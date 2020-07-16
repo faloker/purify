@@ -1,10 +1,10 @@
 import axios from 'axios';
-import Vue from 'vue';
 import store from '../store';
+import { SHOW_MESSAGE } from '@/store/mutations';
 
 const service = axios.create({
   baseURL: process.env.NODE_ENV === 'production' ? window.DOMAIN : 'http://localhost:3000/api',
-  timeout: 5000,
+  timeout: 10000,
 });
 
 service.interceptors.request.use(
@@ -15,14 +15,16 @@ service.interceptors.request.use(
     return config;
   },
   (error) => {
-    Promise.reject(error);
+    return Promise.reject(error);
   }
 );
 
 service.interceptors.response.use(
   (response) => response,
   (error) => {
-    Vue.toasted.global.api_error(error);
+    const msg = error.response ? error.response.data.message : 'Something went wrong...';
+
+    store.commit(SHOW_MESSAGE, { text: msg, type: 'error' });
     return Promise.reject(error);
   }
 );

@@ -31,7 +31,7 @@ describe('Deleting units', () => {
       cy.contains('dast').should('not.be.visible');
     })
 
-    cy.get('.toasted').should('be.visible').contains('Deleted successfully');
+    cy.get('.v-snack__content').should('be.visible').contains('Deleted successfully');
   });
   
 });

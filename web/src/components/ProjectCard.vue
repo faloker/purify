@@ -142,7 +142,7 @@
           </v-btn>
           <v-btn
             color="primary"
-            :disabled="title.length < 3"
+            :disabled="!title || title.length < 3"
             text
             @click="editProject"
           >
@@ -228,9 +228,7 @@ export default {
     deleteProject() {
       this.$store.dispatch(DELETE_PROJECT, this.project.slug).then(() => {
         this.confirmDialog = false;
-        this.$toasted.global.api_success({
-          msg: 'Deleted successfully',
-        });
+        this.$showMessage('success', 'Deleted successfully');
       });
     },
 
@@ -242,9 +240,7 @@ export default {
         })
         .then(() => {
           this.dialog = false;
-          this.$toasted.global.api_success({
-            msg: 'Edited successfully',
-          });
+          this.$showMessage('success', 'Edited successfully');
         });
     },
   },

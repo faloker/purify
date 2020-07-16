@@ -133,9 +133,7 @@ export default {
 
     deleteReport(id) {
       this.$store.dispatch(REPORT_DELETE, id).then(() => {
-        this.$toasted.global.api_success({
-          msg: 'Deleted successfully',
-        });
+        this.$showMessage('success', 'Deleted successfully');
       });
     },
   },

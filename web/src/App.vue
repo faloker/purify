@@ -2,6 +2,7 @@
   <v-app id="app">
     <router-view name="header" />
     <v-content>
+      <snackbar />
       <vue-page-transition name="fade">
         <router-view />
       </vue-page-transition>
@@ -10,9 +11,11 @@
 </template>
 
 <script>
+import Snackbar from '@/components/Snackbar.vue';
+
 export default {
   name: 'App',
-  components: {},
+  components: { Snackbar },
   data: () => ({
     drawer: null,
   }),
