@@ -284,7 +284,7 @@ export default {
       this.$store.dispatch(DELETE_UNIT, slug).then(() => {
         this.confirmDialog = false;
         this.unitToDelete = '';
-        this.$showMessage('success', 'Deleted successfully');
+        this.$showSuccessMessage('The unit has been deleted');
       });
     },
   },

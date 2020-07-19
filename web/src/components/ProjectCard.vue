@@ -228,7 +228,7 @@ export default {
     deleteProject() {
       this.$store.dispatch(DELETE_PROJECT, this.project.slug).then(() => {
         this.confirmDialog = false;
-        this.$showMessage('success', 'Deleted successfully');
+        this.$showSuccessMessage('The project has been deleted');
       });
     },
 
@@ -240,7 +240,7 @@ export default {
         })
         .then(() => {
           this.dialog = false;
-          this.$showMessage('success', 'Edited successfully');
+          this.$showSuccessMessage('The project has been updated');
         });
     },
   },

@@ -133,7 +133,7 @@ export default {
 
     deleteReport(id) {
       this.$store.dispatch(REPORT_DELETE, id).then(() => {
-        this.$showMessage('success', 'Deleted successfully');
+        this.$showSuccessMessage('The report has been deleted');
       });
     },
   },
