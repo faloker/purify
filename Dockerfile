@@ -1,4 +1,4 @@
-FROM node:13-alpine as build-static
+FROM node:14-alpine as build-static
 
 WORKDIR /web
 COPY ./web/package*.json ./
@@ -8,7 +8,7 @@ RUN sed -i "/enbale_cdn/d" public/index.html
 RUN npm run build
 
 
-FROM node:13-alpine as build-api
+FROM node:14-alpine as build-api
 
 WORKDIR /api
 COPY ./api/package*.json ./
@@ -17,7 +17,7 @@ COPY ./api/ .
 RUN npm run build
 
 
-FROM node:13-alpine as production-stage
+FROM node:14-alpine as production-stage
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 RUN npm install -g migrate-mongo

@@ -1,12 +1,12 @@
 <template>
   <v-app id="app">
     <router-view name="header" />
-    <v-content>
+    <v-main>
       <snackbar />
       <vue-page-transition name="fade">
         <router-view />
       </vue-page-transition>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 

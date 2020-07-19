@@ -4,7 +4,6 @@
     :color="message.type"
     :timeout="timeout"
     multi-line
-    absolute
     app
     right
     top
