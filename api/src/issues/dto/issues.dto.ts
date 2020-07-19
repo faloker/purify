@@ -7,8 +7,32 @@ import {
   IsOptional,
   IsIn,
   IsObject,
+  ValidateNested,
+  IsJSON,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+export class IssueChange {
+  @IsJSON()
+  @IsOptional()
+  readonly fields?: string;
+
+  @IsString()
+  @IsIn(['open', 'closed'])
+  @IsOptional()
+  readonly status?: string;
+
+  @IsString()
+  @IsIn(['false positive', 'accepted risk', 'resolved', 'none'])
+  @IsOptional()
+  readonly resolution?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['low', 'info', 'medium', 'high', 'critical'])
+  readonly risk?: string;
+}
 
 export class GetIssuesQueryDto {
   @ApiProperty({
@@ -45,18 +69,16 @@ export class GetIssuesQueryDto {
 }
 
 export class UpdateIssuesBodyDto {
-  @IsArray()
-  @ArrayNotEmpty()
+  @IsUUID('4', { each: true })
   readonly ids: string[];
 
-  @IsObject()
-  readonly change: any;
+  @ValidateNested()
+  @Type(() => IssueChange)
+  readonly change: IssueChange;
 }
 
 export class IdParamDto {
-  @ApiProperty()
   @IsUUID('4')
-  @IsNotEmpty()
   readonly id: string;
 }
 
