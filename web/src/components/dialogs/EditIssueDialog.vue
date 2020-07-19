@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     updateIssue() {
-      const change = { fields: JSON.parse(this.rawIssue) };
+      const change = { fields: this.rawIssue };
 
       this.$store.dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change }).then(() => {
         this.issue.fields = JSON.parse(change.fields);
