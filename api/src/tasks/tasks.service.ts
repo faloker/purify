@@ -50,6 +50,7 @@ export class TasksService {
       .populate('ticket');
 
     for (const issue of issues) {
+      // @ts-ignore
       const { fields } = await this.jiraService.getIssue(issue.ticket.key);
 
       if (
@@ -65,6 +66,7 @@ export class TasksService {
         }).save();
 
         await this.slackService.sendMsg(
+          // @ts-ignore
           `✅ Issue <${issue.ticket.link}|*${issue.ticket.key}*> was resolved in Jira with a resolution equal to *Done*!`,
         );
 

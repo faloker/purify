@@ -11,12 +11,12 @@ export interface Issue extends Document {
   readonly status: string;
   readonly resolution: string;
   readonly risk: string;
-  readonly template: Template;
-  readonly report: Report;
-  readonly ticket: Ticket;
-  readonly unit: Unit;
+  readonly template: Template | string;
+  readonly report: Report | string;
+  readonly ticket: Ticket | string;
+  readonly unit: Unit | string;
   readonly tags: string[];
-  readonly comments: Comment[];
+  readonly comments: Comment[] | string[];
   readonly created_at: Date;
   readonly updated_at: Date;
 }

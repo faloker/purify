@@ -76,8 +76,10 @@ export class ProjectsService {
       const units = await this.unitModel.find({ project: project._id }, '_id');
 
       if (units.length) {
+        // @ts-ignore
         this.reportModel.deleteMany({ unit: { $in: units } });
         this.issueModel.deleteMany({ unit: { $in: units } });
+        // @ts-ignore
         this.unitModel.deleteMany({ _id: { $in: units } });
       }
 
@@ -221,6 +223,7 @@ export class ProjectsService {
       const result = [];
 
       for (const unit of units) {
+        // @ts-ignore
         const numOfReports = await this.reportModel.countDocuments({
           unit: { $eq: unit },
         });

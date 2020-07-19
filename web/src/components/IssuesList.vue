@@ -54,14 +54,15 @@
                 >
                   <template v-slot:default="{ active, toggle }">
                     <v-list-item-action>
-                      <v-checkbox
-                        :input-value="active"
-                        :true-value="item._id"
-                        class="my-3 ml-2"
-                        color="primary"
-                        on-icon="done"
-                        @click="toggle"
-                      />
+                      <div class="my-3 ml-2">
+                        <v-checkbox
+                          :input-value="active"
+                          :true-value="item._id"
+                          color="primary"
+                          on-icon="done"
+                          @click="toggle"
+                        />
+                      </div>
                     </v-list-item-action>
                     <v-list-item-icon>
                       <v-icon

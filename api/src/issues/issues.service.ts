@@ -63,12 +63,15 @@ export class IssuesService {
         resolution: issue.resolution,
         title: matchPattern(
           JSON.parse(issue.fields),
+          // @ts-ignore
           issue.template.title_pattern
         ),
         subtitle: matchPattern(
           JSON.parse(issue.fields),
+          // @ts-ignore
           issue.template.subtitle_pattern
         ),
+        // @ts-ignore
         template: issue.template.name,
         risk: issue.risk,
         created_at: issue.created_at,
