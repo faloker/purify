@@ -24,7 +24,7 @@ service.interceptors.response.use(
   (error) => {
     const msg = error.response ? error.response.data.message : 'Something went wrong...';
 
-    store.commit(SHOW_MESSAGE, { text: msg, type: 'error' });
+    store.commit(SHOW_MESSAGE, { text: msg, title: error.response.data.error, type: 'error' });
     return Promise.reject(error);
   }
 );

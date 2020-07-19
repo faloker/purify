@@ -129,7 +129,7 @@ export default {
   methods: {
     killSession() {
       this.$store.dispatch(LOGOUT).then(() => {
-        this.$showMessage('success', 'Bye');
+        this.$showSuccessMessage('Bye');
         this.$router.replace('welcome');
       });
     },

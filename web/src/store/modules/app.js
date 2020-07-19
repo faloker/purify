@@ -7,6 +7,7 @@ const state = {
   setup: {},
   snackbar: {
     text: '',
+    title: '',
     type: '',
     icon: '',
   },
@@ -36,8 +37,9 @@ const mutations = {
   },
 
   [SHOW_MESSAGE](state, payload) {
-    state.snackbar.text = payload.text;
+    state.snackbar.text = Array.isArray(payload.text) ? payload.text[0] : payload.text;
     state.snackbar.type = payload.type;
+    state.snackbar.title = payload.title;
     state.snackbar.icon = payload.type === 'success' ? 'fa-check' : 'fa-times';
   },
 };

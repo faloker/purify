@@ -230,7 +230,7 @@ export default {
           this.editorDialog = false;
           this.selectedTemplate = {};
 
-          this.$showMessage('success', 'Edited successfully');
+          this.$showSuccessMessage('The template has been updated');
         });
     },
 
@@ -255,7 +255,7 @@ export default {
         this.confirmDialog = false;
         this.selectedTemplate = {};
 
-        this.$showMessage('success', 'Deleted successfully');
+        this.$showSuccessMessage('The template has been deleted');
       });
     },
 

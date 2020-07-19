@@ -9,12 +9,23 @@
     right
     top
   >
-    <div>
-      <v-icon dark left>
-        {{ message.icon }}
-      </v-icon>
-      {{ message.text }}
-    </div>
+    <v-row align="center" justify="center">
+      <v-col cols="2">
+        <v-icon dark left>
+          {{ message.icon }}
+        </v-icon>
+      </v-col>
+      <v-col>
+        <v-row>
+          <div class="font-weight-bold subtitle-1">
+            {{ message.title }}
+          </div>
+        </v-row>
+        <v-row>
+          {{ message.text }}
+        </v-row>
+      </v-col>
+    </v-row>
   </v-snackbar>
 </template>
 
