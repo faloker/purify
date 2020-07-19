@@ -41,11 +41,11 @@
       dense
       dark
     >
-      <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="drawer = true" />
       <v-toolbar-title>
         <b>Purify</b>
       </v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <div class="text-center">
         <v-menu
           v-model="menu"
@@ -57,7 +57,7 @@
           <template v-slot:activator="{ on }">
             <v-btn id="btn-mini-profile" icon>
               <v-avatar size="40" v-on="on">
-                <img :src="currentUser.image" alt="ava" />
+                <img :src="currentUser.image" alt="ava">
               </v-avatar>
             </v-btn>
           </template>
@@ -66,7 +66,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-avatar>
-                  <img :src="currentUser.image" alt="ava" />
+                  <img :src="currentUser.image" alt="ava">
                 </v-list-item-avatar>
 
                 <v-list-item-content>
@@ -86,7 +86,7 @@
               </v-list-item>
             </v-list>
 
-            <v-divider></v-divider>
+            <v-divider />
 
             <v-list>
               <v-list-item-group v-model="item" color="primary">
@@ -129,7 +129,7 @@ export default {
   methods: {
     killSession() {
       this.$store.dispatch(LOGOUT).then(() => {
-        this.$toasted.global.api_success({ msg: 'Bye' });
+        this.$showSuccessMessage('Bye');
         this.$router.replace('welcome');
       });
     },

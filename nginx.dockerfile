@@ -1,4 +1,4 @@
-FROM node:13-alpine as build-static
+FROM node:14-alpine as build-static
 
 WORKDIR /web
 COPY ./web/package*.json ./

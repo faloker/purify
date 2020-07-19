@@ -7,7 +7,7 @@ jobs:
     - uses: actions/checkout@master
     - uses: actions/setup-node@master
       with:
-        node-version: '13'
+        node-version: '14'
     - name: Install root dependencies
       run: npm i
     - name: Start test server and db with docker-compose
@@ -21,7 +21,7 @@ jobs:
     - uses: actions/checkout@master
     - uses: actions/setup-node@master
       with:
-        node-version: '12'
+        node-version: '14'
     - name: Install root dependencies
       run: npm i
     - name: Start test server and db in dev mode

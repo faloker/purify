@@ -203,9 +203,7 @@ export default {
       });
 
       if (ticket) {
-        this.$toasted.global.api_success({
-          msg: 'Jira ticket created successfully',
-        });
+        this.$showSuccessMessage('Jira ticket has been created');
         this.issue.ticket = ticket;
         this.$emit('update:dialog', false);
       }

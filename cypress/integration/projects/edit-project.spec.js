@@ -20,7 +20,7 @@ describe('Editing projects', () => {
     cy.get('#project-title-edit-input').clear().type('blabla{enter}');
 
     cy.contains('Edit project').should('be.visible');
-    cy.get('.toasted').should('be.visible').contains('already exists');
+    cy.get('.v-snack__content').should('be.visible').contains('already exists');
   });
 
   it('Edit all project fields', () => {

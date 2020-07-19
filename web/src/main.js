@@ -1,16 +1,16 @@
 import Vue from 'vue';
 import VuePageTransition from 'vue-page-transition';
 import VueApexCharts from 'vue-apexcharts';
-import { ToastedService } from '@/utils/toasted';
 import App from './App.vue';
 import { router } from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
+import Notifier from './plugins/notifier';
 
 Vue.config.productionTip = false;
-ToastedService.init();
 Vue.use(VuePageTransition);
 Vue.use(VueApexCharts);
+Vue.use(Notifier);
 
 Vue.component('apexchart', VueApexCharts);
 

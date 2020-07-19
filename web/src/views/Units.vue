@@ -61,7 +61,7 @@
               <v-btn
                 color="primary"
                 text
-                :disabled="unitName.length < 3"
+                :disabled="!unitName || unitName.length < 3"
                 @click="createUnit"
               >
                 Create
@@ -283,10 +283,8 @@ export default {
     deleteUnit(slug) {
       this.$store.dispatch(DELETE_UNIT, slug).then(() => {
         this.confirmDialog = false;
-        this.$toasted.global.api_success({
-          msg: 'Deleted successfully',
-        });
         this.unitToDelete = '';
+        this.$showSuccessMessage('The unit has been deleted');
       });
     },
   },

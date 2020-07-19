@@ -291,6 +291,8 @@ export default {
         if (field === 'risk') {
           this.riskDialog = false;
         }
+
+        this.$showSuccessMessage('The issue has been updated');
       });
     },
 

@@ -73,7 +73,7 @@
               </v-btn>
               <v-btn
                 color="primary"
-                :disabled="projectTitle.length < 3"
+                :disabled="!projectTitle || projectTitle.length < 3"
                 text
                 @click="createProject"
               >

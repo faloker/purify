@@ -1,18 +1,21 @@
 <template>
   <v-app id="app">
     <router-view name="header" />
-    <v-content>
+    <v-main>
+      <snackbar />
       <vue-page-transition name="fade">
         <router-view />
       </vue-page-transition>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
 <script>
+import Snackbar from '@/components/Snackbar.vue';
+
 export default {
   name: 'App',
-  components: {},
+  components: { Snackbar },
   data: () => ({
     drawer: null,
   }),

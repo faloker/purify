@@ -42,7 +42,9 @@ export default {
         change.status = 'closed';
       }
       change[field] = value;
-      this.$store.dispatch(ISSUE_UPDATE, { ids: items, change });
+      this.$store.dispatch(ISSUE_UPDATE, { ids: items, change }).then(() => {
+        this.$showSuccessMessage('The issue(s) has been updated');
+      });
     },
   },
 };

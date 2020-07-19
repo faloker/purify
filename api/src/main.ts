@@ -26,6 +26,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       whitelist: true,
       validationError: { target: false, value: false },
+      forbidUnknownValues: true,
     })
   );
 

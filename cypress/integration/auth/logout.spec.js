@@ -12,7 +12,7 @@ describe('Logout', () => {
     cy.get('#menu-mini-profile').should('be.visible');
     cy.get('#btn-logout').click();
 
-    cy.get('.toasted').should('be.visible');
+    cy.get('.v-snack__content').should('be.visible');
     cy.contains('Login');
 
     cy.visit('http://localhost:8080/#/projects');
