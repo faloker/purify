@@ -40,19 +40,25 @@
 </p>
 
 
-## Why
+## Description
 
-The goal of Purify to be an easy-in-use and efficient tool to simplify a workflow of managing vulnerabilities delivered from various tools.
+The goal of Purify to be an easy-in-use and efficient tool to simplify a workflow of managing vulnerabilities delivered from various (even custom) tools.
 
-Purify is designed to analyze the report of **any tool**, if the report is in JSON or XML format. This means you don't need any special plug-ins to process reports from your selection of tools.
+Purify is aims to be a tool-agnostic application. Tool independence makes it possible to analyze results/findings/reports of any toolset. Technically, the report you want to upload should be one of the following:
+- JSON file
+- XML file
+- JSON object (most webhooks dispatch events as separate JSON objects)
 
-Purify is able to remove duplicate results among various vulnerability scanners or tools. In addition, it can combine several results of the same tool based on some fields and it is fully configurable (no coding required). Purify does all this work to reduce the headache of the analyst.
+This means **you don't need any special plug-ins** to parse incoming reports. For this Purify introduces the concept of templates. Templates are code-free and user-friendly structures that parse reports the way you tell them.
 
-Collect all security findings in one place, review/validate/track them, collaborate, get notifications(Slack), export them into tracking systems(Jira) and so on.
+Purify is able to remove duplicate results among various vulnerability scanners or tools. In addition, it can combine several results of the same tool based on selected fields and it is fully configurable. Purify does all this work to reduce the headache of the analyst.
+
+Collect all your findings in one place, review/validate/track them, collaborate with your teammates, receive notifications via Slack, create Jira tickets and many more.
 
 ## Documentation
 
-https://faloker.gitbook.io/purify
+- [Official Documentation](https://faloker.gitbook.io/purify)
+- [API Documentation](https://purify-demo.herokuapp.com/swagger/)
 
 ## Built With
 
