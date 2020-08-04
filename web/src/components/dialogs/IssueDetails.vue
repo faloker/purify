@@ -239,8 +239,8 @@ export default {
 
   computed: {
     ...mapState({
-      systemSetup: (state) => state.app.setup,
-      issueComments: (state) => state.issues.comments,
+      systemSetup: state => state.system.config,
+      issueComments: state => state.issues.comments,
     }),
 
     ...mapGetters(['findTemplateByName']),
@@ -280,20 +280,22 @@ export default {
 
       change[field] = value;
 
-      this.$store.dispatch(ISSUE_UPDATE, { ids: [item._id], change }).then(() => {
-        if (field === 'resolution') {
-          this.issue.status = 'closed';
-        } else if (field === 'status') {
-          this.resolution = 'none';
-        }
-        this.issue[field] = value;
+      this.$store
+        .dispatch(ISSUE_UPDATE, { ids: [item._id], change })
+        .then(() => {
+          if (field === 'resolution') {
+            this.issue.status = 'closed';
+          } else if (field === 'status') {
+            this.resolution = 'none';
+          }
+          this.issue[field] = value;
 
-        if (field === 'risk') {
-          this.riskDialog = false;
-        }
+          if (field === 'risk') {
+            this.riskDialog = false;
+          }
 
-        this.$showSuccessMessage('The issue has been updated');
-      });
+          this.$showSuccessMessage('The issue has been updated');
+        });
     },
 
     genColor() {

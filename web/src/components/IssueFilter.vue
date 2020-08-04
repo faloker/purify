@@ -175,7 +175,7 @@ export default {
       }
 
       if (this.selectedStatuses.length > 0) {
-        this.selectedStatuses.forEach((s) =>
+        this.selectedStatuses.forEach(s =>
           result.push({
             name: 'status',
             value: s,
@@ -184,7 +184,7 @@ export default {
       }
 
       if (this.selectedTemplates.length > 0) {
-        this.selectedTemplates.forEach((t) =>
+        this.selectedTemplates.forEach(t =>
           result.push({
             name: 'template',
             value: t,
@@ -193,7 +193,7 @@ export default {
       }
 
       if (this.selectedTicketStatus.length > 0) {
-        this.selectedTicketStatus.forEach((t) =>
+        this.selectedTicketStatus.forEach(t =>
           result.push({
             name: 'ticket',
             value: t,
@@ -202,7 +202,7 @@ export default {
       }
 
       if (this.selectedResolutions.length > 0) {
-        this.selectedResolutions.forEach((r) =>
+        this.selectedResolutions.forEach(r =>
           result.push({
             name: 'resolution',
             value: r,
@@ -211,7 +211,7 @@ export default {
       }
 
       if (this.selectedRisks.length > 0) {
-        this.selectedRisks.forEach((r) =>
+        this.selectedRisks.forEach(r =>
           result.push({
             name: 'risk',
             value: r,
@@ -233,7 +233,7 @@ export default {
   mounted() {
     this.$store.dispatch(TEMPLATES_FETCH);
 
-    document.onkeydown = (e) => {
+    document.onkeydown = e => {
       // eslint-disable-next-line no-param-reassign
       e = e || window.event;
       if (
@@ -277,19 +277,27 @@ export default {
     clearSelection(item) {
       switch (item.name) {
         case 'risk':
-          this.selectedRisks = this.selectedRisks.filter((r) => r !== item.value);
+          this.selectedRisks = this.selectedRisks.filter(r => r !== item.value);
           break;
         case 'template':
-          this.selectedTemplates = this.selectedTemplates.filter((t) => t !== item.value);
+          this.selectedTemplates = this.selectedTemplates.filter(
+            t => t !== item.value
+          );
           break;
         case 'status':
-          this.selectedStatuses = this.selectedStatuses.filter((s) => s !== item.value);
+          this.selectedStatuses = this.selectedStatuses.filter(
+            s => s !== item.value
+          );
           break;
         case 'resolution':
-          this.selectedResolutions = this.selectedResolutions.filter((r) => r !== item.value);
+          this.selectedResolutions = this.selectedResolutions.filter(
+            r => r !== item.value
+          );
           break;
         case 'ticket':
-          this.selectedTicketStatus = this.selectedTicketStatus.filter((s) => s !== item.value);
+          this.selectedTicketStatus = this.selectedTicketStatus.filter(
+            s => s !== item.value
+          );
           break;
         case 'search':
           this.search_term = '';

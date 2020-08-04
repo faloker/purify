@@ -428,7 +428,7 @@ export default {
       body_fields_types: {},
       reportDialog: false,
       rules: {
-        min: (v) => v.length >= 3 || 'Min 3 symbols',
+        min: v => v.length >= 3 || 'Min 3 symbols',
       },
     };
   },
@@ -457,7 +457,8 @@ export default {
   watch: {
     stepper(newValue, oldValue) {
       this.stepperModel = this.report.type === 'file' ? 1 : 2;
-      this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues = '';
+      this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues =
+        '';
       this.body_fields_types = {};
       this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
       this.merge_fields = this.title_fields = this.body_fields = [];
@@ -489,12 +490,12 @@ export default {
           tags: this.tags,
           body_fields: this.body_fields,
           risk_field: this.risk_field.replace('issue.', ''),
-          merge_fields: this.merge_fields.map((i) => i.replace('issue.', '')),
-          title_fields: this.title_fields.map((i) => i.replace('issue.', '')),
-          internal_comparison_fields: this.internal_comparison_fields.map((i) =>
+          merge_fields: this.merge_fields.map(i => i.replace('issue.', '')),
+          title_fields: this.title_fields.map(i => i.replace('issue.', '')),
+          internal_comparison_fields: this.internal_comparison_fields.map(i =>
             i.replace('issue.', '')
           ),
-          external_comparison_fields: this.external_comparison_fields.map((i) =>
+          external_comparison_fields: this.external_comparison_fields.map(i =>
             i.replace('issue.', '')
           ),
         })

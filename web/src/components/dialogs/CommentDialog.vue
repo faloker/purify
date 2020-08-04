@@ -99,7 +99,7 @@ export default {
     ...mapGetters(['currentUser']),
 
     ...mapState({
-      issueComments: (state) => state.issues.comments,
+      issueComments: state => state.issues.comments,
     }),
 
     timeline() {
@@ -115,9 +115,11 @@ export default {
           text: this.input,
         };
 
-        this.$store.dispatch(POST_COMMENT, { issueId: this.issueId, comment }).then(() => {
-          this.input = null;
-        });
+        this.$store
+          .dispatch(POST_COMMENT, { issueId: this.issueId, comment })
+          .then(() => {
+            this.input = null;
+          });
       }
     },
 

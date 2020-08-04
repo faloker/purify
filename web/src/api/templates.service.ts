@@ -1,10 +1,11 @@
 import request from '@/utils/request';
+import { Template } from '@/store/types';
 
-export const createTemplate = (data) =>
+export const createTemplate = (template: Template) =>
   request({
     url: 'templates',
     method: 'post',
-    data,
+    data: template,
   });
 
 export const getTemplates = () =>
@@ -13,13 +14,13 @@ export const getTemplates = () =>
     method: 'get',
   });
 
-export const deleteTemplate = (slug) =>
+export const deleteTemplate = (slug: string) =>
   request({
     url: `templates/${slug}`,
     method: 'delete',
   });
 
-export const editTemplate = (slug, template) =>
+export const editTemplate = (slug: string, template: Template) =>
   request({
     url: `templates/${slug}`,
     method: 'patch',

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 
-export const getSystemSetup = () =>
+export const getSystemConfig = () =>
   request({
     url: 'system/setup',
     method: 'get',

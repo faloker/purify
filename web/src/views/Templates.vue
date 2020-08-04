@@ -141,7 +141,11 @@
   </v-container>
 </template>
 <script>
-import { TEMPLATES_FETCH, TEMPLATES_EDIT, TEMPLATES_DELETE } from '@/store/actions';
+import {
+  TEMPLATES_FETCH,
+  TEMPLATES_EDIT,
+  TEMPLATES_DELETE,
+} from '@/store/actions';
 import { mapState } from 'vuex';
 import { toLower } from 'lodash';
 import { formatDate } from '@/utils/helpers';
@@ -205,12 +209,12 @@ export default {
   },
   computed: {
     ...mapState({
-      templates: (state) => state.templates.templates,
+      templates: state => state.templates.templates,
     }),
 
     filtredItems() {
       // eslint-disable-next-line max-len
-      return this.templates.filter((item) =>
+      return this.templates.filter(item =>
         toLower(item.template.name).includes(toLower(this.search))
       );
     },
@@ -222,10 +226,15 @@ export default {
   },
   methods: {
     saveChanges() {
-      const { updated_at, created_at, _id, __v, ...fields } = JSON.parse(this.editedTemplate);
+      const { updated_at, created_at, _id, __v, ...fields } = JSON.parse(
+        this.editedTemplate
+      );
 
       this.$store
-        .dispatch(TEMPLATES_EDIT, { slug: this.selectedTemplate.slug, change: fields })
+        .dispatch(TEMPLATES_EDIT, {
+          slug: this.selectedTemplate.slug,
+          change: fields,
+        })
         .then(() => {
           this.editorDialog = false;
           this.selectedTemplate = {};
@@ -251,12 +260,14 @@ export default {
     },
 
     deleteTemplate() {
-      this.$store.dispatch(TEMPLATES_DELETE, this.selectedTemplate.slug).then(() => {
-        this.confirmDialog = false;
-        this.selectedTemplate = {};
+      this.$store
+        .dispatch(TEMPLATES_DELETE, this.selectedTemplate.slug)
+        .then(() => {
+          this.confirmDialog = false;
+          this.selectedTemplate = {};
 
-        this.$showSuccessMessage('The template has been deleted');
-      });
+          this.$showSuccessMessage('The template has been deleted');
+        });
     },
 
     formatDate,

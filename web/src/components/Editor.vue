@@ -51,7 +51,7 @@ export default {
       this.jsonEditor.refresh();
     }, 1);
 
-    this.jsonEditor.on('change', (cm) => {
+    this.jsonEditor.on('change', cm => {
       this.$emit('changed', cm.getValue());
       this.$emit('input', cm.getValue());
     });

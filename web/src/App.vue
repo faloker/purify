@@ -3,23 +3,20 @@
     <router-view name="header" />
     <v-main>
       <snackbar />
-      <vue-page-transition name="fade">
-        <router-view />
-      </vue-page-transition>
+      <!-- <vue-page-transition name="fade"> -->
+      <router-view />
+      <!-- </vue-page-transition> -->
     </v-main>
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import Snackbar from '@/components/Snackbar.vue';
 
-export default {
-  name: 'App',
+export default defineComponent({
   components: { Snackbar },
-  data: () => ({
-    drawer: null,
-  }),
-};
+});
 </script>
 
 <style>

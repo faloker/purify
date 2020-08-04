@@ -35,8 +35,6 @@
 
     <v-app-bar
       app
-      flat
-      hide-on-scroll
       color="#1a73e8"
       dense
       dark
@@ -57,7 +55,7 @@
           <template v-slot:activator="{ on }">
             <v-btn id="btn-mini-profile" icon>
               <v-avatar size="40" v-on="on">
-                <img :src="currentUser.image" alt="ava">
+                <img :src="user.image" alt="ava">
               </v-avatar>
             </v-btn>
           </template>
@@ -66,12 +64,12 @@
             <v-list>
               <v-list-item>
                 <v-list-item-avatar>
-                  <img :src="currentUser.image" alt="ava">
+                  <img :src="user.image" alt="ava">
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                  <v-list-item-title>{{ currentUser.username }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ currentUser.email }}</v-list-item-subtitle>
+                  <v-list-item-title>{{ user.username }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                 </v-list-item-content>
 
                 <v-list-item-action>
@@ -110,29 +108,33 @@
     </v-app-bar>
   </div>
 </template>
-<script>
-import { mapGetters } from 'vuex';
+<script lang="ts">
+import { defineComponent, ref, computed } from '@vue/composition-api';
+import store from '../store';
+import { router } from '../router';
 import { LOGOUT } from '@/store/actions';
 
-export default {
-  name: 'TheHeader',
-  data() {
+export default defineComponent({
+  setup() {
+    const item = ref(null);
+    const menu = ref(false);
+    const drawer = ref(false);
+    const user = computed(() => store.state.profile.user);
+
+    function killSession() {
+      store.dispatch(LOGOUT).then(() => {
+        // this.$showSuccessMessage('Bye');
+        router.replace('welcome');
+      });
+    }
+
     return {
-      item: null,
-      menu: false,
-      drawer: false,
+      item,
+      menu,
+      drawer,
+      user,
+      killSession,
     };
   },
-  computed: {
-    ...mapGetters(['currentUser']),
-  },
-  methods: {
-    killSession() {
-      this.$store.dispatch(LOGOUT).then(() => {
-        this.$showSuccessMessage('Bye');
-        this.$router.replace('welcome');
-      });
-    },
-  },
-};
+});
 </script>

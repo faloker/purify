@@ -9,6 +9,7 @@ export const REPORT_DELETE = 'reportDelete';
 export const FETCH_TEMPLATES_NAMES = 'fetchTemplatesNames';
 
 export const CREATE_UNIT = 'createUnit';
+export const EDIT_UNIT = 'editUnit';
 export const DELETE_UNIT = 'deleteRelease';
 export const FETCH_UNITS = 'fetchUnits';
 export const CHANGE_RELEASE_STATE = 'changeReleaseState';
@@ -44,3 +45,6 @@ export const PROFILE_FETCH = 'profileFetch';
 export const FETCH_SYSTEM_SETUP = 'fetchSystemSetup';
 
 export const SAML_LOGIN = 'samlLogin';
+
+export const SHOW_SUCCESS_MSG = 'showSuccessMsg';
+export const SHOW_ERROR_MSG = 'showErrorMsg';

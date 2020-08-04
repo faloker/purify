@@ -46,10 +46,12 @@ export default {
     updateIssue() {
       const change = { fields: this.rawIssue };
 
-      this.$store.dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change }).then(() => {
-        this.issue.fields = JSON.parse(change.fields);
-        this.$emit('update:issue', this.issue);
-      });
+      this.$store
+        .dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change })
+        .then(() => {
+          this.issue.fields = JSON.parse(change.fields);
+          this.$emit('update:issue', this.issue);
+        });
     },
   },
 };

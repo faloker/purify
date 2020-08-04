@@ -83,7 +83,7 @@ export const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  const { isAuthenticated } = store.getters;
+  const { isAuthenticated } = store.state.auth;
 
   if (to.path === '/welcome') {
     store.dispatch(FETCH_SYSTEM_SETUP);
@@ -106,7 +106,10 @@ router.beforeEach((to, from, next) => {
         document.title = 'Purify | Welcome';
         next('/welcome');
       });
-  } else if ((to.path === '/welcome' || to.name === 'SAML Login') && isAuthenticated) {
+  } else if (
+    (to.path === '/welcome' || to.name === 'SAML Login') &&
+    isAuthenticated
+  ) {
     next(false);
   } else {
     document.title = to.meta.title;

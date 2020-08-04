@@ -19,7 +19,7 @@
               Login
             </v-tab>
             <v-tab
-              v-if="systemSetup.registration"
+              v-if="systemConfig.registration"
               id="tab-register"
               class="title text-none"
             >
@@ -66,7 +66,7 @@
                   </v-row>
                   <v-row justify="center">
                     <v-btn
-                      v-if="systemSetup.saml"
+                      v-if="systemConfig.saml"
                       class="mt-3"
                       outlined
                       type="submit"
@@ -137,60 +137,67 @@
   </v-container>
 </template>
 
-<script>
-import { mapState } from 'vuex';
+<script lang="ts">
+import { defineComponent, ref, computed } from '@vue/composition-api';
 import { REGISTER, LOGIN } from '@/store/actions';
-import { initSAML } from '@/api/auth.service';
+import { router } from '@/router';
+import store from '@/store';
 
-export default {
+export default defineComponent({
   name: 'Welcome',
-  data() {
+
+  setup() {
+    const tabs = ref(null);
+    const username = ref('');
+    const email = ref('');
+    const password = ref('');
+    const loading = ref(false);
+
+    const systemConfig = computed(() => store.state.system.config);
+
+    function register() {
+      loading.value = true;
+      store
+        .dispatch(REGISTER, {
+          email: email.value,
+          password: password.value,
+          username: username.value,
+        })
+        .then(() => {
+          router.push({ name: 'Projects' });
+        })
+        .catch(() => {
+          loading.value = false;
+        });
+    }
+
+    function login() {
+      loading.value = true;
+      store
+        .dispatch(LOGIN, {
+          username: username.value,
+          password: password.value,
+        })
+        .then(() => {
+          router.push({ name: 'Projects' });
+        })
+        .catch(() => {
+          loading.value = false;
+        });
+    }
+
     return {
-      tabs: null,
-      username: '',
-      email: '',
-      password: '',
-      loading: false,
+      tabs,
+      username,
+      email,
+      password,
+      loading,
+      register,
+      login,
+      systemConfig,
     };
   },
-  computed: {
-    ...mapState({
-      systemSetup: (state) => state.app.setup,
-    }),
-  },
-  methods: {
-    register() {
-      this.loading = true;
-      this.$store
-        .dispatch(REGISTER, {
-          email: this.email,
-          password: this.password,
-          username: this.username,
-        })
-        .then(() => {
-          this.$router.push({ name: 'Projects' });
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    },
-
-    login() {
-      this.loading = true;
-      this.$store
-        .dispatch(LOGIN, {
-          username: this.username,
-          password: this.password,
-        })
-        .then(() => {
-          this.$router.push({ name: 'Projects' });
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    },
-  },
-};
+});
 </script>
 
 <style scoped>

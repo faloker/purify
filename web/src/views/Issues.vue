@@ -59,15 +59,15 @@ export default {
   },
   computed: {
     ...mapState({
-      issues: (state) => state.issues.issues,
+      issues: state => state.issues.issues,
     }),
 
     filtredIssues() {
       let issuesToDisplay = this.issues;
 
-      const searchFilter = this.filterOptions.filter((f) => f.name === 'search');
+      const searchFilter = this.filterOptions.filter(f => f.name === 'search');
       issuesToDisplay = searchFilter.length
-        ? this.issues.filter((i) =>
+        ? this.issues.filter(i =>
             JSON.stringify(Object.values(i.fields))
               .toLowerCase()
               .includes(searchFilter[0].value.toLowerCase())
@@ -75,17 +75,17 @@ export default {
         : issuesToDisplay;
 
       this.filterOptions
-        .filter((option) => !['search', 'ticket'].includes(option.name))
-        .forEach((option) => {
+        .filter(option => !['search', 'ticket'].includes(option.name))
+        .forEach(option => {
           issuesToDisplay = this.applyFilter(issuesToDisplay, option.name);
         });
 
       const ticketFilter = this.filterOptions
-        .filter((f) => f.name === 'ticket')
-        .map((f) => (f.value === 'no ticket' ? false : true));
+        .filter(f => f.name === 'ticket')
+        .map(f => (f.value === 'no ticket' ? false : true));
 
       issuesToDisplay = ticketFilter.length
-        ? issuesToDisplay.filter((issue) => ticketFilter.includes(!!issue.ticket))
+        ? issuesToDisplay.filter(issue => ticketFilter.includes(!!issue.ticket))
         : issuesToDisplay;
 
       return issuesToDisplay;
@@ -94,7 +94,7 @@ export default {
     keywordsList() {
       let result = [];
 
-      this.filtredIssues.forEach((issue) => {
+      this.filtredIssues.forEach(issue => {
         const list = Object.values(issue.fields)
           .toString()
           .match(/[a-zA-Z0-9\._-]{3,}/gm);
@@ -134,11 +134,15 @@ export default {
 
   methods: {
     valuesForFilter(option) {
-      const optionValues = [...new Set(this.issues.map((issue) => issue[option]))];
+      const optionValues = [
+        ...new Set(this.issues.map(issue => issue[option])),
+      ];
       const result = [];
 
-      optionValues.forEach((value) => {
-        const total = this.filtredIssues.filter((issue) => issue[option] === value).length;
+      optionValues.forEach(value => {
+        const total = this.filtredIssues.filter(
+          issue => issue[option] === value
+        ).length;
         result.push({
           title: value,
           total: total,
@@ -150,11 +154,13 @@ export default {
     },
 
     applyFilter(issues, filterName) {
-      const options = this.filterOptions.filter((o) => o.name === filterName);
+      const options = this.filterOptions.filter(o => o.name === filterName);
 
       return options.length
-        ? issues.filter((issue) =>
-            options.map((o) => o.value.toLowerCase()).includes(issue[filterName.toLowerCase()])
+        ? issues.filter(issue =>
+            options
+              .map(o => o.value.toLowerCase())
+              .includes(issue[filterName.toLowerCase()])
           )
         : issues;
     },
@@ -162,7 +168,8 @@ export default {
     ticketValuesForFilter() {
       const result = [];
 
-      const totalTickets = this.filtredIssues.filter((issue) => issue['ticket']).length;
+      const totalTickets = this.filtredIssues.filter(issue => issue['ticket'])
+        .length;
       result.push(
         {
           title: 'ticket assigned',
@@ -172,7 +179,10 @@ export default {
         {
           title: 'no ticket',
           total: this.filtredIssues.length - totalTickets,
-          value: ((this.filtredIssues.length - totalTickets) / this.filtredIssues.length) * 100,
+          value:
+            ((this.filtredIssues.length - totalTickets) /
+              this.filtredIssues.length) *
+            100,
         }
       );
 

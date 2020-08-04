@@ -114,7 +114,7 @@ export default {
   },
   computed: {
     ...mapState({
-      reports: (state) => state.reports.reports,
+      reports: state => state.reports.reports,
     }),
   },
   mounted() {
@@ -139,5 +139,4 @@ export default {
   },
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

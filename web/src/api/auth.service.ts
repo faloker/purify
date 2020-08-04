@@ -1,13 +1,13 @@
 import request from '@/utils/request';
 
-export const login = async (data) =>
+export const login = (data: any) =>
   request({
     url: 'auth',
     method: 'post',
     data,
   });
 
-export const signup = (data) =>
+export const signup = (data: any) =>
   request({
     url: 'auth/signup',
     method: 'post',

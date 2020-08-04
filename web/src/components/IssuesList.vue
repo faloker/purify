@@ -230,7 +230,8 @@ export default {
     items() {
       return this.rawItems.filter(
         (item, index) =>
-          index >= (this.page - 1) * this.pageSize && index < this.page * this.pageSize
+          index >= (this.page - 1) * this.pageSize &&
+          index < this.page * this.pageSize
       );
     },
     allSelected() {
@@ -262,7 +263,7 @@ export default {
       if (this.allSelected) {
         this.selected = [];
       } else {
-        this.selected = this.items.map((i) => i._id);
+        this.selected = this.items.map(i => i._id);
       }
     },
 

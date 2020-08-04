@@ -52,10 +52,7 @@
 <script>
 import PersonalSettings from '@/components/PersonalSettings.vue';
 import TokensSettings from '@/components/TokensSettings.vue';
-import {
-  FETCH_PROFILE,
-  LOGOUT,
-} from '@/store/actions';
+import { FETCH_PROFILE, LOGOUT } from '@/store/actions';
 
 export default {
   name: 'Profile',
@@ -80,7 +77,8 @@ export default {
   },
   methods: {
     logout() {
-      this.$store.dispatch(LOGOUT)
+      this.$store
+        .dispatch(LOGOUT)
         .then(() => this.$router.push({ name: 'Welcome' }));
     },
   },
