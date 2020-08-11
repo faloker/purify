@@ -7,7 +7,7 @@
       @input="$emit('input', $event.target.value)"
     >
       <v-card>
-        <v-card-title class="text-h6">
+        <v-card-title>
           {{ title }}
         </v-card-title>
         <v-card-text>
@@ -26,7 +26,7 @@
           <v-btn
             text
             color="quinary"
-            @click="handleClick"
+            @click="$emit('handle-click')"
           >
             {{ okButtonText }}
           </v-btn>
@@ -61,13 +61,6 @@ export default defineComponent({
       type: String,
       default: 'Cancel',
     },
-  },
-
-  setup(props, { emit }) {
-    function handleClick() {
-      emit('handle-click');
-    }
-    return { handleClick };
   },
 });
 </script>

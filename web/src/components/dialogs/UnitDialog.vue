@@ -3,25 +3,22 @@
     <v-dialog
       v-model="value"
       max-width="400px"
-      persistent
       @input="$emit('input', $event.target.value)"
+      @click:outside="$emit('input', false)"
     >
       <v-card>
         <v-card-title>
-          <span class="text-h6">{{ heading }}</span>
+          <span>{{ heading }}</span>
         </v-card-title>
         <v-card-text>
           <v-layout wrap>
             <v-flex xs12>
               <v-text-field
                 id="unit-name-input"
-                v-model="name"
-                outlined
-                dense
+                v-model="nameModel"
                 label="Unit name"
                 clearable
                 required
-                @input="$emit('update:name', name)"
                 @keydown.enter="$emit('handle-click')"
               />
             </v-flex>
@@ -40,7 +37,7 @@
           <v-btn
             color="quinary"
             text
-            :disabled="!name || name.length < 3"
+            :disabled="!nameModel || nameModel.length < 3"
             @click="$emit('handle-click')"
           >
             Save
@@ -51,7 +48,7 @@
   </v-row>
 </template>
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, computed } from '@vue/composition-api';
 export default defineComponent({
   name: 'UnitDialog',
 
@@ -69,6 +66,15 @@ export default defineComponent({
       default: '',
       required: true,
     },
+  },
+
+  setup(props, { emit }) {
+    const nameModel = computed({
+      get: () => props.name,
+      set: val => emit('update:name', val),
+    });
+
+    return { nameModel };
   },
 });
 </script>

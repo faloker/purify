@@ -5,17 +5,15 @@
       <v-col>
         <v-text-field
           id="search"
-          ref="search"
-          v-model="search"
+          v-model="searchTerm"
           clearable
           dense
           outlined
-          @keydown.esc="onEsc"
         >
           <template slot="label">
-            <v-icon style="vertical-align: middle">
+            <v-icon class="mx-1" style="vertical-align: middle">
               search
-            </v-icon>Search for template
+            </v-icon>Search
           </template>
         </v-text-field>
       </v-col>
@@ -32,7 +30,7 @@
             :headers="headers"
             :items="filtredItems"
             :items-per-page="5"
-            :search="search"
+            :search="searchTerm"
             item-key="_id"
           >
             <template v-slot:item.template.name="{ item }">
@@ -71,38 +69,6 @@
         </v-skeleton-loader>
       </v-col>
     </v-row>
-    <v-dialog v-model="confirmDialog" max-width="350">
-      <v-card>
-        <v-card-title>
-          Delete template 
-          <v-chip
-            label
-            class="mx-1"
-          >
-            <span
-              class="d-inline-block text-truncate"
-              style="max-width: 150px;"
-            >
-              <b>{{ selectedTemplate.name }}</b>
-            </span>
-          </v-chip>
-          ?
-        </v-card-title>
-        <v-divider />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="tertiary"
-            text
-            block
-            @click="deleteTemplate()"
-          >
-            Confirm
-          </v-btn>
-          <v-spacer />
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
     <v-dialog
       v-model="editorDialog"
       fullscreen
@@ -138,139 +104,206 @@
         <editor ref="TemplateEditor" v-model="editedTemplate" />
       </v-card>
     </v-dialog>
+    <confirm-dialog
+      v-model="confirmDialog"
+      title="Delete this template?"
+      message="Template will be deattached from reports and issues. You will need to apply a new template. Are you sure you want to continue?"
+      @handle-click="deleteTemplate()"
+    />
   </v-container>
 </template>
-<script>
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  computed,
+  onMounted,
+  ComputedRef,
+  Ref,
+} from '@vue/composition-api';
 import {
   TEMPLATES_FETCH,
   TEMPLATES_EDIT,
   TEMPLATES_DELETE,
+  SHOW_SUCCESS_MSG,
 } from '@/store/actions';
-import { mapState } from 'vuex';
 import { toLower } from 'lodash';
 import { formatDate } from '@/utils/helpers';
 import Editor from '@/components/Editor.vue';
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
+import store from '@/store';
+import { Template, TemplateWithStats } from '@/store/types';
 
-export default {
+export default defineComponent({
   name: 'Templates',
+
   components: {
     Editor,
+    ConfirmDialog,
   },
-  data() {
+
+  setup() {
+    const searchTerm = ref('');
+    const loading = ref(false);
+    const headers = ref([
+      {
+        text: 'Name',
+        width: '20%',
+        align: 'center',
+        value: 'template.name',
+      },
+      {
+        text: 'Issues',
+        width: '15%',
+        align: 'center',
+        value: 'issues',
+      },
+      {
+        text: 'Reports',
+        width: '15%',
+        align: 'center',
+        value: 'reports',
+      },
+      {
+        text: 'Created',
+        width: '15%',
+        align: 'center',
+        value: 'created_at',
+        sortable: false,
+      },
+      {
+        text: 'Updated',
+        width: '15%',
+        align: 'center',
+        value: 'updated_at',
+        sortable: false,
+      },
+      {
+        text: 'Actions',
+        width: '25%',
+        align: 'center',
+        value: 'action',
+        sortable: false,
+      },
+    ]);
+
+    const templates: ComputedRef<TemplateWithStats[]> = computed(
+      () => store.state.templates.items
+    );
+
+    const filtredItems = computed(() =>
+      templates.value.filter(item =>
+        toLower(item.template.name).includes(toLower(searchTerm.value))
+      )
+    );
+
+    onMounted(() => {
+      store.dispatch(TEMPLATES_FETCH).then(() => {
+        loading.value = false;
+      });
+    });
+
+    const {
+      editorDialog,
+      editedTemplate,
+      saveChanges,
+      openEditor,
+      closeEditor,
+    } = useEditTemplate();
+
+    const {
+      confirmDialog,
+      templateToDelete,
+      openConfirmationDialog,
+      deleteTemplate,
+    } = useDeleteTemplate();
+
     return {
-      search: '',
-      loading: true,
-      confirmDialog: false,
-      editorDialog: false,
-      selectedTemplate: {},
-      editedTemplate: {},
-      headers: [
-        {
-          text: 'Name',
-          width: '20%',
-          align: 'center',
-          value: 'template.name',
-        },
-        {
-          text: 'Issues',
-          width: '15%',
-          align: 'center',
-          value: 'issues',
-        },
-        {
-          text: 'Reports',
-          width: '15%',
-          align: 'center',
-          value: 'reports',
-        },
-        {
-          text: 'Created',
-          width: '15%',
-          align: 'center',
-          value: 'created_at',
-          sortable: false,
-        },
-        {
-          text: 'Updated',
-          width: '15%',
-          align: 'center',
-          value: 'updated_at',
-          sortable: false,
-        },
-        {
-          text: 'Actions',
-          width: '25%',
-          align: 'center',
-          value: 'action',
-          sortable: false,
-        },
-      ],
+      editorDialog,
+      loading,
+      filtredItems,
+      headers,
+      searchTerm,
+      editedTemplate,
+      saveChanges,
+      openEditor,
+      closeEditor,
+      confirmDialog,
+      templateToDelete,
+      openConfirmationDialog,
+      deleteTemplate,
+      formatDate,
     };
   },
-  computed: {
-    ...mapState({
-      templates: state => state.templates.templates,
-    }),
+});
 
-    filtredItems() {
-      // eslint-disable-next-line max-len
-      return this.templates.filter(item =>
-        toLower(item.template.name).includes(toLower(this.search))
-      );
-    },
-  },
-  mounted() {
-    this.$store.dispatch(TEMPLATES_FETCH).then(() => {
-      this.loading = false;
-    });
-  },
-  methods: {
-    saveChanges() {
-      const { updated_at, created_at, _id, __v, ...fields } = JSON.parse(
-        this.editedTemplate
-      );
+function useEditTemplate() {
+  const editorDialog = ref(false);
+  const editedTemplate = ref('');
+  const templateToEdit: Ref<Template> | Ref<{}> = ref({});
 
-      this.$store
-        .dispatch(TEMPLATES_EDIT, {
-          slug: this.selectedTemplate.slug,
-          change: fields,
-        })
-        .then(() => {
-          this.editorDialog = false;
-          this.selectedTemplate = {};
+  function saveChanges() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { updated_at, created_at, _id, __v, ...fields } = JSON.parse(
+      editedTemplate.value
+    );
 
-          this.$showSuccessMessage('The template has been updated');
-        });
-    },
+    store
+      .dispatch(TEMPLATES_EDIT, {
+        slug: (templateToEdit.value as Template).slug,
+        change: fields,
+      })
+      .then(async () => {
+        editorDialog.value = false;
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The template has been updated');
+      });
+  }
 
-    openEditor(item) {
-      this.editorDialog = true;
-      this.selectedTemplate = item.template;
-      this.editedTemplate = JSON.stringify(item.template, null, 2);
-    },
+  function openEditor(item: TemplateWithStats) {
+    editorDialog.value = true;
+    templateToEdit.value = item.template;
+    editedTemplate.value = JSON.stringify(item.template, null, 2);
+  }
 
-    closeEditor() {
-      this.editorDialog = false;
-      this.selectedTemplate = {};
-    },
+  function closeEditor() {
+    editorDialog.value = false;
+  }
 
-    openConfirmationDialog(item) {
-      this.confirmDialog = true;
-      this.selectedTemplate = item.template;
-    },
+  return {
+    editorDialog,
+    editedTemplate,
+    saveChanges,
+    openEditor,
+    closeEditor,
+  };
+}
 
-    deleteTemplate() {
-      this.$store
-        .dispatch(TEMPLATES_DELETE, this.selectedTemplate.slug)
-        .then(() => {
-          this.confirmDialog = false;
-          this.selectedTemplate = {};
+function useDeleteTemplate() {
+  const confirmDialog = ref(false);
+  const templateToDelete: Ref<Template> | Ref<{}> = ref({});
 
-          this.$showSuccessMessage('The template has been deleted');
-        });
-    },
+  function openConfirmationDialog(item: TemplateWithStats) {
+    confirmDialog.value = true;
+    templateToDelete.value = item.template;
+  }
 
-    formatDate,
-  },
-};
+  function deleteTemplate() {
+    store
+      .dispatch(TEMPLATES_DELETE, (templateToDelete.value as Template).slug)
+      .then(async () => {
+        confirmDialog.value = false;
+        templateToDelete.value = {};
+
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The template has been deleted');
+      });
+  }
+
+  return {
+    confirmDialog,
+    templateToDelete,
+    openConfirmationDialog,
+    deleteTemplate,
+  };
+}
 </script>

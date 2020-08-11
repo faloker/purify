@@ -73,7 +73,7 @@ export interface User {
   image: string;
 }
 
-interface BodyField {
+export interface BodyField {
   key: string;
   type: string;
 }
@@ -132,6 +132,8 @@ export interface Ticket {
 export interface Issue {
   _id: string;
   fields: string;
+  title: string;
+  subtitle: string;
   status: string;
   resolution: string;
   risk: string;
@@ -168,4 +170,15 @@ export interface Comment {
   author: string | User;
   created_at?: Date;
   updated_at?: Date;
+}
+
+export interface FilterOption {
+  name: string;
+  value: string;
+}
+
+export interface FilterValue {
+  title: string;
+  total: number;
+  value: number;
 }

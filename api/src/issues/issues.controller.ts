@@ -41,7 +41,7 @@ export class IssuesController {
     return this.issuesService.createJiraTicket(id, body);
   }
 
-  @Post(':id/comment')
+  @Post(':id/comments')
   saveComment(@Param() params: IdParamDto, @Body() comment: SaveCommentBodyDto) {
     return this.issuesService.saveComment(params.id, comment);
   }

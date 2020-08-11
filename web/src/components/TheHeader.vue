@@ -111,7 +111,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api';
 import store from '../store';
-import { router } from '../router';
+import { router } from '@/router';
 import { LOGOUT } from '@/store/actions';
 
 export default defineComponent({

@@ -89,7 +89,7 @@ export class IssuesService {
 
   async createJiraTicket(issueId: string, issue: any) {
     const settings = await this.jiraService.getSettings();
-
+    // add check to vertify that issue exists
     if (settings) {
       const jiraTicket = await this.jiraService
         .createIssue(issue)

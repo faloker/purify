@@ -13,88 +13,59 @@
     </v-row>
     <v-row justify="center" align="center">
       <v-col cols="10">
-        <v-skeleton-loader
-          :loading="loading"
-          transition="scale-transition"
-          type="paragraph@5"
-        >
-          <issues-list :raw-items="filtredIssues" />
-        </v-skeleton-loader>
+        <div v-if="loading" class="mt-14">
+          <v-skeleton-loader
+            v-for="(index) in [1, 2, 3, 4, 5]"
+            :key="index"
+            class="my-3"
+            :loading="loading"
+            transition="scale-transition"
+            type="paragraph"
+          />
+        </div>
+        <issues-list v-else :raw-items="filtredIssues" />
       </v-col>
     </v-row>
   </v-container>
 </template>
-<script>
-import { mapState } from 'vuex';
-import { groupBy } from 'lodash';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  Ref,
+  onMounted,
+  ComputedRef,
+  computed,
+} from '@vue/composition-api';
+import store from '@/store';
 import IssuesList from '@/components/IssuesList.vue';
 import { compareDesc, sub } from 'date-fns';
 import IssueFilter from '@/components/IssueFilter.vue';
 import { ISSUES_FETCH } from '@/store/actions';
-import { SET_ACTIVE_UNIT } from '@/store/mutations';
+import { Issue, FilterValue, FilterOption } from '@/store/types';
 
-export default {
+export default defineComponent({
   name: 'Issues',
+
   components: {
     IssuesList,
     IssueFilter,
   },
-  data() {
-    return {
-      resolutionStatus: '',
-      ticket: '',
-      closed: false,
-      search: '',
-      templates: [],
-      timeback: '',
-      loading: true,
-      risk: [],
-      filterOptions: [
-        {
-          name: 'status',
-          value: 'open',
-        },
-      ],
-    };
-  },
-  computed: {
-    ...mapState({
-      issues: state => state.issues.issues,
-    }),
 
-    filtredIssues() {
-      let issuesToDisplay = this.issues;
+  setup(props, context) {
+    const loading = ref(true);
+    const {
+      filterOptions,
+      filtredIssues,
+      valuesForFilter,
+      ticketValuesForFilter,
+    } = useFiltres();
 
-      const searchFilter = this.filterOptions.filter(f => f.name === 'search');
-      issuesToDisplay = searchFilter.length
-        ? this.issues.filter(i =>
-            JSON.stringify(Object.values(i.fields))
-              .toLowerCase()
-              .includes(searchFilter[0].value.toLowerCase())
-          )
-        : issuesToDisplay;
+    const keywordsList = computed(() => {
+      let result: string[] = [];
 
-      this.filterOptions
-        .filter(option => !['search', 'ticket'].includes(option.name))
-        .forEach(option => {
-          issuesToDisplay = this.applyFilter(issuesToDisplay, option.name);
-        });
-
-      const ticketFilter = this.filterOptions
-        .filter(f => f.name === 'ticket')
-        .map(f => (f.value === 'no ticket' ? false : true));
-
-      issuesToDisplay = ticketFilter.length
-        ? issuesToDisplay.filter(issue => ticketFilter.includes(!!issue.ticket))
-        : issuesToDisplay;
-
-      return issuesToDisplay;
-    },
-
-    keywordsList() {
-      let result = [];
-
-      this.filtredIssues.forEach(issue => {
+      filtredIssues.value.forEach(issue => {
         const list = Object.values(issue.fields)
           .toString()
           .match(/[a-zA-Z0-9\._-]{3,}/gm);
@@ -102,92 +73,120 @@ export default {
       });
 
       return [...new Set(result)];
-    },
-  },
-
-  // watch: {
-  //   filterOptions(newValue, oldValue) {
-  //     this.$router.replace({
-  //       path: 'Issues',
-  //       params: { slug: this.$route.params.slug },
-  //       query: { filter: JSON.stringify(groupBy(newValue, 'name')) },
-  //     });
-  //   },
-  // },
-
-  mounted() {
-    this.$store.commit(SET_ACTIVE_UNIT, this.$route.params.slug);
-
-    // if (this.$route.query.filter) {
-    //   this.filterOptions = this.$route.query.filter;
-    // } else {
-    //   this.filterOptions.push({
-    //     name: 'status',
-    //     value: 'open',
-    //   });
-    // }
-
-    this.$store.dispatch(ISSUES_FETCH, this.$route.params.slug).then(() => {
-      this.loading = false;
     });
+
+    onMounted(async () => {
+      store.dispatch(ISSUES_FETCH, context.root.$route.params.slug).then(() => {
+        loading.value = false;
+      });
+    });
+
+    return {
+      loading,
+      keywordsList,
+      filterOptions,
+      filtredIssues,
+      valuesForFilter,
+      ticketValuesForFilter,
+    };
   },
+});
 
-  methods: {
-    valuesForFilter(option) {
-      const optionValues = [
-        ...new Set(this.issues.map(issue => issue[option])),
-      ];
-      const result = [];
+function useFiltres() {
+  const issues: ComputedRef<Issue[]> = computed(() => store.state.issues.items);
+  const filterOptions: Ref<FilterOption[]> = ref([
+    { name: 'status', value: 'open' },
+  ]);
+  const filtredIssues = computed(() => {
+    const searchFilter = filterOptions.value.filter(f => f.name === 'search');
+    let issuesToDisplay = issues.value;
 
-      optionValues.forEach(value => {
-        const total = this.filtredIssues.filter(
-          issue => issue[option] === value
-        ).length;
-        result.push({
-          title: value,
-          total: total,
-          value: (total / this.filtredIssues.length) * 100,
-        });
+    issuesToDisplay = searchFilter.length
+      ? issues.value.filter(i =>
+          JSON.stringify(Object.values(i.fields))
+            .toLowerCase()
+            .includes(searchFilter[0].value.toLowerCase())
+        )
+      : issuesToDisplay;
+
+    filterOptions.value
+      .filter(option => !['search', 'ticket'].includes(option.name))
+      .forEach(option => {
+        issuesToDisplay = applyFilter(issuesToDisplay, option.name);
       });
 
-      return result.sort((a, b) => b.total - a.total);
-    },
+    const ticketFilter = filterOptions.value
+      .filter(f => f.name === 'ticket')
+      .map(f => (f.value === 'no ticket' ? false : true));
 
-    applyFilter(issues, filterName) {
-      const options = this.filterOptions.filter(o => o.name === filterName);
+    issuesToDisplay = ticketFilter.length
+      ? issuesToDisplay.filter(issue => ticketFilter.includes(!!issue.ticket))
+      : issuesToDisplay;
 
-      return options.length
-        ? issues.filter(issue =>
-            options
-              .map(o => o.value.toLowerCase())
-              .includes(issue[filterName.toLowerCase()])
-          )
-        : issues;
-    },
+    return issuesToDisplay;
+  });
 
-    ticketValuesForFilter() {
-      const result = [];
+  function applyFilter(issues: Issue[], filterName: string) {
+    const options = filterOptions.value.filter(o => o.name === filterName);
 
-      const totalTickets = this.filtredIssues.filter(issue => issue['ticket'])
+    return options.length
+      ? issues.filter(issue =>
+          options
+            .map(o => o.value.toLowerCase())
+            // @ts-ignore
+            .includes(issue[filterName.toLowerCase()])
+        )
+      : issues;
+  }
+
+  function valuesForFilter(option: string) {
+    // @ts-ignore
+    const optionValues = [...new Set(issues.value.map(issue => issue[option]))];
+    const result: FilterValue[] = [];
+
+    optionValues.forEach(value => {
+      // @ts-ignore
+      const total = filtredIssues.value.filter(issue => issue[option] === value)
         .length;
-      result.push(
-        {
-          title: 'ticket assigned',
-          total: totalTickets,
-          value: (totalTickets / this.filtredIssues.length) * 100,
-        },
-        {
-          title: 'no ticket',
-          total: this.filtredIssues.length - totalTickets,
-          value:
-            ((this.filtredIssues.length - totalTickets) /
-              this.filtredIssues.length) *
-            100,
-        }
-      );
+      result.push({
+        title: value,
+        total: total,
+        value: (total / filtredIssues.value.length) * 100,
+      });
+    });
 
-      return result.sort((a, b) => b.total - a.total);
-    },
-  },
-};
+    return result.sort((a, b) => b.total - a.total);
+  }
+
+  function ticketValuesForFilter() {
+    const result: FilterValue[] = [];
+
+    const totalTickets = filtredIssues.value.filter(issue => issue['ticket'])
+      .length;
+    result.push(
+      {
+        title: 'ticket assigned',
+        total: totalTickets,
+        value: (totalTickets / filtredIssues.value.length) * 100,
+      },
+      {
+        title: 'no ticket',
+        total: filtredIssues.value.length - totalTickets,
+        value:
+          ((filtredIssues.value.length - totalTickets) /
+            filtredIssues.value.length) *
+          100,
+      }
+    );
+
+    return result.sort((a, b) => b.total - a.total);
+  }
+
+  return {
+    filterOptions,
+    filtredIssues,
+    valuesForFilter,
+    ticketValuesForFilter,
+  };
+}
 </script>

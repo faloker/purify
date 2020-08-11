@@ -138,10 +138,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from '@vue/composition-api';
+import {
+  defineComponent,
+  ref,
+  computed,
+  ComputedRef,
+} from '@vue/composition-api';
 import { REGISTER, LOGIN } from '@/store/actions';
 import { router } from '@/router';
 import store from '@/store';
+import { SystemConfig } from '@/store/types';
 
 export default defineComponent({
   name: 'Welcome',
@@ -153,7 +159,9 @@ export default defineComponent({
     const password = ref('');
     const loading = ref(false);
 
-    const systemConfig = computed(() => store.state.system.config);
+    const systemConfig: ComputedRef<SystemConfig> = computed(
+      () => store.state.system.config
+    );
 
     function register() {
       loading.value = true;
@@ -188,12 +196,12 @@ export default defineComponent({
 
     return {
       tabs,
-      username,
       email,
-      password,
-      loading,
-      register,
       login,
+      loading,
+      username,
+      password,
+      register,
       systemConfig,
     };
   },

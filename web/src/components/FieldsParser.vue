@@ -68,29 +68,33 @@
     </template>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, computed } from '@vue/composition-api';
 import { parseKey } from '@/utils/helpers';
 
-export default {
+export default defineComponent({
   name: 'FieldsParser',
   props: ['ikey', 'ivalue'],
-  computed: {
-    fieldKey() {
-      return this.ikey.key || this.ikey;
-    },
 
-    fieldType() {
-      return this.ikey.type || 'text';
-    },
-  },
-  methods: {
-    parseKey,
-    isPrintable(obj) {
+  setup(props) {
+    const fieldKey = computed(() => props.ikey.key || props.ikey);
+    const fieldType = computed(() => props.ikey.type || 'text');
+
+    function isPrintable(obj: any) {
       return ['string', 'boolean', 'number'].includes(typeof obj);
-    },
-    decodeValue(str) {
+    }
+
+    function decodeValue(str: string) {
       return atob(str);
-    },
+    }
+
+    return {
+      fieldKey,
+      fieldType,
+      isPrintable,
+      decodeValue,
+      parseKey,
+    };
   },
-};
+});
 </script>

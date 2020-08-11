@@ -3,36 +3,34 @@
     <v-dialog
       v-model="value"
       max-width="400px"
-      persistent
       @input="$emit('input', $event.target.value)"
+      @click:outside="$emit('input', false)"
     >
       <v-card>
         <v-card-title>
-          <span class="text-h6">{{ heading }}</span>
+          <span>{{ heading }}</span>
         </v-card-title>
         <v-card-text>
           <v-col>
             <v-row>
               <v-text-field
                 id="project-title-input"
-                v-model="title"
+                v-model="titleModel"
                 label="Project title"
                 clearable
                 required
-                @input="$emit('update:title', title)"
-                @keydown.enter="handleClick"
+                @keydown.enter="$emit('handle-click')"
               />
             </v-row>
             <v-row>
               <v-text-field
                 id="project-subtitle-input"
-                v-model="subtitle"
+                v-model="subtitleModel"
                 label="Project short description"
                 clearable
                 hint="For example, a tech stack: django, react, e.t.c"
                 required
-                @input="$emit('update:subtitle', subtitle)"
-                @keydown.enter="handleClick"
+                @keydown.enter="$emit('handle-click')"
               />
             </v-row>
           </v-col>
@@ -51,7 +49,7 @@
             color="quinary"
             :disabled="!title || title.length < 3"
             text
-            @click="handleClick"
+            @click="$emit('handle-click')"
           >
             Save
           </v-btn>
@@ -61,7 +59,7 @@
   </v-row>
 </template>
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, computed } from '@vue/composition-api';
 export default defineComponent({
   name: 'ProjectDialog',
 
@@ -87,10 +85,16 @@ export default defineComponent({
   },
 
   setup(props, { emit }) {
-    function handleClick() {
-      emit('handle-click');
-    }
-    return { handleClick };
+    const subtitleModel = computed({
+      get: () => props.subtitle,
+      set: val => emit('update:subtitle', val),
+    });
+    const titleModel = computed({
+      get: () => props.title,
+      set: val => emit('update:title', val),
+    });
+
+    return { subtitleModel, titleModel };
   },
 });
 </script>

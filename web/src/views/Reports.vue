@@ -12,7 +12,7 @@
           :sort-by="['created_at']"
           :sort-desc="[true]"
           :items="reports"
-          :search="search"
+          :search="searchTerm"
           :items-per-page="5"
         >
           <template v-slot:item.created_at="{ item }">
@@ -47,96 +47,168 @@
             <b v-else>{{ item.statistics.old }}</b>
           </template>
           <template v-slot:item.action="{ item }" class="text-center">
-            <v-btn
-              text
-              icon
-              color="red darken-1"
-              @click="deleteReport(item._id)"
-            >
-              <v-icon>fa-times</v-icon>
-            </v-btn>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  text
+                  icon
+                  color="red darken-1"
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="openConfirmationDialog(item)"
+                >
+                  <v-icon>fa-times</v-icon>
+                </v-btn>
+              </template>
+              <span>Delete</span>
+            </v-tooltip>
           </template>
           <v-alert v-slot:no-results>
-            Your search for "{{ search }}" found no results.
+            Your search for "{{ searchTerm }}" found no results.
           </v-alert>
         </v-data-table>
         <stepper :stepper.sync="stepperDialog" :report="report" />
       </v-card>
     </v-skeleton-loader>
+    <confirm-dialog
+      v-model="confirmDialog"
+      title="Delete this report?"
+      message="All issues will be removed as well. Are you sure you want to continue?"
+      @handle-click="deleteReport"
+    />
   </v-container>
 </template>
-<script>
-import { mapState } from 'vuex';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  computed,
+  SetupContext,
+} from '@vue/composition-api';
+import store from '@/store';
 import Stepper from '@/components/dialogs/StepperConfigurator.vue';
-import { FETCH_REPORTS, REPORT_DELETE, FETCH_CONTENT } from '@/store/actions';
-import { SET_ACTIVE_UNIT } from '@/store/mutations';
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
+import {
+  FETCH_REPORTS,
+  REPORT_DELETE,
+  FETCH_CONTENT,
+  SHOW_SUCCESS_MSG,
+} from '@/store/actions';
+import { Report } from '@/store/types';
 
-export default {
+export default defineComponent({
+  name: 'Reports',
+
   components: {
     Stepper,
+    ConfirmDialog,
   },
-  data() {
+
+  setup(props, context) {
+    const searchTerm = ref('');
+    const loading = ref(true);
+    const headers = ref([
+      { text: 'Date', value: 'created_at', width: '21%' },
+      {
+        text: 'Template',
+        align: 'center',
+        value: 'template',
+        width: '21%',
+      },
+      {
+        text: 'New',
+        align: 'center',
+        value: 'new',
+        width: '21%',
+      },
+      {
+        text: 'Duplicate',
+        align: 'center',
+        value: 'old',
+        width: '21%',
+      },
+      {
+        text: 'Actions',
+        align: 'center',
+        value: 'action',
+        sortable: false,
+        width: '16%',
+      },
+    ]);
+
+    const reports = computed(() => store.state.reports.items);
+
+    onMounted(() => {
+      store
+        .dispatch(FETCH_REPORTS, context.root.$route.params.slug)
+        .then(() => {
+          loading.value = false;
+        });
+    });
+
+    const { stepperDialog, report, openStepper } = useStepper();
+    const {
+      deleteReport,
+      confirmDialog,
+      openConfirmationDialog,
+    } = useDeleteReport(context);
+
     return {
-      search: '',
-      loading: true,
-      stepperDialog: false,
-      reportContent: {},
-      report: {},
-      headers: [
-        { text: 'Date', value: 'created_at', width: '21%' },
-        {
-          text: 'Template',
-          align: 'center',
-          value: 'template',
-          width: '21%',
-        },
-        {
-          text: 'New',
-          align: 'center',
-          value: 'new',
-          width: '21%',
-        },
-        {
-          text: 'Duplicate',
-          align: 'center',
-          value: 'old',
-          width: '21%',
-        },
-        {
-          text: 'Actions',
-          align: 'center',
-          value: 'action',
-          sortable: false,
-          width: '16%',
-        },
-      ],
+      report,
+      reports,
+      loading,
+      headers,
+      searchTerm,
+      openStepper,
+      deleteReport,
+      confirmDialog,
+      stepperDialog,
+      openConfirmationDialog,
     };
   },
-  computed: {
-    ...mapState({
-      reports: state => state.reports.reports,
-    }),
-  },
-  mounted() {
-    this.$store.commit(SET_ACTIVE_UNIT, this.$route.params.slug);
-    this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug).then(() => {
-      this.loading = false;
-    });
-  },
-  methods: {
-    openStepper(item) {
-      this.$store.dispatch(FETCH_CONTENT, item._id).then(() => {
-        this.report = item;
-        this.stepperDialog = true;
-      });
-    },
+});
 
-    deleteReport(id) {
-      this.$store.dispatch(REPORT_DELETE, id).then(() => {
-        this.$showSuccessMessage('The report has been deleted');
-      });
-    },
-  },
-};
+function useDeleteReport(context: SetupContext) {
+  const confirmDialog = ref(false);
+  const reportId = ref('');
+
+  function deleteReport() {
+    store.dispatch(REPORT_DELETE, reportId.value).then(async () => {
+      confirmDialog.value = false;
+      await store.dispatch(SHOW_SUCCESS_MSG, 'The report has been deleted');
+      await store.dispatch(FETCH_REPORTS, context.root.$route.params.slug);
+    });
+  }
+
+  function openConfirmationDialog(item: Report) {
+    confirmDialog.value = true;
+    reportId.value = item._id;
+  }
+
+  return {
+    confirmDialog,
+    deleteReport,
+    openConfirmationDialog,
+  };
+}
+
+function useStepper() {
+  const stepperDialog = ref(false);
+  const report = ref({});
+
+  function openStepper(item: Report) {
+    store.dispatch(FETCH_CONTENT, item._id).then(() => {
+      report.value = item;
+      stepperDialog.value = true;
+    });
+  }
+
+  return {
+    stepperDialog,
+    report,
+    openStepper,
+  };
+}
 </script>
-<style scoped></style>

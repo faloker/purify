@@ -16,7 +16,7 @@
           <v-btn
             class="mx-2"
             outlined
-            @click="getContent(report._id)"
+            @click="reportDialog = true"
           >
             View report
           </v-btn>
@@ -340,7 +340,7 @@
             outlined
             :loading="loading"
             :disabled="loading"
-            @click="saveTemplate()"
+            @click="createTemplate()"
           >
             Save
           </v-btn>
@@ -389,131 +389,194 @@
     </v-dialog>
   </div>
 </template>
-<script>
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  computed,
+  PropType,
+  watch,
+  SetupContext,
+  Ref,
+} from '@vue/composition-api';
+// @ts-ignore
 import VueJsonPretty from 'vue-json-pretty';
-import { mapGetters } from 'vuex';
-import { TEMPLATE_CREATE, FETCH_REPORTS, FETCH_CONTENT } from '@/store/actions';
+import { TEMPLATE_CREATE, FETCH_REPORTS } from '@/store/actions';
+import { Report } from '@/store/types';
+import store from '@/store';
 
-export default {
+interface BodyField {
+  key: string;
+  type: string;
+}
+
+export default defineComponent({
   name: 'StepperConfigurator',
+
   components: {
     VueJsonPretty,
   },
+
   props: {
     stepper: {
       required: true,
       type: Boolean,
     },
     report: {
-      type: Object,
+      type: Object as PropType<Report>,
       required: true,
     },
   },
 
-  data() {
+  setup(props, context) {
+    const stepperModel = ref(1);
+    const reportDialog = ref(false);
+    const rules = ref({
+      min: (v: string) => v.length >= 3 || 'Min 3 symbols',
+    });
+
+    const reportContent = computed(() => store.state.reports.content);
+
+    const {
+      name,
+      tags,
+      loading,
+      risk_field,
+      body_fields,
+      merge_fields,
+      title_fields,
+      title_pattern,
+      stepperDialog,
+      path_to_issues,
+      createTemplate,
+      subtitle_pattern,
+      body_fields_types,
+      external_comparison_fields,
+      internal_comparison_fields,
+    } = useCreateTemplate(props, context);
+
+    const exampleIssue = computed(() => {
+      return props.report.type === 'file'
+        ? reportContent.value[path_to_issues.value.replace('report.', '')]
+        : reportContent.value;
+    });
+
+    watch(props, () => {
+      stepperModel.value = props.report.type === 'file' ? 1 : 2;
+      name.value = title_pattern.value = subtitle_pattern.value = path_to_issues.value =
+        '';
+      body_fields_types.value = {};
+      tags.value = internal_comparison_fields.value = external_comparison_fields.value = [];
+      merge_fields.value = title_fields.value = body_fields.value = [];
+    });
+
     return {
-      stepperModel: 1,
-      name: '',
-      loading: false,
-      merge_fields: [],
-      internal_comparison_fields: [],
-      external_comparison_fields: [],
-      title_pattern: '',
-      subtitle_pattern: '',
-      tags: [],
-      path_to_issues: '',
-      title_fields: [],
-      body_fields: [],
-      risk_field: '',
-      body_fields_types: {},
-      reportDialog: false,
-      rules: {
-        min: v => v.length >= 3 || 'Min 3 symbols',
-      },
+      name,
+      tags,
+      rules,
+      loading,
+      risk_field,
+      body_fields,
+      merge_fields,
+      exampleIssue,
+      title_fields,
+      stepperModel,
+      reportDialog,
+      title_pattern,
+      reportContent,
+      stepperDialog,
+      path_to_issues,
+      createTemplate,
+      subtitle_pattern,
+      body_fields_types,
+      external_comparison_fields,
+      internal_comparison_fields,
     };
   },
+});
 
-  computed: {
-    ...mapGetters(['app', 'activeRelease', 'reportContent']),
+function useCreateTemplate(props: any, context: SetupContext) {
+  const loading = ref(false);
+  const name = ref('');
+  const merge_fields: Ref<string[]> = ref([]);
+  const internal_comparison_fields: Ref<string[]> = ref([]);
+  const external_comparison_fields: Ref<string[]> = ref([]);
+  const title_pattern = ref('');
+  const subtitle_pattern = ref('');
+  const tags: Ref<string[]> = ref([]);
+  const path_to_issues = ref('');
+  const title_fields: Ref<string[]> = ref([]);
+  const body_fields: Ref<BodyField[]> = ref([]);
+  const risk_field = ref('');
+  const body_fields_types = ref({});
+  const stepperDialog = computed({
+    get: () => props.stepper,
+    set: val => context.emit('update:stepper', val),
+  });
 
-    exampleIssue() {
-      if (this.report.type === 'file') {
-        return this.reportContent[this.path_to_issues.replace('report.', '')];
-      } else {
-        return this.reportContent;
-      }
-    },
+  function createTemplate() {
+    loading.value = true;
+    body_fields.value = [];
 
-    stepperDialog: {
-      get() {
-        return this.stepper;
-      },
-      set(newValue) {
-        this.$emit('update:stepper', newValue);
-      },
-    },
-  },
+    for (const key of Object.keys(body_fields_types.value)) {
+      body_fields.value.push({
+        key: key.replace('issue.', ''),
+        // @ts-ignore
+        type: body_fields_types.value[key],
+      });
+    }
 
-  watch: {
-    stepper(newValue, oldValue) {
-      this.stepperModel = this.report.type === 'file' ? 1 : 2;
-      this.name = this.title_pattern = this.subtitle_pattern = this.path_to_issues =
-        '';
-      this.body_fields_types = {};
-      this.tags = this.internal_comparison_fields = this.external_comparison_fields = [];
-      this.merge_fields = this.title_fields = this.body_fields = [];
-    },
-  },
+    store
+      .dispatch(TEMPLATE_CREATE, {
+        path_to_issues: path_to_issues.value
+          .replace('report.root.', '')
+          .replace('[0]', '')
+          .replace('report.root', ''),
+        report: props.report._id,
+        name: name.value,
+        title_pattern: title_pattern.value,
+        subtitle_pattern: subtitle_pattern.value,
+        tags: tags.value,
+        body_fields: body_fields.value,
+        risk_field: risk_field.value.replace('issue.', ''),
+        merge_fields: merge_fields.value.map(i => i.replace('issue.', '')),
+        title_fields: title_fields.value.map(i => i.replace('issue.', '')),
+        internal_comparison_fields: internal_comparison_fields.value.map(i =>
+          i.replace('issue.', '')
+        ),
+        external_comparison_fields: external_comparison_fields.value.map(i =>
+          i.replace('issue.', '')
+        ),
+      })
+      .then(async () => {
+        loading.value = false;
+        await store.dispatch(FETCH_REPORTS, context.root.$route.params.slug);
+        stepperDialog.value = false;
+      })
+      .catch(() => {
+        loading.value = false;
+      });
+  }
 
-  methods: {
-    saveTemplate() {
-      this.loading = true;
-
-      this.body_fields = [];
-      for (const key of Object.keys(this.body_fields_types)) {
-        this.body_fields.push({
-          key: key.replace('issue.', ''),
-          type: this.body_fields_types[key],
-        });
-      }
-
-      this.$store
-        .dispatch(TEMPLATE_CREATE, {
-          path_to_issues: this.path_to_issues
-            .replace('report.root.', '')
-            .replace('[0]', '')
-            .replace('report.root', ''),
-          report: this.report._id,
-          name: this.name,
-          title_pattern: this.title_pattern,
-          subtitle_pattern: this.subtitle_pattern,
-          tags: this.tags,
-          body_fields: this.body_fields,
-          risk_field: this.risk_field.replace('issue.', ''),
-          merge_fields: this.merge_fields.map(i => i.replace('issue.', '')),
-          title_fields: this.title_fields.map(i => i.replace('issue.', '')),
-          internal_comparison_fields: this.internal_comparison_fields.map(i =>
-            i.replace('issue.', '')
-          ),
-          external_comparison_fields: this.external_comparison_fields.map(i =>
-            i.replace('issue.', '')
-          ),
-        })
-        .then(() => {
-          this.loading = false;
-          this.$store.dispatch(FETCH_REPORTS, this.$route.params.slug);
-          this.stepperDialog = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    },
-
-    async getContent(reportId) {
-      this.reportDialog = true;
-    },
-  },
-};
+  return {
+    name,
+    tags,
+    loading,
+    risk_field,
+    body_fields,
+    merge_fields,
+    title_fields,
+    title_pattern,
+    stepperDialog,
+    path_to_issues,
+    createTemplate,
+    subtitle_pattern,
+    body_fields_types,
+    external_comparison_fields,
+    internal_comparison_fields,
+  };
+}
 </script>
 
 <style scoped>

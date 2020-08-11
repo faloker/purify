@@ -40,89 +40,90 @@
           transition="scale-transition"
           type="table-tbody"
         >
-          <v-data-table
-            :headers="headers"
-            :items="filtredItems"
-            :items-per-page="5"
-            :search="search"
-            class="elevation-1"
-            item-key="_id"
-          >
-            <template v-slot:item.name="{ item }">
-              <v-btn
-                text
-                color="primary"
-                rounded
-                class="text-none mr-5"
-                :to="{ name: 'Issues', params: { slug: item.slug } }"
-              >
-                <span
-                  class="d-inline-block text-truncate"
-                  style="max-width: 130px;"
+          <v-card outlined>
+            <v-data-table
+              :headers="headers"
+              :items="filtredItems"
+              :items-per-page="5"
+              :search="searchTerm"
+              item-key="_id"
+            >
+              <template v-slot:item.name="{ item }">
+                <v-btn
+                  text
+                  color="primary"
+                  rounded
+                  class="text-none mr-5"
+                  :to="{ name: 'Issues', params: { slug: item.slug } }"
                 >
-                  {{ item.name }}
-                </span>
-              </v-btn>
-            </template>
+                  <span
+                    class="d-inline-block text-truncate"
+                    style="max-width: 130px;"
+                  >
+                    {{ item.name }}
+                  </span>
+                </v-btn>
+              </template>
 
-            <template v-slot:item.progress="{ item }">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-progress-linear
-                    background-color="blue lighten-4"
-                    height="14"
-                    color="primary"
-                    rounded
-                    :value="item.progress"
-                    v-on="on"
-                  />
-                </template>
-                <span>{{ item.closed_tickets }} / {{ item.tickets }}</span>
-              </v-tooltip>
-            </template>
-            <template v-slot:item.reports="{ item }">
-              <v-btn
-                text
-                rounded
-                class="mr-5"
-                :to="{ name: 'Reports', params: { slug: item.slug } }"
-              >
-                {{ item.reports }}
-              </v-btn>
-            </template>
-            <template v-slot:item.action="{ item }" class="text-center">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    text
-                    icon
-                    v-bind="attrs"
-                    color="secondary"
-                    v-on="on"
-                    @click="openEditDialog(item)"
-                  >
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                </template>
-                <span>Edit</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    text
-                    icon
-                    color="red darken-1"
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="openConfirmationDialog(item)"
-                  >
-                    <v-icon>fa-times</v-icon>
-                  </v-btn>
-                </template>
-                <span>Delete</span>
-              </v-tooltip>
-            </template>
-          </v-data-table>
+              <template v-slot:item.progress="{ item }">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-progress-linear
+                      background-color="blue lighten-4"
+                      height="14"
+                      color="primary"
+                      rounded
+                      :value="item.progress"
+                      v-on="on"
+                    />
+                  </template>
+                  <span>{{ item.closed_tickets }} / {{ item.tickets }}</span>
+                </v-tooltip>
+              </template>
+              <template v-slot:item.reports="{ item }">
+                <v-btn
+                  text
+                  rounded
+                  class="mr-5"
+                  :to="{ name: 'Reports', params: { slug: item.slug } }"
+                >
+                  {{ item.reports }}
+                </v-btn>
+              </template>
+              <template v-slot:item.action="{ item }" class="text-center">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      text
+                      icon
+                      v-bind="attrs"
+                      color="secondary"
+                      v-on="on"
+                      @click="openEditDialog(item)"
+                    >
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Edit</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      text
+                      icon
+                      color="red darken-1"
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="openConfirmationDialog(item)"
+                    >
+                      <v-icon>fa-times</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Delete</span>
+                </v-tooltip>
+              </template>
+            </v-data-table>
+          </v-card>
         </v-skeleton-loader>
       </v-col>
     </v-row>
@@ -147,6 +148,7 @@ import {
   ref,
   computed,
   onMounted,
+  ComputedRef,
 } from '@vue/composition-api';
 import store from '@/store';
 import { toLower } from 'lodash';
@@ -197,11 +199,11 @@ export default defineComponent({
       },
     ]);
 
-    const units = computed(() => store.state.units.items);
+    const units: ComputedRef<Unit[]> = computed(() => store.state.units.items);
     const project = computed(() => context.root.$route.params.slug);
 
     const filtredItems = computed(() => {
-      return units.value.filter((item: Unit) =>
+      return units.value.filter(item =>
         toLower(item.name).includes(toLower(searchTerm.value))
       );
     });

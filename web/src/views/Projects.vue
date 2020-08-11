@@ -57,6 +57,7 @@ import {
   ref,
   computed,
   onMounted,
+  ComputedRef,
 } from '@vue/composition-api';
 import { toLower } from 'lodash';
 import store from '@/store';
@@ -75,9 +76,11 @@ export default defineComponent({
     const searchTerm = ref('');
     const loading = ref(true);
 
-    const projects = computed(() => store.state.projects.items);
+    const projects: ComputedRef<Project[]> = computed(
+      () => store.state.projects.items
+    );
     const filtredItems = computed(() => {
-      return projects.value.filter((item: Project) =>
+      return projects.value.filter(item =>
         toLower(item.title + item.subtitle).includes(toLower(searchTerm.value))
       );
     });

@@ -1,8 +1,7 @@
 <template>
   <v-item-group
-    v-model="selection"
+    v-model="selectionModel"
     multiple
-    @change="$emit('update:selection', selection)"
   >
     <v-sheet
       class="px-2"
@@ -11,28 +10,8 @@
     >
       <v-container>
         <v-row align="start">
-          <!-- <template v-if="!searchBar"> -->
           <strong class="text--secondary pl-1">{{ name }}</strong>
           <v-spacer />
-          <!-- <v-btn
-              icon
-              @click="openSearch"
-            >
-              <v-icon small>
-                fa-search
-              </v-icon>
-            </v-btn>-->
-          <!-- </template> -->
-          <!-- <v-autocomplete
-            v-else
-            v-model="search"
-            multiple
-            :items="titles"
-            clearable
-            hide-no-data
-            dense
-            @click:clear="searchBar = false"
-          />-->
         </v-row>
         <v-row>
           <v-sheet
@@ -71,9 +50,10 @@
     </v-sheet>
   </v-item-group>
 </template>
-<script>
-export default {
-  name: 'FilterOption',
+<script lang="ts">
+import { defineComponent, computed } from '@vue/composition-api';
+export default defineComponent({
+  name: 'FilterOptionSelector',
   props: {
     items: {
       type: Array,
@@ -88,24 +68,13 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    // search: [],
-    // searchBar: false,
-  }),
-  // computed: {
-  // titles() {
-  //   return this.items.map((item) => item.title);
-  // },
-  // filteredItems() {
-  //   return this.search.length
-  //     ? this.items.filter((item) => this.search.includes(item.title))
-  //     : this.items;
-  // },
-  // },
-  // methods: {
-  //   openSearch() {
-  //     this.searchBar = true;
-  //   },
-  // },
-};
+  setup(props, { emit }) {
+    const selectionModel = computed({
+      get: () => props.selection,
+      set: val => emit('update:selection', val),
+    });
+
+    return { selectionModel };
+  },
+});
 </script>

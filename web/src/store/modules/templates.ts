@@ -18,12 +18,6 @@ import { Template, TemplateWithStats, EditTemplateDto } from '../types';
 export default class Templates extends VuexModule {
   items: TemplateWithStats[] = [];
 
-  get findTemplateByName() {
-    return (name: string) => {
-      this.items.find(item => item.template.name === name);
-    };
-  }
-
   @Mutation
   [TEMPLATES_SET](templates: TemplateWithStats[]) {
     this.items = templates;

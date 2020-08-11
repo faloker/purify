@@ -23,7 +23,7 @@ export const createTicket = (issuesId: string, data: any) =>
 
 export const postComment = (issuesId: string, comment: any) =>
   request({
-    url: `issues/${issuesId}/comment`,
+    url: `issues/${issuesId}/comments`,
     method: 'post',
     data: comment,
   });

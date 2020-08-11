@@ -1,19 +1,15 @@
 import Vue from 'vue';
 import VueCompositionAPI from '@vue/composition-api';
-// import VuePageTransition from 'vue-page-transition';
 import VueApexCharts from 'vue-apexcharts';
 import App from './App.vue';
-import { router } from './router';
-import store from './store';
-import vuetify from './plugins/vuetify';
-import Notifier from './plugins/notifier';
+import { router } from '@/router';
+import store from '@/store';
+import vuetify from '@/plugins/vuetify';
 
 Vue.config.productionTip = false;
 
 Vue.use(VueCompositionAPI);
-// Vue.use(VuePageTransition);
 Vue.use(VueApexCharts);
-Vue.use(Notifier);
 
 Vue.component('apexchart', VueApexCharts);
 Vue.prototype.API_URL =
