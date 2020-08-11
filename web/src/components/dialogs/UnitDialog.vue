@@ -11,8 +11,8 @@
           <span>{{ heading }}</span>
         </v-card-title>
         <v-card-text>
-          <v-layout wrap>
-            <v-flex xs12>
+          <v-col>
+            <v-row>
               <v-text-field
                 id="unit-name-input"
                 v-model="nameModel"
@@ -21,8 +21,8 @@
                 required
                 @keydown.enter="$emit('handle-click')"
               />
-            </v-flex>
-          </v-layout>
+            </v-row>
+          </v-col>
         </v-card-text>
         <v-divider />
         <v-card-actions>
@@ -40,7 +40,7 @@
             :disabled="!nameModel || nameModel.length < 3"
             @click="$emit('handle-click')"
           >
-            Save
+            {{ okButtonText }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -65,6 +65,10 @@ export default defineComponent({
       type: String,
       default: '',
       required: true,
+    },
+    okButtonText: {
+      type: String,
+      default: 'Save',
     },
   },
 

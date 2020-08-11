@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
+const cypressTypeScriptPreprocessor = require('./cy-ts-preprocessor');
 
 module.exports = (on, config) => {
   require('@cypress/code-coverage/task')(on, config);
+
+  on('file:preprocessor', cypressTypeScriptPreprocessor);
 
   on('task', {
     'flush:db': async () => {

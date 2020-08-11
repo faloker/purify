@@ -31,6 +31,7 @@
     "vuex-module-decorators": "^0.17.0"
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/jwt-decode": "^2.2.1",
     "@types/lodash": "^4.14.158",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
@@ -43,6 +44,7 @@
     "@vue/cli-service": "~4.4.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
+    "babel-plugin-istanbul": "^6.0.0",
     "babel-plugin-transform-decorators": "^6.24.1",
     "cross-env": "^7.0.2",
     "eslint": "^6.7.2",
@@ -53,6 +55,8 @@
     "sass": "^1.26.10",
     "sass-loader": "^9.0.2",
     "script-loader": "^0.7.2",
+    "source-map-support": "^0.5.19",
+    "ts-node": "^8.10.2",
     "typescript": "~3.9.3",
     "vue-cli-plugin-vuetify": "^2.0.7",
     "vue-template-compiler": "^2.6.11",

@@ -1,4 +1,4 @@
-import oneshotExample from '../../fixtures/oneshot-example.json';
+import * as oneshotExample from '../../fixtures/oneshot-example.json';
 
 let apiToken = '';
 let reportId = '';

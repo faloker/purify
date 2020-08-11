@@ -1,4 +1,5 @@
-import oneshotExample from '../fixtures/oneshot-example.json';
+/// <reference path="../support/index.d.ts" />
+import * as oneshotExample from '../fixtures/oneshot-example.json';
 
 Cypress.Commands.add(
   'apiCreateUser',
@@ -42,17 +43,6 @@ Cypress.Commands.add('apiCreateUnit', (jwtToken, name = 'unit') => {
   });
 });
 
-Cypress.Commands.add('apiUploadOneshot', (apiToken) => {
-  cy.request({
-    method: 'POST',
-    url: `${Cypress.env('apiUrl')}/api/upload/oneshot/test-title-unit`,
-    body: oneshotExample,
-    headers: { apikey: apiToken },
-  }).then((resp) => {
-    cy.apiCreateTemplate(apiToken, resp.body._id);
-  });
-})
-
 Cypress.Commands.add(
   'apiCreateTemplate',
   (apiToken, reportId, name = 'bandit') => {
@@ -83,3 +73,14 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add('apiUploadOneshot', (apiToken) => {
+  cy.request({
+    method: 'POST',
+    url: `${Cypress.env('apiUrl')}/api/upload/oneshot/test-title-unit`,
+    body: oneshotExample,
+    headers: { apikey: apiToken },
+  }).then((resp) => {
+    cy.apiCreateTemplate(apiToken, resp.body._id);
+  });
+});

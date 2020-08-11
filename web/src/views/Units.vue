@@ -29,6 +29,7 @@
           v-model="dialog"
           heading="New Unit"
           :name.sync="unitName"
+          ok-button-text="Create"
           @handle-click="createUnit"
         />
       </v-col>

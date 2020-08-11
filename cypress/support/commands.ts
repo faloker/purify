@@ -1,3 +1,5 @@
+/// <reference path="../support/index.d.ts" />
+
 Cypress.Commands.add('login', (username = 'test', password = 'testtest') => {
   cy.visit(`${Cypress.env('webUrl')}/#/welcome`);
   cy.get('#tab-login').click();
@@ -23,7 +25,7 @@ Cypress.Commands.add('createProject', (name, description = '') => {
   cy.contains('Create project').click();
 
   cy.get('.v-dialog').within(() => {
-    cy.contains('New project').should('be.visible');
+    cy.contains('New Project').should('be.visible');
     cy.contains('button', 'Create').should('be.disabled');
 
     cy.get('#project-title-input').type(name);
@@ -47,3 +49,5 @@ Cypress.Commands.add('createUnit', (name) => {
     cy.contains('button', 'Create').should('not.be.disabled').click();
   });
 });
+
+export {};

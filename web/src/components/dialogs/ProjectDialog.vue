@@ -51,7 +51,7 @@
             text
             @click="$emit('handle-click')"
           >
-            Save
+            {{ okButtonText }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -81,6 +81,10 @@ export default defineComponent({
       type: String,
       default: '',
       required: true,
+    },
+    okButtonText: {
+      type: String,
+      default: 'Save',
     },
   },
 

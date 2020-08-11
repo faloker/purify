@@ -30,6 +30,7 @@
           v-model="dialog"
           :title.sync="projectTitle"
           :subtitle.sync="projectSubtitle"
+          ok-button-text="Create"
           @handle-click="createProject"
         />
       </v-col>

@@ -123,7 +123,6 @@ export default defineComponent({
 
     function killSession() {
       store.dispatch(LOGOUT).then(() => {
-        // this.$showSuccessMessage('Bye');
         router.replace('welcome');
       });
     }

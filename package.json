@@ -27,11 +27,16 @@
   },
   "homepage": "https://github.com/faloker/purify#readme",
   "devDependencies": {
+    "@bahmutov/add-typescript-to-cypress": "^2.1.2",
     "@cypress/code-coverage": "^3.8.1",
+    "@types/mongoose": "^5.7.36",
+    "@types/node": "^14.0.27",
     "babel-plugin-istanbul": "^6.0.0",
-    "cypress": "^4.8.0",
+    "cypress": "^4.12.0",
     "istanbul-lib-coverage": "^3.0.0",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "typescript": "^3.9.7",
+    "webpack": "^4.18.1"
   },
   "dependencies": {
     "concurrently": "^5.1.0",

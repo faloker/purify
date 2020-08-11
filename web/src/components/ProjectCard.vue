@@ -95,7 +95,7 @@
     </v-hover>
     <project-dialog
       v-model="dialog"
-      heading="Edit project"
+      heading="Edit Project"
       :title.sync="title"
       :subtitle.sync="subtitle"
       @handle-click="editProject"
