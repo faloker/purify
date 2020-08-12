@@ -34,6 +34,7 @@ export class CreateTemplateDto {
   readonly internal_comparison_fields: string[];
 
   @IsArray()
+  @IsOptional()
   readonly merge_fields: string[];
 
   @IsString()
@@ -76,7 +77,7 @@ export class EditTemplateBodyDto {
   readonly internal_comparison_fields: string[];
 
   @IsArray()
-  @ArrayNotEmpty()
+  @IsOptional()
   readonly merge_fields: string[];
 
   @IsString()
