@@ -279,11 +279,13 @@ function useEditUnit(project: string) {
   const name = ref('');
 
   async function editUnit() {
-    store.dispatch(EDIT_UNIT, slug.value).then(async () => {
-      editDialog.value = false;
-      await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been updated');
-      await store.dispatch(FETCH_UNITS, project);
-    });
+    store
+      .dispatch(EDIT_UNIT, { slug: slug.value, name: name.value })
+      .then(async () => {
+        editDialog.value = false;
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been updated');
+        await store.dispatch(FETCH_UNITS, project);
+      });
   }
 
   function openEditDialog(item: Unit) {

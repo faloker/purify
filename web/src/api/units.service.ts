@@ -19,8 +19,9 @@ export const deleteUnit = (slug: string) =>
     method: 'delete',
   });
 
-export const editUnit = (slug: string) =>
+export const editUnit = (slug: string, name: string) =>
   request({
     url: `units/${slug}`,
     method: 'patch',
+    data: { name },
   });

@@ -62,6 +62,11 @@ export interface CreateUnitDto {
   project: string;
 }
 
+export interface EditUnitDto {
+  slug: string;
+  name: string;
+}
+
 export interface DeleteUnitDto {
   slug: string;
 }

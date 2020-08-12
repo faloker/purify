@@ -12,7 +12,7 @@ import {
   EDIT_UNIT,
 } from '@/store/actions';
 import { SET_UNITS } from '@/store/mutations';
-import { Unit, CreateUnitDto } from '../types';
+import { Unit, CreateUnitDto, EditUnitDto } from '../types';
 
 @Module
 export default class Units extends VuexModule {
@@ -49,7 +49,7 @@ export default class Units extends VuexModule {
   }
 
   @Action
-  async [EDIT_UNIT](slug: string) {
-    await editUnit(slug);
+  async [EDIT_UNIT](payload: EditUnitDto) {
+    await editUnit(payload.slug, payload.name);
   }
 }

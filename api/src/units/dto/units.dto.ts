@@ -22,3 +22,9 @@ export class UnitList extends Unit {
   readonly tickets: number;
   readonly closed_tickets: number;
 }
+
+export class EditUnitDto {
+  @IsString()
+  @MinLength(3)
+  readonly name: string;
+}

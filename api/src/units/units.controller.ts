@@ -8,10 +8,12 @@ import {
   HttpCode,
   UseGuards,
   Controller,
+  Patch,
 } from '@nestjs/common';
 import { UnitsService } from './units.service';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
-import { CreateUnitDto, Unit } from './dto/units.dto';
+import { CreateUnitDto, Unit, EditUnitDto } from './dto/units.dto';
+import { Unit as IUnit } from './interfaces/unit.interface';
 import {
   ApiTags,
   ApiSecurity,
@@ -20,6 +22,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiNoContentResponse,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 
 @ApiBearerAuth()
@@ -38,6 +41,20 @@ export class UnitsController {
   })
   createUnit(@Body() createUnitDto: CreateUnitDto) {
     return this.unitsService.create(createUnitDto);
+  }
+
+  @Patch(':slug')
+  @ApiOperation({ summary: 'Update unit by slug' })
+  @ApiOkResponse({
+    description: 'Update successful',
+    type: Unit,
+  })
+  @ApiNotFoundResponse({ description: 'No such unit' })
+  editProject(
+    @Param('slug') slug: string,
+    @Body() editUnitDto: EditUnitDto
+  ): Promise<IUnit> {
+    return this.unitsService.edit(slug, editUnitDto);
   }
 
   @Delete(':slug')
