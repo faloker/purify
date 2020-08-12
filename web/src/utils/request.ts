@@ -28,11 +28,15 @@ service.interceptors.response.use(
   error => {
     const msg = error.response
       ? error.response.data.message
+      : 'An unrecognized error has occurred';
+
+    const heading = error.response
+      ? error.response.data.error
       : 'Something went wrong...';
 
     store.commit(SET_MESSAGE, {
       text: msg,
-      title: error.response.data.error,
+      title: heading,
       type: 'error',
     });
     return Promise.reject(error);
