@@ -51,15 +51,13 @@
                   :value="item._id"
                   active-class="primary--text"
                 >
-                  <template v-slot:default="{ active, toggle }">
+                  <template v-slot:default="{ active }">
                     <v-list-item-action>
                       <div class="my-3 ml-2">
                         <v-checkbox
                           :input-value="active"
-                          :true-value="item._id"
                           color="primary"
                           on-icon="done"
-                          @click="toggle"
                         />
                       </div>
                     </v-list-item-action>
@@ -262,6 +260,12 @@ export default defineComponent({
         selectedIssues.value = items.value.map(i => i._id);
       } else {
         selectedIssues.value = [];
+      }
+    });
+
+    watch(selectedIssues, () => {
+      if (!selectedIssues.value.length && allSelected) {
+        allSelected.value = false;
       }
     });
 
