@@ -462,7 +462,8 @@ export default defineComponent({
         : reportContent.value;
     });
 
-    watch(props, () => {
+    // @ts-ignore
+    watch(props.stepper, () => {
       stepperModel.value = props.report.type === 'file' ? 1 : 2;
       name.value = title_pattern.value = subtitle_pattern.value = path_to_issues.value =
         '';
