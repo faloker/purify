@@ -7,7 +7,7 @@
     <v-card class="fill-height">
       <v-card-title>
         <v-container>
-          <v-row>
+          <v-row align="center">
             <v-col cols="1" class="ml-2">
               <v-row justify="center">
                 <v-tooltip bottom>
@@ -246,7 +246,7 @@ export default defineComponent({
     },
   },
 
-  setup(props) {
+  setup(props, context) {
     const ticketDialog = ref(false);
     const editDialog = ref(false);
     const severities = ref(['info', 'low', 'medium', 'high', 'critical']);
@@ -289,7 +289,11 @@ export default defineComponent({
       change[field] = value;
 
       store
-        .dispatch(ISSUE_UPDATE, { ids: [item._id], change })
+        .dispatch(ISSUE_UPDATE, {
+          ids: [item._id],
+          change,
+          unitId: context.root.$route.params.slug,
+        })
         .then(async () => {
           if (field === 'resolution') {
             props.issue.status = 'closed';
