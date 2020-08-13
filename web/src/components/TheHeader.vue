@@ -122,9 +122,12 @@ export default defineComponent({
     const user = computed(() => store.state.profile.user);
 
     function killSession() {
-      store.dispatch(LOGOUT).then(() => {
-        router.replace('welcome');
-      });
+      store
+        .dispatch(LOGOUT)
+        .then(() => {
+          router.replace('welcome');
+        })
+        .catch(() => {});
     }
 
     return {

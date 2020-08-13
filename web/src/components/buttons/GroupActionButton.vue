@@ -60,7 +60,8 @@ export default defineComponent({
             SHOW_SUCCESS_MSG,
             'The issues have been updated'
           );
-        });
+        })
+        .catch(() => {});
     }
 
     return {

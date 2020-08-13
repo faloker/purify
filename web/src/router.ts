@@ -86,12 +86,12 @@ router.beforeEach((to, from, next) => {
   const { isAuthenticated } = store.state.auth;
 
   if (to.path === '/welcome') {
-    store.dispatch(FETCH_SYSTEM_SETUP);
+    store.dispatch(FETCH_SYSTEM_SETUP).catch(() => {});
   }
 
   if (to.name === 'SAML Login') {
     store.dispatch(SAML_LOGIN, { token: atob(to.params.token) });
-    store.dispatch(FETCH_SYSTEM_SETUP);
+    store.dispatch(FETCH_SYSTEM_SETUP).catch(() => {});
     next('/projects');
   }
 

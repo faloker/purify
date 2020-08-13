@@ -170,7 +170,8 @@ function useEditProject(project: Project) {
       .then(async () => {
         dialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The project has been updated');
-      });
+      })
+      .catch(() => {});
   }
 
   return {
@@ -185,10 +186,13 @@ function useDeleteProject(project: Project) {
   const confirmDialog = ref(false);
 
   async function deleteProject() {
-    store.dispatch(DELETE_PROJECT, project.slug).then(async () => {
-      confirmDialog.value = false;
-      await store.dispatch(SHOW_SUCCESS_MSG, 'The project has been deleted');
-    });
+    store
+      .dispatch(DELETE_PROJECT, project.slug)
+      .then(async () => {
+        confirmDialog.value = false;
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The project has been deleted');
+      })
+      .catch(() => {});
   }
 
   return {

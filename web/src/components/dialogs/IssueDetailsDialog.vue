@@ -307,7 +307,8 @@ export default defineComponent({
             riskDialog.value = false;
           }
           await store.dispatch(SHOW_SUCCESS_MSG, 'The issue has been updated');
-        });
+        })
+        .catch(() => {});
     }
     return {
       updateIssue,

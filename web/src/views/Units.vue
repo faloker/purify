@@ -255,11 +255,14 @@ function useDeleteUnit(project: string) {
   const slug = ref('');
 
   async function deleteUnit() {
-    store.dispatch(DELETE_UNIT, slug.value).then(async () => {
-      confirmDialog.value = false;
-      await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been deleted');
-      await store.dispatch(FETCH_UNITS, project);
-    });
+    store
+      .dispatch(DELETE_UNIT, slug.value)
+      .then(async () => {
+        confirmDialog.value = false;
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been deleted');
+        await store.dispatch(FETCH_UNITS, project);
+      })
+      .catch(() => {});
   }
 
   function openConfirmationDialog(item: Unit) {
@@ -285,7 +288,8 @@ function useEditUnit(project: string) {
         editDialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been updated');
         await store.dispatch(FETCH_UNITS, project);
-      });
+      })
+      .catch(() => {});
   }
 
   function openEditDialog(item: Unit) {

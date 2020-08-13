@@ -175,11 +175,14 @@ function useDeleteReport(context: SetupContext) {
   const reportId = ref('');
 
   function deleteReport() {
-    store.dispatch(REPORT_DELETE, reportId.value).then(async () => {
-      confirmDialog.value = false;
-      await store.dispatch(SHOW_SUCCESS_MSG, 'The report has been deleted');
-      await store.dispatch(FETCH_REPORTS, context.root.$route.params.slug);
-    });
+    store
+      .dispatch(REPORT_DELETE, reportId.value)
+      .then(async () => {
+        confirmDialog.value = false;
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The report has been deleted');
+        await store.dispatch(FETCH_REPORTS, context.root.$route.params.slug);
+      })
+      .catch(() => {});
   }
 
   function openConfirmationDialog(item: Report) {

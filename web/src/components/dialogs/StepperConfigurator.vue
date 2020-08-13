@@ -79,7 +79,7 @@
             v-model="risk_field"
             :deep="2"
             :path="'issue'"
-            :selectable-type="'single'"
+            :selectable-type="'multiple'"
             :path-selectable="(path, data) => path !== 'issue'"
             :data="exampleIssue"
             :show-select-controller="true"
@@ -89,6 +89,7 @@
             class="mx-2 mt-3"
             outlined
             color="primary"
+            :disabled="risk_field.length > 1"
             @click="stepperModel = 4"
           >
             Next
@@ -462,14 +463,13 @@ export default defineComponent({
         : reportContent.value;
     });
 
-    // @ts-ignore
-    watch(props.stepper, () => {
+    watch(stepperDialog, () => {
       stepperModel.value = props.report.type === 'file' ? 1 : 2;
       name.value = title_pattern.value = subtitle_pattern.value = path_to_issues.value =
         '';
       body_fields_types.value = {};
       tags.value = internal_comparison_fields.value = external_comparison_fields.value = [];
-      merge_fields.value = title_fields.value = body_fields.value = [];
+      merge_fields.value = risk_field.value = title_fields.value = body_fields.value = [];
     });
 
     return {
@@ -509,7 +509,7 @@ function useCreateTemplate(props: any, context: SetupContext) {
   const path_to_issues = ref('');
   const title_fields: Ref<string[]> = ref([]);
   const body_fields: Ref<BodyField[]> = ref([]);
-  const risk_field = ref('');
+  const risk_field: Ref<string[]> = ref([]);
   const body_fields_types = ref({});
   const stepperDialog = computed({
     get: () => props.stepper,
@@ -540,7 +540,7 @@ function useCreateTemplate(props: any, context: SetupContext) {
         subtitle_pattern: subtitle_pattern.value,
         tags: tags.value,
         body_fields: body_fields.value,
-        risk_field: risk_field.value.replace('issue.', ''),
+        risk_field: risk_field.value.map(i => i.replace('issue.', ''))[0],
         merge_fields: merge_fields.value.map(i => i.replace('issue.', '')),
         title_fields: title_fields.value.map(i => i.replace('issue.', '')),
         internal_comparison_fields: internal_comparison_fields.value.map(i =>
