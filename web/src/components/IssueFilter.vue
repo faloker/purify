@@ -15,21 +15,23 @@
                 </span>
                 <span v-else key="1">
                   <v-row no-gutters justify="start">
-                    <v-chip
-                      v-for="(item, index) in appliedFilters"
-                      :key="index"
-                      class="mx-2"
-                      label
-                      close
-                      @click:close="clearSelection(item)"
-                    >
-                      <v-icon
-                        color="primary"
-                        left
-                        small
-                      >{{ getFilterIcon(item.name) }}</v-icon>
-                      <strong class="text-capitalize">{{ item.value }}</strong>
-                    </v-chip>
+                    <v-fade-transition group leave-absolute>
+                      <v-chip
+                        v-for="(item, index) in appliedFilters"
+                        :key="index"
+                        class="mx-2"
+                        label
+                        close
+                        @click:close="clearSelection(item)"
+                      >
+                        <v-icon
+                          color="primary"
+                          left
+                          small
+                        >{{ getFilterIcon(item.name) }}</v-icon>
+                        <strong class="text-capitalize">{{ item.value }}</strong>
+                      </v-chip>
+                    </v-fade-transition>
                   </v-row>
                 </span>
               </v-fade-transition>

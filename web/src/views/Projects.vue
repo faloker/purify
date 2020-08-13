@@ -35,7 +35,7 @@
         />
       </v-col>
     </v-row>
-    <v-row align="center" justify="space-around">
+    <v-row>
       <template v-for="project in filtredItems">
         <v-col :key="project._id">
           <v-skeleton-loader
@@ -44,7 +44,9 @@
             type="card"
             width="400"
           >
-            <project-card :project="project" />
+            <v-fade-transition>
+              <project-card :project="project" />
+            </v-fade-transition>
           </v-skeleton-loader>
         </v-col>
       </template>

@@ -61,7 +61,7 @@
     </template>
     <template v-else-if="typeof ivalue === 'object'">
       <v-layout column>
-        <v-flex v-for="k in Object.keys(ivalue)" :key="`${Math.random()}-${k}`">
+        <v-flex v-for="k in Object.keys(ivalue || {})" :key="`${Math.random()}-${k}`">
           <fields-parser :ikey="k" :ivalue="ivalue[k]" />
         </v-flex>
       </v-layout>
@@ -74,7 +74,14 @@ import { parseKey } from '@/utils/helpers';
 
 export default defineComponent({
   name: 'FieldsParser',
-  props: ['ikey', 'ivalue'],
+  props: {
+    ikey: {
+      type: [Object, String],
+    },
+    ivalue: {
+      type: [Object, String],
+    },
+  },
 
   setup(props) {
     const fieldKey = computed(() => props.ikey.key || props.ikey);

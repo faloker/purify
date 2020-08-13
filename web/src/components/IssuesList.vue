@@ -45,94 +45,100 @@
             class="elevation-1"
           >
             <v-list-item-group v-model="selectedIssues" multiple>
-              <template v-for="(item, index) in items">
-                <v-list-item
-                  :key="`issue-${item._id}`"
-                  :value="item._id"
-                  active-class="primary--text"
-                >
-                  <template v-slot:default="{ active }">
-                    <v-list-item-action>
-                      <div class="my-3 ml-2">
-                        <v-checkbox
-                          :input-value="active"
-                          color="primary"
-                          on-icon="done"
-                        />
-                      </div>
-                    </v-list-item-action>
-                    <v-list-item-icon>
-                      <v-icon
-                        left
-                        class="my-3 pr-4"
-                        :color="getRiskColor(item.risk)"
-                      >
-                        fa-bug
-                      </v-icon>
-                    </v-list-item-icon>
-
-                    <v-list-item-content @click="openDialog('issue', item)">
-                      <v-list-item-title>
-                        <!-- <div class="text-truncate"> -->
-                        {{ item.title }}
-                        <v-chip
-                          v-if="item.status === 'closed'"
-                          class="ml-2"
-                          small
-                        >
-                          <span class="text-capitalize">{{ item.resolution }}</span>
-                        </v-chip>
-                        <!-- </div> -->
-                      </v-list-item-title>
-                      <v-list-item-subtitle>
-                        <!-- <div class="text-truncate"> -->
-                        {{ item.subtitle }}
-                        <!-- </div> -->
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-
-                    <v-list-item-action>
-                      <v-btn
-                        v-if="item.ticket"
-                        outlined
-                        class="mt-2 mr-3"
-                        rounded
-                        color="senary"
-                        :href="item.ticket.link"
-                        target="_blank"
-                      >
+              <v-slide-y-transition
+                group
+                hide-on-leave
+                tag="v-list"
+              >
+                <template v-for="(item, index) in items">
+                  <v-list-item
+                    :key="`issue-${item._id}`"
+                    :value="item._id"
+                    active-class="primary--text"
+                  >
+                    <template v-slot:default="{ active }">
+                      <v-list-item-action>
+                        <div class="my-3 ml-2">
+                          <v-checkbox
+                            :input-value="active"
+                            color="primary"
+                            on-icon="done"
+                          />
+                        </div>
+                      </v-list-item-action>
+                      <v-list-item-icon>
                         <v-icon
-                          v-if="item.ticket.type == 'jira'"
-                          color="senary"
                           left
+                          class="my-3 pr-4"
+                          :color="getRiskColor(item.risk)"
                         >
-                          mdi-jira
+                          fa-bug
                         </v-icon>
-                        {{ item.ticket.key }}
-                      </v-btn>
-                    </v-list-item-action>
-                    <v-list-item-action>
-                      <v-btn
-                        v-if="item.totalComments"
-                        text
-                        class="mt-2 mr-3"
-                        color="secondary"
-                        @click.stop="openDialog('comment', item)"
-                      >
-                        <v-icon left small>
-                          mdi-comment-text-multiple
-                        </v-icon>
-                        <span>{{ item.totalComments }}</span>
-                      </v-btn>
-                    </v-list-item-action>
-                  </template>
-                </v-list-item>
-                <v-divider
-                  v-if="index + 1 < items.length"
-                  :key="`dvr-${index}`"
-                  class="mx-10"
-                />
-              </template>
+                      </v-list-item-icon>
+
+                      <v-list-item-content @click="openDialog('issue', item)">
+                        <v-list-item-title>
+                          <!-- <div class="text-truncate"> -->
+                          {{ item.title }}
+                          <v-chip
+                            v-if="item.status === 'closed'"
+                            class="ml-2"
+                            small
+                          >
+                            <span class="text-capitalize">{{ item.resolution }}</span>
+                          </v-chip>
+                        <!-- </div> -->
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                          <!-- <div class="text-truncate"> -->
+                          {{ item.subtitle }}
+                        <!-- </div> -->
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+
+                      <v-list-item-action>
+                        <v-btn
+                          v-if="item.ticket"
+                          outlined
+                          class="mt-2 mr-3"
+                          rounded
+                          color="senary"
+                          :href="item.ticket.link"
+                          target="_blank"
+                        >
+                          <v-icon
+                            v-if="item.ticket.type == 'jira'"
+                            color="senary"
+                            left
+                          >
+                            mdi-jira
+                          </v-icon>
+                          {{ item.ticket.key }}
+                        </v-btn>
+                      </v-list-item-action>
+                      <v-list-item-action>
+                        <v-btn
+                          v-if="item.totalComments"
+                          text
+                          class="mt-2 mr-3"
+                          color="secondary"
+                          @click.stop="openDialog('comment', item)"
+                        >
+                          <v-icon left small>
+                            mdi-comment-text-multiple
+                          </v-icon>
+                          <span>{{ item.totalComments }}</span>
+                        </v-btn>
+                      </v-list-item-action>
+                    </template>
+                  </v-list-item>
+                  <v-divider
+                    v-if="index + 1 < items.length"
+                    :key="`dvr-${index}`"
+                    class="mx-10"
+                  />
+                </template>
+              </v-slide-y-transition>
             </v-list-item-group>
           </v-list>
         </v-col>
@@ -242,11 +248,14 @@ export default defineComponent({
       await store.dispatch(TEMPLATES_FETCH);
     });
 
-    watch([ref(props.rawItems), pageSize], () => {
-      if (currentPage.value > totalPages.value) {
-        currentPage.value = 1;
+    watch(
+      () => [props.rawItems, pageSize.value],
+      () => {
+        if (currentPage.value > totalPages.value) {
+          currentPage.value = 1;
+        }
       }
-    });
+    );
 
     const {
       commentDialog,
@@ -260,12 +269,6 @@ export default defineComponent({
         selectedIssues.value = items.value.map(i => i._id);
       } else {
         selectedIssues.value = [];
-      }
-    });
-
-    watch(selectedIssues, () => {
-      if (!selectedIssues.value.length && allSelected) {
-        allSelected.value = false;
       }
     });
 

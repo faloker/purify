@@ -26,17 +26,22 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => response,
   error => {
-    const msg = error.response
+    let msg = error.response
       ? error.response.data.message
       : 'An unrecognized error has occurred';
 
-    const heading = error.response
+    let heading = error.response
       ? error.response.data.error
       : 'Something went wrong...';
 
+    if (msg === 'Unauthorized') {
+      heading = msg;
+      msg = 'Please login first';
+    }
+
     store.commit(SET_MESSAGE, {
-      text: msg,
       title: heading,
+      text: msg,
       type: 'error',
     });
     return Promise.reject(error);
