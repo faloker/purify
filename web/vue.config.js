@@ -8,7 +8,7 @@ const config = {
 if (process.env.NODE_ENV === 'production') {
   const configureWebpack = {
     plugins: [
-    // new BundleAnalyzerPlugin(),
+      // new BundleAnalyzerPlugin(),
     ],
     externals: {
       vue: 'Vue',

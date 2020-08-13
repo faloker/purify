@@ -56,28 +56,30 @@ export class IssuesService {
       .populate('comments');
 
     for (const issue of rawIssues) {
-      issues.push({
-        _id: issue._id,
-        fields: JSON.parse(issue.fields),
-        status: issue.status,
-        resolution: issue.resolution,
-        title: matchPattern(
-          JSON.parse(issue.fields),
+      if (issue.template) {
+        issues.push({
+          _id: issue._id,
+          fields: JSON.parse(issue.fields),
+          status: issue.status,
+          resolution: issue.resolution,
+          title: matchPattern(
+            JSON.parse(issue.fields),
+            // @ts-ignore
+            issue.template.title_pattern
+          ),
+          subtitle: matchPattern(
+            JSON.parse(issue.fields),
+            // @ts-ignore
+            issue.template.subtitle_pattern
+          ),
           // @ts-ignore
-          issue.template.title_pattern
-        ),
-        subtitle: matchPattern(
-          JSON.parse(issue.fields),
-          // @ts-ignore
-          issue.template.subtitle_pattern
-        ),
-        // @ts-ignore
-        template: issue.template.name,
-        risk: issue.risk,
-        created_at: issue.created_at,
-        ticket: issue.ticket,
-        totalComments: issue.comments.length,
-      });
+          template: issue.template.name,
+          risk: issue.risk,
+          created_at: issue.created_at,
+          ticket: issue.ticket,
+          totalComments: issue.comments.length,
+        });
+      }
     }
 
     return issues;
@@ -89,7 +91,7 @@ export class IssuesService {
 
   async createJiraTicket(issueId: string, issue: any) {
     const settings = await this.jiraService.getSettings();
-
+    // add check to vertify that issue exists
     if (settings) {
       const jiraTicket = await this.jiraService
         .createIssue(issue)

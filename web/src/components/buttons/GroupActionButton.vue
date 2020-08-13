@@ -1,9 +1,6 @@
 <template>
   <div>
-    <v-tooltip
-      top
-      transition="scale-transition"
-    >
+    <v-tooltip top transition="scale-transition">
       <template v-slot:activator="{ on }">
         <v-btn
           icon
@@ -19,33 +16,57 @@
     </v-tooltip>
   </div>
 </template>
-<script>
-import { ISSUE_UPDATE } from '@/store/actions';
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  Ref,
+  computed,
+  PropType,
+  watch,
+  onMounted,
+} from '@vue/composition-api';
+import { ISSUE_UPDATE, SHOW_SUCCESS_MSG } from '@/store/actions';
+import store from '@/store';
 
-export default {
+export default defineComponent({
   name: 'GroupActionButton',
+
   props: {
     items: {
       type: Array,
       required: true,
     },
   },
-  data() {
-    return {
-      fab: false,
-    };
-  },
-  methods: {
-    updateIssues(items, field, value) {
-      const change = {};
+
+  setup(props, context) {
+    function updateIssues(items: string[], field: string, value: string) {
+      const change: any = {};
+
       if (field === 'resolution') {
         change.status = 'closed';
       }
+
       change[field] = value;
-      this.$store.dispatch(ISSUE_UPDATE, { ids: items, change }).then(() => {
-        this.$showSuccessMessage('The issue(s) has been updated');
-      });
-    },
+
+      store
+        .dispatch(ISSUE_UPDATE, {
+          ids: items,
+          change,
+          unitId: context.root.$route.params.slug,
+        })
+        .then(async () => {
+          await store.dispatch(
+            SHOW_SUCCESS_MSG,
+            'The issues have been updated'
+          );
+        })
+        .catch(() => {});
+    }
+
+    return {
+      updateIssues,
+    };
   },
-};
+});
 </script>

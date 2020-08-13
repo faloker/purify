@@ -15,21 +15,23 @@
                 </span>
                 <span v-else key="1">
                   <v-row no-gutters justify="start">
-                    <v-chip
-                      v-for="(item, index) in appliedFilters"
-                      :key="index"
-                      class="mx-2"
-                      label
-                      close
-                      @click:close="clearSelection(item)"
-                    >
-                      <v-icon
-                        color="primary"
-                        left
-                        small
-                      >{{ getIcon(item.name) }}</v-icon>
-                      <strong class="text-capitalize">{{ item.value }}</strong>
-                    </v-chip>
+                    <v-fade-transition group leave-absolute>
+                      <v-chip
+                        v-for="(item, index) in appliedFilters"
+                        :key="index"
+                        class="mx-2"
+                        label
+                        close
+                        @click:close="clearSelection(item)"
+                      >
+                        <v-icon
+                          color="primary"
+                          left
+                          small
+                        >{{ getFilterIcon(item.name) }}</v-icon>
+                        <strong class="text-capitalize">{{ item.value }}</strong>
+                      </v-chip>
+                    </v-fade-transition>
                   </v-row>
                 </span>
               </v-fade-transition>
@@ -48,8 +50,7 @@
               <strong class="text--secondary pl-1">Text search</strong>
               <v-autocomplete
                 id="search"
-                ref="search"
-                v-model="search_term"
+                v-model="searchTerm"
                 class="pt-2"
                 :items="keywords"
                 :search-input.sync="search"
@@ -62,36 +63,36 @@
                 <template slot="label">
                   <v-icon style="vertical-align: middle">
                     search
-                  </v-icon>Press &quot;/&quot; to focus
+                  </v-icon>
                 </template>
               </v-autocomplete>
             </v-col>
             <v-divider class="mx-2" vertical />
-            <filter-option
+            <filter-option-selector
               :items="statusFilterItems"
               name="Status"
               :selection.sync="selectedStatuses"
             />
             <v-divider class="mx-2" vertical />
-            <filter-option
+            <filter-option-selector
               :items="riskFilterItems"
               name="Risk"
               :selection.sync="selectedRisks"
             />
             <v-divider class="mx-2" vertical />
-            <filter-option
+            <filter-option-selector
               :items="templateFilterItems"
               name="Template"
               :selection.sync="selectedTemplates"
             />
             <v-divider class="mx-2" vertical />
-            <filter-option
+            <filter-option-selector
               :items="resolutionFilterItems"
               name="Resolution"
               :selection.sync="selectedResolutions"
             />
             <v-divider class="mx-2" vertical />
-            <filter-option
+            <filter-option-selector
               :items="ticketFilterItems"
               name="Ticket"
               :selection.sync="selectedTicketStatus"
@@ -102,80 +103,87 @@
     </v-expansion-panel>
   </v-expansion-panels>
 </template>
-<script>
-import { mapGetters } from 'vuex';
-import { TEMPLATES_FETCH } from '@/store/actions';
-import FilterOption from '@/components/FilterOption.vue';
-import { capitalize } from 'lodash';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  computed,
+  PropType,
+  watch,
+  Ref,
+} from '@vue/composition-api';
+import FilterOptionSelector from '@/components/FilterOptionSelector.vue';
+import { getFilterIcon } from '@/utils/helpers';
+import { FilterOption, FilterValue } from '@/store/types';
 
-export default {
+export default defineComponent({
   name: 'IssueFilter',
-  components: { FilterOption },
+
+  components: { FilterOptionSelector },
+
   props: {
     keywords: {
-      type: Array,
+      type: Array as PropType<string[]>,
       required: true,
     },
     riskFilterItems: {
-      type: Array,
+      type: Array as PropType<FilterValue[]>,
       required: true,
     },
     templateFilterItems: {
-      type: Array,
+      type: Array as PropType<FilterValue[]>,
       required: true,
     },
     statusFilterItems: {
-      type: Array,
+      type: Array as PropType<FilterValue[]>,
       required: true,
     },
     resolutionFilterItems: {
-      type: Array,
+      type: Array as PropType<FilterValue[]>,
       required: true,
     },
     ticketFilterItems: {
-      type: Array,
+      type: Array as PropType<FilterValue[]>,
       required: true,
     },
   },
-  data() {
-    return {
-      search_term: '',
-      search: null,
-      timeback: '',
-      selectedRisks: [],
-      selectedTemplates: [],
-      selectedStatuses: ['open'],
-      selectedResolutions: [],
-      selectedTicketStatus: [],
-      dates: [
-        {
-          text: 'last day',
-          value: '1',
-        },
-        {
-          text: 'last 3 days',
-          value: '3',
-        },
-        {
-          text: 'last 7 days',
-          value: '7',
-        },
-      ],
-    };
-  },
 
-  computed: {
-    ...mapGetters(['templatesNames', 'templatesTags']),
+  setup(props, { emit }) {
+    const searchTerm = ref('');
+    const search = ref('');
+    const selectedRisks: Ref<string[]> = ref([]);
+    const selectedTemplates: Ref<string[]> = ref([]);
+    const selectedStatuses: Ref<string[]> = ref(['open']);
+    const selectedResolutions: Ref<string[]> = ref([]);
+    const selectedTicketStatus: Ref<string[]> = ref([]);
+    const dates = ref([
+      {
+        text: 'last day',
+        value: '1',
+      },
+      {
+        text: 'last 3 days',
+        value: '3',
+      },
+      {
+        text: 'last 7 days',
+        value: '7',
+      },
+    ]);
 
-    appliedFilters() {
-      const result = [];
+    const appliedFilters = computed(() => {
+      const result: FilterOption[] = [];
 
-      if (this.search) {
-        result.push({ name: 'search', icon: 'short_text', value: this.search });
+      if (search.value) {
+        result.push({
+          name: 'search',
+          value: search.value,
+        });
       }
 
-      if (this.selectedStatuses.length > 0) {
-        this.selectedStatuses.forEach((s) =>
+      if (selectedStatuses.value.length > 0) {
+        selectedStatuses.value.forEach(s =>
           result.push({
             name: 'status',
             value: s,
@@ -183,8 +191,8 @@ export default {
         );
       }
 
-      if (this.selectedTemplates.length > 0) {
-        this.selectedTemplates.forEach((t) =>
+      if (selectedTemplates.value.length > 0) {
+        selectedTemplates.value.forEach(t =>
           result.push({
             name: 'template',
             value: t,
@@ -192,8 +200,8 @@ export default {
         );
       }
 
-      if (this.selectedTicketStatus.length > 0) {
-        this.selectedTicketStatus.forEach((t) =>
+      if (selectedTicketStatus.value.length > 0) {
+        selectedTicketStatus.value.forEach(t =>
           result.push({
             name: 'ticket',
             value: t,
@@ -201,8 +209,8 @@ export default {
         );
       }
 
-      if (this.selectedResolutions.length > 0) {
-        this.selectedResolutions.forEach((r) =>
+      if (selectedResolutions.value.length > 0) {
+        selectedResolutions.value.forEach(r =>
           result.push({
             name: 'resolution',
             value: r,
@@ -210,8 +218,8 @@ export default {
         );
       }
 
-      if (this.selectedRisks.length > 0) {
-        this.selectedRisks.forEach((r) =>
+      if (selectedRisks.value.length > 0) {
+        selectedRisks.value.forEach(r =>
           result.push({
             name: 'risk',
             value: r,
@@ -220,85 +228,61 @@ export default {
       }
 
       return result;
-    },
-  },
+    });
 
-  watch: {
-    // eslint-disable-next-line no-unused-vars
-    appliedFilters(newValue, oldValue) {
-      this.$emit('filter_update', newValue);
-    },
-  },
+    watch(appliedFilters, (newValue, oldValue) => {
+      emit('filter_update', newValue);
+    });
 
-  mounted() {
-    this.$store.dispatch(TEMPLATES_FETCH);
-
-    document.onkeydown = (e) => {
-      // eslint-disable-next-line no-param-reassign
-      e = e || window.event;
-      if (
-        e.keyCode === 191 && // Forward Slash '/'
-        e.target !== this.$refs.search.$refs.input
-      ) {
-        e.preventDefault();
-        this.$refs.search.focus();
-      }
-    };
-  },
-
-  methods: {
-    onEsc() {
-      this.$refs.search.blur();
-    },
-
-    getIcon(name) {
-      switch (name) {
-        case 'risk':
-          return 'fa-bug';
-          break;
-        case 'resolution':
-          return 'mdi-thumbs-up-down';
-          break;
-        case 'ticket':
-          return 'mdi-cards';
-          break;
-        case 'status':
-          return 'mdi-checkbox-marked-circle-outline';
-          break;
-        case 'template':
-          return 'mdi-file';
-          break;
-        case 'search':
-          return 'short_text';
-          break;
-      }
-    },
-
-    clearSelection(item) {
+    function clearSelection(item: FilterOption) {
       switch (item.name) {
         case 'risk':
-          this.selectedRisks = this.selectedRisks.filter((r) => r !== item.value);
+          selectedRisks.value = selectedRisks.value.filter(
+            r => r !== item.value
+          );
           break;
         case 'template':
-          this.selectedTemplates = this.selectedTemplates.filter((t) => t !== item.value);
+          selectedTemplates.value = selectedTemplates.value.filter(
+            t => t !== item.value
+          );
           break;
         case 'status':
-          this.selectedStatuses = this.selectedStatuses.filter((s) => s !== item.value);
+          selectedStatuses.value = selectedStatuses.value.filter(
+            s => s !== item.value
+          );
           break;
         case 'resolution':
-          this.selectedResolutions = this.selectedResolutions.filter((r) => r !== item.value);
+          selectedResolutions.value = selectedResolutions.value.filter(
+            r => r !== item.value
+          );
           break;
         case 'ticket':
-          this.selectedTicketStatus = this.selectedTicketStatus.filter((s) => s !== item.value);
+          selectedTicketStatus.value = selectedTicketStatus.value.filter(
+            s => s !== item.value
+          );
           break;
         case 'search':
-          this.search_term = '';
-          this.search = '';
+          searchTerm.value = '';
+          search.value = '';
           break;
       }
-    },
+    }
+
+    return {
+      searchTerm,
+      search,
+      appliedFilters,
+      selectedResolutions,
+      selectedTicketStatus,
+      selectedStatuses,
+      selectedTemplates,
+      selectedRisks,
+      clearSelection,
+      getFilterIcon,
+      dates,
+    };
   },
-};
+});
 </script>
 <style scoped>
 .sheet-class {

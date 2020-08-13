@@ -20,36 +20,36 @@
             {{ message.title }}
           </div>
         </v-row>
-        <v-row>
-          {{ message.text }}
-        </v-row>
+        <v-row>{{ message.text }}</v-row>
       </v-col>
     </v-row>
   </v-snackbar>
 </template>
 
-<script>
-import { mapState } from 'vuex';
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  computed,
+  onBeforeMount,
+} from '@vue/composition-api';
+import store from '@/store';
 
-export default {
-  name: 'Snackbar',
-  data: () => ({
-    snackbar: false,
-    timeout: 3500,
-  }),
+export default defineComponent({
+  setup() {
+    const snackbar = ref(false);
+    const timeout = ref(3500);
+    const message = computed(() => store.state.system.message);
 
-  computed: {
-    ...mapState({
-      message: (state) => state.app.snackbar,
-    }),
-  },
-
-  created() {
-    this.$store.subscribe((mutation, state) => {
-      if (mutation.type === 'showMessage') {
-        this.snackbar = true;
-      }
+    onBeforeMount(() => {
+      store.subscribe((mutation, state) => {
+        if (mutation.type === 'setMessage') {
+          snackbar.value = true;
+        }
+      });
     });
+
+    return { timeout, snackbar, message };
   },
-};
+});
 </script>

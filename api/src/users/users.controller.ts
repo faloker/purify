@@ -22,7 +22,7 @@ export class UsersController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const newUser = await this.usersService.createUser(createUserDto);
-    return { id: newUser._id };
+    return { _id: newUser._id };
   }
 
   @Get('current_user')
@@ -30,6 +30,6 @@ export class UsersController {
     const { _id, username, email, image } = await this.usersService.findOne({
       _id: req.user.id,
     });
-    return { id: _id, username, email, image };
+    return { _id, username, email, image };
   }
 }

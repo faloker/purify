@@ -19,7 +19,7 @@ export class TasksService {
     @InjectModel('Comment') private readonly commentModel: Model<Comment>,
     private jiraService: JiraService,
     private smtpService: SmtpService,
-    private slackService: SlackService,
+    private slackService: SlackService
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
@@ -67,7 +67,7 @@ export class TasksService {
 
         await this.slackService.sendMsg(
           // @ts-ignore
-          `✅ Issue <${issue.ticket.link}|*${issue.ticket.key}*> was resolved in Jira with a resolution equal to *Done*!`,
+          `✅ Issue <${issue.ticket.link}|*${issue.ticket.key}*> was resolved in Jira with a resolution equal to *Done*!`
         );
 
         await this.issueModel.updateOne(
@@ -75,7 +75,7 @@ export class TasksService {
           {
             $push: { comments: comment._id },
             status: 'closed',
-          },
+          }
         );
       }
     }

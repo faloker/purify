@@ -61,36 +61,47 @@
     </template>
     <template v-else-if="typeof ivalue === 'object'">
       <v-layout column>
-        <v-flex v-for="k in Object.keys(ivalue)" :key="`${Math.random()}-${k}`">
+        <v-flex v-for="k in Object.keys(ivalue || {})" :key="`${Math.random()}-${k}`">
           <fields-parser :ikey="k" :ivalue="ivalue[k]" />
         </v-flex>
       </v-layout>
     </template>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, computed } from '@vue/composition-api';
 import { parseKey } from '@/utils/helpers';
 
-export default {
+export default defineComponent({
   name: 'FieldsParser',
-  props: ['ikey', 'ivalue'],
-  computed: {
-    fieldKey() {
-      return this.ikey.key || this.ikey;
+  props: {
+    ikey: {
+      type: [Object, String],
     },
+    ivalue: {
+      type: [Object, String],
+    },
+  },
 
-    fieldType() {
-      return this.ikey.type || 'text';
-    },
-  },
-  methods: {
-    parseKey,
-    isPrintable(obj) {
+  setup(props) {
+    const fieldKey = computed(() => props.ikey.key || props.ikey);
+    const fieldType = computed(() => props.ikey.type || 'text');
+
+    function isPrintable(obj: any) {
       return ['string', 'boolean', 'number'].includes(typeof obj);
-    },
-    decodeValue(str) {
+    }
+
+    function decodeValue(str: string) {
       return atob(str);
-    },
+    }
+
+    return {
+      fieldKey,
+      fieldType,
+      isPrintable,
+      decodeValue,
+      parseKey,
+    };
   },
-};
+});
 </script>

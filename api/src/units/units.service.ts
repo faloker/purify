@@ -2,12 +2,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import slug = require('slug');
+import * as slugify from 'slug';
 import { Unit } from './interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { Report } from 'src/reports/interfaces/report.interface';
 import { Project } from 'src/projects/interfaces/project.interface';
-import { CreateUnitDto } from './dto/units.dto';
+import { CreateUnitDto, EditUnitDto } from './dto/units.dto';
 
 @Injectable()
 export class UnitsService {
@@ -27,7 +27,7 @@ export class UnitsService {
       return new this.unitModel({
         name: createUnitDto.name,
         project: project._id,
-        slug: `${createUnitDto.project}-${slug(createUnitDto.name)}`,
+        slug: `${createUnitDto.project}-${slugify(createUnitDto.name)}`,
       }).save();
     } else {
       throw new NotFoundException('No such project');
@@ -41,6 +41,23 @@ export class UnitsService {
       await this.reportModel.deleteMany({ unit: unit._id });
       await this.issueModel.deleteMany({ unit: unit._id });
       await this.unitModel.deleteOne({ slug });
+    } else {
+      throw new NotFoundException('No such unit');
+    }
+  }
+
+  async edit(slug: string, fields: EditUnitDto) {
+    const unit = await this.unitModel.findOne({ slug }).populate('project');
+    const newName = fields.name;
+
+    if (unit) {
+      const newSlug = `${(unit.project as Project).title}-${slugify(newName)}`;
+
+      await this.unitModel.updateOne(
+        { slug },
+        { slug: newSlug, name: newName }
+      );
+      return this.unitModel.findOne({ slug: newSlug });
     } else {
       throw new NotFoundException('No such unit');
     }

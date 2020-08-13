@@ -6,16 +6,15 @@
         <v-text-field
           id="search"
           ref="search"
-          v-model="search"
+          v-model="searchTerm"
           clearable
           dense
           outlined
-          @keydown.esc="onEsc"
         >
           <template slot="label">
-            <v-icon style="vertical-align: middle">
+            <v-icon class="mx-1" style="vertical-align: middle">
               search
-            </v-icon>Search for project
+            </v-icon>Search
           </template>
         </v-text-field>
       </v-col>
@@ -27,64 +26,16 @@
         >
           <v-icon>mdi-pencil</v-icon>Create project
         </v-btn>
-        <v-dialog v-model="dialog" max-width="400px">
-          <v-card>
-            <v-card-title>
-              <span class="title">New project</span>
-            </v-card-title>
-            <v-card-text>
-              <v-col>
-                <v-row>
-                  <v-text-field
-                    id="project-title-input"
-                    v-model="projectTitle"
-                    label="Project title"
-                    outlined
-                    dense
-                    clearable
-                    required
-                    @keydown.enter="createProject"
-                  />
-                </v-row>
-                <v-row>
-                  <v-text-field
-                    id="project-subtitle-input"
-                    v-model="projectSubtitle"
-                    label="Project short description"
-                    clearable
-                    dense
-                    outlined
-                    hint="For example, a tech stack: django, react, e.t.c"
-                    required
-                    @keydown.enter="createProject"
-                  />
-                </v-row>
-              </v-col>
-            </v-card-text>
-            <v-divider />
-            <v-card-actions>
-              <v-spacer />
-              <v-btn
-                color="tertiary"
-                text
-                @click="dialog = false"
-              >
-                Close
-              </v-btn>
-              <v-btn
-                color="primary"
-                :disabled="!projectTitle || projectTitle.length < 3"
-                text
-                @click="createProject"
-              >
-                Create
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <project-dialog
+          v-model="dialog"
+          :title.sync="projectTitle"
+          :subtitle.sync="projectSubtitle"
+          ok-button-text="Create"
+          @handle-click="createProject"
+        />
       </v-col>
     </v-row>
-    <v-row align="center" justify="space-around">
+    <v-row>
       <template v-for="project in filtredItems">
         <v-col :key="project._id">
           <v-skeleton-loader
@@ -93,88 +44,91 @@
             type="card"
             width="400"
           >
-            <project-card :project="project" :dialogs.sync="subDialogs" />
+            <v-fade-transition>
+              <project-card :project="project" />
+            </v-fade-transition>
           </v-skeleton-loader>
         </v-col>
       </template>
     </v-row>
   </v-container>
 </template>
-<script>
-import { mapState } from 'vuex';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  computed,
+  onMounted,
+  ComputedRef,
+} from '@vue/composition-api';
 import { toLower } from 'lodash';
+import store from '@/store';
 import ProjectCard from '@/components/ProjectCard.vue';
+import ProjectDialog from '@/components/dialogs/ProjectDialog.vue';
 import { FETCH_PROJECTS, CREATE_PROJECT } from '@/store/actions';
+import { Project } from '@/store/types';
 
-export default {
+export default defineComponent({
   name: 'Projects',
-  components: {
-    ProjectCard,
-  },
-  data() {
-    return {
-      search: '',
-      loading: true,
-      dialog: false,
-      projectSubtitle: '',
-      projectTitle: '',
-      subDialogs: false,
-    };
-  },
-  computed: {
-    ...mapState({
-      projects: (state) => state.projects.projects,
-    }),
 
-    filtredItems() {
-      // eslint-disable-next-line max-len
-      return this.projects.filter((item) =>
-        toLower(item.title + item.subtitle).includes(toLower(this.search))
+  components: { ProjectCard, ProjectDialog },
+
+  setup() {
+    const search = ref(null);
+    const searchTerm = ref('');
+    const loading = ref(true);
+
+    const projects: ComputedRef<Project[]> = computed(
+      () => store.state.projects.items
+    );
+    const filtredItems = computed(() => {
+      return projects.value.filter(item =>
+        toLower(item.title + item.subtitle).includes(toLower(searchTerm.value))
       );
-    },
-  },
-  mounted() {
-    this.$store.dispatch(FETCH_PROJECTS).then(() => {
-      this.loading = false;
     });
 
-    document.onkeydown = (e) => {
-      // eslint-disable-next-line no-param-reassign
-      e = e || window.event;
-      if (
-        e.keyCode === 191 && // Forward Slash '/'
-        !this.dialog &&
-        !this.subDialogs &&
-        e.target !== this.$refs.search.$refs.input
-      ) {
-        e.preventDefault();
-        this.$refs.search.focus();
-      } else if (
-        e.keyCode === 67 &&
-        !this.dialog &&
-        !this.subDialogs &&
-        e.target !== this.$refs.search.$refs.input
-      ) {
-        this.dialog = true;
-      }
+    onMounted(() => {
+      store.dispatch(FETCH_PROJECTS).then(() => {
+        loading.value = false;
+      });
+    });
+
+    const createProject = useCreateProject();
+
+    return {
+      ...createProject,
+      filtredItems,
+      searchTerm,
+      loading,
+      search,
     };
   },
-  methods: {
-    createProject() {
-      const payload = {
-        title: this.projectTitle,
-        subtitle: this.projectSubtitle,
-      };
-      this.$store.dispatch(CREATE_PROJECT, payload).then(() => {
-        this.projectTitle = '';
-        this.projectSubtitle = '';
-        this.dialog = false;
-      });
-    },
+});
 
-    onEsc() {
-      this.$refs.search.blur();
-    },
-  },
-};
+function useCreateProject() {
+  const projectSubtitle = ref('');
+  const projectTitle = ref('');
+  const dialog = ref(false);
+
+  async function createProject() {
+    store
+      .dispatch(CREATE_PROJECT, {
+        title: projectTitle.value,
+        subtitle: projectSubtitle.value,
+      })
+      .then(() => {
+        projectTitle.value = '';
+        projectSubtitle.value = '';
+        dialog.value = false;
+      });
+  }
+
+  return {
+    projectTitle,
+    projectSubtitle,
+    dialog,
+    createProject,
+  };
+}
 </script>

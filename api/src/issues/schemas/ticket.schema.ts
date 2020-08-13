@@ -9,5 +9,5 @@ export const TicketSchema = new Schema(
     link: { type: String, required: true },
     key: { type: String, required: true },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );

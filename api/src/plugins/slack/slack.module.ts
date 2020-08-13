@@ -5,9 +5,11 @@ import { SlackSettingsSchema } from './schemas/slack.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'SlackSettings', schema: SlackSettingsSchema }]),
+    MongooseModule.forFeature([
+      { name: 'SlackSettings', schema: SlackSettingsSchema },
+    ]),
   ],
   providers: [SlackService],
-  exports: [SlackService]
+  exports: [SlackService],
 })
 export class SlackModule {}

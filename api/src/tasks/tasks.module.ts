@@ -17,6 +17,6 @@ import { CommentSchema } from 'src/issues/schemas/comment.schema';
     SmtpModule,
     SlackModule,
   ],
-  providers: [TasksService]
+  providers: [TasksService],
 })
 export class TasksModule {}

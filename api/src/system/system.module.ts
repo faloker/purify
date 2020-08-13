@@ -7,6 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [JiraModule, ConfigModule],
   controllers: [SystemController],
-  providers: [SystemService]
+  providers: [SystemService],
 })
 export class SystemModule {}

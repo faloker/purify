@@ -15,7 +15,6 @@
                 on-icon="done_all"
                 class="pl-6"
                 v-on="on"
-                @change="selectAll()"
               />
             </template>
             <span v-if="!allSelected">Select All</span>
@@ -27,7 +26,7 @@
           class="ma-3"
           vertical
         />
-        <group-action-btn :items="selected" />
+        <group-action-btn :items="selectedIssues" />
         <v-spacer />
 
         <v-col cols="1">
@@ -45,97 +44,101 @@
             three-line
             class="elevation-1"
           >
-            <v-list-item-group v-model="selected" multiple>
-              <template v-for="(item, index) in items">
-                <v-list-item
-                  :key="`issue-${item._id}`"
-                  :value="item._id"
-                  active-class="primary--text"
-                >
-                  <template v-slot:default="{ active, toggle }">
-                    <v-list-item-action>
-                      <div class="my-3 ml-2">
-                        <v-checkbox
-                          :input-value="active"
-                          :true-value="item._id"
-                          color="primary"
-                          on-icon="done"
-                          @click="toggle"
-                        />
-                      </div>
-                    </v-list-item-action>
-                    <v-list-item-icon>
-                      <v-icon
-                        left
-                        class="my-3 pr-4"
-                        :color="genColor(item.risk)"
-                      >
-                        fa-bug
-                      </v-icon>
-                    </v-list-item-icon>
-
-                    <v-list-item-content @click="openIssue(item)">
-                      <v-list-item-title>
-                        <!-- <div class="text-truncate"> -->
-                        {{ item.title }}
-                        <v-chip
-                          v-if="item.status === 'closed'"
-                          class="ml-2"
-                          small
-                        >
-                          <span class="text-capitalize">{{ item.resolution }}</span>
-                        </v-chip>
-                        <!-- </div> -->
-                      </v-list-item-title>
-                      <v-list-item-subtitle>
-                        <!-- <div class="text-truncate"> -->
-                        {{ item.subtitle }}
-                        <!-- </div> -->
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-
-                    <v-list-item-action>
-                      <v-btn
-                        v-if="item.ticket"
-                        outlined
-                        class="mt-2 mr-3"
-                        rounded
-                        color="senary"
-                        :href="item.ticket.link"
-                        target="_blank"
-                      >
+            <v-list-item-group v-model="selectedIssues" multiple>
+              <v-slide-y-transition
+                group
+                hide-on-leave
+                tag="v-list"
+              >
+                <template v-for="(item, index) in items">
+                  <v-list-item
+                    :key="`issue-${item._id}`"
+                    :value="item._id"
+                    active-class="primary--text"
+                  >
+                    <template v-slot:default="{ active }">
+                      <v-list-item-action>
+                        <div class="my-3 ml-2">
+                          <v-checkbox
+                            :input-value="active"
+                            color="primary"
+                            on-icon="done"
+                          />
+                        </div>
+                      </v-list-item-action>
+                      <v-list-item-icon>
                         <v-icon
-                          v-if="item.ticket.type == 'jira'"
-                          color="senary"
                           left
+                          class="my-3 pr-4"
+                          :color="getRiskColor(item.risk)"
                         >
-                          mdi-jira
+                          fa-bug
                         </v-icon>
-                        {{ item.ticket.key }}
-                      </v-btn>
-                    </v-list-item-action>
-                    <v-list-item-action>
-                      <v-btn
-                        v-if="item.totalComments"
-                        text
-                        class="mt-2 mr-3"
-                        color="secondary"
-                        @click="openComments(item)"
-                      >
-                        <v-icon left small>
-                          mdi-comment-text-multiple
-                        </v-icon>
-                        <span>{{ item.totalComments }}</span>
-                      </v-btn>
-                    </v-list-item-action>
-                  </template>
-                </v-list-item>
-                <v-divider
-                  v-if="index + 1 < items.length"
-                  :key="`dvr-${index}`"
-                  class="mx-10"
-                />
-              </template>
+                      </v-list-item-icon>
+
+                      <v-list-item-content @click="openDialog('issue', item)">
+                        <v-list-item-title>
+                          <!-- <div class="text-truncate"> -->
+                          {{ item.title }}
+                          <v-chip
+                            v-if="item.status === 'closed'"
+                            class="ml-2"
+                            small
+                          >
+                            <span class="text-capitalize">{{ item.resolution }}</span>
+                          </v-chip>
+                        <!-- </div> -->
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                          <!-- <div class="text-truncate"> -->
+                          {{ item.subtitle }}
+                        <!-- </div> -->
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+
+                      <v-list-item-action>
+                        <v-btn
+                          v-if="item.ticket"
+                          outlined
+                          class="mt-2 mr-3"
+                          rounded
+                          color="senary"
+                          :href="item.ticket.link"
+                          target="_blank"
+                        >
+                          <v-icon
+                            v-if="item.ticket.type == 'jira'"
+                            color="senary"
+                            left
+                          >
+                            mdi-jira
+                          </v-icon>
+                          {{ item.ticket.key }}
+                        </v-btn>
+                      </v-list-item-action>
+                      <v-list-item-action>
+                        <v-btn
+                          v-if="item.totalComments"
+                          text
+                          class="mt-2 mr-3"
+                          color="secondary"
+                          @click.stop="openDialog('comment', item)"
+                        >
+                          <v-icon left small>
+                            mdi-comment-text-multiple
+                          </v-icon>
+                          <span>{{ item.totalComments }}</span>
+                        </v-btn>
+                      </v-list-item-action>
+                    </template>
+                  </v-list-item>
+                  <v-divider
+                    v-if="index + 1 < items.length"
+                    :key="`dvr-${index}`"
+                    class="mx-10"
+                  />
+                </template>
+              </v-slide-y-transition>
             </v-list-item-group>
           </v-list>
         </v-col>
@@ -144,7 +147,7 @@
         <v-col>
           <v-btn
             icon
-            :disabled="!(page - 1)"
+            :disabled="!(currentPage - 1)"
             @click="prevPage"
           >
             <v-icon large>
@@ -157,7 +160,7 @@
           </v-chip>
           <v-btn
             icon
-            :disabled="page * pageSize >= rawItems.length"
+            :disabled="currentPage * pageSize >= rawItems.length"
             @click="nextPage"
           >
             <v-icon large>
@@ -166,9 +169,6 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-dialog v-model="dialog" max-width="56%">
-        <issue-details :issue="selectedIssue" />
-      </v-dialog>
     </template>
     <template v-else>
       <v-row align="center" justify="center">
@@ -177,126 +177,166 @@
         </v-col>
       </v-row>
     </template>
+    <issue-details-dialog
+      :key="`idd-${selectedIssue._id}`"
+      v-model="issueDialog"
+      :issue="selectedIssue"
+    />
     <comment-dialog
       :key="`ilcd-${selectedIssue._id}`"
+      v-model="commentDialog"
       :issue-id="selectedIssue._id"
-      :dialog.sync="commentDialog"
     />
   </v-container>
 </template>
-
-<script>
-import { mapGetters } from 'vuex';
-import { GET_COMMENTS } from '@/store/actions';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  Ref,
+  computed,
+  PropType,
+  watch,
+  onMounted,
+} from '@vue/composition-api';
+import store from '@/store';
+import { GET_COMMENTS, TEMPLATES_FETCH } from '@/store/actions';
 import GroupActionBtn from '@/components/buttons/GroupActionButton.vue';
-import IssueDetails from '@/components/dialogs/IssueDetails.vue';
+import IssueDetailsDialog from '@/components/dialogs/IssueDetailsDialog.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
-import { matchPattern } from '@//utils/helpers';
+import { getRiskColor } from '@/utils/helpers';
+import { Issue } from '@/store/types';
 
-export default {
+export default defineComponent({
   name: 'IssuesList',
 
   components: {
     GroupActionBtn,
-    IssueDetails,
+    IssueDetailsDialog,
     CommentDialog,
   },
 
   props: {
     rawItems: {
-      type: Array,
+      type: Array as PropType<Issue[]>,
       required: true,
       default: () => [],
     },
   },
 
-  data() {
+  setup(props) {
+    const allSelected = ref(false);
+    const selectedIssues: Ref<string[]> = ref([]);
+    const { currentPage, pageSize, nextPage, prevPage, sizes } = usePagination(
+      props.rawItems
+    );
+
+    const items = computed(() => {
+      return props.rawItems.filter(
+        (item, index) =>
+          index >= (currentPage.value - 1) * pageSize.value &&
+          index < currentPage.value * pageSize.value
+      );
+    });
+
+    const totalPages = computed(() =>
+      Math.ceil(props.rawItems.length / pageSize.value)
+    );
+
+    onMounted(async () => {
+      await store.dispatch(TEMPLATES_FETCH);
+    });
+
+    watch(
+      () => [props.rawItems, pageSize.value],
+      () => {
+        if (currentPage.value > totalPages.value) {
+          currentPage.value = 1;
+        }
+      }
+    );
+
+    const {
+      commentDialog,
+      issueDialog,
+      selectedIssue,
+      openDialog,
+    } = useIssueDetails();
+
+    watch(allSelected, newValue => {
+      if (newValue) {
+        selectedIssues.value = items.value.map(i => i._id);
+      } else {
+        selectedIssues.value = [];
+      }
+    });
+
     return {
-      page: 1,
-      commentDialog: false,
-      search: '',
-      pageSize: 5,
-      sizes: [5, 10, 50],
-      pageCount: this.rawItems / this.pageSize,
-      selected: [],
-      rating: 3,
-      dialog: false,
-      selectedIssue: {},
+      commentDialog,
+      issueDialog,
+      selectedIssue,
+      openDialog,
+      allSelected,
+      selectedIssues,
+      currentPage,
+      totalPages,
+      pageSize,
+      nextPage,
+      prevPage,
+      items,
+      sizes,
+      getRiskColor,
     };
   },
+});
 
-  computed: {
-    ...mapGetters(['currentUser']),
-    items() {
-      return this.rawItems.filter(
-        (item, index) =>
-          index >= (this.page - 1) * this.pageSize && index < this.page * this.pageSize
-      );
-    },
-    allSelected() {
-      return this.selected.length === this.pageSize;
-    },
-  },
+function usePagination(items: Issue[]) {
+  const currentPage = ref(1);
+  const pageSize = ref(5);
+  const sizes = ref([5, 10, 50]);
 
-  watch: {
-    rawItems(newItems, oldItems) {
-      this.page = 1;
-    },
-    pageSize(newValue, oldValue) {
-      this.page = 1;
-    },
-  },
+  function nextPage() {
+    if (currentPage.value * pageSize.value < items.length) {
+      currentPage.value += 1;
+    }
+  }
 
-  methods: {
-    matchPattern,
+  function prevPage() {
+    if (currentPage.value > 1) {
+      currentPage.value -= 1;
+    }
+  }
 
-    nextPage() {
-      if (this.page * this.pageSize < this.rawItems.length) this.page += 1;
-    },
+  return {
+    currentPage,
+    pageSize,
+    nextPage,
+    prevPage,
+    sizes,
+  };
+}
 
-    prevPage() {
-      if (this.page > 1) this.page -= 1;
-    },
+function useIssueDetails() {
+  const commentDialog = ref(false);
+  const issueDialog = ref(false);
+  const selectedIssue = ref({});
 
-    selectAll() {
-      if (this.allSelected) {
-        this.selected = [];
-      } else {
-        this.selected = this.items.map((i) => i._id);
-      }
-    },
+  async function openDialog(dialogType: string, item: Issue) {
+    await store.dispatch(GET_COMMENTS, item._id);
+    if (dialogType === 'comment') {
+      commentDialog.value = true;
+    } else {
+      issueDialog.value = true;
+    }
+    selectedIssue.value = item;
+  }
 
-    openIssue(item) {
-      this.$store.dispatch(GET_COMMENTS, item._id).then(() => {
-        this.dialog = true;
-        this.selectedIssue = item;
-      });
-    },
-
-    openComments(item) {
-      this.$store.dispatch(GET_COMMENTS, item._id).then(() => {
-        this.commentDialog = true;
-        this.selectedIssue = item;
-      });
-    },
-
-    genColor(risk) {
-      switch (risk) {
-        case 'info':
-          return 'light-blue lighten-3';
-        case 'low':
-          return 'blue';
-        case 'medium':
-          return 'orange';
-        case 'high':
-          return 'red';
-        case 'critical':
-          return 'red darken-4';
-        default:
-          return 'grey';
-      }
-    },
-  },
-};
+  return {
+    commentDialog,
+    issueDialog,
+    selectedIssue,
+    openDialog,
+  };
+}
 </script>
-<style></style>

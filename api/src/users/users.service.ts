@@ -16,7 +16,7 @@ export class UsersService {
       image: `https://api.adorable.io/avatars/285/${user.username}.png`,
       salt,
       password: this.genSecret(user.password, salt),
-    }).save();;
+    }).save();
   }
 
   async findOne(condition: any): Promise<User> {
@@ -38,7 +38,7 @@ export class UsersService {
 
     await this.userModel.updateOne(
       { _id: user._id },
-      { $set: { token: secret } },
+      { $set: { token: secret } }
     );
     return {
       apikey: Buffer.from(`${user.username}:${token}`).toString('base64'),
@@ -51,19 +51,21 @@ export class UsersService {
 
     await this.userModel.updateOne(
       { _id: userId },
-      { $set: { refresh_token: secret } },
+      { $set: { refresh_token: secret } }
     );
   }
 
   async validateRefreshToken(userId: string, token: string) {
     const user = await this.userModel.findOne({ _id: userId });
-    return this.isSecretValid(token, user.refresh_token, user.salt);
+    return user
+      ? this.isSecretValid(token, user.refresh_token, user.salt)
+      : false;
   }
 
   async removeRefreshToken(userId: string) {
     await this.userModel.updateOne(
       { _id: userId },
-      { $set: { refresh_token: '' } },
+      { $set: { refresh_token: '' } }
     );
   }
 }

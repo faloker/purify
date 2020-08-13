@@ -8,5 +8,5 @@ export const CommentSchema = new Schema(
     text: String,
     author: { type: String, ref: 'User' },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );

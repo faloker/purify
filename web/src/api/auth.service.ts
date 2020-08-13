@@ -1,0 +1,34 @@
+import request from '@/utils/request';
+
+export const login = (data: any) =>
+  request({
+    url: 'auth',
+    method: 'post',
+    data,
+  });
+
+export const signup = (data: any) =>
+  request({
+    url: 'auth/signup',
+    method: 'post',
+    data,
+  });
+
+export const refreshToken = () =>
+  request({
+    url: 'auth/refresh_token',
+    method: 'get',
+    withCredentials: true,
+  });
+
+export const logout = () =>
+  request({
+    url: 'auth',
+    method: 'delete',
+  });
+
+export const initSAML = () =>
+  request({
+    url: 'auth/saml',
+    method: 'get',
+  });

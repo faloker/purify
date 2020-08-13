@@ -67,99 +67,28 @@
     </v-row>
   </v-container>
 </template>
-
-<script>
-import { mapState } from 'vuex';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  Ref,
+  ComputedRef,
+  computed,
+  onMounted,
+} from '@vue/composition-api';
+import store from '@/store';
 import { FETCH_PROJECTS, FETCH_STATS } from '@/store/actions';
 
-export default {
+export default defineComponent({
   name: 'Dashboard',
-  // eslint-disable-next-line vue/no-unused-components
-  data: () => ({
-    issuesLineChartOptions: {
-      chart: {
-        id: 'rvso-linechart',
-      },
-      stroke: {
-        curve: 'smooth',
-      },
-      xaxis: {
-        categories: [
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July',
-          'August',
-          'September',
-          'October',
-          'November',
-          'December',
-        ],
-      },
-      colors: ['#FF6859', '#1EB980'],
-      title: {
-        text: 'Open vs Closed',
-        align: 'left',
-      },
-    },
-    issuesLineChartSeries: [
-      {
-        name: 'Open',
-        data: [],
-      },
-      {
-        name: 'Resolved',
-        data: [],
-      },
-    ],
-    reportsLineChartOptions: {
-      chart: {
-        id: 'reports-linechart',
-      },
-      title: {
-        text: 'Reports Volume',
-        align: 'left',
-      },
-      stroke: {
-        curve: 'smooth',
-      },
-      xaxis: {
-        categories: [
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July',
-          'August',
-          'September',
-          'October',
-          'November',
-          'December',
-        ],
-      },
-    },
-    reportsLineChartSeries: [
-      {
-        name: 'Reports Volume',
-        data: [],
-      },
-    ],
-    riskDonutChartOptions: {
-      title: {
-        text: 'Risks',
-        align: 'left',
-      },
-      noData: { text: 'Waiting for input...' },
-      labels: ['Info', 'Low', 'Medium', 'High', 'Critical'],
-      colors: ['#72DEFF', '#1EB980', '#FFCF44', '#FF6859', '#D50000'],
-    },
-    riskDonutChartSeries: [],
-    months: [
+
+  setup() {
+    const unitSearch = ref('');
+    const unitsNames = ref([]);
+    const selectedUnit = ref('');
+    const selectedProject = ref('');
+    const months = ref([
       'January',
       'February',
       'March',
@@ -172,35 +101,87 @@ export default {
       'October',
       'November',
       'December',
-    ],
-    loaded: false,
-    unitSearch: null,
-    unitsNames: null,
-    selectedUnit: null,
-    selectedProject: null,
-  }),
-  computed: {
-    ...mapState({
-      projects: (state) => state.projects.projects,
-      stats: (state) => state.projects.stats,
-    }),
-  },
-  mounted() {
-    this.$store.dispatch(FETCH_PROJECTS);
-  },
-  methods: {
-    fetchStats() {
-      if (this.selectedProject) {
-        this.$store.dispatch(FETCH_STATS, this.selectedProject).then(() => {
-          this.unitSearch = null;
-          this.unitsNames = this.stats.units.map((unit) => unit.name);
-          this.setStats(this.stats.project);
+    ]);
+    const issuesLineChartOptions = ref({
+      chart: {
+        id: 'read-vs-closed',
+      },
+      stroke: {
+        curve: 'smooth',
+      },
+      xaxis: {
+        categories: months.value,
+      },
+      colors: ['#FF6859', '#1EB980'],
+      title: {
+        text: 'Open vs Closed',
+        align: 'left',
+      },
+    });
+
+    const issuesLineChartSeries = ref([
+      {
+        name: 'Open',
+        data: [],
+      },
+      {
+        name: 'Resolved',
+        data: [],
+      },
+    ]);
+
+    const reportsLineChartOptions = ref({
+      chart: {
+        id: 'reports-volume',
+      },
+      title: {
+        text: 'Reports Volume',
+        align: 'left',
+      },
+      stroke: {
+        curve: 'smooth',
+      },
+      xaxis: {
+        categories: months.value,
+      },
+    });
+    const reportsLineChartSeries = ref([
+      {
+        name: 'Reports Volume',
+        data: [],
+      },
+    ]);
+    const riskDonutChartOptions = ref({
+      chart: {
+        id: 'risks-chart',
+      },
+      title: {
+        text: 'Risks',
+        align: 'left',
+      },
+      noData: { text: 'Waiting for input...' },
+      labels: ['Info', 'Low', 'Medium', 'High', 'Critical'],
+      colors: ['#72DEFF', '#1EB980', '#FFCF44', '#FF6859', '#D50000'],
+    });
+    const riskDonutChartSeries = ref([]);
+
+    const projects = computed(() => store.state.projects.items);
+    const stats = computed(() => store.state.projects.stats);
+
+    onMounted(async () => await store.dispatch(FETCH_PROJECTS));
+
+    function fetchStats() {
+      if (selectedProject.value) {
+        store.dispatch(FETCH_STATS, selectedProject.value).then(() => {
+          unitSearch.value = '';
+          unitsNames.value = stats.value.units.map((unit: any) => unit.name);
+          setStats(stats.value.project);
         });
       }
-    },
+    }
 
-    setStats(entity) {
-      this.issuesLineChartSeries = [
+    function setStats(entity: any) {
+      issuesLineChartSeries.value = [
         {
           name: 'Open',
           data: entity.open,
@@ -211,24 +192,41 @@ export default {
         },
       ];
 
-      this.riskDonutChartSeries = entity.risks;
+      riskDonutChartSeries.value = entity.risks;
 
-      this.reportsLineChartSeries = [
+      reportsLineChartSeries.value = [
         {
+          name: 'Reports Volume',
           data: entity.reports,
         },
       ];
-    },
+    }
 
-    updateStats() {
-      this.loaded = false;
-      if (this.selectedUnit) {
-        this.setStats(this.stats.units.filter((u) => u.name === this.selectedUnit)[0].data);
+    function updateStats() {
+      if (selectedUnit.value) {
+        setStats(
+          stats.value.units.find((u: any) => u.name === selectedUnit.value).data
+        );
       } else {
-        this.setStats(this.stats.project);
+        setStats(stats.value.project);
       }
-      this.loaded = true;
-    },
+    }
+
+    return {
+      projects,
+      updateStats,
+      fetchStats,
+      unitSearch,
+      selectedProject,
+      selectedUnit,
+      unitsNames,
+      issuesLineChartOptions,
+      issuesLineChartSeries,
+      reportsLineChartOptions,
+      reportsLineChartSeries,
+      riskDonutChartOptions,
+      riskDonutChartSeries,
+    };
   },
-};
+});
 </script>
