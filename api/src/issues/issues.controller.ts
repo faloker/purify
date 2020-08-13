@@ -42,10 +42,13 @@ export class IssuesController {
   }
 
   @Post(':id/comments')
-  saveComment(@Param() params: IdParamDto, @Body() comment: SaveCommentBodyDto) {
+  saveComment(
+    @Param() params: IdParamDto,
+    @Body() comment: SaveCommentBodyDto
+  ) {
     return this.issuesService.saveComment(params.id, comment);
   }
-  
+
   @Get(':id/comments')
   getComments(@Param() params: IdParamDto) {
     return this.issuesService.getComments(params.id);

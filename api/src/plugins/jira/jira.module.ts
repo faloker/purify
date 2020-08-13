@@ -5,7 +5,9 @@ import { JiraSettingsSchema } from './schemas/jira.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'JiraSettings', schema: JiraSettingsSchema }]),
+    MongooseModule.forFeature([
+      { name: 'JiraSettings', schema: JiraSettingsSchema },
+    ]),
   ],
   providers: [JiraService],
   exports: [JiraService],

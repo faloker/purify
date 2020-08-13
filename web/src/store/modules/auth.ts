@@ -60,7 +60,7 @@ export default class Auth extends VuexModule {
     timeUntilRefresh -= 120000;
 
     const refreshTask = setTimeout(
-      () => this.context.dispatch(REFRESH_TOKEN),
+      () => this.context.dispatch(REFRESH_TOKEN).catch(() => {}),
       timeUntilRefresh
     );
     this.context.commit(SET_REFRESH_TASK, refreshTask);

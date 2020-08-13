@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface JiraSettings extends Document{
+export interface JiraSettings extends Document {
   readonly _id: string;
   host: string;
   username: string;

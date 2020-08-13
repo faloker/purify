@@ -5,7 +5,9 @@ import { SMTPSettingsSchema } from './schemas/smtp.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'SMTPSettings', schema: SMTPSettingsSchema }]),
+    MongooseModule.forFeature([
+      { name: 'SMTPSettings', schema: SMTPSettingsSchema },
+    ]),
   ],
   providers: [SmtpService],
   exports: [SmtpService],

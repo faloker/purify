@@ -9,12 +9,14 @@ import { SlackModule } from 'src/plugins/slack/slack.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'JiraSettings', schema: JiraSettingsSchema }]),
+    MongooseModule.forFeature([
+      { name: 'JiraSettings', schema: JiraSettingsSchema },
+    ]),
     JiraModule,
     SmtpModule,
     SlackModule,
   ],
   controllers: [SettingsController],
-  providers: [SettingsService]
+  providers: [SettingsService],
 })
 export class SettingsModule {}

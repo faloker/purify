@@ -9,7 +9,7 @@ import { JiraSettings } from './interfaces/jira.interface';
 export class JiraService {
   constructor(
     @InjectModel('JiraSettings')
-    private readonly jiraSettingsModel: Model<JiraSettings>,
+    private readonly jiraSettingsModel: Model<JiraSettings>
   ) {}
 
   async saveSettings(host: string, username: string, api_key: string) {
@@ -42,7 +42,7 @@ export class JiraService {
         host: settings.host,
         basic_auth: {
           base64: Buffer.from(
-            `${settings.username}:${settings.api_key}`,
+            `${settings.username}:${settings.api_key}`
           ).toString('base64'),
         },
       });
