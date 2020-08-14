@@ -3,9 +3,7 @@
     <router-view name="header" />
     <v-main>
       <snackbar />
-      <!-- <vue-page-transition name="fade"> -->
       <router-view />
-      <!-- </vue-page-transition> -->
     </v-main>
   </v-app>
 </template>

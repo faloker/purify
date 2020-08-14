@@ -319,7 +319,8 @@ function useCreateUnit(project: string) {
       .then(() => {
         unitName.value = '';
         dialog.value = false;
-      });
+      })
+      .catch(() => {});
   }
 
   return {

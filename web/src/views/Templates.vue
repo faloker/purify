@@ -101,7 +101,11 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <editor ref="TemplateEditor" v-model="editedTemplate" />
+        <editor
+          ref="TemplateEditor"
+          v-model="editedTemplate"
+          mode="application/json"
+        />
       </v-card>
     </v-dialog>
     <confirm-dialog

@@ -121,7 +121,8 @@ function useCreateProject() {
         projectTitle.value = '';
         projectSubtitle.value = '';
         dialog.value = false;
-      });
+      })
+      .catch(() => {});
   }
 
   return {
