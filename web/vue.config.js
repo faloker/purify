@@ -15,7 +15,6 @@ if (process.env.NODE_ENV === 'production') {
       lodash: '_',
       'vue-toasted': 'Toasted',
       'vue-router': 'VueRouter',
-      'vue-simplemde': 'VueSimpleMDE',
       'vue-apexcharts': 'VueApexCharts',
       apexcharts: 'ApexCharts',
     },

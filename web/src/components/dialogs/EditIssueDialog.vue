@@ -1,33 +1,41 @@
 <template>
   <v-dialog
     v-model="value"
-    max-width="800"
-    @click:outside="$emit('input', false)"
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
   >
     <v-card>
-      <v-card-title>
-        <span class="title mb-2">Edit issue</span>
-      </v-card-title>
-      <v-card-text>
-        <v-textarea
-          id="raw-issue-text"
-          v-model="rawIssue"
-          filled
-          label="Raw issue"
-          auto-grow
-        />
-      </v-card-text>
-      <v-divider />
-      <v-card-actions>
-        <v-spacer />
+      <v-toolbar
+        color="primary"
+        dark
+        dense
+      >
         <v-btn
-          color="green darken-1"
-          text
-          @click="updateIssue()"
+          icon
+          dark
+          @click="$emit('input', false)"
         >
-          Confirm
+          <v-icon>close</v-icon>
         </v-btn>
-      </v-card-actions>
+        <v-toolbar-title class="title">
+          <b>Issue Editor</b>
+        </v-toolbar-title>
+        <v-spacer />
+        <v-toolbar-items>
+          <v-btn text @click="updateIssue()">
+            save
+            <v-icon right>
+              save
+            </v-icon>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
+      <editor
+        ref="IssueEditor"
+        v-model="rawIssue"
+        mode="application/json"
+      />
     </v-card>
   </v-dialog>
 </template>
@@ -38,7 +46,8 @@ import {
   PropType,
   onMounted,
 } from '@vue/composition-api';
-import { ISSUE_UPDATE } from '@/store/actions';
+import { ISSUE_UPDATE, SHOW_SUCCESS_MSG } from '@/store/actions';
+import Editor from '@/components/Editor.vue';
 import { Issue } from '@/store/types';
 import store from '@/store';
 
@@ -54,6 +63,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+  },
+
+  components: {
+    Editor,
   },
 
   setup(props, context) {
@@ -72,9 +85,11 @@ export default defineComponent({
           change,
           unitId: context.root.$route.params.slug,
         })
-        .then(() => {
+        .then(async () => {
           const updatedIssue = props.issue;
           updatedIssue.fields = JSON.parse(change.fields);
+
+          await store.dispatch(SHOW_SUCCESS_MSG, 'The issue has been updated');
           context.emit('update:issue', updatedIssue);
           context.emit('input', false);
         });

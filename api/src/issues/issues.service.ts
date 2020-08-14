@@ -89,12 +89,16 @@ export class IssuesService {
     return this.issueModel.updateMany({ _id: { $in: ids } }, { $set: change });
   }
 
-  async createJiraTicket(issueId: string, issue: any) {
+  async createJiraTicket(issueId: string, jiraIssue: any) {
+    const issue = await this.issueModel.findOne({ _id: issueId });
+    if (!issue) {
+      throw new BadRequestException('No such issue');
+    }
+
     const settings = await this.jiraService.getSettings();
-    // add check to vertify that issue exists
     if (settings) {
       const jiraTicket = await this.jiraService
-        .createIssue(issue)
+        .createIssue(jiraIssue)
         .catch(err => {
           throw new BadRequestException(JSON.stringify(JSON.parse(err).body));
         });

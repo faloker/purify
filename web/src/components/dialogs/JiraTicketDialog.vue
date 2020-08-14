@@ -118,25 +118,35 @@
           </v-dialog>
         </v-toolbar-items>
       </v-toolbar>
-      <vue-simplemde
-        ref="markdownEditor"
-        v-model="preparedMarkdown"
-        :configs="configs"
-      />
+      <v-row>
+        <v-col cols="6">
+          <editor
+            ref="JiraTicketEditor"
+            v-model="markdown"
+            mode="text/x-markdown"
+          />
+        </v-col>
+        <v-divider vertical />
+        <v-col cols="5">
+          <div class="ma-3 preview-html" v-html="compiledMarkdown" />
+        </v-col>
+      </v-row>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import {
   defineComponent,
-  ref,
   computed,
   ComputedRef,
   PropType,
+  ref,
+  onMounted,
 } from '@vue/composition-api';
 // @ts-ignore
 import j2md from 'jira2md';
-import VueSimpleMDE from 'vue-simplemde';
+import marked from 'marked';
+import Editor from '@/components/Editor.vue';
 import { CREATE_TICKET, SHOW_SUCCESS_MSG } from '@/store/actions';
 import { prepareMarkdown } from '@/utils/helpers';
 import { Template, TemplateWithStats, Issue } from '@/store/types';
@@ -146,7 +156,7 @@ export default defineComponent({
   name: 'JiraTicketDialog',
 
   components: {
-    'vue-simplemde': VueSimpleMDE,
+    Editor,
   },
 
   props: {
@@ -160,7 +170,7 @@ export default defineComponent({
     },
   },
 
-  setup(props, { emit }) {
+  setup(props, context) {
     const finisher = ref(false);
     const summary = ref('');
     const configs = ref({ spellChecker: false });
@@ -171,6 +181,7 @@ export default defineComponent({
     // const selectedAssignee
     const selectedComponents = ref([]);
     const labels = ref([]);
+    const markdown = ref('');
 
     const issueTemplate: ComputedRef<Template> = computed(() => {
       const doc = store.state.templates.items.find(
@@ -179,8 +190,10 @@ export default defineComponent({
       return doc ? doc.template : {};
     });
 
-    const preparedMarkdown = computed(() => {
-      return prepareMarkdown(props.issue, issueTemplate.value);
+    const compiledMarkdown = computed(() => marked(markdown.value));
+
+    onMounted(() => {
+      markdown.value = prepareMarkdown(props.issue, issueTemplate.value);
     });
 
     async function createTicket() {
@@ -190,20 +203,20 @@ export default defineComponent({
       payload.issuetype = { name: selectedIssueType.value };
       payload.labels = labels.value;
       payload.summary = summary.value;
-      payload.description = j2md.to_jira(preparedMarkdown.value);
+      payload.description = j2md.to_jira(markdown.value);
       // payload.components = this.components;
 
       const ticket = await store.dispatch(CREATE_TICKET, {
-        id: props.issue._id,
+        issueId: props.issue._id,
         fields: payload,
+        unitId: context.root.$route.params.slug,
       });
 
       if (ticket) {
         const updatedIssue = props.issue;
         updatedIssue.ticket = ticket;
-        emit('update:issue', updatedIssue);
-
-        emit('input', false);
+        context.emit('update:issue', updatedIssue);
+        context.emit('input', false);
         await store.dispatch(SHOW_SUCCESS_MSG, 'Jira ticket has been created');
       }
     }
@@ -215,8 +228,9 @@ export default defineComponent({
 
     return {
       openFinisher,
+      compiledMarkdown,
       createTicket,
-      preparedMarkdown,
+      markdown,
       finisher,
       configs,
       summary,
@@ -231,5 +245,7 @@ export default defineComponent({
 });
 </script>
 <style>
-@import '~simplemde/dist/simplemde.min.css';
+.preview-html {
+  font-size: 14px;
+}
 </style>
