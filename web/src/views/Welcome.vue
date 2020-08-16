@@ -1,137 +1,115 @@
 <template>
   <v-container>
     <v-row align="center" justify="center">
-      <v-col cols="3" class="mt-12">
-        <v-row class="my-4" justify="center">
-          <v-img
-            src="@/assets/logo_trans.png"
-            max-width="110"
-            max-height="110"
-          />
-        </v-row>
-        <v-row>
-          <v-tabs
-            v-model="tabs"
-            fixed-tabs
-            slider-color="primary"
-          >
-            <v-tab id="tab-login" class="title text-none">
-              Login
-            </v-tab>
-            <v-tab
-              v-if="systemConfig.registration"
-              id="tab-register"
-              class="title text-none"
-            >
-              Register
-            </v-tab>
-            <v-tabs-items v-model="tabs" class="mt-7">
-              <v-tab-item>
-                <v-form class="grey-form">
-                  <v-row>
-                    <v-spacer />
-                    <v-text-field
-                      id="username"
-                      v-model="username"
-                      label="Username"
-                      prepend-icon="accessibility_new"
-                      required
-                    />
-                    <v-spacer />
-                  </v-row>
-                  <v-row>
-                    <v-spacer />
-                    <v-text-field
-                      id="password"
-                      v-model="password"
-                      label="Password"
-                      required
-                      type="password"
-                      prepend-icon="lock"
-                    />
-                    <v-spacer />
-                  </v-row>
-                  <v-row justify="center">
-                    <v-btn
-                      class="mt-3"
-                      outlined
-                      type="submit"
-                      color="primary"
-                      :loading="loading"
-                      :disabled="!password || !username"
-                      @click.prevent="login()"
-                    >
-                      Sign In
-                    </v-btn>
-                  </v-row>
-                  <v-row justify="center">
-                    <v-btn
-                      v-if="systemConfig.saml"
-                      class="mt-3"
-                      outlined
-                      type="submit"
-                      color="quinary"
-                      :href="`${API_URL}/auth/saml`"
-                    >
-                      Or Login with SSO
-                    </v-btn>
-                  </v-row>
-                </v-form>
-              </v-tab-item>
-              <v-tab-item>
-                <v-form class="grey-form">
-                  <v-row>
-                    <v-spacer />
-                    <v-text-field
-                      id="user"
-                      v-model="username"
-                      label="Username"
-                      prepend-icon="accessibility_new"
-                      required
-                    />
-                    <v-spacer />
-                  </v-row>
-                  <v-row>
-                    <v-spacer />
-                    <v-text-field
-                      id="email"
-                      v-model="email"
-                      label="Email"
-                      required
-                      prepend-icon="alternate_email"
-                    />
-                    <v-spacer />
-                  </v-row>
-                  <v-row>
-                    <v-spacer />
-                    <v-text-field
-                      id="pass"
-                      v-model="password"
-                      label="Password"
-                      required
-                      type="password"
-                      prepend-icon="lock"
-                    />
-                    <v-spacer />
-                  </v-row>
-                  <v-row justify="center">
-                    <v-btn
-                      class="mt-3"
-                      outlined
-                      type="submit"
-                      color="primary"
-                      :loading="loading"
-                      :disabled="!email || !password || !username"
-                      @click.prevent="register()"
-                    >
-                      Sign Up
-                    </v-btn>
-                  </v-row>
-                </v-form>
-              </v-tab-item>
-            </v-tabs-items>
-          </v-tabs>
-        </v-row>
+      <v-col cols="4" class="mt-12">
+        <v-card min-width="400px">
+          <v-row align="center" justify="center">
+            <v-img
+              class="mt-2"
+              src="@/assets/logo_trans.png"
+              max-width="90"
+              max-height="90"
+            />
+          </v-row>
+          <v-divider class="my-5" />
+          <v-row>
+            <v-col v-if="systemConfig.saml" class="sso-block">
+              <v-row align="center" justify="center">
+                <div>
+                  <v-icon class="mb-1 mr-1" small>
+                    info
+                  </v-icon>
+                  <span class="text-uppercase text--disabled">Password Login is Disabled</span>
+                  <p class="mt-3">
+                    Your account requires Single Sign-On.
+                  </p>
+                </div>
+              </v-row>
+              <v-row justify="center" align="center">
+                <v-btn
+                  v-if="systemConfig.saml"
+                  width="320"
+                  dark
+                  class="mt-1"
+                  type="submit"
+                  color="quinary"
+                  :href="`${API_URL}/auth/saml`"
+                >
+                  <v-icon left>
+                    lock
+                  </v-icon>Sign In With Your Identity Provider
+                </v-btn>
+              </v-row>
+              <v-row
+                class="mt-5"
+                align="center"
+                justify="center"
+              >
+                <p
+                  class="ml-2"
+                >
+                  If you are an admin, click 
+                  <a
+                    class="text-decoration-none"
+                    @click="forceLogin = !forceLogin"
+                  >here</a> to sign in.
+                </p>
+              </v-row>
+            </v-col>
+            <v-slide-y-transition>
+              <v-col v-if="!systemConfig.saml || forceLogin" class="sign-in-block">
+                <v-row>
+                  <v-spacer />
+                  <v-text-field
+                    id="username"
+                    v-model="username"
+                    label="Username"
+                    required
+                    dense
+                    outlined
+                  />
+                  <v-spacer />
+                </v-row>
+                <v-row>
+                  <v-spacer />
+                  <v-text-field
+                    id="password"
+                    v-model="password"
+                    label="Password"
+                    required
+                    outlined
+                    dense
+                    type="password"
+                    @keydown.enter="login"
+                  />
+                  <v-spacer />
+                </v-row>
+                <v-row justify="center" align="center">
+                  <v-btn
+                    width="320"
+                    class="mx-5"
+                    type="submit"
+                    color="primary"
+                    :loading="loading"
+                    :disabled="!password || !username"
+                    @click.prevent="login"
+                  >
+                    Sign In
+                  </v-btn>
+                </v-row>
+              </v-col>
+            </v-slide-y-transition>
+          </v-row>
+          <v-divider class="mx-3" />
+          <v-row justify="center" align="center">
+            <div class="body-1 mt-4 mb-7">
+              <a
+                href="https://github.com/faloker/purify/releases/latest"
+                target="_blank"
+              >Check Out What's New in Purify</a>
+            </div>
+          </v-row>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -158,6 +136,7 @@ export default defineComponent({
     const email = ref('');
     const password = ref('');
     const loading = ref(false);
+    const forceLogin = ref(false);
 
     const systemConfig: ComputedRef<SystemConfig> = computed(
       () => store.state.system.config
@@ -202,6 +181,7 @@ export default defineComponent({
       username,
       password,
       register,
+      forceLogin,
       systemConfig,
     };
   },

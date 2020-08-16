@@ -32,7 +32,6 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-
     <v-app-bar
       app
       color="#1a73e8"
@@ -59,19 +58,16 @@
               </v-avatar>
             </v-btn>
           </template>
-
           <v-card id="menu-mini-profile">
-            <v-list>
+            <v-list max-width="330">
               <v-list-item>
                 <v-list-item-avatar>
                   <img :src="user.image" alt="ava">
                 </v-list-item-avatar>
-
                 <v-list-item-content>
                   <v-list-item-title>{{ user.username }}</v-list-item-title>
                   <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                 </v-list-item-content>
-
                 <v-list-item-action>
                   <v-btn
                     id="btn-logout"
@@ -83,9 +79,7 @@
                 </v-list-item-action>
               </v-list-item>
             </v-list>
-
             <v-divider />
-
             <v-list>
               <v-list-item-group v-model="item" color="primary">
                 <v-list-item>
