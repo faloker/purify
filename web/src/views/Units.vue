@@ -61,7 +61,7 @@
                     class="d-inline-block text-truncate"
                     style="max-width: 130px;"
                   >
-                    {{ item.name }}
+                    {{ item.displayName }}
                   </span>
                 </v-btn>
               </template>

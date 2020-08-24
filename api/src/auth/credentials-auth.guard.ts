@@ -13,7 +13,7 @@ export class CredentialsAuthGuard implements CanActivate {
     if (this.configService.get<string>('USE_LDAP') === 'true') {
       return new LdapAuthGuard().canActivate(context);
     }
-    
+
     return new LocalAuthGuard().canActivate(context);
   }
 }

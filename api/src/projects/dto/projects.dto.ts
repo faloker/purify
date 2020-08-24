@@ -5,8 +5,10 @@ import {
   MinLength,
   Matches,
   IsOptional,
+  IsBoolean,
+  IsIn,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateProjectDto {
   @ApiProperty()
@@ -25,6 +27,13 @@ export class CreateProjectDto {
   @MinLength(3)
   @MaxLength(40)
   readonly description: string;
+}
+
+export class GetProjectsQueryDto {
+  @ApiPropertyOptional()
+  @IsIn(['true', 'false'])
+  @IsOptional()
+  verbose: string;
 }
 
 export class EditProjectDto extends CreateProjectDto {}

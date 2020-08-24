@@ -47,7 +47,7 @@
             </v-row>
             <v-row class="mt-5">
               <v-autocomplete
-                v-model="membershipModel"
+                v-model="membershipsModel"
                 :items="projects"
                 multiple
                 :disabled="isOwner"
@@ -63,7 +63,7 @@
                     @click="toggle"
                   >
                     <v-list-item-action>
-                      <v-icon :color="membershipModel.length > 0 ? 'indigo darken-4' : ''">
+                      <v-icon :color="membershipsModel.length > 0 ? 'indigo darken-4' : ''">
                         {{ icon }}
                       </v-icon>
                     </v-list-item-action>
@@ -84,7 +84,7 @@
                   <span
                     v-if="index === 3"
                     class="grey--text caption"
-                  >(+{{ membershipModel.length - 3 }} others)</span>
+                  >(+{{ membershipsModel.length - 3 }} others)</span>
                 </template>
               </v-autocomplete>
             </v-row>
@@ -160,7 +160,7 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    membership: {
+    memberships: {
       type: Array as PropType<string[]>,
       default: () => [],
     },
@@ -189,9 +189,9 @@ export default defineComponent({
       get: () => props.role,
       set: val => emit('update:role', val),
     });
-    const membershipModel = computed({
-      get: () => props.membership,
-      set: val => emit('update:membership', val),
+    const membershipsModel = computed({
+      get: () => props.memberships,
+      set: val => emit('update:memberships', val),
     });
     const ssoBypassModel = computed({
       get: () => props.ssoBypass,
@@ -203,17 +203,17 @@ export default defineComponent({
     );
     const isOwner = computed(() => roleModel.value === 'Owner');
     const icon = computed(() => {
-      if (membershipModel.value.length === props.projects.length)
+      if (membershipsModel.value.length === props.projects.length)
         return 'mdi-close-box';
-      else if (membershipModel.value.length > 0) return 'mdi-minus-box';
+      else if (membershipsModel.value.length > 0) return 'mdi-minus-box';
       return 'mdi-checkbox-blank-outline';
     });
 
     function toggle() {
-      if (membershipModel.value.length === props.projects.length) {
-        membershipModel.value = [];
+      if (membershipsModel.value.length === props.projects.length) {
+        membershipsModel.value = [];
       } else {
-        membershipModel.value = props.projects.map(
+        membershipsModel.value = props.projects.map(
           (project: Project) => project.name
         );
       }
@@ -221,11 +221,11 @@ export default defineComponent({
 
     watch(roleModel, (newValue, oldValue) => {
       if (newValue === 'Owner') {
-        membershipModel.value = props.projects.map(
+        membershipsModel.value = props.projects.map(
           (project: Project) => project.name
         );
       } else if (oldValue === 'Owner') {
-        membershipModel.value = [];
+        membershipsModel.value = [];
       }
     });
 
@@ -246,7 +246,7 @@ export default defineComponent({
 
     return {
       nameModel,
-      membershipModel,
+      membershipsModel,
       roleModel,
       emailModel,
       ssoBypassModel,

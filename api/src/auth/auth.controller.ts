@@ -16,7 +16,14 @@ import { CreateUserDto, ChangePasswordDto } from 'src/users/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { GenericAuthGuard } from './generic-auth.guard';
 import { CredentialsAuthGuard } from './credentials-auth.guard';
-import { ApiTags, ApiBody, ApiExcludeEndpoint, ApiOperation, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBody,
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger';
 import { SamlAuthGuard } from './saml-auth.guard';
 
 @ApiTags('auth')

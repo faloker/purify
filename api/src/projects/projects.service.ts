@@ -20,10 +20,13 @@ export class ProjectsService {
     @InjectModel('Report') private readonly reportModel: Model<Report>
   ) {}
 
-  async getAll() {
+  async getAll(verbose: string) {
     const projects = await this.projectModel.find();
-    const result = [];
+    if (verbose !== 'true') {
+      return projects;
+    }
 
+    const result = [];
     for (const project of projects) {
       const units = await this.unitModel
         .find({ project: project._id })

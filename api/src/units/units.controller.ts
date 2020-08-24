@@ -55,32 +55,35 @@ export class UnitsController {
     description: 'Created successfully',
     type: Unit,
   })
-  createUnit(@Param('projectName') projectName: string, @Body() createUnitDto: CreateUnitDto) {
-      return this.unitsService.create(projectName, createUnitDto);
+  createUnit(
+    @Param('projectName') projectName: string,
+    @Body() createUnitDto: CreateUnitDto
+  ) {
+    return this.unitsService.create(projectName, createUnitDto);
   }
 
   @Patch(':unitName')
   @Roles(['admin', 'editor'])
-  @ApiOperation({ summary: 'Update a unit by name' })
+  @ApiOperation({ summary: 'Update unit by name' })
   @ApiOkResponse({
     description: 'Update successful',
     type: Unit,
   })
   @ApiNotFoundResponse({ description: 'No such unit' })
   editProject(
-    @Param('slug') slug: string,
+    @Param('unitName') unitName: string,
     @Body() editUnitDto: EditUnitDto
   ): Promise<IUnit> {
-    return this.unitsService.edit(slug, editUnitDto);
+    return this.unitsService.edit(unitName, editUnitDto);
   }
 
-  @Delete(':slug')
+  @Delete(':unitName')
   @Roles(['admin', 'editor'])
-  @ApiOperation({ summary: 'Delete unit by slug' })
+  @ApiOperation({ summary: 'Delete unit by name' })
   @ApiNoContentResponse({ description: 'Removed successfully' })
   @ApiNotFoundResponse({ description: 'No such unit' })
   @HttpCode(204)
-  deleteUnit(@Param('slug') slug: string) {
-    return this.unitsService.delete(slug);
+  deleteUnit(@Param('unitName') unitName: string) {
+    return this.unitsService.delete(unitName);
   }
 }

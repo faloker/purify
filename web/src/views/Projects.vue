@@ -92,7 +92,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.dispatch(FETCH_PROJECTS).then(() => {
+      store.dispatch(FETCH_PROJECTS, true).then(() => {
         loading.value = false;
       });
     });

@@ -1,9 +1,9 @@
 import request from '@/utils/request';
 import { CreateProjectDto } from '@/store/types';
 
-export const getProjects = () =>
+export const getProjects = (verbose: boolean) =>
   request({
-    url: 'projects',
+    url: `projects?verbose=${verbose}`,
     method: 'get',
   });
 

@@ -2,7 +2,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import * as slugify from 'slug';
+import * as slug from 'slug';
 import { Unit } from './interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { Report } from 'src/reports/interfaces/report.interface';
@@ -20,25 +20,26 @@ export class UnitsService {
 
   async create(projectName: string, createUnitDto: CreateUnitDto) {
     const project = await this.projectModel.findOne({ name: projectName });
-
     if (project) {
       return new this.unitModel({
         displayName: createUnitDto.displayName,
         project: project._id,
-        name: `${projectName}-${slugify(createUnitDto.displayName)}`,
+        name: `${projectName}-${slug(createUnitDto.displayName, {
+          lower: true,
+        })}`,
       }).save();
     } else {
       throw new NotFoundException('No such project');
     }
   }
 
-  async delete(slug: string) {
-    const unit = await this.unitModel.findOne({ slug });
+  async delete(name: string) {
+    const unit = await this.unitModel.findOne({ name });
 
     if (unit) {
       await this.reportModel.deleteMany({ unit: unit._id });
       await this.issueModel.deleteMany({ unit: unit._id });
-      await this.unitModel.deleteOne({ slug });
+      await this.unitModel.deleteOne({ name });
     } else {
       throw new NotFoundException('No such unit');
     }

@@ -1,7 +1,6 @@
 import { Schema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { nanoid } from 'nanoid'
-
+import { nanoid } from 'nanoid';
 
 export const InviteTokenSchema = new Schema({
   _id: { type: String, default: uuidv4 },
@@ -9,7 +8,7 @@ export const InviteTokenSchema = new Schema({
     type: String,
     unique: true,
     required: true,
-    default: () => nanoid()
+    default: () => nanoid(),
   },
   user: { type: String, ref: 'User' },
 });

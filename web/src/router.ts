@@ -75,7 +75,7 @@ export const router = new Router({
       meta: { title: 'Purify | Units' },
     },
     {
-      path: '/unit/:slug/issues',
+      path: '/projects/:projectName/units/:unitName/issues',
       name: 'Issues',
       components: {
         default: () => import('@/views/Issues.vue'),
@@ -84,7 +84,7 @@ export const router = new Router({
       meta: { title: 'Purify | Issues' },
     },
     {
-      path: '/unit/:slug/reports',
+      path: '/projects/:projectName/units/:unitName/reports',
       name: 'Reports',
       components: {
         default: () => import('@/views/Reports.vue'),

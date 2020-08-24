@@ -3,10 +3,10 @@ import { nanoid } from 'nanoid';
 
 const ProjectSchema = new Schema(
   {
-    _id: { type: String,  default: () => nanoid() },
+    _id: { type: String, default: () => nanoid() },
     description: String,
     displayName: String,
-    name: { type: String, unique: true, },
+    name: { type: String, unique: true },
   },
   { timestamps: true }
 );

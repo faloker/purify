@@ -32,8 +32,8 @@ export default class Projects extends VuexModule {
   }
 
   @Action
-  async [FETCH_PROJECTS]() {
-    const { data } = await getProjects();
+  async [FETCH_PROJECTS](verbose = false) {
+    const { data } = await getProjects(verbose);
     this.context.commit(SET_PROJECTS, data);
   }
 

@@ -79,7 +79,7 @@ export interface User {
   image: string;
   role: Role;
   ssoBypass: boolean;
-  membership: string[];
+  memberships: string[];
 }
 
 export enum Role {

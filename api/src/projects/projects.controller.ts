@@ -8,6 +8,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -27,6 +28,7 @@ import {
   EditProjectDto,
   ProjectList,
   Project,
+  GetProjectsQueryDto,
 } from './dto/projects.dto';
 import { Project as IProject } from './interfaces/project.interface';
 import { UnitList } from 'src/units/dto/units.dto';
@@ -55,10 +57,9 @@ export class ProjectsController {
   @ApiOperation({ summary: 'List projects' })
   @ApiOkResponse({
     description: 'List of projects',
-    type: [ProjectList],
   })
-  getProjects() {
-    return this.projectsService.getAll();
+  getProjects(@Query() query: GetProjectsQueryDto) {
+    return this.projectsService.getAll(query.verbose);
   }
 
   @Patch(':projectName')

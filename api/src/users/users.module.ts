@@ -10,7 +10,9 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule,
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
-    MongooseModule.forFeature([{ name: 'InviteToken', schema: InviteTokenSchema }]),
+    MongooseModule.forFeature([
+      { name: 'InviteToken', schema: InviteTokenSchema },
+    ]),
   ],
   controllers: [UsersController],
   providers: [UsersService],

@@ -9,8 +9,9 @@ import {
   ArrayNotEmpty,
   IsBoolean,
   MaxLength,
+  IsOptional,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Role } from '../interfaces/user.interface';
 
 export class CreateUserDto {
@@ -34,10 +35,9 @@ export class CreateUserDto {
 }
 
 export class EditUserDto extends CreateUserDto {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
-  @MinLength(3)
-  @MaxLength(40)
+  @IsOptional()
   readonly name: string;
 }
 
@@ -60,8 +60,8 @@ export class ChangePasswordDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  readonly password: string;  
-  
+  readonly password: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

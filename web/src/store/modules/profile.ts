@@ -13,7 +13,7 @@ export default class Profile extends VuexModule {
     image: '',
     ssoBypass: false,
     role: Role.OBSERVER,
-    membership: [],
+    memberships: [],
   };
 
   @Mutation

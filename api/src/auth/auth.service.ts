@@ -46,7 +46,9 @@ export class AuthService {
   }
 
   async validateSAMLUser(user: any) {
-    const doc = await this.usersService.findOne({ email: user.email });
+    const doc = await this.usersService.findOne({
+      email: user[this.configService.get<string>('SAML_EMAIL_FIELD_NAME')],
+    });
     if (doc) {
       return doc;
     } else {

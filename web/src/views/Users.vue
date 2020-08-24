@@ -15,7 +15,7 @@
             :projects="projects"
             :email.sync="email"
             :role.sync="role"
-            :membership.sync="membership"
+            :memberships.sync="memberships"
             :sso-bypass.sync="ssoBypass"
             @handle-click="createUser"
           />
@@ -61,8 +61,8 @@
                   {{ item.role }}
                 </v-chip>
               </template>
-              <template v-slot:item.membership="{ item }">
-                <template v-for="(i, index) in item.membership">
+              <template v-slot:item.memberships="{ item }">
+                <template v-for="(i, index) in item.memberships">
                   <v-chip
                     v-if="index < 3"
                     :key="index"
@@ -77,7 +77,7 @@
                     :key="index"
                     small
                     class="grey--text caption mx-1"
-                  >(+{{ item.membership.length - 3 }} others)</span>
+                  >(+{{ item.memberships.length - 3 }} others)</span>
                 </template>
               </template>
               <template v-slot:item.actions="{ item }">
@@ -159,7 +159,7 @@
           :name.sync="newName"
           :email.sync="newEmail"
           :role.sync="newRole"
-          :membership.sync="newMembership"
+          :memberships.sync="newmemberships"
           :sso-bypass.sync="newSsoBypass"
           @handle-click="editUser"
         />
@@ -216,7 +216,7 @@ export default defineComponent({
       },
       {
         text: 'Projects',
-        value: 'membership',
+        value: 'memberships',
         align: 'center',
         sortable: false,
       },
@@ -311,7 +311,7 @@ function useCreateUser() {
   const email = ref('');
   const role = ref('');
   const ssoBypass = ref(false);
-  const membership = ref([]);
+  const memberships = ref([]);
   const inviteLink = ref('');
   const isPasswordReset = ref(false);
 
@@ -320,14 +320,14 @@ function useCreateUser() {
       .dispatch(CREATE_USER, {
         email: email.value,
         role: role.value.toLowerCase(),
-        membership: membership.value,
+        memberships: memberships.value,
         ssoBypass: ssoBypass.value,
       })
       .then(async (link: string) => {
         await store.dispatch(SHOW_SUCCESS_MSG, 'The user has been created');
         createDialog.value = false;
         role.value = email.value = '';
-        membership.value = [];
+        memberships.value = [];
 
         inviteLink.value = link;
         linkDialog.value = true;
@@ -353,7 +353,7 @@ function useCreateUser() {
     role,
     ssoBypass,
     inviteLink,
-    membership,
+    memberships,
     createUser,
     isPasswordReset,
     resetPassword,
@@ -367,7 +367,7 @@ function useEditUser() {
   const newRole = ref('');
   const newName = ref('');
   const newSsoBypass = ref(false);
-  const newMembership: Ref<string[]> = ref([]);
+  const newmemberships: Ref<string[]> = ref([]);
 
   async function editUser() {
     store
@@ -376,14 +376,14 @@ function useEditUser() {
         email: newEmail.value,
         name: newName.value,
         role: newRole.value.toLowerCase(),
-        membership: newMembership.value,
+        memberships: newmemberships.value,
         ssoBypass: newSsoBypass.value,
       })
       .then(async () => {
         await store.dispatch(SHOW_SUCCESS_MSG, 'The user has been updated');
         editDialog.value = false;
         newRole.value = newName.value = newEmail.value = '';
-        newMembership.value = [];
+        newmemberships.value = [];
       })
       .catch(() => {});
   }
@@ -395,7 +395,7 @@ function useEditUser() {
     newName.value = item.name;
     newRole.value = capitalize(item.role);
     newSsoBypass.value = item.ssoBypass;
-    newMembership.value = item.membership;
+    newmemberships.value = item.memberships;
   }
 
   return {
@@ -405,7 +405,7 @@ function useEditUser() {
     newRole,
     newName,
     newSsoBypass,
-    newMembership,
+    newmemberships,
     editUser,
   };
 }
