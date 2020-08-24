@@ -30,7 +30,7 @@ export class CreateUserDto {
   @ApiProperty()
   @IsArray()
   @ArrayNotEmpty()
-  readonly membership: string[];
+  readonly memberships: string[];
 }
 
 export class EditUserDto extends CreateUserDto {
@@ -52,7 +52,7 @@ export class LoginUserDto {
   readonly password: string;
 }
 
-export class UserList extends CreateUserDto {
+export class UserList extends EditUserDto {
   readonly _id: string;
 }
 

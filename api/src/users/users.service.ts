@@ -47,7 +47,7 @@ export class UsersService {
         name: user.name,
         email: user.email,
         role: user.role as Role,
-        membership: user.membership,
+        memberships: user.memberships,
         ssoBypass: user.ssoBypass,
       }
     );

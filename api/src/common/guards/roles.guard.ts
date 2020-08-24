@@ -20,11 +20,11 @@ export class RolesGuard implements CanActivate {
     }
 
     const hasRole = () => roles.includes(request.user.role);
-    const hasMembership = () =>
-      request.user.membership.includes(request.params['projectName'] || '');
+    const hasmembership = () =>
+      request.user.memberships.includes(request.params['projectName'] || '');
 
     return Object.keys(request.params).includes('projectName')
-      ? hasRole() && hasMembership()
+      ? hasRole() && hasmembership()
       : hasRole();
   }
 }

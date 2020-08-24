@@ -7,12 +7,14 @@ import {
   DELETE_USER,
   CHANGE_PASSWORD,
   EDIT_USER,
+  RESET_USER_PASSWORD,
 } from '../actions';
 import {
   getUsers,
   createUser,
   deleteUser,
   editUser,
+  resetUserPassword,
 } from '@/api/users.service';
 import { changePassword } from '@/api/auth.service';
 
@@ -35,6 +37,12 @@ export default class Users extends VuexModule {
   async [CREATE_USER](payload: any) {
     const { data } = await createUser(payload);
     await this.context.dispatch(FETCH_USERS);
+    return data.link;
+  }
+
+  @Action
+  async [RESET_USER_PASSWORD](userId: string) {
+    const { data } = await resetUserPassword(userId);
     return data.link;
   }
 

@@ -48,11 +48,11 @@
                 <p
                   class="ml-2"
                 >
-                  If you are an admin, click 
+                  Click 
                   <a
-                    class="text-decoration-none"
+                    class="text-decoration-underline"
                     @click="forceLogin = !forceLogin"
-                  >here</a> to sign in.
+                  >here</a> to sign in with email and password.
                 </p>
               </v-row>
             </v-col>

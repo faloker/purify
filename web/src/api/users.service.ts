@@ -35,3 +35,10 @@ export function deleteUser(userId: string) {
     method: 'delete',
   });
 }
+
+export function resetUserPassword(userId: string) {
+  return request({
+    url: `users/${userId}/reset_password`,
+    method: 'POST',
+  });
+}

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/interfaces/user.interface';
@@ -45,22 +45,12 @@ export class AuthService {
     }
   }
 
-  async validateSAMLUser(user: any): Promise<any> {
-    const entity = await this.usersService.findOne({
-      email: user.email,
-      type: 'saml',
-    });
-
-    if (!entity) {
-      // return this.usersService.createUser({
-      //   username:
-      //     user[this.configService.get<string>('SAML_USERNAME_FIELD_NAME')],
-      //   password: randomBytes(16).toString('hex'),
-      //   email: user[this.configService.get<string>('SAML_EMAIL_FIELD_NAME')],
-      //   type: 'saml',
-      // });
+  async validateSAMLUser(user: any) {
+    const doc = await this.usersService.findOne({ email: user.email });
+    if (doc) {
+      return doc;
     } else {
-      return entity;
+      throw new NotFoundException('No such user');
     }
   }
 

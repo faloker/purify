@@ -100,7 +100,7 @@
                     <v-list-item @click="openEditDialog(item)">
                       <v-list-item-title>Edit User</v-list-item-title>
                     </v-list-item>
-                    <v-list-item>
+                    <v-list-item @click="resetPassword(item)">
                       <v-list-item-title>Reset Password</v-list-item-title>
                     </v-list-item>
                     <v-divider />
@@ -121,13 +121,13 @@
         />
         <v-dialog v-model="linkDialog" max-width="500">
           <v-card>
-            <template v-if="!systemConfig.saml">
+            <template v-if="!systemConfig.saml || isPasswordReset">
               <v-card-title>Share login link</v-card-title>
               <v-card-subtitle>To log in, the user will need to follow the link and set a password.</v-card-subtitle>
               <v-card-text>
                 <v-text-field
                   id="textToCopy"
-                  :value="inviteLink"
+                  :value="isPasswordReset ? inviteLink : inviteLink"
                   filled
                   readonly
                   :append-outer-icon="ttcIcon"
@@ -138,6 +138,16 @@
             <v-template v-else>
               <v-card-title>User has been created</v-card-title>
               <v-card-subtitle>SSO is enabled in your installation, so users have to sign in with your identity provider.</v-card-subtitle>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn
+                  color="quinary"
+                  text
+                  @click="linkDialog = false"
+                >
+                  OK
+                </v-btn>
+              </v-card-actions>
             </v-template>
           </v-card>
         </v-dialog>
@@ -178,6 +188,7 @@ import {
   CREATE_USER,
   DELETE_USER,
   EDIT_USER,
+  RESET_USER_PASSWORD,
 } from '@/store/actions';
 import { User, SystemConfig } from '@/store/types';
 export default defineComponent({
@@ -302,6 +313,7 @@ function useCreateUser() {
   const ssoBypass = ref(false);
   const membership = ref([]);
   const inviteLink = ref('');
+  const isPasswordReset = ref(false);
 
   async function createUser() {
     store
@@ -323,6 +335,17 @@ function useCreateUser() {
       .catch(() => {});
   }
 
+  function resetPassword(item: User) {
+    store
+      .dispatch(RESET_USER_PASSWORD, item._id)
+      .then(async (link: string) => {
+        inviteLink.value = link;
+        isPasswordReset.value = true;
+        linkDialog.value = true;
+      })
+      .catch(() => {});
+  }
+
   return {
     createDialog,
     linkDialog,
@@ -332,6 +355,8 @@ function useCreateUser() {
     inviteLink,
     membership,
     createUser,
+    isPasswordReset,
+    resetPassword,
   };
 }
 

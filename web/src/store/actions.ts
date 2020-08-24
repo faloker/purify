@@ -22,6 +22,7 @@ export const LOGOUT = 'logout';
 export const REGISTER = 'register';
 export const UPDATE_USER = 'updateUser';
 export const REFRESH_TOKEN = 'refreshToken';
+export const CHANGE_PASSWORD = 'changePassword';
 
 export const CREATE_TICKET = 'createTicket';
 
@@ -54,4 +55,4 @@ export const FETCH_USERS = 'fetchUsers';
 export const CREATE_USER = 'createUser';
 export const EDIT_USER = 'editUser';
 export const DELETE_USER = 'deleteUser';
-export const CHANGE_PASSWORD = 'changePassword';
+export const RESET_USER_PASSWORD = 'resetUserPassword';

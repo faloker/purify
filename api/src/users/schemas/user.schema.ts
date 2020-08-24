@@ -25,5 +25,5 @@ export const UserSchema = new Schema({
     enum: ['owner', 'admin', 'user', 'observer'],
     required: true,
   },
-  membership: [{ type: String }],
+  memberships: [{ type: String }],
 });

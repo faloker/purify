@@ -22,14 +22,14 @@ import { SamlAuthGuard } from './saml-auth.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  cookieConfig: any;
+  cookiesConfig: any;
 
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService
   ) {
-    this.cookieConfig = {
+    this.cookiesConfig = {
       httpOnly: true,
       path: '/',
       secure: this.configService.get<string>('SECURE') === 'true',
@@ -54,7 +54,7 @@ export class AuthController {
 
     response
       .status(200)
-      .cookie('refreshToken', tokens.refreshToken, this.cookieConfig)
+      .cookie('refreshToken', tokens.refreshToken, this.cookiesConfig)
       .send({ token: tokens.accessToken });
   }
 
@@ -70,7 +70,7 @@ export class AuthController {
   //   const tokens = await this.authService.login(newUser);
 
   //   response
-  //     .cookie('refreshToken', tokens.refreshToken, this.cookieConfig)
+  //     .cookie('refreshToken', tokens.refreshToken, this.cookiesConfig)
   //     .send({ token: tokens.accessToken });
   // }
 
@@ -84,7 +84,7 @@ export class AuthController {
         );
 
         response
-          .cookie('refreshToken', tokens.refreshToken, this.cookieConfig)
+          .cookie('refreshToken', tokens.refreshToken, this.cookiesConfig)
           .send({ token: tokens.accessToken });
       } catch (err) {
         response.status(HttpStatus.UNAUTHORIZED).send({
@@ -121,7 +121,7 @@ export class AuthController {
   @UseGuards(GenericAuthGuard)
   async logout(@Request() req, @Res() response) {
     await this.authService.removeRefreshToken(req.user.id);
-    response.clearCookie('refreshToken', this.cookieConfig).send('bye');
+    response.clearCookie('refreshToken', this.cookiesConfig).send('bye');
   }
 
   @Get('saml')
@@ -136,7 +136,7 @@ export class AuthController {
     const tokens = await this.authService.login(req.user);
 
     response
-      .cookie('refreshToken', tokens.refreshToken, this.cookieConfig)
+      .cookie('refreshToken', tokens.refreshToken, this.cookiesConfig)
       .redirect(
         `https://${this.configService.get<string>(
           'DOMAIN'
@@ -144,7 +144,7 @@ export class AuthController {
       );
   }
 
-  @Post('/change_password')
+  @Post('change_password')
   @ApiOperation({ summary: 'Change user password' })
   @ApiOkResponse({ description: 'Changed successfully' })
   @ApiNotFoundResponse({ description: 'No such token' })
