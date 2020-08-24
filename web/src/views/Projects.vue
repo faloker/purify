@@ -28,8 +28,9 @@
         </v-btn>
         <project-dialog
           v-model="dialog"
-          :title.sync="projectTitle"
-          :subtitle.sync="projectSubtitle"
+          :name.sync="name"
+          :display-name.sync="displayName"
+          :description.sync="description"
           ok-button-text="Create"
           @handle-click="createProject"
         />
@@ -84,7 +85,9 @@ export default defineComponent({
     );
     const filtredItems = computed(() => {
       return projects.value.filter(item =>
-        toLower(item.title + item.subtitle).includes(toLower(searchTerm.value))
+        toLower(item.displayName + item.description).includes(
+          toLower(searchTerm.value)
+        )
       );
     });
 
@@ -107,28 +110,32 @@ export default defineComponent({
 });
 
 function useCreateProject() {
-  const projectSubtitle = ref('');
-  const projectTitle = ref('');
+  const description = ref('');
+  const name = ref('');
+  const displayName = ref('');
   const dialog = ref(false);
 
   async function createProject() {
     store
       .dispatch(CREATE_PROJECT, {
-        title: projectTitle.value,
-        subtitle: projectSubtitle.value,
+        displayName: displayName.value,
+        description: description.value,
+        name: name.value,
       })
       .then(() => {
-        projectTitle.value = '';
-        projectSubtitle.value = '';
+        displayName.value = '';
+        description.value = '';
+        name.value = '';
         dialog.value = false;
       })
       .catch(() => {});
   }
 
   return {
-    projectTitle,
-    projectSubtitle,
+    displayName,
+    description,
     dialog,
+    name,
     createProject,
   };
 }

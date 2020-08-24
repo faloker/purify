@@ -21,7 +21,7 @@ export default class Units extends VuexModule {
   @Mutation
   [SET_UNITS](units: Unit[]) {
     function calcProgress(item: Unit) {
-      return (item.closed_tickets / item.tickets || 0) * 100;
+      return (item.numClosedIssues / item.numIssues || 0) * 100;
     }
 
     units.forEach((unit: Unit) => {
@@ -39,7 +39,7 @@ export default class Units extends VuexModule {
 
   @Action
   async [CREATE_UNIT](payload: CreateUnitDto) {
-    await createUnit(payload.name, payload.project);
+    await createUnit(payload.displayName, payload.project);
     this.context.dispatch(FETCH_UNITS, payload.project);
   }
 

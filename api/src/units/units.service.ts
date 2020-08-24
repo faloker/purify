@@ -18,16 +18,14 @@ export class UnitsService {
     @InjectModel('Report') private readonly reportModel: Model<Report>
   ) {}
 
-  async create(createUnitDto: CreateUnitDto) {
-    const project = await this.projectModel.findOne({
-      slug: createUnitDto.project,
-    });
+  async create(projectName: string, createUnitDto: CreateUnitDto) {
+    const project = await this.projectModel.findOne({ name: projectName });
 
     if (project) {
       return new this.unitModel({
-        name: createUnitDto.name,
+        displayName: createUnitDto.displayName,
         project: project._id,
-        slug: `${createUnitDto.project}-${slugify(createUnitDto.name)}`,
+        name: `${projectName}-${slugify(createUnitDto.displayName)}`,
       }).save();
     } else {
       throw new NotFoundException('No such project');
@@ -51,15 +49,27 @@ export class UnitsService {
     const newName = fields.name;
 
     if (unit) {
-      const newSlug = `${(unit.project as Project).title}-${slugify(newName)}`;
+      // const newSlug = `${(unit.project as Project).title}-${slugify(newName)}`;
 
-      await this.unitModel.updateOne(
-        { slug },
-        { slug: newSlug, name: newName }
-      );
-      return this.unitModel.findOne({ slug: newSlug });
+      await this.unitModel.updateOne({ slug }, { slug: '', name: newName });
+      return this.unitModel.findOne({ slug: 'newSlug' });
     } else {
       throw new NotFoundException('No such unit');
+    }
+  }
+
+  async getUnits(projectName: string) {
+    const project = await this.projectModel.findOne({ name: projectName });
+
+    if (project) {
+      return await this.unitModel
+        .find({ project: project._id })
+        .populate('numIssues')
+        .populate('numClosedIssues')
+        .populate('numTickets')
+        .populate('numReports');
+    } else {
+      throw new NotFoundException('No such project');
     }
   }
 }

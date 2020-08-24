@@ -7,7 +7,7 @@ import cors = require('cors');
 import cookieParser = require('cookie-parser');
 import * as helmet from 'helmet';
 import { AppModule } from './app.module';
-import { MongoExceptionFilter } from './filters/mongo-exception.filter';
+import { MongoExceptionFilter } from './common/filters/mongo-exception.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {

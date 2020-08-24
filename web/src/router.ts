@@ -22,6 +22,14 @@ export const router = new Router({
       meta: { title: 'Purify | Welcome' },
     },
     {
+      path: '/welcome/:token',
+      name: 'ChangePassword',
+      components: {
+        default: () => import('@/views/ChangePassword.vue'),
+      },
+      meta: { title: 'Purify | Change Password' },
+    },
+    {
       path: '/projects',
       name: 'Projects',
       components: {
@@ -40,6 +48,15 @@ export const router = new Router({
       meta: { title: 'Purify | Templates' },
     },
     {
+      path: '/users',
+      name: 'Users',
+      components: {
+        default: () => import('@/views/Users.vue'),
+        header: TheHeader,
+      },
+      meta: { title: 'Purify | Users' },
+    },
+    {
       path: '/dashboard',
       name: 'Dashboard',
       components: {
@@ -49,7 +66,7 @@ export const router = new Router({
       meta: { title: 'Purify | Dashboard' },
     },
     {
-      path: '/project/:slug/units',
+      path: '/projects/:projectName/units',
       name: 'Units',
       components: {
         default: () => import('@/views/Units.vue'),
@@ -97,7 +114,10 @@ router.beforeEach(async (to, from, next) => {
     next('Projects');
   }
 
-  if (!['Welcome', 'SAML Login'].includes(to.name!) && !isAuthenticated) {
+  if (
+    !['Welcome', 'SAML Login', 'ChangePassword'].includes(to.name!) &&
+    !isAuthenticated
+  ) {
     store
       .dispatch(REFRESH_TOKEN)
       .then(() => {

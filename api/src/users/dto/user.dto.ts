@@ -4,32 +4,66 @@ import {
   IsString,
   MinLength,
   Matches,
+  IsIn,
+  IsArray,
+  ArrayNotEmpty,
+  IsBoolean,
+  MaxLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '../interfaces/user.interface';
 
 export class CreateUserDto {
-  @ApiProperty()
-  @IsString()
-  @Matches(/^[a-zA-Z0-9_\-]+$/)
-  readonly username: string;
-
   @ApiProperty()
   @IsEmail()
   readonly email: string;
 
   @ApiProperty()
-  @MinLength(6)
-  readonly password: string;
+  @IsString()
+  @IsIn(['owner', 'admin', 'user', 'observer'])
+  readonly role: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  readonly ssoBypass: boolean;
+
+  @ApiProperty()
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly membership: string[];
+}
+
+export class EditUserDto extends CreateUserDto {
+  @ApiProperty()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(40)
+  readonly name: string;
 }
 
 export class LoginUserDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly username: string;
+  @IsEmail()
+  readonly email: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   readonly password: string;
+}
+
+export class UserList extends CreateUserDto {
+  readonly _id: string;
+}
+
+export class ChangePasswordDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly password: string;  
+  
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly token: string;
 }

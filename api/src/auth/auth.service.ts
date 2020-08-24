@@ -14,8 +14,8 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne({ username, type: 'local' });
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOne({ email, type: 'local' });
 
     if (
       user &&
@@ -29,17 +29,17 @@ export class AuthService {
 
   async validateADUser(user: any): Promise<any> {
     const entity = await this.usersService.findOne({
-      username: user.uid,
+      email: user.uid,
       type: 'ldap',
     });
 
     if (!entity) {
-      return this.usersService.createUser({
-        username: user.uid,
-        password: randomBytes(16).toString('hex'),
-        email: user.mail,
-        type: 'ldap',
-      });
+      // return this.usersService.createUser({
+      //   username: user.uid,
+      //   password: randomBytes(16).toString('hex'),
+      //   email: user.mail,
+      //   type: 'ldap',
+      // });
     } else {
       return entity;
     }
@@ -52,13 +52,13 @@ export class AuthService {
     });
 
     if (!entity) {
-      return this.usersService.createUser({
-        username:
-          user[this.configService.get<string>('SAML_USERNAME_FIELD_NAME')],
-        password: randomBytes(16).toString('hex'),
-        email: user[this.configService.get<string>('SAML_EMAIL_FIELD_NAME')],
-        type: 'saml',
-      });
+      // return this.usersService.createUser({
+      //   username:
+      //     user[this.configService.get<string>('SAML_USERNAME_FIELD_NAME')],
+      //   password: randomBytes(16).toString('hex'),
+      //   email: user[this.configService.get<string>('SAML_EMAIL_FIELD_NAME')],
+      //   type: 'saml',
+      // });
     } else {
       return entity;
     }
@@ -77,18 +77,18 @@ export class AuthService {
   }
 
   async login(user: User) {
-    const refresh_token = this.jwtService.sign(
-      { id: user._id, type: 'refresh_token' },
+    const refreshToken = this.jwtService.sign(
+      { id: user._id, type: 'refreshToken' },
       { expiresIn: '72h' }
     );
-    await this.usersService.saveRefreshToken(user._id, refresh_token);
+    await this.usersService.saveRefreshToken(user._id, refreshToken);
 
     return {
-      access_token: this.jwtService.sign({
+      accessToken: this.jwtService.sign({
         id: user._id,
-        type: 'access_token',
+        type: 'accessToken',
       }),
-      refresh_token,
+      refreshToken,
     };
   }
 
@@ -100,18 +100,18 @@ export class AuthService {
     const { id, type } = await this.jwtService.verify(token);
 
     if (
-      type === 'refresh_token' &&
+      type === 'refreshToken' &&
       this.usersService.validateRefreshToken(id, token)
     ) {
-      const refresh_token = this.jwtService.sign(
-        { id, type: 'refresh_token' },
+      const refreshToken = this.jwtService.sign(
+        { id, type: 'refreshToken' },
         { expiresIn: '72h' }
       );
-      await this.usersService.saveRefreshToken(id, refresh_token);
+      await this.usersService.saveRefreshToken(id, refreshToken);
 
       return {
-        access_token: this.jwtService.sign({ id, type: 'access_token' }),
-        refresh_token,
+        accessToken: this.jwtService.sign({ id, type: 'accessToken' }),
+        refreshToken,
       };
     } else {
       throw new Error('Invalid refresh token');

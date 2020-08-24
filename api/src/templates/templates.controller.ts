@@ -73,7 +73,7 @@ export class TemplatesController {
 
   @Delete(':slug')
   @ApiOperation({ summary: 'Delete template by slug' })
-  @ApiNoContentResponse({ description: 'Delete successful' })
+  @ApiNoContentResponse({ description: 'Removed successfully' })
   @ApiNotFoundResponse({ description: 'No such template' })
   @HttpCode(204)
   deleteOne(@Param('slug') slug: string) {

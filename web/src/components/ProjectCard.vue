@@ -16,18 +16,18 @@
               color="primary"
               rounded
               class="text-none title"
-              :to="{name: 'Units', params: { slug: project.slug }}"
+              :to="{name: 'Units', params: { projectName: project.name }}"
             >
               <span
                 class="d-inline-block text-truncate"
                 style="max-width: 300px;"
-              >{{ project.title }}</span>
+              >{{ project.displayName }}</span>
             </v-btn>
           </div>
           <div
             class="text-center subheading font-weight-light grey--text text-truncate"
           >
-            {{ project.subtitle }}
+            {{ project.description }}
           </div>
           <v-divider class="mt-2" />
           <v-container fluid>
@@ -36,7 +36,7 @@
                 <p class="display-1 font-weight-black">
                   <countTo
                     :start-val="0"
-                    :end-val="project.issues"
+                    :end-val="project.numIssues"
                     :duration="2000"
                   />
                 </p>
@@ -48,7 +48,7 @@
                 <p class="display-1 font-weight-black">
                   <countTo
                     :start-val="0"
-                    :end-val="project.tickets"
+                    :end-val="project.numTickets"
                     :duration="2000"
                   />
                 </p>
@@ -60,7 +60,7 @@
                 <p class="display-1 font-weight-black">
                   <countTo
                     :start-val="0"
-                    :end-val="project.units"
+                    :end-val="project.numUnits"
                     :duration="2000"
                   />
                 </p>
@@ -96,8 +96,9 @@
     <project-dialog
       v-model="dialog"
       heading="Edit Project"
-      :title.sync="title"
-      :subtitle.sync="subtitle"
+      :name.sync="name"
+      :display-name.sync="displayName"
+      :description.sync="description"
       @handle-click="editProject"
     />
     <confirm-dialog
@@ -140,32 +141,27 @@ export default defineComponent({
   },
 
   setup(props) {
-    const { dialog, title, subtitle, editProject } = useEditProject(
-      props.project
-    );
-    const { confirmDialog, deleteProject } = useDeleteProject(props.project);
-
     return {
-      dialog,
-      title,
-      subtitle,
-      editProject,
-      confirmDialog,
-      deleteProject,
+      ...useEditProject(props.project),
+      ...useDeleteProject(props.project),
     };
   },
 });
 
 function useEditProject(project: Project) {
   const dialog = ref(false);
-  const title = ref(project.title);
-  const subtitle = ref(project.subtitle || '');
+  const displayName = ref(project.displayName);
+  const name = ref(project.name);
+  const description = ref(project.description || '');
 
   async function editProject() {
     store
       .dispatch(EDIT_PROJECT, {
-        slug: project.slug,
-        change: { title: title.value, subtitle: subtitle.value },
+        name: project.name,
+        change: {
+          displayName: displayName.value,
+          description: description.value,
+        },
       })
       .then(async () => {
         dialog.value = false;
@@ -176,8 +172,9 @@ function useEditProject(project: Project) {
 
   return {
     dialog,
-    title,
-    subtitle,
+    name,
+    displayName,
+    description,
     editProject,
   };
 }
@@ -187,7 +184,7 @@ function useDeleteProject(project: Project) {
 
   async function deleteProject() {
     store
-      .dispatch(DELETE_PROJECT, project.slug)
+      .dispatch(DELETE_PROJECT, project.name)
       .then(async () => {
         confirmDialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The project has been deleted');

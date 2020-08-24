@@ -37,6 +37,7 @@
     "jira-connector": "^2.16.1",
     "lodash": "^4.17.20",
     "mongoose": "^5.9.29",
+    "nanoid": "^3.1.12",
     "nodemailer": "^6.4.11",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",

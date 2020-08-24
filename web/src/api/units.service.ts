@@ -6,11 +6,11 @@ export const getUnits = (slug: string) =>
     method: 'get',
   });
 
-export const createUnit = (name: string, project: string) =>
+export const createUnit = (displayName: string, projectName: string) =>
   request({
-    url: 'units',
+    url: `projects/${projectName}/units`,
     method: 'post',
-    data: { name, project },
+    data: { displayName },
   });
 
 export const deleteUnit = (slug: string) =>

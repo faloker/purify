@@ -25,3 +25,6 @@ export const SET_STATS = 'setStats';
 
 // Units
 export const SET_UNITS = 'setUnits';
+
+// Users
+export const SET_USERS = 'setUsers';

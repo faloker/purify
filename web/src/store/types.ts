@@ -24,14 +24,14 @@ export interface Credentials {
 
 export interface Project {
   _id: string;
-  title: string;
-  subtitle: string;
-  slug: string;
-  created_at: Date;
-  updated_at: Date;
-  units: number;
-  issues: number;
-  tickets: number;
+  displayName: string;
+  description: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  numUnits: number;
+  numIssues: number;
+  numTickets: number;
 }
 
 export interface CreateProjectDto {
@@ -47,18 +47,19 @@ export interface EditProjectDto extends CreateProjectDto {
 export interface Unit {
   _id: string;
   name: string;
-  slug: string;
+  displayName: string;
   project: string;
-  created_at: Date;
-  updated_at: Date;
-  reports: number;
-  closed_tickets: number;
-  tickets: number;
+  createdAt: Date;
+  updatedAt: Date;
+  numReports: number;
+  numIssues: number;
+  numTickets: number;
+  numClosedIssues: number;
   progress?: number;
 }
 
 export interface CreateUnitDto {
-  name: string;
+  displayName: string;
   project: string;
 }
 
@@ -73,9 +74,19 @@ export interface DeleteUnitDto {
 
 export interface User {
   _id: string;
-  username: string;
+  name: string;
   email: string;
   image: string;
+  role: Role;
+  ssoBypass: boolean;
+  membership: string[];
+}
+
+export enum Role {
+  OWNER = 'owner',
+  ADMIN = 'admin',
+  USER = 'user',
+  OBSERVER = 'observer',
 }
 
 export interface BodyField {
@@ -186,4 +197,9 @@ export interface FilterValue {
   title: string;
   total: number;
   value: number;
+}
+
+export interface ChangePasswordDto {
+  password: string;
+  token: string;
 }

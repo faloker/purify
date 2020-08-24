@@ -44,7 +44,7 @@
           <v-card outlined>
             <v-data-table
               :headers="headers"
-              :items="filtredItems"
+              :items="units"
               :items-per-page="5"
               :search="searchTerm"
               item-key="_id"
@@ -55,7 +55,7 @@
                   color="primary"
                   rounded
                   class="text-none mr-5"
-                  :to="{ name: 'Issues', params: { slug: item.slug } }"
+                  :to="{ name: 'Issues', params: { unitName: item.name } }"
                 >
                   <span
                     class="d-inline-block text-truncate"
@@ -78,7 +78,7 @@
                       v-on="on"
                     />
                   </template>
-                  <span>{{ item.closed_tickets }} / {{ item.tickets }}</span>
+                  <span>{{ item.numClosedIssues }} / {{ item.numIssues }}</span>
                 </v-tooltip>
               </template>
               <template v-slot:item.reports="{ item }">
@@ -86,9 +86,9 @@
                   text
                   rounded
                   class="mr-5"
-                  :to="{ name: 'Reports', params: { slug: item.slug } }"
+                  :to="{ name: 'Reports', params: { unitName: item.name } }"
                 >
-                  {{ item.reports }}
+                  {{ item.numReports }}
                 </v-btn>
               </template>
               <template v-slot:item.action="{ item }" class="text-center">
@@ -177,7 +177,7 @@ export default defineComponent({
         text: 'Name',
         width: '30%',
         align: 'center',
-        value: 'name',
+        value: 'displayName',
       },
       {
         text: 'Progress',
@@ -189,7 +189,7 @@ export default defineComponent({
         text: 'Reports',
         width: '15%',
         align: 'center',
-        value: 'reports',
+        value: 'numReports',
       },
       {
         text: 'Actions',
@@ -201,32 +201,26 @@ export default defineComponent({
     ]);
 
     const units: ComputedRef<Unit[]> = computed(() => store.state.units.items);
-    const project = computed(() => context.root.$route.params.slug);
-
-    const filtredItems = computed(() => {
-      return units.value.filter(item =>
-        toLower(item.name).includes(toLower(searchTerm.value))
-      );
-    });
+    const projectName = computed(() => context.root.$route.params.projectName);
 
     onMounted(() => {
-      store.dispatch(FETCH_UNITS, project.value).then(() => {
+      store.dispatch(FETCH_UNITS, projectName.value).then(() => {
         loading.value = false;
       });
     });
 
-    const { unitName, dialog, createUnit } = useCreateUnit(project.value);
+    const { unitName, dialog, createUnit } = useCreateUnit(projectName.value);
     const { confirmDialog, deleteUnit, openConfirmationDialog } = useDeleteUnit(
-      project.value
+      projectName.value
     );
     const { name, editDialog, editUnit, openEditDialog } = useEditUnit(
-      project.value
+      projectName.value
     );
 
     function selectUnit(item: Unit) {
       context.root.$router.push({
         name: 'Issues',
-        params: { slug: item.slug },
+        params: { unitName: item.name },
       });
     }
 
@@ -238,7 +232,8 @@ export default defineComponent({
       createUnit,
       confirmDialog,
       deleteUnit,
-      filtredItems,
+      // filtredItems,
+      units,
       searchTerm,
       loading,
       headers,
@@ -267,7 +262,7 @@ function useDeleteUnit(project: string) {
 
   function openConfirmationDialog(item: Unit) {
     confirmDialog.value = true;
-    slug.value = item.slug;
+    slug.value = item.name;
   }
 
   return {
@@ -294,7 +289,7 @@ function useEditUnit(project: string) {
 
   function openEditDialog(item: Unit) {
     editDialog.value = true;
-    slug.value = item.slug;
+    slug.value = item.name;
     name.value = item.name;
   }
 
@@ -313,7 +308,7 @@ function useCreateUnit(project: string) {
   async function createUnit() {
     store
       .dispatch(CREATE_UNIT, {
-        name: unitName.value,
+        displayName: unitName.value,
         project,
       })
       .then(() => {

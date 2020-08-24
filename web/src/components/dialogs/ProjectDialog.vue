@@ -14,22 +14,35 @@
           <v-col>
             <v-row>
               <v-text-field
-                id="project-title-input"
-                v-model="titleModel"
-                label="Project title"
-                clearable
-                required
-                @keydown.enter="$emit('handle-click')"
+                id="displayName"
+                v-model="displayNameModel"
+                label="Display name"
+                dense
+                outlined
               />
             </v-row>
             <v-row>
               <v-text-field
-                id="project-subtitle-input"
-                v-model="subtitleModel"
-                label="Project short description"
-                clearable
-                hint="For example, a tech stack: django, react, e.t.c"
-                required
+                id="name"
+                v-model="nameModel"
+                label="Short name"
+                hint="The short name is used as the unique ID within URLs."
+                dense
+                outlined
+                persistent-hint
+                append-icon="mdi-auto-fix"
+                @click:append="slugifyDisplayName"
+              />
+            </v-row>
+            <v-row class="mt-2">
+              <v-text-field
+                id="description"
+                v-model="descriptionModel"
+                label="Description"
+                hint="For example a tech stack or something meaningful."
+                dense
+                outlined
+                persistent-hint
                 @keydown.enter="$emit('handle-click')"
               />
             </v-row>
@@ -47,7 +60,7 @@
           <v-spacer />
           <v-btn
             color="quinary"
-            :disabled="!title || title.length < 3"
+            :disabled="!displayName || displayName.length < 3"
             text
             @click="$emit('handle-click')"
           >
@@ -59,7 +72,9 @@
   </v-row>
 </template>
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api';
+import { defineComponent, computed, ref } from '@vue/composition-api';
+// @ts-ignore
+import * as slug from 'slug';
 export default defineComponent({
   name: 'ProjectDialog',
 
@@ -72,12 +87,17 @@ export default defineComponent({
       type: String,
       default: 'New Project',
     },
-    title: {
+    displayName: {
       type: String,
       default: '',
       required: true,
     },
-    subtitle: {
+    name: {
+      type: String,
+      default: '',
+      required: true,
+    },
+    description: {
       type: String,
       default: '',
       required: true,
@@ -89,16 +109,30 @@ export default defineComponent({
   },
 
   setup(props, { emit }) {
-    const subtitleModel = computed({
-      get: () => props.subtitle,
-      set: val => emit('update:subtitle', val),
+    const descriptionModel = computed({
+      get: () => props.description,
+      set: val => emit('update:description', val),
     });
-    const titleModel = computed({
-      get: () => props.title,
-      set: val => emit('update:title', val),
+    const displayNameModel = computed({
+      get: () => props.displayName,
+      set: val => emit('update:displayName', val),
+    });
+    const nameModel = computed({
+      get: () => props.name,
+      set: val => emit('update:name', val),
     });
 
-    return { subtitleModel, titleModel };
+    function slugifyDisplayName() {
+      // @ts-ignore
+      nameModel.value = slug(displayNameModel.value);
+    }
+
+    return {
+      descriptionModel,
+      displayNameModel,
+      nameModel,
+      slugifyDisplayName,
+    };
   },
 });
 </script>

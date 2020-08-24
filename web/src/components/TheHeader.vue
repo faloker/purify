@@ -30,6 +30,18 @@
             <v-list-item-title>Templates</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item
+          v-permission="['owner', 'admin']"
+          active-class="primary--text"
+          :to="{ name: 'Users' }"
+        >
+          <v-list-item-action>
+            <v-icon>mdi-account-group</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Users</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
@@ -65,7 +77,7 @@
                   <img :src="user.image" alt="ava">
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title>{{ user.username }}</v-list-item-title>
+                  <v-list-item-title>{{ user.name }}</v-list-item-title>
                   <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>

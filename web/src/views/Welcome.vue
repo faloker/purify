@@ -61,10 +61,9 @@
                 <v-row>
                   <v-spacer />
                   <v-text-field
-                    id="username"
-                    v-model="username"
-                    label="Username"
-                    required
+                    id="email"
+                    v-model="email"
+                    label="Email"
                     dense
                     outlined
                   />
@@ -76,7 +75,6 @@
                     id="password"
                     v-model="password"
                     label="Password"
-                    required
                     outlined
                     dense
                     type="password"
@@ -91,7 +89,7 @@
                     type="submit"
                     color="primary"
                     :loading="loading"
-                    :disabled="!password || !username"
+                    :disabled="!password || !email"
                     @click.prevent="login"
                   >
                     Sign In
@@ -114,7 +112,6 @@
     </v-row>
   </v-container>
 </template>
-
 <script lang="ts">
 import {
   defineComponent,
@@ -122,7 +119,7 @@ import {
   computed,
   ComputedRef,
 } from '@vue/composition-api';
-import { REGISTER, LOGIN } from '@/store/actions';
+import { LOGIN } from '@/store/actions';
 import { router } from '@/router';
 import store from '@/store';
 import { SystemConfig } from '@/store/types';
@@ -132,7 +129,6 @@ export default defineComponent({
 
   setup() {
     const tabs = ref(null);
-    const username = ref('');
     const email = ref('');
     const password = ref('');
     const loading = ref(false);
@@ -142,27 +138,11 @@ export default defineComponent({
       () => store.state.system.config
     );
 
-    function register() {
-      loading.value = true;
-      store
-        .dispatch(REGISTER, {
-          email: email.value,
-          password: password.value,
-          username: username.value,
-        })
-        .then(() => {
-          router.push({ name: 'Projects' });
-        })
-        .catch(() => {
-          loading.value = false;
-        });
-    }
-
     function login() {
       loading.value = true;
       store
         .dispatch(LOGIN, {
-          username: username.value,
+          email: email.value,
           password: password.value,
         })
         .then(() => {
@@ -178,16 +158,13 @@ export default defineComponent({
       email,
       login,
       loading,
-      username,
       password,
-      register,
       forceLogin,
       systemConfig,
     };
   },
 });
 </script>
-
 <style scoped>
 .grey-form {
   background-color: #fafafa;

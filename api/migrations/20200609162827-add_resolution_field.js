@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const uuid = require('uuid');
-
 module.exports = {
   async up(db, client) {
     // combine different resolutions in one field

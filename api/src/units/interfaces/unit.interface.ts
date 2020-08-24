@@ -8,4 +8,7 @@ export interface Unit extends Document {
   readonly project: string | Project;
   readonly created_at: Date;
   readonly updated_at: Date;
+  readonly numIssues?: number;
+  readonly numTickets?: number;
+  readonly numReports?: number;
 }

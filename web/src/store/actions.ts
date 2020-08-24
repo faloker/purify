@@ -48,3 +48,10 @@ export const SAML_LOGIN = 'samlLogin';
 
 export const SHOW_SUCCESS_MSG = 'showSuccessMsg';
 export const SHOW_ERROR_MSG = 'showErrorMsg';
+
+// Users
+export const FETCH_USERS = 'fetchUsers';
+export const CREATE_USER = 'createUser';
+export const EDIT_USER = 'editUser';
+export const DELETE_USER = 'deleteUser';
+export const CHANGE_PASSWORD = 'changePassword';

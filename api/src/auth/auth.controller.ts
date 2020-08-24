@@ -12,11 +12,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
-import { CreateUserDto } from 'src/users/dto/user.dto';
+import { CreateUserDto, ChangePasswordDto } from 'src/users/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { GenericAuthGuard } from './generic-auth.guard';
 import { CredentialsAuthGuard } from './credentials-auth.guard';
-import { ApiTags, ApiBody, ApiExcludeEndpoint } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiExcludeEndpoint, ApiOperation, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { SamlAuthGuard } from './saml-auth.guard';
 
 @ApiTags('auth')
@@ -43,7 +43,7 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        username: { type: 'string' },
+        email: { type: 'string' },
         password: { type: 'string' },
       },
     },
@@ -54,38 +54,38 @@ export class AuthController {
 
     response
       .status(200)
-      .cookie('refresh_token', tokens.refresh_token, this.cookieConfig)
-      .send({ token: tokens.access_token });
+      .cookie('refreshToken', tokens.refreshToken, this.cookieConfig)
+      .send({ token: tokens.accessToken });
   }
 
-  @Post('signup')
-  async register(@Body() createUserDto: CreateUserDto, @Res() response) {
-    if (this.configService.get<string>('ALLOW_REGISTRATION') === 'false') {
-      throw new BadRequestException(
-        'Registration is disabled for this installation'
-      );
-    }
+  // @Post('signup')
+  // async register(@Body() createUserDto: CreateUserDto, @Res() response) {
+  //   if (this.configService.get<string>('ALLOW_REGISTRATION') === 'false') {
+  //     throw new BadRequestException(
+  //       'Registration is disabled for this installation'
+  //     );
+  //   }
 
-    const newUser = await this.usersService.createUser(createUserDto);
-    const tokens = await this.authService.login(newUser);
+  //   const newUser = await this.usersService.createUser(createUserDto);
+  //   const tokens = await this.authService.login(newUser);
 
-    response
-      .cookie('refresh_token', tokens.refresh_token, this.cookieConfig)
-      .send({ token: tokens.access_token });
-  }
+  //   response
+  //     .cookie('refreshToken', tokens.refreshToken, this.cookieConfig)
+  //     .send({ token: tokens.accessToken });
+  // }
 
-  @Get('refresh_token')
+  @Get('refreshToken')
   @ApiExcludeEndpoint()
   async refreshToken(@Request() req, @Res() response) {
     if (req.cookies) {
       try {
         const tokens = await this.authService.refreshToken(
-          req.cookies.refresh_token
+          req.cookies.refreshToken
         );
 
         response
-          .cookie('refresh_token', tokens.refresh_token, this.cookieConfig)
-          .send({ token: tokens.access_token });
+          .cookie('refreshToken', tokens.refreshToken, this.cookieConfig)
+          .send({ token: tokens.accessToken });
       } catch (err) {
         response.status(HttpStatus.UNAUTHORIZED).send({
           statusCode: HttpStatus.UNAUTHORIZED,
@@ -121,7 +121,7 @@ export class AuthController {
   @UseGuards(GenericAuthGuard)
   async logout(@Request() req, @Res() response) {
     await this.authService.removeRefreshToken(req.user.id);
-    response.clearCookie('refresh_token', this.cookieConfig).send('bye');
+    response.clearCookie('refreshToken', this.cookieConfig).send('bye');
   }
 
   @Get('saml')
@@ -136,11 +136,19 @@ export class AuthController {
     const tokens = await this.authService.login(req.user);
 
     response
-      .cookie('refresh_token', tokens.refresh_token, this.cookieConfig)
+      .cookie('refreshToken', tokens.refreshToken, this.cookieConfig)
       .redirect(
         `https://${this.configService.get<string>(
           'DOMAIN'
-        )}/#/saml/login/${Buffer.from(tokens.access_token).toString('base64')}`
+        )}/#/saml/login/${Buffer.from(tokens.accessToken).toString('base64')}`
       );
+  }
+
+  @Post('/change_password')
+  @ApiOperation({ summary: 'Change user password' })
+  @ApiOkResponse({ description: 'Changed successfully' })
+  @ApiNotFoundResponse({ description: 'No such token' })
+  changePassword(@Body() changePasswordDto: ChangePasswordDto) {
+    return this.usersService.changePassword(changePasswordDto);
   }
 }

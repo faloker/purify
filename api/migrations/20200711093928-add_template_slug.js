@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const uuid = require('uuid');
 const slug = require('slug');
 
 module.exports = {

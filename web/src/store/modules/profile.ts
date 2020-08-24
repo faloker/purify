@@ -2,11 +2,19 @@ import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 import { PROFILE_FETCH } from '@/store/actions';
 import { SET_PROFILE } from '@/store/mutations';
 import { currentUser } from '@/api/users.service';
-import { User } from '../types';
+import { User, Role } from '../types';
 
 @Module
 export default class Profile extends VuexModule {
-  user: User | {} = {};
+  user: User = {
+    _id: '',
+    name: '',
+    email: '',
+    image: '',
+    ssoBypass: false,
+    role: Role.OBSERVER,
+    membership: [],
+  };
 
   @Mutation
   [SET_PROFILE](user: User) {

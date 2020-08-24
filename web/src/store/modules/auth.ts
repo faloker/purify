@@ -30,7 +30,7 @@ export default class Auth extends VuexModule {
     const { data } = await login(credentials);
 
     this.context.commit(SET_AUTH, data.token);
-    this.context.dispatch(AUTO_REFRESH);
+    await this.context.dispatch(AUTO_REFRESH);
   }
 
   @Action
@@ -38,7 +38,7 @@ export default class Auth extends VuexModule {
     const { data } = await signup(credentials);
 
     this.context.commit(SET_AUTH, data.token);
-    this.context.dispatch(AUTO_REFRESH);
+    await this.context.dispatch(AUTO_REFRESH);
   }
 
   @Action
@@ -46,12 +46,12 @@ export default class Auth extends VuexModule {
     const { data } = await refreshToken();
 
     this.context.commit(SET_AUTH, data.token);
-    this.context.dispatch(AUTO_REFRESH);
+    await this.context.dispatch(AUTO_REFRESH);
   }
 
   @Action
   async [AUTO_REFRESH]() {
-    this.context.dispatch(PROFILE_FETCH);
+    await this.context.dispatch(PROFILE_FETCH);
 
     const { exp } = jwt_decode(this.token);
     const now = Date.now();
@@ -69,7 +69,7 @@ export default class Auth extends VuexModule {
   @Action
   async [SAML_LOGIN](token: string) {
     this.context.commit(SET_AUTH, token);
-    this.context.dispatch(AUTO_REFRESH);
+    await this.context.dispatch(AUTO_REFRESH);
   }
 
   @Mutation

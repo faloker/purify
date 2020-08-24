@@ -30,6 +30,7 @@ import {
 } from './dto/projects.dto';
 import { Project as IProject } from './interfaces/project.interface';
 import { UnitList } from 'src/units/dto/units.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
@@ -38,6 +39,17 @@ import { UnitList } from 'src/units/dto/units.dto';
 @UseGuards(GenericAuthGuard)
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
+
+  @Post()
+  @Roles(['owner'])
+  @ApiOperation({ summary: 'Create project' })
+  @ApiCreatedResponse({
+    description: 'Created successfully',
+    type: Project,
+  })
+  createProject(@Body() createProjectDto: CreateProjectDto): Promise<IProject> {
+    return this.projectsService.create(createProjectDto);
+  }
 
   @Get()
   @ApiOperation({ summary: 'List projects' })
@@ -49,57 +61,48 @@ export class ProjectsController {
     return this.projectsService.getAll();
   }
 
-  @Post()
-  @ApiOperation({ summary: 'Create project' })
-  @ApiCreatedResponse({
-    description: 'Created successfully',
-    type: Project,
-  })
-  createProject(@Body() createProjectDto: CreateProjectDto): Promise<IProject> {
-    return this.projectsService.create(createProjectDto);
-  }
-
-  @Patch(':slug')
-  @ApiOperation({ summary: 'Update project by slug' })
+  @Patch(':projectName')
+  @ApiOperation({ summary: 'Update a project by name' })
   @ApiOkResponse({
     description: 'Update successful',
     type: Project,
   })
   @ApiNotFoundResponse({ description: 'No such project' })
   editProject(
-    @Param('slug') slug: string,
+    @Param('projectName') name: string,
     @Body() editProjectDto: EditProjectDto
   ): Promise<IProject> {
-    return this.projectsService.edit(slug, editProjectDto);
+    return this.projectsService.edit(name, editProjectDto);
   }
 
-  @Delete(':slug')
-  @ApiOperation({ summary: 'Delete project by slug' })
-  @ApiNoContentResponse({ description: 'Delete successful' })
+  @Delete(':projectName')
+  @Roles(['owner'])
+  @ApiOperation({ summary: 'Delete project' })
+  @ApiNoContentResponse({ description: 'Removed successfully' })
   @ApiNotFoundResponse({ description: 'No such project' })
   @HttpCode(204)
-  deleteProject(@Param('slug') slug: string) {
-    return this.projectsService.delete(slug);
+  deleteProject(@Param('projectName') name: string) {
+    return this.projectsService.delete(name);
   }
 
-  @Get(':slug/stats')
+  @Get(':projectName/stats')
   @ApiOperation({ summary: 'Get project statistics' })
   @ApiOkResponse({
     description: 'Yearly statistics for the project and units',
     type: ProjectStatistics,
   })
   @ApiNotFoundResponse({ description: 'No such project' })
-  getStats(@Param('slug') slug: string) {
-    return this.projectsService.getStats(slug);
+  getStats(@Param('projectName') name: string) {
+    return this.projectsService.getStats(name);
   }
 
-  @Get(':slug/units')
-  @ApiOperation({ summary: 'List units in project' })
-  @ApiOkResponse({
-    description: 'List of units',
-    type: [UnitList],
-  })
-  getUnits(@Param('slug') slug: string) {
-    return this.projectsService.getUnits(slug);
-  }
+  // @Get(':projectName/units')
+  // @ApiOperation({ summary: 'List units in the project' })
+  // @ApiOkResponse({
+  //   description: 'List of units',
+  //   type: [UnitList],
+  // })
+  // getUnits(@Param('projectName') name: string) {
+  //   return this.projectsService.getUnits(name);
+  // }
 }
