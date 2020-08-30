@@ -40,7 +40,7 @@ export class ReportsController {
   }
 
   @Delete(':id')
-  @Roles(['owner', 'admin', 'user'])
+  @Roles(['owner', 'admin'])
   @ApiOperation({ summary: 'Delete report by id' })
   @ApiNoContentResponse({ description: 'Removed successfully' })
   @ApiNotFoundResponse({ description: 'No such report' })

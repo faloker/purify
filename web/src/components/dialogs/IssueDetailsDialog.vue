@@ -28,7 +28,10 @@
               <v-row justify="center">
                 <span class="text-capitalize">{{ issue.risk }}</span>
               </v-row>
-              <v-dialog v-model="riskDialog" max-width="300">
+              <v-dialog
+                v-model="riskDialog"
+                max-width="300"
+              >
                 <v-card>
                   <v-card-title>
                     <span class="title mb-2">Change risk</span>
@@ -68,7 +71,7 @@
               </v-row>
             </v-col>
           </v-row>
-          <v-row justify="center">
+          <v-row v-permission="['owner', 'admin', 'user']" justify="center">
             <v-col>
               <v-menu
                 v-if="issue.status === 'open'"

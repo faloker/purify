@@ -6,7 +6,7 @@
         align="center"
         justify="center"
       >
-        <div>
+        <div v-permission="['owner', 'admin', 'user']">
           <v-tooltip top>
             <template v-slot:activator="{ on }">
               <v-checkbox
@@ -22,11 +22,12 @@
           </v-tooltip>
         </div>
         <v-divider
+          v-permission="['owner', 'admin', 'user']"
           light
           class="ma-3"
           vertical
         />
-        <group-action-btn :items="selectedIssues" />
+        <group-action-btn v-permission="['owner', 'admin', 'user']" :items="selectedIssues" />
         <v-spacer />
 
         <v-col cols="1">

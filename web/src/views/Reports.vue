@@ -50,6 +50,7 @@
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
+                  v-permission="['owner', 'admin']"
                   text
                   icon
                   color="red darken-1"
