@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog
       v-model="value"
-      max-width="400px"
+      max-width="430px"
       @input="$emit('input', $event.target.value)"
       @click:outside="$emit('input', false)"
     >
@@ -73,8 +73,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api';
-// @ts-ignore
-import * as slug from 'slug';
+import slug from 'slug';
 export default defineComponent({
   name: 'ProjectDialog',
 
@@ -123,7 +122,6 @@ export default defineComponent({
     });
 
     function slugifyDisplayName() {
-      // @ts-ignore
       nameModel.value = slug(displayNameModel.value);
     }
 

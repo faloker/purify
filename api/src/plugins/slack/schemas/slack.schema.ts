@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Schema } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 export const SlackSettingsSchema = new Schema(
   {
-    _id: { type: String, default: uuidv4 },
+    _id: { type: String, default: () => nanoid() },
     webhook: { type: String, required: true },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
+  { timestamps: true }
 );

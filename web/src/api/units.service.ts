@@ -1,27 +1,32 @@
 import request from '@/utils/request';
+import { EditUnitDto } from '@/store/types';
 
-export const getUnits = (slug: string) =>
-  request({
-    url: `projects/${slug}/units`,
+export function getUnits(projectName: string) {
+  return request({
+    url: `projects/${projectName}/units`,
     method: 'get',
   });
+}
 
-export const createUnit = (displayName: string, projectName: string) =>
-  request({
+export function createUnit(projectName: string, payload: any) {
+  return request({
     url: `projects/${projectName}/units`,
     method: 'post',
-    data: { displayName },
+    data: { ...payload },
   });
+}
 
-export const deleteUnit = (slug: string) =>
-  request({
-    url: `units/${slug}`,
+export function deleteUnit(unitName: string) {
+  return request({
+    url: `units/${unitName}`,
     method: 'delete',
   });
+}
 
-export const editUnit = (slug: string, name: string) =>
-  request({
-    url: `units/${slug}`,
+export function editUnit(unitName: string, displayName: string) {
+  return request({
+    url: `units/${unitName}`,
     method: 'patch',
-    data: { name },
+    data: { displayName },
   });
+}

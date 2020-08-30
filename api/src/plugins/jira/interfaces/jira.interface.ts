@@ -5,6 +5,6 @@ export interface JiraSettings extends Document {
   host: string;
   username: string;
   api_key: string;
-  readonly created_at: Date;
-  readonly updated_at: Date;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
 }

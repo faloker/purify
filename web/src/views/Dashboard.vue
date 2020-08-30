@@ -7,8 +7,8 @@
           id="projectSearch"
           v-model="selectedProject"
           :items="projects"
-          item-text="title"
-          item-value="slug"
+          item-text="displayName"
+          item-value="name"
           clearable
           dense
           outlined
@@ -168,15 +168,18 @@ export default defineComponent({
     const projects = computed(() => store.state.projects.items);
     const stats = computed(() => store.state.projects.stats);
 
-    onMounted(async () => await store.dispatch(FETCH_PROJECTS));
+    onMounted(async () => await store.dispatch(FETCH_PROJECTS).catch(() => {}));
 
     function fetchStats() {
       if (selectedProject.value) {
-        store.dispatch(FETCH_STATS, selectedProject.value).then(() => {
-          unitSearch.value = '';
-          unitsNames.value = stats.value.units.map((unit: any) => unit.name);
-          setStats(stats.value.project);
-        });
+        store
+          .dispatch(FETCH_STATS, selectedProject.value)
+          .then(() => {
+            unitSearch.value = '';
+            unitsNames.value = stats.value.units.map((unit: any) => unit.name);
+            setStats(stats.value.project);
+          })
+          .catch(() => {});
       }
     }
 

@@ -46,18 +46,18 @@ export default class Projects extends VuexModule {
   @Action
   async [CREATE_PROJECT](payload: CreateProjectDto) {
     await createProject(payload);
-    this.context.dispatch(FETCH_PROJECTS);
+    this.context.dispatch(FETCH_PROJECTS, true);
   }
 
   @Action
-  async [DELETE_PROJECT](slug: string) {
-    await deleteProject(slug);
-    this.context.dispatch(FETCH_PROJECTS);
+  async [DELETE_PROJECT](projectName: string) {
+    await deleteProject(projectName);
+    this.context.dispatch(FETCH_PROJECTS, true);
   }
 
   @Action
   async [EDIT_PROJECT](payload: EditProjectDto) {
-    await editProject(payload.slug, payload.change);
-    this.context.dispatch(FETCH_PROJECTS);
+    await editProject(payload.name, payload.change);
+    this.context.dispatch(FETCH_PROJECTS, true);
   }
 }

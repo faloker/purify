@@ -35,13 +35,6 @@ export class IssueChange {
 }
 
 export class GetIssuesQueryDto {
-  @ApiProperty({
-    description: 'The slug of a unit you want to get issues for.',
-  })
-  @IsString()
-  @IsNotEmpty()
-  readonly unit: string;
-
   @ApiPropertyOptional({
     description: 'Filter by issue status.',
     enum: ['open', 'closed'],
@@ -66,10 +59,24 @@ export class GetIssuesQueryDto {
   @IsOptional()
   @IsString()
   readonly risks?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter by project name',
+  })
+  @IsOptional()
+  @IsString()
+  readonly projectName?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter by unit name',
+  })
+  @IsOptional()
+  @IsString()
+  readonly unitName?: string;
 }
 
 export class UpdateIssuesBodyDto {
-  @IsUUID('4', { each: true })
+  @IsString({ each: true })
   readonly ids: string[];
 
   @ValidateNested()
@@ -78,7 +85,7 @@ export class UpdateIssuesBodyDto {
 }
 
 export class IdParamDto {
-  @IsUUID('4')
+  @IsString()
   readonly id: string;
 }
 

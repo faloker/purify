@@ -61,7 +61,7 @@ export class AuthService {
       .toString()
       .split(':');
 
-    const user = await this.usersService.findOne({ username });
+    const user = await this.usersService.findOne({ name: username });
     if (user && this.usersService.isSecretValid(token, user.token, user.salt)) {
       return user;
     }

@@ -24,14 +24,15 @@ export default class Reports extends VuexModule {
   }
 
   @Action
-  async [FETCH_REPORTS](unitSlug: string) {
-    const { data } = await getReports(unitSlug);
+  async [FETCH_REPORTS]() {
+    const { data } = await getReports(this.context.rootState.system.unitName);
     this.context.commit(SET_REPORTS, data);
   }
 
   @Action
   async [REPORT_DELETE](reportId: string) {
     await deleteReport(reportId);
+    await this.context.dispatch(FETCH_REPORTS).catch(() => {});
   }
 
   @Action

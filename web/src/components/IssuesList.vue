@@ -245,7 +245,7 @@ export default defineComponent({
     );
 
     onMounted(async () => {
-      await store.dispatch(TEMPLATES_FETCH);
+      store.dispatch(TEMPLATES_FETCH);
     });
 
     watch(

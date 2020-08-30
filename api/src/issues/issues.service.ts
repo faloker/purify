@@ -14,6 +14,8 @@ import { Comment } from './interfaces/comment.interface';
 import { SaveCommentBodyDto, GetIssuesQueryDto } from './dto/issues.dto';
 import { JiraService } from 'src/plugins/jira/jira.service';
 import { matchPattern } from 'src/utils/converter';
+import { Project } from 'src/projects/interfaces/project.interface';
+import { Template } from 'src/templates/interfaces/template.interface';
 
 @Injectable()
 export class IssuesService {
@@ -22,60 +24,74 @@ export class IssuesService {
     @InjectModel('Unit') private readonly unitModel: Model<Unit>,
     @InjectModel('Comment') private readonly commentModel: Model<Comment>,
     @InjectModel('Ticket') private readonly ticketModel: Model<Ticket>,
+    @InjectModel('Project') private readonly projectModel: Model<Project>,
     private jiraService: JiraService
   ) {}
 
-  async get(params: GetIssuesQueryDto) {
-    const unit = await this.unitModel.findOne({ slug: params.unit });
+  async getIssues(params: GetIssuesQueryDto, allowedProjects?: string[]) {
     const options: any = {};
-
-    if (!unit) {
-      throw new NotFoundException();
-    } else {
-      options.unit = unit._id;
-    }
 
     if (params.status) {
       options.status = params.status;
     }
-
     if (params.ticket) {
       options.ticket = { $exists: params.ticket === 'true' ? true : false };
     }
-
     if (params.risks) {
       options.risk = { $in: params.risks.split(',').map(r => r.toLowerCase()) };
+    }
+    if (params.unitName) {
+      const { _id } = await this.unitModel
+        .findOne({ name: params.unitName }, '_id')
+        .lean();
+      if (_id) {
+        options.unit = _id;
+      } else {
+        throw new NotFoundException('Unit not found');
+      }
+    }
+    if (params.projectName) {
+      const { _id } = await this.projectModel
+        .findOne({ name: params.projectName }, '_id')
+        .lean();
+      if (_id) {
+        options.project = _id;
+      } else {
+        throw new NotFoundException('Project not found');
+      }
+    } else if (allowedProjects) {
+      options.project = { $in: allowedProjects };
     }
 
     const issues: any = [];
 
     const rawIssues = await this.issueModel
       .find(options)
-      .populate('template', ['title_pattern', 'subtitle_pattern', 'name'])
+      .lean()
+      .populate('template', ['titlePattern', 'subtitlePattern', 'displayName'])
       .populate('ticket')
       .populate('comments');
 
     for (const issue of rawIssues) {
+      const fieldsAsObject = JSON.parse(issue.fields);
       if (issue.template) {
         issues.push({
           _id: issue._id,
-          fields: JSON.parse(issue.fields),
+          fields: fieldsAsObject,
           status: issue.status,
           resolution: issue.resolution,
           title: matchPattern(
-            JSON.parse(issue.fields),
-            // @ts-ignore
-            issue.template.title_pattern
+            fieldsAsObject,
+            (issue.template as Template).titlePattern
           ),
           subtitle: matchPattern(
-            JSON.parse(issue.fields),
-            // @ts-ignore
-            issue.template.subtitle_pattern
+            fieldsAsObject,
+            (issue.template as Template).subtitlePattern
           ),
-          // @ts-ignore
-          template: issue.template.name,
+          template: (issue.template as Template).displayName,
           risk: issue.risk,
-          created_at: issue.created_at,
+          createdAt: issue.createdAt,
+          updatedAt: issue.updatedAt,
           ticket: issue.ticket,
           totalComments: issue.comments.length,
         });
@@ -85,16 +101,17 @@ export class IssuesService {
     return issues;
   }
 
-  async updateMany(ids: string[], change: any) {
-    return this.issueModel.updateMany({ _id: { $in: ids } }, { $set: change });
+  async updateMany(ids: string[], change: any, allowedProjects?: string[]) {
+    const options: any = { _id: { $in: ids } };
+
+    if (allowedProjects) {
+      options.project = { $in: allowedProjects };
+    }
+
+    return this.issueModel.updateMany(options, { $set: change });
   }
 
   async createJiraTicket(issueId: string, jiraIssue: any) {
-    const issue = await this.issueModel.findOne({ _id: issueId });
-    if (!issue) {
-      throw new BadRequestException('No such issue');
-    }
-
     const settings = await this.jiraService.getSettings();
     if (settings) {
       const jiraTicket = await this.jiraService
@@ -128,18 +145,24 @@ export class IssuesService {
       { $push: { comments: comment._id } }
     );
 
-    const createdComment = await this.commentModel
+    return this.commentModel
       .findOne({ _id: comment._id })
+      .lean()
       .populate('author', ['username', 'image']);
-
-    return createdComment;
   }
 
-  async getComments(issueId: string) {
-    const issue = await this.issueModel.findOne({ _id: issueId }).populate({
-      path: 'comments',
-      populate: { path: 'author', select: 'username image' },
-    });
+  async getComments(issueId: string, allowedProjects?: string[]) {
+    const issue = await this.issueModel
+      .findOne({ _id: issueId })
+      .lean()
+      .populate({
+        path: 'comments',
+        populate: { path: 'author', select: 'username image' },
+      });
     return issue.comments;
+  }
+
+  async findOne(issueId: string) {
+    return this.issueModel.findOne({ _id: issueId }).lean();
   }
 }

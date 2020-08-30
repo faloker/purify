@@ -7,6 +7,9 @@ import { UnitSchema } from 'src/units/schemas/unit.schema';
 import { TicketSchema } from './schemas/ticket.schema';
 import { CommentSchema } from './schemas/comment.schema';
 import { JiraModule } from 'src/plugins/jira/jira.module';
+import { UnitsModule } from 'src/units/units.module';
+import { ProjectsModule } from 'src/projects/projects.module';
+import { ProjectSchema } from 'src/projects/schemas/project.schema';
 
 @Module({
   imports: [
@@ -14,7 +17,10 @@ import { JiraModule } from 'src/plugins/jira/jira.module';
     MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
     MongooseModule.forFeature([{ name: 'Ticket', schema: TicketSchema }]),
     MongooseModule.forFeature([{ name: 'Comment', schema: CommentSchema }]),
+    MongooseModule.forFeature([{ name: 'Project', schema: ProjectSchema }]),
     JiraModule,
+    ProjectsModule,
+    UnitsModule,
   ],
   controllers: [IssuesController],
   providers: [IssuesService],

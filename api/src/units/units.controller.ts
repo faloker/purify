@@ -10,11 +10,13 @@ import {
   Controller,
   Patch,
   NotFoundException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UnitsService } from './units.service';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
-import { CreateUnitDto, Unit, EditUnitDto, UnitList } from './dto/units.dto';
-import { Unit as IUnit } from './interfaces/unit.interface';
+import { CreateUnitDto, EditUnitDto } from './dto/units.dto';
+import { Unit } from './interfaces/unit.interface';
 import {
   ApiTags,
   ApiSecurity,
@@ -24,66 +26,81 @@ import {
   ApiNotFoundResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiParam,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Project } from 'src/projects/interfaces/project.interface';
+import { ProjectInterceptor } from 'src/common/interceptors/project.interceptor';
+import { UnitInterceptor } from 'src/common/interceptors/unit.interceptor';
+import { IssuesService } from 'src/issues/issues.service';
+import { GetIssuesQueryDto } from 'src/issues/dto/issues.dto';
+import { FileUploadDto } from 'src/reports/dto/reports.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ReportsService } from 'src/reports/reports.service';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
-@Controller('projects/:projectName/units')
+@UseInterceptors(UnitInterceptor)
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
-@ApiTags('units')
+@Controller('units')
 export class UnitsController {
-  constructor(private readonly unitsService: UnitsService) {}
-
-  @Get()
-  @Roles(['owner', 'admin', 'user', 'observer'])
-  @ApiOperation({ summary: 'List units in the project' })
-  @ApiOkResponse({
-    description: 'List of units',
-    type: [UnitList],
-  })
-  getUnits(@Param('projectName') projectName: string) {
-    return this.unitsService.getUnits(projectName);
-  }
-
-  @Post()
-  @Roles(['owner', 'admin'])
-  @ApiOperation({ summary: 'Create unit' })
-  @ApiCreatedResponse({
-    description: 'Created successfully',
-    type: Unit,
-  })
-  createUnit(
-    @Param('projectName') projectName: string,
-    @Body() createUnitDto: CreateUnitDto
-  ) {
-    return this.unitsService.create(projectName, createUnitDto);
-  }
+  constructor(
+    private readonly unitsService: UnitsService,
+    private readonly reportsService: ReportsService
+  ) {}
 
   @Patch(':unitName')
-  @Roles(['admin', 'editor'])
+  @Roles(['owner', 'admin'])
   @ApiOperation({ summary: 'Update unit by name' })
-  @ApiOkResponse({
-    description: 'Update successful',
-    type: Unit,
-  })
+  @ApiOkResponse({ description: 'Update successful' })
   @ApiNotFoundResponse({ description: 'No such unit' })
-  editProject(
-    @Param('unitName') unitName: string,
-    @Body() editUnitDto: EditUnitDto
-  ): Promise<IUnit> {
-    return this.unitsService.edit(unitName, editUnitDto);
+  @ApiParam({ name: 'unitName', type: 'string', required: true })
+  @ApiTags('units')
+  editUnit(@Param('unitName') unit: Unit, @Body() editUnitDto: EditUnitDto) {
+    return this.unitsService.updateOne(unit, editUnitDto);
   }
 
   @Delete(':unitName')
-  @Roles(['admin', 'editor'])
+  @Roles(['owner', 'admin'])
   @ApiOperation({ summary: 'Delete unit by name' })
   @ApiNoContentResponse({ description: 'Removed successfully' })
   @ApiNotFoundResponse({ description: 'No such unit' })
+  @ApiParam({ name: 'unitName', type: 'string', required: true })
+  @ApiTags('units')
   @HttpCode(204)
-  deleteUnit(@Param('unitName') unitName: string) {
-    return this.unitsService.delete(unitName);
+  deleteUnit(@Param('unitName') unit: Unit) {
+    return this.unitsService.deleteOne(unit._id);
+  }
+
+  @Get(':unitName/reports')
+  @Roles(['owner', 'admin', 'user', 'observer'])
+  @ApiOperation({ summary: 'List reports' })
+  @ApiOkResponse({ description: 'List of reports' })
+  @ApiParam({ name: 'unitName', type: 'string', required: true })
+  getReports(@Param('unitName') unit: Unit) {
+    return this.reportsService.getReports(unit._id);
+  }
+
+  @Post(':unitName/reports')
+  @Roles(['owner', 'admin', 'user'])
+  @ApiOperation({ summary: 'Upload file' })
+  @ApiCreatedResponse({ description: 'Upload successfull' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'The file to upload',
+    type: FileUploadDto,
+  })
+  @ApiParam({ name: 'unitName', type: 'string', required: true })
+  @UseInterceptors(FileInterceptor('file'))
+  saveReport(
+    @UploadedFile() file,
+    @Param('unitName') unit: Unit,
+    @Body() body: FileUploadDto
+  ) {
+    return this.reportsService.saveFileReport(file, unit, body.template);
   }
 }

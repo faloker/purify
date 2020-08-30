@@ -35,12 +35,13 @@ export interface Project {
 }
 
 export interface CreateProjectDto {
-  title: string;
-  subtitle: string;
+  name: string;
+  displayName: string;
+  description: string;
 }
 
 export interface EditProjectDto extends CreateProjectDto {
-  slug: string;
+  name: string;
   change: CreateProjectDto;
 }
 
@@ -60,17 +61,11 @@ export interface Unit {
 
 export interface CreateUnitDto {
   displayName: string;
-  project: string;
-}
-
-export interface EditUnitDto {
-  slug: string;
   name: string;
 }
 
-export interface DeleteUnitDto {
-  slug: string;
-}
+// eslint-disable-next-line
+export interface EditUnitDto extends CreateUnitDto {}
 
 export interface User {
   _id: string;
@@ -96,26 +91,25 @@ export interface BodyField {
 
 export interface Template {
   _id: string;
-  slug: string;
   name: string;
-  path_to_issues: string;
-  title_fields: string[];
-  body_fields: BodyField[];
-  risk_field: string;
-  internal_comparison_fields: string[];
-  external_comparison_fields: string[];
-  merge_fields: string[];
-  title_pattern: string;
-  subtitle_pattern: string;
+  displayName: string;
+  pathToIssues: string;
+  titleFields: string[];
+  bodyFields: BodyField[];
+  riskField: string;
+  internalComparisonFields: string[];
+  externalComparisonFields: string[];
+  mergeFields: string[];
+  titlePattern: string;
+  subtitlePattern: string;
   tags: string[];
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface TemplateWithStats {
-  issues: number;
-  reports: number;
-  template: Template;
+export interface TemplateWithStats extends Template {
+  numIssues: number;
+  numReports: number;
 }
 
 interface Statistics {
@@ -130,12 +124,12 @@ export interface Report {
   unit: string;
   type: string;
   template: string;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface EditTemplateDto {
-  slug: string;
+  name: string;
   change: Template;
 }
 
@@ -159,8 +153,8 @@ export interface Issue {
   unit: Unit | string;
   tags: string[];
   comments: Comment[] | string[];
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface EditIssueDto {
@@ -184,8 +178,8 @@ export interface Comment {
   _id: string;
   text: string;
   author: string | User;
-  created_at?: Date;
-  updated_at?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface FilterOption {

@@ -20,6 +20,7 @@
       </v-col>
       <v-col>
         <v-btn
+          v-permission="['owner']"
           color="primary"
           text
           @click="dialog = true"
@@ -92,9 +93,12 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.dispatch(FETCH_PROJECTS, true).then(() => {
-        loading.value = false;
-      });
+      store
+        .dispatch(FETCH_PROJECTS, true)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
     });
 
     const createProject = useCreateProject();

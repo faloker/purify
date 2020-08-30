@@ -14,14 +14,14 @@ export const UnitSchema = new Schema(
 
 UnitSchema.virtual('numIssues', {
   ref: 'Issue',
-  localField: 'name',
+  localField: '_id',
   foreignField: 'unit',
   count: true,
 });
 
 UnitSchema.virtual('numClosedIssues', {
   ref: 'Issue',
-  localField: 'name',
+  localField: '_id',
   foreignField: 'unit',
   match: { status: 'closed' },
   count: true,
@@ -29,7 +29,7 @@ UnitSchema.virtual('numClosedIssues', {
 
 UnitSchema.virtual('numTickets', {
   ref: 'Issue',
-  localField: 'name',
+  localField: '_id',
   foreignField: 'unit',
   match: { ticket: { $exists: true } },
   count: true,
@@ -37,7 +37,7 @@ UnitSchema.virtual('numTickets', {
 
 UnitSchema.virtual('numReports', {
   ref: 'Report',
-  localField: 'name',
+  localField: '_id',
   foreignField: 'unit',
   count: true,
 });

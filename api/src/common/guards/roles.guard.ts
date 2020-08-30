@@ -12,19 +12,13 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    if (!request.user) {
+    const req = context.switchToHttp().getRequest();
+    if (!req.user) {
       return false;
-    } else if (request.user.role === Role.OWNER) {
+    } else if (req.user.role === Role.OWNER) {
       return true;
     }
 
-    const hasRole = () => roles.includes(request.user.role);
-    const hasmembership = () =>
-      request.user.memberships.includes(request.params['projectName'] || '');
-
-    return Object.keys(request.params).includes('projectName')
-      ? hasRole() && hasmembership()
-      : hasRole();
+    return roles.includes(req.user.role);
   }
 }

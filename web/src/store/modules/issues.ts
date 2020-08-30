@@ -38,27 +38,27 @@ export default class Issues extends VuexModule {
   }
 
   @Action
-  async [ISSUES_FETCH](unit: string) {
-    const { data } = await getIssues(unit);
+  async [ISSUES_FETCH]() {
+    const { data } = await getIssues(this.context.rootState.system.unitName);
     this.context.commit(SET_ISSUES, data);
   }
 
   @Action
   async [ISSUE_UPDATE](payload: EditIssueDto) {
     await updateIssues(payload.ids, payload.change);
-    this.context.dispatch(ISSUES_FETCH, payload.unitId);
+    this.context.dispatch(ISSUES_FETCH);
   }
 
   @Action
   async [CREATE_TICKET](payload: CreateTicketDto) {
     const { data } = await createTicket(payload.issueId, payload.fields);
-    this.context.dispatch(ISSUES_FETCH, payload.unitId);
+    this.context.dispatch(ISSUES_FETCH);
     return data;
   }
 
   @Action
   async [POST_COMMENT](payload: PostCommentDto) {
-    const { data } = await postComment(payload.issueId, payload.comment);
+    await postComment(payload.issueId, payload.comment);
     this.context.dispatch(GET_COMMENTS, payload.issueId);
   }
 

@@ -11,40 +11,38 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateProjectDto {
-  @ApiProperty()
-  @Matches(RegExp(/^[a-z0-9_.-]+$/))
+  @Matches(RegExp(/^[a-z0-9_-]+$/))
+  @MinLength(3)
+  @MaxLength(40)
   readonly name: string;
 
-  @ApiProperty()
   @IsString()
   @MinLength(3)
   @MaxLength(40)
   readonly displayName: string;
 
-  @ApiProperty()
   @IsString()
   @IsOptional()
   @MinLength(3)
   @MaxLength(40)
-  readonly description: string;
+  readonly description?: string;
 }
 
 export class GetProjectsQueryDto {
-  @ApiPropertyOptional()
   @IsIn(['true', 'false'])
   @IsOptional()
-  verbose: string;
+  verbose?: string;
 }
 
 export class EditProjectDto extends CreateProjectDto {}
 
-export class Project extends CreateProjectDto {
+export class ProjectDto extends CreateProjectDto {
   readonly _id: string;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }
 
-export class ProjectList extends Project {
+export class ProjectList extends ProjectDto {
   readonly numIssues: number;
   readonly numUnits: number;
   readonly numTickets: number;

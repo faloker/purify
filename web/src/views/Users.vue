@@ -62,7 +62,16 @@
                 </v-chip>
               </template>
               <template v-slot:item.memberships="{ item }">
-                <template v-for="(i, index) in item.memberships">
+                <template v-if="item.role === 'owner'">
+                  <v-chip
+                    small
+                    label
+                    class="mx-1"
+                  >
+                    <span>All Projects</span>
+                  </v-chip>
+                </template>
+                <template v-for="(i, index) in item.memberships" v-else>
                   <v-chip
                     v-if="index < 3"
                     :key="index"
@@ -70,7 +79,7 @@
                     label
                     class="mx-1"
                   >
-                    <span>{{ i }}</span>
+                    <span>{{ i.displayName }}</span>
                   </v-chip>
                   <span
                     v-if="index === 3"
@@ -159,7 +168,7 @@
           :name.sync="newName"
           :email.sync="newEmail"
           :role.sync="newRole"
-          :memberships.sync="newmemberships"
+          :memberships.sync="newMemberships"
           :sso-bypass.sync="newSsoBypass"
           @handle-click="editUser"
         />
@@ -234,11 +243,14 @@ export default defineComponent({
       () => store.state.system.config
     );
 
-    onMounted(() => {
-      store.dispatch(FETCH_USERS).then(() => {
-        loading.value = false;
-      });
-      store.dispatch(FETCH_PROJECTS);
+    onMounted(async () => {
+      await store
+        .dispatch(FETCH_USERS)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
+      await store.dispatch(FETCH_PROJECTS).catch(() => {});
     });
 
     function getColor(role: string) {
@@ -367,7 +379,7 @@ function useEditUser() {
   const newRole = ref('');
   const newName = ref('');
   const newSsoBypass = ref(false);
-  const newmemberships: Ref<string[]> = ref([]);
+  const newMemberships: Ref<string[]> = ref([]);
 
   async function editUser() {
     store
@@ -376,14 +388,14 @@ function useEditUser() {
         email: newEmail.value,
         name: newName.value,
         role: newRole.value.toLowerCase(),
-        memberships: newmemberships.value,
+        memberships: newMemberships.value,
         ssoBypass: newSsoBypass.value,
       })
       .then(async () => {
         await store.dispatch(SHOW_SUCCESS_MSG, 'The user has been updated');
         editDialog.value = false;
         newRole.value = newName.value = newEmail.value = '';
-        newmemberships.value = [];
+        newMemberships.value = [];
       })
       .catch(() => {});
   }
@@ -395,7 +407,7 @@ function useEditUser() {
     newName.value = item.name;
     newRole.value = capitalize(item.role);
     newSsoBypass.value = item.ssoBypass;
-    newmemberships.value = item.memberships;
+    newMemberships.value = item.memberships;
   }
 
   return {
@@ -405,7 +417,7 @@ function useEditUser() {
     newRole,
     newName,
     newSsoBypass,
-    newmemberships,
+    newMemberships,
     editUser,
   };
 }

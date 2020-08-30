@@ -9,6 +9,8 @@ import {
   Param,
   Delete,
   Query,
+  UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,6 +21,7 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiCreatedResponse,
+  ApiParam,
 } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { GenericAuthGuard } from '../auth/generic-auth.guard';
@@ -27,53 +30,71 @@ import {
   CreateProjectDto,
   EditProjectDto,
   ProjectList,
-  Project,
+  ProjectDto,
   GetProjectsQueryDto,
 } from './dto/projects.dto';
-import { Project as IProject } from './interfaces/project.interface';
-import { UnitList } from 'src/units/dto/units.dto';
+import { Project } from './interfaces/project.interface';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { ProjectInterceptor } from 'src/common/interceptors/project.interceptor';
+import { UnitsService } from 'src/units/units.service';
+import { CreateUnitDto } from 'src/units/dto/units.dto';
+import { Role } from 'src/users/interfaces/user.interface';
 
+@UseGuards(RolesGuard)
+@UseGuards(GenericAuthGuard)
+@UseInterceptors(ProjectInterceptor)
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
-@ApiTags('projects')
 @Controller('projects')
-@UseGuards(GenericAuthGuard)
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly projectsService: ProjectsService,
+    private readonly unitsService: UnitsService
+  ) {}
 
   @Post()
   @Roles(['owner'])
   @ApiOperation({ summary: 'Create project' })
   @ApiCreatedResponse({
     description: 'Created successfully',
-    type: Project,
+    type: ProjectDto,
   })
-  createProject(@Body() createProjectDto: CreateProjectDto): Promise<IProject> {
+  @ApiTags('projects')
+  createProject(@Body() createProjectDto: CreateProjectDto): Promise<Project> {
     return this.projectsService.create(createProjectDto);
   }
 
   @Get()
+  @Roles(['owner', 'admin', 'user', 'observer'])
   @ApiOperation({ summary: 'List projects' })
   @ApiOkResponse({
     description: 'List of projects',
   })
-  getProjects(@Query() query: GetProjectsQueryDto) {
-    return this.projectsService.getAll(query.verbose);
+  @ApiTags('projects')
+  getProjects(@Query() query: GetProjectsQueryDto, @Req() req) {
+    if (req.user.role !== Role.OWNER) {
+      return this.projectsService.getAll(query, req.user.memberships);
+    } else {
+      return this.projectsService.getAll(query);
+    }
   }
 
   @Patch(':projectName')
+  @Roles(['owner', 'admin'])
   @ApiOperation({ summary: 'Update a project by name' })
   @ApiOkResponse({
     description: 'Update successful',
-    type: Project,
+    type: ProjectDto,
   })
   @ApiNotFoundResponse({ description: 'No such project' })
+  @ApiParam({ name: 'projectName', type: 'string', required: true })
+  @ApiTags('projects')
   editProject(
-    @Param('projectName') name: string,
+    @Param('projectName') project: Project,
     @Body() editProjectDto: EditProjectDto
-  ): Promise<IProject> {
-    return this.projectsService.edit(name, editProjectDto);
+  ) {
+    return this.projectsService.updateOne(project._id, editProjectDto);
   }
 
   @Delete(':projectName')
@@ -81,29 +102,46 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Delete project' })
   @ApiNoContentResponse({ description: 'Removed successfully' })
   @ApiNotFoundResponse({ description: 'No such project' })
+  @ApiParam({ name: 'projectName', type: 'string', required: true })
+  @ApiTags('projects')
   @HttpCode(204)
-  deleteProject(@Param('projectName') name: string) {
-    return this.projectsService.delete(name);
+  deleteProject(@Param('projectName') project: Project) {
+    return this.projectsService.deleteOne(project._id);
   }
 
   @Get(':projectName/stats')
+  @Roles(['owner', 'admin', 'user', 'observer'])
   @ApiOperation({ summary: 'Get project statistics' })
   @ApiOkResponse({
     description: 'Yearly statistics for the project and units',
     type: ProjectStatistics,
   })
   @ApiNotFoundResponse({ description: 'No such project' })
-  getStats(@Param('projectName') name: string) {
-    return this.projectsService.getStats(name);
+  @ApiTags('projects')
+  getStats(@Param('projectName') project: Project) {
+    return this.projectsService.getStats(project);
   }
 
-  // @Get(':projectName/units')
-  // @ApiOperation({ summary: 'List units in the project' })
-  // @ApiOkResponse({
-  //   description: 'List of units',
-  //   type: [UnitList],
-  // })
-  // getUnits(@Param('projectName') name: string) {
-  //   return this.projectsService.getUnits(name);
-  // }
+  @Get(':projectName/units')
+  @Roles(['owner', 'admin', 'user', 'observer'])
+  @ApiOperation({ summary: 'List units in the project' })
+  @ApiOkResponse({ description: 'List of units' })
+  @ApiParam({ name: 'projectName', type: 'string', required: true })
+  @ApiTags('units')
+  getUnits(@Param('projectName') project: Project) {
+    return this.unitsService.getUnits(project._id);
+  }
+
+  @Post(':projectName/units')
+  @Roles(['owner', 'admin'])
+  @ApiOperation({ summary: 'Create unit' })
+  @ApiCreatedResponse({ description: 'Created successfully' })
+  @ApiParam({ name: 'projectName', type: 'string', required: true })
+  @ApiTags('units')
+  createUnit(
+    @Param('projectName') project: Project,
+    @Body() createUnitDto: CreateUnitDto
+  ) {
+    return this.unitsService.create(project, createUnitDto);
+  }
 }

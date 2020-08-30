@@ -93,7 +93,7 @@ function parseField(field: any, fieldValue: any) {
 export function prepareMarkdown(issue: Issue, template: Template) {
   let result = '';
 
-  for (const field of template.body_fields) {
+  for (const field of template.bodyFields) {
     result += parseField(field, getValue(issue.fields, field.key));
   }
 

@@ -17,11 +17,11 @@ export class UsersService {
     private readonly configService: ConfigService
   ) {}
 
-  async getAll(): Promise<User[]> {
-    return this.userModel.find(
-      {},
-      { password: 0, token: 0, salt: 0, refreshToken: 0 }
-    );
+  async getAll() {
+    return this.userModel
+      .find({}, { password: 0, token: 0, salt: 0, refreshToken: 0 })
+      .lean()
+      .populate('memberships', 'displayName');
   }
 
   async delete(userId: string) {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ReportSchema } from './schemas/report.schema';
 import { ReportsController } from './reports.controller';
@@ -7,6 +7,8 @@ import { IssueSchema } from 'src/issues/schemas/issue.schema';
 import { UnitSchema } from 'src/units/schemas/unit.schema';
 import { TemplateSchema } from 'src/templates/schemas/template.schema';
 import { TemplatesModule } from 'src/templates/templates.module';
+import { ProjectsModule } from 'src/projects/projects.module';
+import { UnitsModule } from 'src/units/units.module';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { TemplatesModule } from 'src/templates/templates.module';
     MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
     MongooseModule.forFeature([{ name: 'Template', schema: TemplateSchema }]),
     TemplatesModule,
+    forwardRef(() => UnitsModule),
   ],
   controllers: [ReportsController],
   providers: [ReportsService],

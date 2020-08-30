@@ -185,9 +185,9 @@ export default defineComponent({
 
     const issueTemplate: ComputedRef<Template> = computed(() => {
       const doc = store.state.templates.items.find(
-        (item: TemplateWithStats) => item.template.name === props.issue.template
+        (item: TemplateWithStats) => item.displayName === props.issue.template
       );
-      return doc ? doc.template : {};
+      return doc ? doc : {};
     });
 
     const compiledMarkdown = computed(() => marked(markdown.value));
@@ -209,7 +209,6 @@ export default defineComponent({
       const ticket = await store.dispatch(CREATE_TICKET, {
         issueId: props.issue._id,
         fields: payload,
-        unitId: context.root.$route.params.slug,
       });
 
       if (ticket) {

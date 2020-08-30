@@ -1,7 +1,11 @@
 <template>
   <v-container>
     <v-row align="center" justify="center">
-      <v-col cols="4" class="mt-12">
+      <v-col
+        cols="4"
+        xl="3"
+        class="mt-12"
+      >
         <v-card min-width="400px">
           <v-row align="center" justify="center">
             <v-img

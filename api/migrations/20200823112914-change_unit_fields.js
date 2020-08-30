@@ -1,3 +1,5 @@
+const slug = require('slug');
+
 module.exports = {
   async up(db, client) {
     await db.collection('units').dropIndex('slug_1');
@@ -14,11 +16,18 @@ module.exports = {
             $unset: { name: '' },
           }
         );
+
+        const project = await db
+          .collection('projects')
+          .findOne({ _id: unit.project });
+
         await db.collection('units').updateOne(
           { _id: unit._id },
           {
             $set: {
-              name: unit.slug,
+              name: `${slug(project.name, {
+                lower: true,
+              })}.${slug(unit.name, { lower: true })}`,
             },
             $unset: { slug: '' },
           }
@@ -33,11 +42,17 @@ module.exports = {
       .collection('units')
       .find()
       .forEach(async unit => {
+        const project = await db
+          .collection('projects')
+          .findOne({ _id: unit.project });
+
         await db.collection('units').updateOne(
           { _id: unit._id },
           {
             $set: {
-              slug: unit.name,
+              slug: `${slug(project.name, {
+                lower: true,
+              })}-${slug(unit.displayName, { lower: true })}`,
             },
             $unset: { name: '' },
           }

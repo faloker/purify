@@ -4,42 +4,15 @@ import {
   IsString,
   MinLength,
   IsJSON,
+  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UploadReportDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  readonly file: any;
+export class FileUploadDto {
+  @ApiProperty({ type: 'string', format: 'binary' })
+  file: any;
 
-  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  readonly unit: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly template?: string;
-}
-
-export class DeleteReportDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly id: string;
-}
-
-export class GetReportsDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly unit: string;
-}
-
-export class GetReportContentDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly id: string;
+  @IsOptional()
+  template?: string;
 }

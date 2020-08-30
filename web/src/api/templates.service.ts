@@ -8,10 +8,11 @@ export const createTemplate = (template: Template) =>
     data: template,
   });
 
-export const getTemplates = () =>
+export const getTemplates = (verbose: boolean) =>
   request({
     url: 'templates',
     method: 'get',
+    params: { verbose },
   });
 
 export const deleteTemplate = (slug: string) =>

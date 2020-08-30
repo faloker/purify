@@ -76,9 +76,12 @@ export default defineComponent({
     });
 
     onMounted(async () => {
-      store.dispatch(ISSUES_FETCH, context.root.$route.params.slug).then(() => {
-        loading.value = false;
-      });
+      store
+        .dispatch(ISSUES_FETCH)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
     });
 
     return {

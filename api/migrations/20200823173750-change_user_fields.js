@@ -12,7 +12,7 @@ module.exports = {
               name: user.username,
             },
             $unset: { username: '' },
-            $rename: { refreshToken: 'refreshToken' },
+            $rename: { refresh_token: 'refreshToken' },
           }
         );
       });
@@ -30,7 +30,7 @@ module.exports = {
               username: user.name,
             },
             $unset: { name: '' },
-            $rename: { refreshToken: 'refreshToken' },
+            $rename: { refreshToken: 'refresh_token' },
           }
         );
       });

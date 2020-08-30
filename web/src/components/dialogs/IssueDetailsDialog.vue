@@ -59,12 +59,12 @@
             <v-divider class="my-3 mx-3" vertical />
             <v-col class="ml-2" cols="9">
               <v-row class="headline">
-                {{ matchPattern(issue.fields, issueTemplate.title_pattern) }}
+                {{ matchPattern(issue.fields, issueTemplate.titlePattern) }}
               </v-row>
               <v-row
                 class="title grey--text font-weight-light my-2"
               >
-                {{ matchPattern(issue.fields, issueTemplate.subtitle_pattern) }}
+                {{ matchPattern(issue.fields, issueTemplate.subtitlePattern) }}
               </v-row>
             </v-col>
           </v-row>
@@ -193,7 +193,7 @@
         </v-container>
       </v-card-title>
       <v-container>
-        <v-col v-for="field in issueTemplate.body_fields" :key="`${Math.random()}-${field.key}`">
+        <v-col v-for="field in issueTemplate.bodyFields" :key="`${Math.random()}-${field.key}`">
           <fields-parser :ikey="field" :ivalue="getValue(issue.fields, field.key)" />
         </v-col>
       </v-container>
@@ -264,14 +264,14 @@ export default defineComponent({
 
     const issueTemplate: ComputedRef<Template> = computed(() => {
       const doc = store.state.templates.items.find(
-        (item: TemplateWithStats) => item.template.name === props.issue.template
+        (item: TemplateWithStats) => item.displayName === props.issue.template
       );
-      return doc ? doc.template : {};
+      return doc ? doc : {};
     });
 
     const preparedMarkdown = computed(() => {
       let result = '';
-      for (const field of issueTemplate.value.body_fields) {
+      for (const field of issueTemplate.value.bodyFields) {
         result += `## ${parseKey(field.key)}\n`;
         result += `${getValue(props.issue.fields, field.key)}\n\n`;
       }
@@ -292,7 +292,6 @@ export default defineComponent({
         .dispatch(ISSUE_UPDATE, {
           ids: [item._id],
           change,
-          unitId: context.root.$route.params.slug,
         })
         .then(async () => {
           if (field === 'resolution') {

@@ -75,6 +75,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
+            v-permission="['owner', 'admin']"
             class="edit-btn"
             color="primary"
             text
@@ -83,6 +84,7 @@
             Edit
           </v-btn>
           <v-btn
+            v-permission="['owner']"
             class="delete-btn"
             color="tertiary"
             text
@@ -159,6 +161,7 @@ function useEditProject(project: Project) {
       .dispatch(EDIT_PROJECT, {
         name: project.name,
         change: {
+          name: name.value,
           displayName: displayName.value,
           description: description.value,
         },

@@ -3,13 +3,14 @@ import { CreateProjectDto } from '@/store/types';
 
 export const getProjects = (verbose: boolean) =>
   request({
-    url: `projects?verbose=${verbose}`,
+    url: `projects`,
     method: 'get',
+    params: { verbose },
   });
 
-export const getStats = (slug: string) =>
+export const getStats = (projectName: string) =>
   request({
-    url: `projects/${slug}/stats`,
+    url: `projects/${projectName}/stats`,
     method: 'get',
   });
 
@@ -20,15 +21,16 @@ export const createProject = (project: CreateProjectDto) =>
     data: project,
   });
 
-export const deleteProject = (slug: string) =>
-  request({
-    url: `projects/${slug}`,
+export function deleteProject(projectName: string) {
+  return request({
+    url: `projects/${projectName}`,
     method: 'delete',
   });
+}
 
-export const editProject = (slug: string, change: CreateProjectDto) =>
+export const editProject = (projectName: string, change: CreateProjectDto) =>
   request({
-    url: `projects/${slug}`,
+    url: `projects/${projectName}`,
     method: 'patch',
     data: change,
   });

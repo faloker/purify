@@ -19,16 +19,17 @@
       </v-col>
       <v-col>
         <v-btn
+          v-permission="['owner', 'admin']"
           color="primary"
           text
-          @click="dialog = true"
+          @click="createDialog = true"
         >
           <v-icon>mdi-pencil</v-icon>Create unit
         </v-btn>
         <unit-dialog
-          v-model="dialog"
+          v-model="createDialog"
           heading="New Unit"
-          :name.sync="unitName"
+          :display-name.sync="displayName"
           ok-button-text="Create"
           @handle-click="createUnit"
         />
@@ -60,9 +61,7 @@
                   <span
                     class="d-inline-block text-truncate"
                     style="max-width: 130px;"
-                  >
-                    {{ item.displayName }}
-                  </span>
+                  >{{ item.displayName }}</span>
                 </v-btn>
               </template>
 
@@ -81,7 +80,7 @@
                   <span>{{ item.numClosedIssues }} / {{ item.numIssues }}</span>
                 </v-tooltip>
               </template>
-              <template v-slot:item.reports="{ item }">
+              <template v-slot:item.numReports="{ item }">
                 <v-btn
                   text
                   rounded
@@ -95,6 +94,7 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
+                      v-permission="['owner', 'admin']"
                       text
                       icon
                       v-bind="attrs"
@@ -110,6 +110,7 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
+                      v-permission="['owner', 'admin']"
                       text
                       icon
                       color="red darken-1"
@@ -137,7 +138,7 @@
     <unit-dialog
       v-model="editDialog"
       heading="Edit Unit"
-      :name.sync="name"
+      :display-name.sync="newDisplayName"
       @handle-click="editUnit"
     />
   </v-container>
@@ -152,7 +153,6 @@ import {
   ComputedRef,
 } from '@vue/composition-api';
 import store from '@/store';
-import { toLower } from 'lodash';
 import {
   FETCH_UNITS,
   CREATE_UNIT,
@@ -177,7 +177,7 @@ export default defineComponent({
         text: 'Name',
         width: '30%',
         align: 'center',
-        value: 'displayName',
+        value: 'name',
       },
       {
         text: 'Progress',
@@ -201,21 +201,14 @@ export default defineComponent({
     ]);
 
     const units: ComputedRef<Unit[]> = computed(() => store.state.units.items);
-    const projectName = computed(() => context.root.$route.params.projectName);
-
     onMounted(() => {
-      store.dispatch(FETCH_UNITS, projectName.value).then(() => {
-        loading.value = false;
-      });
+      store
+        .dispatch(FETCH_UNITS)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
     });
-
-    const { unitName, dialog, createUnit } = useCreateUnit(projectName.value);
-    const { confirmDialog, deleteUnit, openConfirmationDialog } = useDeleteUnit(
-      projectName.value
-    );
-    const { name, editDialog, editUnit, openEditDialog } = useEditUnit(
-      projectName.value
-    );
 
     function selectUnit(item: Unit) {
       context.root.$router.push({
@@ -225,44 +218,35 @@ export default defineComponent({
     }
 
     return {
-      name,
-      unitName,
       selectUnit,
-      dialog,
-      createUnit,
-      confirmDialog,
-      deleteUnit,
-      // filtredItems,
       units,
       searchTerm,
       loading,
       headers,
-      openConfirmationDialog,
-      editDialog,
-      editUnit,
-      openEditDialog,
+      ...useEditUnit(),
+      ...useDeleteUnit(),
+      ...useCreateUnit(),
     };
   },
 });
 
-function useDeleteUnit(project: string) {
+function useDeleteUnit() {
   const confirmDialog = ref(false);
-  const slug = ref('');
+  const unitName = ref('');
 
   async function deleteUnit() {
     store
-      .dispatch(DELETE_UNIT, slug.value)
+      .dispatch(DELETE_UNIT, unitName.value)
       .then(async () => {
         confirmDialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been deleted');
-        await store.dispatch(FETCH_UNITS, project);
       })
       .catch(() => {});
   }
 
   function openConfirmationDialog(item: Unit) {
     confirmDialog.value = true;
-    slug.value = item.name;
+    unitName.value = item.name;
   }
 
   return {
@@ -271,56 +255,57 @@ function useDeleteUnit(project: string) {
     openConfirmationDialog,
   };
 }
-function useEditUnit(project: string) {
+function useEditUnit() {
   const editDialog = ref(false);
-  const slug = ref('');
+  const newDisplayName = ref('');
   const name = ref('');
 
   async function editUnit() {
     store
-      .dispatch(EDIT_UNIT, { slug: slug.value, name: name.value })
+      .dispatch(EDIT_UNIT, {
+        name: name.value,
+        displayName: newDisplayName.value,
+      })
       .then(async () => {
         editDialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been updated');
-        await store.dispatch(FETCH_UNITS, project);
       })
       .catch(() => {});
   }
 
   function openEditDialog(item: Unit) {
     editDialog.value = true;
-    slug.value = item.name;
     name.value = item.name;
+    newDisplayName.value = item.displayName;
   }
 
   return {
-    name,
+    editDialog,
+    newDisplayName,
     editUnit,
     openEditDialog,
-    editDialog,
   };
 }
 
-function useCreateUnit(project: string) {
-  const unitName = ref('');
-  const dialog = ref(false);
+function useCreateUnit() {
+  const displayName = ref('');
+  const createDialog = ref(false);
 
   async function createUnit() {
     store
       .dispatch(CREATE_UNIT, {
-        displayName: unitName.value,
-        project,
+        displayName: displayName.value,
       })
       .then(() => {
-        unitName.value = '';
-        dialog.value = false;
+        displayName.value = '';
+        createDialog.value = false;
       })
       .catch(() => {});
   }
 
   return {
-    unitName,
-    dialog,
+    displayName,
+    createDialog,
     createUnit,
   };
 }

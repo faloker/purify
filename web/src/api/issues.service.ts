@@ -1,11 +1,12 @@
 import request from '@/utils/request';
 
-export const getIssues = (unit: string) =>
-  request({
-    url: 'issues',
+export function getIssues(unitName: string) {
+  return request({
+    url: `/issues`,
     method: 'get',
-    params: { unit },
+    params: { unitName },
   });
+}
 
 export const updateIssues = (ids: string[], change: any) =>
   request({

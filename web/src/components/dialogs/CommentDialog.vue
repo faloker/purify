@@ -38,7 +38,7 @@
           <v-slide-x-transition group>
             <v-timeline-item
               v-for="event in timeline"
-              :key="event.created_at"
+              :key="event.createdAt"
               class="mb-4"
               small
             >
@@ -60,7 +60,7 @@
                 <v-col
                   class="text-right"
                   cols="5"
-                  v-text="formatDate(event.created_at)"
+                  v-text="formatDate(event.createdAt)"
                 />
               </v-row>
             </v-timeline-item>

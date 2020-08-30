@@ -9,15 +9,15 @@
         <v-data-table
           :headers="headers"
           item-key="_id"
-          :sort-by="['created_at']"
+          :sort-by="['createdAt']"
           :sort-desc="[true]"
           :items="reports"
           :search="searchTerm"
           :items-per-page="5"
         >
-          <template v-slot:item.created_at="{ item }">
+          <template v-slot:item.createdAt="{ item }">
             <div class="subheading">
-              {{ new Date(item.created_at).toLocaleDateString() }}
+              {{ new Date(item.createdAt).toLocaleDateString() }}
             </div>
           </template>
           <template v-slot:item.template="{ item }" class="text-center">
@@ -110,7 +110,7 @@ export default defineComponent({
     const searchTerm = ref('');
     const loading = ref(true);
     const headers = ref([
-      { text: 'Date', value: 'created_at', width: '21%' },
+      { text: 'Date', value: 'createdAt', width: '21%' },
       {
         text: 'Template',
         align: 'center',
@@ -142,10 +142,11 @@ export default defineComponent({
 
     onMounted(() => {
       store
-        .dispatch(FETCH_REPORTS, context.root.$route.params.slug)
+        .dispatch(FETCH_REPORTS)
         .then(() => {
           loading.value = false;
-        });
+        })
+        .catch(() => {});
     });
 
     const { stepperDialog, report, openStepper } = useStepper();
@@ -153,7 +154,7 @@ export default defineComponent({
       deleteReport,
       confirmDialog,
       openConfirmationDialog,
-    } = useDeleteReport(context);
+    } = useDeleteReport();
 
     return {
       report,
@@ -170,7 +171,7 @@ export default defineComponent({
   },
 });
 
-function useDeleteReport(context: SetupContext) {
+function useDeleteReport() {
   const confirmDialog = ref(false);
   const reportId = ref('');
 
@@ -180,7 +181,6 @@ function useDeleteReport(context: SetupContext) {
       .then(async () => {
         confirmDialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The report has been deleted');
-        await store.dispatch(FETCH_REPORTS, context.root.$route.params.slug);
       })
       .catch(() => {});
   }
@@ -202,10 +202,13 @@ function useStepper() {
   const report = ref({});
 
   function openStepper(item: Report) {
-    store.dispatch(FETCH_CONTENT, item._id).then(() => {
-      report.value = item;
-      stepperDialog.value = true;
-    });
+    store
+      .dispatch(FETCH_CONTENT, item._id)
+      .then(() => {
+        report.value = item;
+        stepperDialog.value = true;
+      })
+      .catch(() => {});
   }
 
   return {

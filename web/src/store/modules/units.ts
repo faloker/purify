@@ -32,24 +32,26 @@ export default class Units extends VuexModule {
   }
 
   @Action
-  async [FETCH_UNITS](projectSlug: string) {
-    const { data } = await getUnits(projectSlug);
+  async [FETCH_UNITS]() {
+    const { data } = await getUnits(this.context.rootState.system.projectName);
     this.context.commit(SET_UNITS, data);
   }
 
   @Action
-  async [CREATE_UNIT](payload: CreateUnitDto) {
-    await createUnit(payload.displayName, payload.project);
-    this.context.dispatch(FETCH_UNITS, payload.project);
+  async [CREATE_UNIT](createUnitDto: CreateUnitDto) {
+    await createUnit(this.context.rootState.system.projectName, createUnitDto);
+    this.context.dispatch(FETCH_UNITS);
   }
 
   @Action
-  async [DELETE_UNIT](slug: string) {
-    await deleteUnit(slug);
+  async [DELETE_UNIT](unitName: string) {
+    await deleteUnit(unitName);
+    this.context.dispatch(FETCH_UNITS);
   }
 
   @Action
-  async [EDIT_UNIT](payload: EditUnitDto) {
-    await editUnit(payload.slug, payload.name);
+  async [EDIT_UNIT](editUnitDto: EditUnitDto) {
+    await editUnit(editUnitDto.name, editUnitDto.displayName);
+    this.context.dispatch(FETCH_UNITS);
   }
 }

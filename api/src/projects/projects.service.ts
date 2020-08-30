@@ -6,7 +6,11 @@ import { groupBy, get } from 'lodash';
 import * as slugify from 'slug';
 
 import { Project } from './interfaces/project.interface';
-import { CreateProjectDto, EditProjectDto } from './dto/projects.dto';
+import {
+  CreateProjectDto,
+  EditProjectDto,
+  GetProjectsQueryDto,
+} from './dto/projects.dto';
 import { Unit } from 'src/units/interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { Report } from 'src/reports/interfaces/report.interface';
@@ -20,90 +24,70 @@ export class ProjectsService {
     @InjectModel('Report') private readonly reportModel: Model<Report>
   ) {}
 
-  async getAll(verbose: string) {
-    const projects = await this.projectModel.find();
-    if (verbose !== 'true') {
+  async getAll(query: GetProjectsQueryDto, allowedProjects?: string[]) {
+    const projects = await this.projectModel
+      .find(allowedProjects ? { _id: { $in: allowedProjects } } : {})
+      .lean();
+
+    if (query.verbose !== 'true') {
       return projects;
     }
 
-    const result = [];
     for (const project of projects) {
       const units = await this.unitModel
         .find({ project: project._id })
+        .lean()
         .populate('numIssues')
         .populate('numTickets');
 
-      result.push({
-        _id: project._id,
-        name: project.name,
-        description: project.description,
-        displayName: project.displayName,
-        createdAt: project.createdAt,
-        updatedAt: project.updatedAt,
-        numUnits: units.length,
-        numIssues: units.reduce((total, currentValue) => {
-          return total + currentValue.numIssues;
-        }, 0),
-        numTickets: units.reduce((total, currentValue) => {
-          return total + currentValue.numTickets;
-        }, 0),
-      });
+      project['numUnits'] = units.length;
+      project['numIssues'] = units.reduce((total, currentValue) => {
+        return total + currentValue.numIssues;
+      }, 0);
+      project['numTickets'] = units.reduce((total, currentValue) => {
+        return total + currentValue.numTickets;
+      }, 0);
     }
-    return result;
+    return projects;
   }
 
   async create(project: CreateProjectDto) {
     return new this.projectModel(project).save();
   }
 
-  async edit(name: string, fields: any) {
-    const project = await this.projectModel.findOne({ name });
-    const change: any = fields;
-
-    if (project) {
-      // if (project.title !== fields.title) {
-      //   change.slug = slugify(fields.title);
-      // }
-
-      await this.projectModel.updateOne({ name }, change);
-      return this.projectModel.findOne({ name });
-    } else {
-      throw new NotFoundException('No such project');
-    }
+  async updateOne(projectId: string, editProjectDto: EditProjectDto) {
+    await this.projectModel.updateOne({ _id: projectId }, editProjectDto);
+    return this.projectModel.findOne({ _id: projectId }).lean();
   }
 
-  async delete(name: string) {
-    const project = await this.projectModel.findOne({ name });
+  async deleteOne(projectId: string) {
+    const units = await this.unitModel
+      .find({ project: projectId }, '_id')
+      .lean();
 
-    if (project) {
-      const units = await this.unitModel.find({ project: project._id }, '_id');
-
-      if (units.length) {
-        // @ts-ignore
-        await this.reportModel.deleteMany({ unit: { $in: units } });
-        await this.issueModel.deleteMany({ unit: { $in: units } });
-        // @ts-ignore
-        await this.unitModel.deleteMany({ _id: { $in: units } });
-      }
-
-      await this.projectModel.deleteOne({ name });
-    } else {
-      throw new NotFoundException('No such project');
+    if (units.length) {
+      const ids = units.map((unit: any) => unit._id);
+      // update memeberships
+      await this.reportModel.deleteMany({ unit: { $in: ids } });
+      await this.issueModel.deleteMany({ unit: { $in: ids } });
+      await this.unitModel.deleteMany({ _id: { $in: ids } });
     }
+
+    await this.projectModel.deleteOne({ _id: projectId });
   }
 
   async getStatisticsForUnit(unit: string) {
     const uploadedReports = await this.reportModel.find(
       { unit },
-      '_id created_at'
-    );
+      '_id createdAt'
+    ).lean();
     let issues = await this.issueModel.find(
       { unit },
-      '_id status resolution created_at risk'
-    );
+      '_id status resolution createdAt risk'
+    ).lean();
 
     issues = issues.filter(
-      issue => issue.created_at.getFullYear() === new Date().getFullYear()
+      issue => issue.createdAt.getFullYear() === new Date().getFullYear()
     );
 
     const open = new Array(12).fill(0);
@@ -113,11 +97,11 @@ export class ProjectsService {
 
     const openIssues = groupBy(
       issues.filter(issue => issue.status === 'open'),
-      issue => issue.created_at.getMonth()
+      issue => issue.createdAt.getMonth()
     );
 
     const reportsByDate = groupBy(uploadedReports, report =>
-      report.created_at.getMonth()
+      report.createdAt.getMonth()
     );
 
     const closedIssues = groupBy(
@@ -125,7 +109,7 @@ export class ProjectsService {
         issue =>
           issue.status === 'closed' && issue.resolution !== 'false positive'
       ),
-      issue => issue.created_at.getMonth()
+      issue => issue.createdAt.getMonth()
     );
 
     const issuesRisks = groupBy(
@@ -175,46 +159,43 @@ export class ProjectsService {
     };
   }
 
-  async getStats(name: string) {
-    const project = await this.projectModel.findOne({ name });
+  async getStats(project: Project) {
+    const units = await this.unitModel
+      .find({ project: project._id }, '_id displayName')
+      .lean();
 
-    if (project) {
-      const units = await this.unitModel.find(
-        { project: project._id },
-        '_id name'
-      );
+    const unitsStat = [];
+    const projectStat = {
+      open: new Array(12).fill(0),
+      closed: new Array(12).fill(0),
+      risks: new Array(5).fill(0),
+      reports: new Array(12).fill(0),
+    };
 
-      const unitsStat = [];
-      const projectStat = {
-        open: new Array(12).fill(0),
-        closed: new Array(12).fill(0),
-        risks: new Array(5).fill(0),
-        reports: new Array(12).fill(0),
-      };
+    if (units.length) {
+      for (const unit of units) {
+        const data = await this.getStatisticsForUnit(unit._id);
 
-      if (units.length) {
-        for (const unit of units) {
-          const data = await this.getStatisticsForUnit(unit._id);
+        unitsStat.push({
+          name: unit.displayName,
+          data,
+        });
 
-          unitsStat.push({
-            name: unit.name,
-            data,
-          });
-
-          Object.keys(data).forEach(key => {
-            const arr = data[key];
-            const updated = projectStat[key].map((a, i) => a + arr[i]);
-            projectStat[key] = updated;
-          });
-        }
+        Object.keys(data).forEach(key => {
+          const arr = data[key];
+          const updated = projectStat[key].map((a, i) => a + arr[i]);
+          projectStat[key] = updated;
+        });
       }
-
-      return {
-        project: projectStat,
-        units: unitsStat,
-      };
-    } else {
-      throw new NotFoundException('No such project');
     }
+
+    return {
+      project: projectStat,
+      units: unitsStat,
+    };
+  }
+
+  async findOne(projectName: string) {
+    return this.projectModel.findOne({ name: projectName }).lean();
   }
 }

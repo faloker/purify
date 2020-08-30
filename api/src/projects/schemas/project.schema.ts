@@ -1,7 +1,8 @@
-import { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { nanoid } from 'nanoid';
+import { UnitSchema } from 'src/units/schemas/unit.schema';
 
-const ProjectSchema = new Schema(
+export const ProjectSchema = new Schema(
   {
     _id: { type: String, default: () => nanoid() },
     description: String,
@@ -10,5 +11,3 @@ const ProjectSchema = new Schema(
   },
   { timestamps: true }
 );
-
-export { ProjectSchema };

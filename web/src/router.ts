@@ -4,6 +4,7 @@ import Router from 'vue-router';
 import TheHeader from '@/components/TheHeader.vue';
 import store from './store';
 import { REFRESH_TOKEN, FETCH_SYSTEM_SETUP, SAML_LOGIN } from './store/actions';
+import { SET_PROJECT_NAME, SET_UNIT_NAME } from './store/mutations';
 
 Vue.use(Router);
 
@@ -68,14 +69,14 @@ export const router = new Router({
     {
       path: '/projects/:projectName/units',
       name: 'Units',
+      meta: { title: 'Purify | Units' },
       components: {
         default: () => import('@/views/Units.vue'),
         header: TheHeader,
       },
-      meta: { title: 'Purify | Units' },
     },
     {
-      path: '/projects/:projectName/units/:unitName/issues',
+      path: '/units/:unitName/issues',
       name: 'Issues',
       components: {
         default: () => import('@/views/Issues.vue'),
@@ -84,7 +85,7 @@ export const router = new Router({
       meta: { title: 'Purify | Issues' },
     },
     {
-      path: '/projects/:projectName/units/:unitName/reports',
+      path: '/units/:unitName/reports',
       name: 'Reports',
       components: {
         default: () => import('@/views/Reports.vue'),
@@ -102,6 +103,14 @@ export const router = new Router({
 // TODO refactor router
 router.beforeEach(async (to, from, next) => {
   const { isAuthenticated } = store.state.auth;
+
+  if (to.params.projectName) {
+    store.commit(SET_PROJECT_NAME, to.params.projectName);
+  }
+
+  if (to.params.unitName) {
+    store.commit(SET_UNIT_NAME, to.params.unitName);
+  }
 
   if (to.name === 'Welcome') {
     await store.dispatch(FETCH_SYSTEM_SETUP).catch(() => {});

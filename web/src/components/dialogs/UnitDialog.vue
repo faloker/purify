@@ -14,12 +14,22 @@
           <v-col>
             <v-row>
               <v-text-field
-                id="unit-name-input"
-                v-model="nameModel"
-                label="Unit name"
-                clearable
-                required
+                id="displayName"
+                v-model="displayNameModel"
+                label="Display name"
+                dense
+                outlined
                 @keydown.enter="$emit('handle-click')"
+              />
+            </v-row>
+            <v-row>
+              <v-text-field
+                id="unitId"
+                v-model="idPreview"
+                label="ID"
+                disabled
+                dense
+                outlined
               />
             </v-row>
           </v-col>
@@ -37,7 +47,7 @@
           <v-btn
             color="quinary"
             text
-            :disabled="!nameModel || nameModel.length < 3"
+            :disabled="!displayName || displayName.length < 3"
             @click="$emit('handle-click')"
           >
             {{ okButtonText }}
@@ -49,6 +59,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api';
+import slug from 'slug';
+import store from '@/store';
 export default defineComponent({
   name: 'UnitDialog',
 
@@ -61,10 +73,9 @@ export default defineComponent({
       type: String,
       default: 'New Unit',
     },
-    name: {
+    displayName: {
       type: String,
       default: '',
-      required: true,
     },
     okButtonText: {
       type: String,
@@ -73,12 +84,16 @@ export default defineComponent({
   },
 
   setup(props, { emit }) {
-    const nameModel = computed({
-      get: () => props.name,
-      set: val => emit('update:name', val),
+    const displayNameModel = computed({
+      get: () => props.displayName,
+      set: val => emit('update:display-name', val),
+    });
+    const projectName = computed(() => store.state.system.projectName);
+    const idPreview = computed(() => {
+      return `${projectName.value}.${slug(displayNameModel.value)}`;
     });
 
-    return { nameModel };
+    return { displayNameModel, idPreview };
   },
 });
 </script>

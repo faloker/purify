@@ -55,7 +55,7 @@
                 outlined
                 label="Projects"
                 item-text="displayName"
-                item-value="name"
+                item-value="_id"
               >
                 <template v-slot:prepend-item>
                   <v-list-item
@@ -214,7 +214,7 @@ export default defineComponent({
         membershipsModel.value = [];
       } else {
         membershipsModel.value = props.projects.map(
-          (project: Project) => project.name
+          (project: Project) => project._id
         );
       }
     }
@@ -222,7 +222,7 @@ export default defineComponent({
     watch(roleModel, (newValue, oldValue) => {
       if (newValue === 'Owner') {
         membershipsModel.value = props.projects.map(
-          (project: Project) => project.name
+          (project: Project) => project._id
         );
       } else if (oldValue === 'Owner') {
         membershipsModel.value = [];

@@ -14,6 +14,8 @@ export const SET_REFRESH_TASK = 'setRefreshTask';
 // System
 export const SET_MESSAGE = 'setMessage';
 export const SET_CONFIG = 'setConfig';
+export const SET_PROJECT_NAME = 'setProjectName';
+export const SET_UNIT_NAME = 'setUnitName';
 
 // Reports
 export const SET_CONTENT = 'setContent';

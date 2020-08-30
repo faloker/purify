@@ -30,6 +30,13 @@ export default class Users extends VuexModule {
   @Action
   async [FETCH_USERS]() {
     const { data } = await getUsers();
+
+    for (const user of data) {
+      // if (user.memberships) {
+      //   user.memberships = user.memberships.map((m: any) => m.displayName);
+      // }
+    }
+
     this.context.commit(SET_USERS, data);
   }
 

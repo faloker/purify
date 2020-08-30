@@ -4,114 +4,86 @@ import {
   IsArray,
   ArrayNotEmpty,
   IsOptional,
+  Matches,
+  MinLength,
+  MaxLength,
+  IsIn,
 } from 'class-validator';
 
-export class CreateTemplateDto {
-  @IsString()
-  @IsNotEmpty()
+export class EditTemplateDto {
+  @Matches(RegExp(/^[a-z0-9_-]+$/))
+  @MinLength(3)
+  @MaxLength(40)
   readonly name: string;
 
+  @IsString()
+  @MinLength(3)
+  @MaxLength(40)
+  readonly displayName: string;
+
+  @IsString()
+  readonly pathToIssues: string;
+
+  @IsString()
+  @IsOptional()
+  readonly riskField?: string;
+
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly titleFields: string[];
+
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly externalComparisonFields: string[];
+
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly internalComparisonFields: string[];
+
+  @IsArray()
+  @IsOptional()
+  readonly mergeFields: string[];
+
+  @IsString()
+  @IsNotEmpty()
+  readonly titlePattern: string;
+
+  @IsString()
+  readonly subtitlePattern: string;
+
+  @IsArray()
+  readonly tags: string[];
+
+  @IsArray()
+  @ArrayNotEmpty()
+  readonly bodyFields: BodyField[];
+}
+
+export class CreateTemplateDto extends EditTemplateDto {
   @IsString()
   @IsNotEmpty()
   readonly report: string;
-
-  @IsString()
-  readonly path_to_issues: string;
-
-  @IsString()
-  readonly risk_field?: string;
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly title_fields: string[];
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly external_comparison_fields: string[];
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly internal_comparison_fields: string[];
-
-  @IsArray()
-  @IsOptional()
-  readonly merge_fields: string[];
-
-  @IsString()
-  @IsNotEmpty()
-  readonly title_pattern: string;
-
-  @IsString()
-  readonly subtitle_pattern: string;
-
-  @IsArray()
-  readonly tags: string[];
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly body_fields: BodyField[];
 }
 
-export class EditTemplateBodyDto {
-  @IsString()
-  @IsNotEmpty()
-  readonly name: string;
-
-  @IsString()
-  @IsOptional()
-  slug?: string;
-
-  @IsString()
-  readonly path_to_issues: string;
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly title_fields: string[];
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly external_comparison_fields: string[];
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly internal_comparison_fields: string[];
-
-  @IsArray()
-  @IsOptional()
-  readonly merge_fields: string[];
-
-  @IsString()
-  @IsOptional()
-  readonly risk_field: string;
-
-  @IsString()
-  @IsNotEmpty()
-  readonly title_pattern: string;
-
-  @IsString()
-  readonly subtitle_pattern: string;
-
-  @IsArray()
-  readonly tags: string[];
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly body_fields: BodyField[];
-}
-
-export class Template extends CreateTemplateDto {
+export class Template extends EditTemplateDto {
   readonly _id: string;
-  readonly created_at: Date;
-  readonly updated_at: Date;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
 }
 
 export class TemplateList {
   readonly template: Template;
-  readonly issues: number;
-  readonly reports: number;
+  readonly numIssues: number;
+  readonly numReports: number;
 }
 
 class BodyField {
   readonly key: string;
   readonly type: string;
+}
+
+export class GetTemplatesQueryDto {
+  @IsIn(['true', 'false'])
+  @IsOptional()
+  verbose?: string;
 }
