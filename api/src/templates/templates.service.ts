@@ -180,7 +180,9 @@ export class TemplatesService {
   }
 
   async updateOne(name: string, template: EditTemplateDto) {
-    const oldTemplate = await this.templateModel.findOne({ name }, '_id').lean();
+    const oldTemplate = await this.templateModel
+      .findOne({ name }, '_id')
+      .lean();
 
     if (oldTemplate) {
       await this.templateModel.updateOne({ name }, template);

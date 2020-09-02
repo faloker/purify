@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { CreateProjectDto } from '@/store/types';
+import { CreateProjectDto, AddUserDto } from '@/store/types';
 
 export const getProjects = (verbose: boolean) =>
   request({
@@ -34,3 +34,26 @@ export const editProject = (projectName: string, change: CreateProjectDto) =>
     method: 'patch',
     data: change,
   });
+
+export function getUsers(projectName: string) {
+  return request({
+    url: `projects/${projectName}/users`,
+    method: 'get',
+  });
+}
+
+export function addUser(payload: AddUserDto) {
+  return request({
+    url: `projects/${payload.projectName}/users`,
+    method: 'post',
+    data: { userId: payload.userId },
+  });
+}
+
+export function removeUser(payload: AddUserDto) {
+  return request({
+    url: `projects/${payload.projectName}/users`,
+    method: 'delete',
+    data: { userId: payload.userId },
+  });
+}

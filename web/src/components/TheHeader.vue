@@ -1,61 +1,55 @@
 <template>
-  <div>
-    <v-navigation-drawer
-      v-model="drawer"
-      absolute
-      temporary
-    >
-      <v-list nav dense>
-        <v-list-item active-class="primary--text" :to="{ name: 'Projects' }">
-          <v-list-item-action>
-            <v-icon>mdi-apps</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Projects</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item active-class="primary--text" :to="{ name: 'Dashboard' }">
-          <v-list-item-action>
-            <v-icon>mdi-chart-bar</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item active-class="primary--text" :to="{ name: 'Templates' }">
-          <v-list-item-action>
-            <v-icon>mdi-file</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Templates</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item
-          v-permission="['owner', 'admin']"
-          active-class="primary--text"
-          :to="{ name: 'Users' }"
+  <v-app-bar
+    app
+    color="#1a73e8"
+    dark
+    dense
+  >
+    <v-container>
+      <v-row justify="center" align="center">
+        <v-toolbar-title>
+          <b>Purify</b>
+        </v-toolbar-title>
+        <v-divider
+          class="ml-4 my-2 mr-1"
+          vertical
+        />
+        <project-picker />
+        <v-spacer />
+        <v-menu
+          offset-y
+          nudge-bottom="5"
+          nudge-width="80"
+          transition="slide-y-reverse-transition"
         >
-          <v-list-item-action>
-            <v-icon>mdi-account-group</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Users</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar
-      app
-      color="#1a73e8"
-      dense
-      dark
-    >
-      <v-app-bar-nav-icon @click="drawer = true" />
-      <v-toolbar-title>
-        <b>Purify</b>
-      </v-toolbar-title>
-      <v-spacer />
-      <div class="text-center">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              text
+              class="text-none"
+              v-bind="attrs"
+              v-on="on"
+            >
+              Manage
+              <v-icon small>
+                mdi-chevron-down
+              </v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item active-class="primary--text" :to="{ name: 'Templates' }">
+              <v-list-item-action>
+                <v-icon>mdi-file</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Templates</v-list-item-title>
+            </v-list-item>
+            <v-list-item active-class="primary--text" :to="{ name: 'Users' }">
+              <v-list-item-action>
+                <v-icon>mdi-account-group</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Users</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-menu
           v-model="menu"
           :close-on-content-click="false"
@@ -64,14 +58,23 @@
           transition="slide-y-transition"
         >
           <template v-slot:activator="{ on }">
-            <v-btn id="btn-mini-profile" icon>
-              <v-avatar size="40" v-on="on">
-                <img :src="user.image" alt="ava">
-              </v-avatar>
+            <v-btn
+              id="btn-mini-profile"
+              text
+              class="text-none"
+              v-on="on"
+            >
+              <!-- <v-avatar size="40" v-on="on">
+                  <img :src="user.image" alt="ava">
+                </v-avatar> -->
+              My profile
+              <v-icon small>
+                mdi-chevron-down
+              </v-icon>
             </v-btn>
           </template>
           <v-card id="menu-mini-profile">
-            <v-list max-width="330">
+            <v-list dense max-width="330">
               <v-list-item>
                 <v-list-item-avatar>
                   <img :src="user.image" alt="ava">
@@ -92,7 +95,7 @@
               </v-list-item>
             </v-list>
             <v-divider />
-            <v-list>
+            <v-list dense>
               <v-list-item-group v-model="item" color="primary">
                 <v-list-item>
                   <v-list-item-icon>
@@ -110,17 +113,22 @@
             </v-list>
           </v-card>
         </v-menu>
-      </div>
-    </v-app-bar>
-  </div>
+      </v-row>
+    </v-container>
+  </v-app-bar>
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api';
 import store from '../store';
 import { router } from '@/router';
 import { LOGOUT } from '@/store/actions';
+import ProjectPicker from '@/components/ProjectPicker.vue';
 
 export default defineComponent({
+  name: 'TheHeader',
+
+  components: { ProjectPicker },
+
   setup() {
     const item = ref(null);
     const menu = ref(false);

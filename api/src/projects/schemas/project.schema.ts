@@ -1,6 +1,5 @@
-import { Schema, model } from 'mongoose';
+import { Schema } from 'mongoose';
 import { nanoid } from 'nanoid';
-import { UnitSchema } from 'src/units/schemas/unit.schema';
 
 export const ProjectSchema = new Schema(
   {

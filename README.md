@@ -55,10 +55,17 @@ Purify is able to remove duplicate results among various vulnerability scanners 
 
 Collect all your findings in one place, review/validate/track them, collaborate with your teammates, receive notifications via Slack, create Jira tickets and many more.
 
-## Documentation
+## Getting started
 
 - [Official Documentation](https://faloker.gitbook.io/purify)
-- [API Documentation](https://purify-demo.herokuapp.com/swagger/)
+- [Live Demo](https://purify-demo.herokuapp.com)
+  - email: system@purify.com
+  - password: secret
+
+## Questions
+
+For questions and support please use the official [Discord channel](https://discord.gg/a9hz3PF). The issue list of this repo is exclusively for bug reports and feature requests.
+
 
 ## Built With
 

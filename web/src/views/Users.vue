@@ -54,7 +54,7 @@
             >
               <template v-slot:item.role="{ item }">
                 <v-chip
-                  :color="getColor(item.role)"
+                  :color="getRoleColor(item.role)"
                   class="text-capitalize"
                   dark
                 >
@@ -188,6 +188,7 @@ import {
 } from '@vue/composition-api';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
 import UserDialog from '@/components/dialogs/UserDialog.vue';
+import { getRoleColor } from '@/utils/helpers';
 import { capitalize } from 'lodash';
 import store from '@/store';
 import {
@@ -244,7 +245,7 @@ export default defineComponent({
     );
 
     onMounted(async () => {
-      await store
+      store
         .dispatch(FETCH_USERS)
         .then(() => {
           loading.value = false;
@@ -252,19 +253,6 @@ export default defineComponent({
         .catch(() => {});
       await store.dispatch(FETCH_PROJECTS).catch(() => {});
     });
-
-    function getColor(role: string) {
-      switch (role) {
-        case 'owner':
-          return 'senary';
-        case 'admin':
-          return 'quaternary';
-        case 'user':
-          return 'secondary';
-        case 'observer':
-          return 'quinary';
-      }
-    }
 
     function copyText() {
       const ttc = document.querySelector('#textToCopy') as HTMLInputElement;
@@ -279,7 +267,7 @@ export default defineComponent({
       ...useDeleteUser(),
       ttcIcon,
       systemConfig,
-      getColor,
+      getRoleColor,
       copyText,
       loading,
       headers,

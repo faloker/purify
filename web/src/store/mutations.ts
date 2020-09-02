@@ -20,6 +20,7 @@ export const SET_UNIT_NAME = 'setUnitName';
 // Reports
 export const SET_CONTENT = 'setContent';
 export const SET_REPORTS = 'setReports';
+export const SET_PROJECT_USERS = 'setProjectUsers';
 
 // Projects
 export const SET_PROJECTS = 'setProjects';

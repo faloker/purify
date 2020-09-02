@@ -133,3 +133,16 @@ export function getFilterIcon(value: string) {
       return 'short_text';
   }
 }
+
+export function getRoleColor(role: string) {
+  switch (role) {
+    case 'owner':
+      return 'senary';
+    case 'admin':
+      return 'quaternary';
+    case 'user':
+      return 'secondary';
+    case 'observer':
+      return 'quinary';
+  }
+}

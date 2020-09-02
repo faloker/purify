@@ -1,7 +1,11 @@
+// Projects
 export const FETCH_PROJECTS = 'fetchProjects';
 export const DELETE_PROJECT = 'deleteProject';
 export const CREATE_PROJECT = 'createProject';
 export const CHANGE_PROJECT_NAME = 'changeProjectName';
+export const FETCH_PROJECT_USERS = 'fetchProjectUsers';
+export const ADD_USER = 'addUser';
+export const REMOVE_USER = 'removeUser';
 
 export const FETCH_REPORTS = 'fetchReports';
 export const REPORT_DELETE = 'reportDelete';

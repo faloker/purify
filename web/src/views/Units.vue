@@ -148,6 +148,7 @@
 import {
   defineComponent,
   ref,
+  watch,
   computed,
   onMounted,
   ComputedRef,
@@ -200,9 +201,21 @@ export default defineComponent({
       },
     ]);
 
+    const projectName = computed(() => store.state.system.projectName);
     const units: ComputedRef<Unit[]> = computed(() => store.state.units.items);
-    onMounted(() => {
-      store
+
+    onMounted(async () => {
+      await store
+        .dispatch(FETCH_UNITS)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
+    });
+
+    watch(projectName, async () => {
+      loading.value = true;
+      await store
         .dispatch(FETCH_UNITS)
         .then(() => {
           loading.value = false;

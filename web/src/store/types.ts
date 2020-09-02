@@ -45,6 +45,11 @@ export interface EditProjectDto extends CreateProjectDto {
   change: CreateProjectDto;
 }
 
+export interface AddUserDto {
+  projectName: string;
+  userId: string;
+}
+
 export interface Unit {
   _id: string;
   name: string;

@@ -5,6 +5,9 @@ import {
   createProject,
   deleteProject,
   editProject,
+  getUsers,
+  addUser,
+  removeUser,
 } from '@/api/projects.service';
 import {
   FETCH_PROJECTS,
@@ -12,14 +15,25 @@ import {
   CREATE_PROJECT,
   FETCH_STATS,
   EDIT_PROJECT,
+  FETCH_PROJECT_USERS,
+  FETCH_USERS,
+  ADD_USER,
+  REMOVE_USER,
 } from '@/store/actions';
-import { SET_PROJECTS, SET_STATS } from '@/store/mutations';
-import { Project, EditProjectDto, CreateProjectDto } from '../types';
+import { SET_PROJECTS, SET_STATS, SET_PROJECT_USERS } from '@/store/mutations';
+import {
+  Project,
+  EditProjectDto,
+  CreateProjectDto,
+  User,
+  AddUserDto,
+} from '../types';
 
 @Module
 export default class Projects extends VuexModule {
   items: Project[] = [];
   stats: any = {};
+  users: User[] = [];
 
   @Mutation
   [SET_PROJECTS](projects: Project[]) {
@@ -29,6 +43,11 @@ export default class Projects extends VuexModule {
   @Mutation
   [SET_STATS](stats: any) {
     this.stats = stats;
+  }
+
+  @Mutation
+  [SET_PROJECT_USERS](users: User[]) {
+    this.users = users;
   }
 
   @Action
@@ -46,18 +65,30 @@ export default class Projects extends VuexModule {
   @Action
   async [CREATE_PROJECT](payload: CreateProjectDto) {
     await createProject(payload);
-    this.context.dispatch(FETCH_PROJECTS, true);
+    await this.context.dispatch(FETCH_PROJECTS, true);
   }
 
   @Action
   async [DELETE_PROJECT](projectName: string) {
     await deleteProject(projectName);
-    this.context.dispatch(FETCH_PROJECTS, true);
+    await this.context.dispatch(FETCH_PROJECTS, true);
   }
 
   @Action
   async [EDIT_PROJECT](payload: EditProjectDto) {
     await editProject(payload.name, payload.change);
-    this.context.dispatch(FETCH_PROJECTS, true);
+    await this.context.dispatch(FETCH_PROJECTS, true);
+  }
+
+  @Action
+  async [ADD_USER](payload: AddUserDto) {
+    await addUser(payload);
+    await this.context.dispatch(FETCH_USERS);
+  }
+
+  @Action
+  async [REMOVE_USER](payload: AddUserDto) {
+    await removeUser(payload);
+    await this.context.dispatch(FETCH_USERS);
   }
 }

@@ -32,6 +32,7 @@ import {
   ProjectList,
   ProjectDto,
   GetProjectsQueryDto,
+  AddUserDto,
 } from './dto/projects.dto';
 import { Project } from './interfaces/project.interface';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -143,5 +144,33 @@ export class ProjectsController {
     @Body() createUnitDto: CreateUnitDto
   ) {
     return this.unitsService.create(project, createUnitDto);
+  }
+
+  @Post(':projectName/users')
+  @Roles(['owner', 'admin'])
+  @ApiOperation({ summary: 'Add user to the project' })
+  @ApiCreatedResponse({ description: 'Added' })
+  @ApiParam({ name: 'projectName', type: 'string', required: true })
+  @ApiTags('users')
+  @HttpCode(204)
+  addUser(
+    @Param('projectName') project: Project,
+    @Body() addUserDto: AddUserDto
+  ) {
+    return this.projectsService.addUser(project, addUserDto.userId);
+  }
+
+  @Delete(':projectName/users')
+  @Roles(['owner', 'admin', 'user'])
+  @ApiOperation({ summary: 'Remove user from the project' })
+  @ApiCreatedResponse({ description: 'Removed' })
+  @ApiParam({ name: 'projectName', type: 'string', required: true })
+  @ApiTags('users')
+  @HttpCode(204)
+  removeUser(
+    @Param('projectName') project: Project,
+    @Body() addUserDto: AddUserDto
+  ) {
+    return this.projectsService.removeUser(project, addUserDto.userId);
   }
 }

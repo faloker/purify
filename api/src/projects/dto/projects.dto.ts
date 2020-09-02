@@ -23,8 +23,6 @@ export class CreateProjectDto {
 
   @IsString()
   @IsOptional()
-  @MinLength(3)
-  @MaxLength(40)
   readonly description?: string;
 }
 
@@ -35,6 +33,11 @@ export class GetProjectsQueryDto {
 }
 
 export class EditProjectDto extends CreateProjectDto {}
+
+export class AddUserDto {
+  @IsString()
+  userId: string;
+}
 
 export class ProjectDto extends CreateProjectDto {
   readonly _id: string;

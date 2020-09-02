@@ -11,7 +11,7 @@ export interface User extends Document {
   readonly refreshToken: string;
   readonly role: Role;
   readonly ssoBypass: boolean;
-  readonly memberships: string[];
+  memberships: string[];
 }
 
 export enum Role {

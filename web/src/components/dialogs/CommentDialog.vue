@@ -45,14 +45,14 @@
               <template v-slot:icon>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-avatar v-if="event.author.username === 'purify'" v-on="on">
+                    <v-avatar v-if="event.author.name === 'System'" v-on="on">
                       <img src="@/assets/logo_trans.png">
                     </v-avatar>
                     <v-avatar v-else v-on="on">
                       <img :src="event.author.image">
                     </v-avatar>
                   </template>
-                  <span>{{ event.author.username }}</span>
+                  <span>{{ event.author.name }}</span>
                 </v-tooltip>
               </template>
               <v-row justify="space-between">

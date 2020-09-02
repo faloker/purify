@@ -5,6 +5,7 @@
       max-width="400px"
       @input="$emit('input', $event.target.value)"
       @click:outside="$emit('input', false)"
+      @keydown.esc="$emit('input', false)"
     >
       <v-card>
         <v-card-title>

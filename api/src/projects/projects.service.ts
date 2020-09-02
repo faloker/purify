@@ -14,6 +14,7 @@ import {
 import { Unit } from 'src/units/interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { Report } from 'src/reports/interfaces/report.interface';
+import { User, Role } from 'src/users/interfaces/user.interface';
 
 @Injectable()
 export class ProjectsService {
@@ -21,7 +22,8 @@ export class ProjectsService {
     @InjectModel('Project') private readonly projectModel: Model<Project>,
     @InjectModel('Unit') private readonly unitModel: Model<Unit>,
     @InjectModel('Issue') private readonly issueModel: Model<Issue>,
-    @InjectModel('Report') private readonly reportModel: Model<Report>
+    @InjectModel('Report') private readonly reportModel: Model<Report>,
+    @InjectModel('User') private readonly userModel: Model<User>
   ) {}
 
   async getAll(query: GetProjectsQueryDto, allowedProjects?: string[]) {
@@ -34,6 +36,16 @@ export class ProjectsService {
     }
 
     for (const project of projects) {
+      const numUsers = await this.userModel.countDocuments({
+        $or: [
+          {
+            memberships: { $elemMatch: { $eq: project._id } },
+          },
+          {
+            role: { $eq: Role.OWNER },
+          },
+        ],
+      });
       const units = await this.unitModel
         .find({ project: project._id })
         .lean()
@@ -41,6 +53,7 @@ export class ProjectsService {
         .populate('numTickets');
 
       project['numUnits'] = units.length;
+      project['numUsers'] = numUsers;
       project['numIssues'] = units.reduce((total, currentValue) => {
         return total + currentValue.numIssues;
       }, 0);
@@ -77,14 +90,12 @@ export class ProjectsService {
   }
 
   async getStatisticsForUnit(unit: string) {
-    const uploadedReports = await this.reportModel.find(
-      { unit },
-      '_id createdAt'
-    ).lean();
-    let issues = await this.issueModel.find(
-      { unit },
-      '_id status resolution createdAt risk'
-    ).lean();
+    const uploadedReports = await this.reportModel
+      .find({ unit }, '_id createdAt')
+      .lean();
+    let issues = await this.issueModel
+      .find({ unit }, '_id status resolution createdAt risk')
+      .lean();
 
     issues = issues.filter(
       issue => issue.createdAt.getFullYear() === new Date().getFullYear()
@@ -197,5 +208,45 @@ export class ProjectsService {
 
   async findOne(projectName: string) {
     return this.projectModel.findOne({ name: projectName }).lean();
+  }
+
+  async getUsers(project: Project) {
+    return this.userModel
+      .find(
+        {
+          $or: [
+            {
+              memberships: { $elemMatch: { $eq: project._id } },
+            },
+            {
+              role: { $eq: Role.OWNER },
+            },
+          ],
+        },
+        { _id: 1, role: 1, name: 1, email: 1, image: 1 }
+      )
+      .lean();
+  }
+
+  async addUser(project: Project, userId: string) {
+    const user = await this.userModel.findOne({ _id: userId });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.memberships.push(project._id);
+    user.save();
+  }
+
+  async removeUser(project: Project, userId: string) {
+    const user = await this.userModel.findOne({ _id: userId });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.memberships = user.memberships.filter(m => m !== project._id);
+    user.save();
   }
 }

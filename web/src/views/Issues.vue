@@ -15,12 +15,10 @@
       <v-col cols="10">
         <div v-if="loading" class="mt-14">
           <v-skeleton-loader
-            v-for="(index) in [1, 2, 3, 4, 5]"
-            :key="index"
             class="my-3"
             :loading="loading"
-            transition="scale-transition"
-            type="paragraph"
+            transition-group="scale-transition"
+            type="paragraph@5"
           />
         </div>
         <issues-list v-else :raw-items="filtredIssues" />
