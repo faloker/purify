@@ -12,6 +12,7 @@
         <v-row class="mx-1">
           <user-dialog
             v-model="createDialog"
+            :roles="['Owner', 'Admin', 'User', 'Observer']"
             :projects="projects"
             :email.sync="email"
             :role.sync="role"
@@ -19,7 +20,11 @@
             :sso-bypass.sync="ssoBypass"
             @handle-click="createUser"
           />
-          <v-btn color="primary" @click="createDialog = true">
+          <v-btn
+            v-permission="['owner']"
+            color="primary"
+            @click.stop="createDialog = true"
+          >
             <v-icon left>
               add
             </v-icon>Create user
@@ -52,6 +57,12 @@
               :search="searchTerm"
               :items-per-page="10"
             >
+              <template v-slot:item.name="{ item }">
+                <v-avatar size="36">
+                  <img :src="item.image" alt="ava">
+                </v-avatar>
+                <span class="ml-3">{{ item.name }}</span>
+              </template>
               <template v-slot:item.role="{ item }">
                 <v-chip
                   :color="getRoleColor(item.role)"
@@ -105,16 +116,16 @@
                     </v-btn>
                   </template>
 
-                  <v-list>
-                    <v-list-item @click="openEditDialog(item)">
+                  <v-list v-permission="['owner']">
+                    <v-list-item @click.stop="openEditDialog(item)">
                       <v-list-item-title>Edit User</v-list-item-title>
                     </v-list-item>
-                    <v-list-item @click="resetPassword(item)">
+                    <v-list-item @click.stop="resetPassword(item)">
                       <v-list-item-title>Reset Password</v-list-item-title>
                     </v-list-item>
                     <v-divider />
-                    <v-list-item @click="openConfirmationDialog(item)">
-                      <v-list-item-title>Delete User</v-list-item-title>
+                    <v-list-item @click.stop="openConfirmationDialog(item)">
+                      <strong class="red--text text--lighten-1">Delete User</strong>
                     </v-list-item>
                   </v-list>
                 </v-menu>
@@ -128,42 +139,16 @@
           message="Are you sure you want to continue?"
           @handle-click="deleteUser()"
         />
-        <v-dialog v-model="linkDialog" max-width="500">
-          <v-card>
-            <template v-if="!systemConfig.saml || isPasswordReset">
-              <v-card-title>Share login link</v-card-title>
-              <v-card-subtitle>To log in, the user will need to follow the link and set a password.</v-card-subtitle>
-              <v-card-text>
-                <v-text-field
-                  id="textToCopy"
-                  :value="isPasswordReset ? inviteLink : inviteLink"
-                  filled
-                  readonly
-                  :append-outer-icon="ttcIcon"
-                  @click:append-outer="copyText"
-                />
-              </v-card-text>
-            </template>
-            <v-template v-else>
-              <v-card-title>User has been created</v-card-title>
-              <v-card-subtitle>SSO is enabled in your installation, so users have to sign in with your identity provider.</v-card-subtitle>
-              <v-card-actions>
-                <v-spacer />
-                <v-btn
-                  color="quinary"
-                  text
-                  @click="linkDialog = false"
-                >
-                  OK
-                </v-btn>
-              </v-card-actions>
-            </v-template>
-          </v-card>
-        </v-dialog>
+        <invite-link-dialog
+          v-model="linkDialog"
+          :link="inviteLink"
+          :is-password-reset="isPasswordReset"
+        />
         <user-dialog
           v-model="editDialog"
           heading="Edit User"
           ok-button-text="Save"
+          :roles="['Owner', 'Admin', 'User', 'Observer']"
           :projects="projects"
           :name.sync="newName"
           :email.sync="newEmail"
@@ -188,6 +173,7 @@ import {
 } from '@vue/composition-api';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
 import UserDialog from '@/components/dialogs/UserDialog.vue';
+import InviteLinkDialog from '@/components/dialogs/InviteLinkDialog.vue';
 import { getRoleColor } from '@/utils/helpers';
 import { capitalize } from 'lodash';
 import store from '@/store';
@@ -207,12 +193,12 @@ export default defineComponent({
   components: {
     ConfirmDialog,
     UserDialog,
+    InviteLinkDialog,
   },
 
   setup(props, context) {
     const searchTerm = ref('');
     const loading = ref(true);
-    const ttcIcon = ref('mdi-content-copy');
     const headers = ref([
       { text: 'Name', value: 'name' },
       {
@@ -254,21 +240,12 @@ export default defineComponent({
       await store.dispatch(FETCH_PROJECTS).catch(() => {});
     });
 
-    function copyText() {
-      const ttc = document.querySelector('#textToCopy') as HTMLInputElement;
-      ttc!.select();
-      document.execCommand('copy');
-      ttcIcon.value = 'mdi-check';
-    }
-
     return {
       ...useCreateUser(),
       ...useEditUser(),
       ...useDeleteUser(),
-      ttcIcon,
       systemConfig,
       getRoleColor,
-      copyText,
       loading,
       headers,
       searchTerm,
@@ -315,7 +292,7 @@ function useCreateUser() {
   const inviteLink = ref('');
   const isPasswordReset = ref(false);
 
-  async function createUser() {
+  function createUser() {
     store
       .dispatch(CREATE_USER, {
         email: email.value,

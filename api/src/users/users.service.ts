@@ -7,6 +7,7 @@ import { User, Role } from './interfaces/user.interface';
 import { CreateUserDto, ChangePasswordDto, EditUserDto } from './dto/user.dto';
 import { InviteToken } from './interfaces/inviteToken.interface';
 import { ConfigService } from '@nestjs/config';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class UsersService {
@@ -37,6 +38,7 @@ export class UsersService {
     return new this.userModel({
       ...newUser,
       salt: randomBytes(16).toString('hex'),
+      image: `https://api.adorable.io/avatars/285/${nanoid(10)}.png`
     }).save();
   }
 

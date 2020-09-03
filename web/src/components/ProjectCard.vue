@@ -79,7 +79,7 @@
             class="edit-btn"
             color="primary"
             text
-            @click="dialog = true"
+            @click.stop="dialog = true"
           >
             Edit
           </v-btn>
@@ -88,7 +88,7 @@
             class="delete-btn"
             color="tertiary"
             text
-            @click="confirmDialog = true"
+            @click.stop="confirmDialog = true"
           >
             Delete
           </v-btn>

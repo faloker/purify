@@ -11,6 +11,7 @@ import {
   Query,
   UseInterceptors,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -169,8 +170,12 @@ export class ProjectsController {
   @HttpCode(204)
   removeUser(
     @Param('projectName') project: Project,
-    @Body() addUserDto: AddUserDto
+    @Body() addUserDto: AddUserDto,
+    @Req() req
   ) {
+    if (req.user._id === addUserDto.userId) {
+      throw new BadRequestException('No you stay');
+    }
     return this.projectsService.removeUser(project, addUserDto.userId);
   }
 }

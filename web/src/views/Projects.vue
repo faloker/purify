@@ -13,7 +13,7 @@
           <v-btn
             v-permission="['owner']"
             color="primary"
-            @click="dialog = true"
+            @click.stop="dialog = true"
           >
             <v-icon left>
               add
@@ -63,14 +63,14 @@
                   </template>
 
                   <v-list>
-                    <v-list-item @click="openEditDialog(item)">
+                    <v-list-item @click.stop="openEditDialog(item)">
                       <v-list-item-title>Edit Project</v-list-item-title>
                     </v-list-item>
-                    <v-list-item @click="openManageDialog(item)">
+                    <v-list-item @click.stop="openManageDialog(item)">
                       <v-list-item-title>Manage Users</v-list-item-title>
                     </v-list-item>
                     <v-divider />
-                    <v-list-item @click="openConfirmationDialog(item)">
+                    <v-list-item @click.stop="openConfirmationDialog(item)">
                       <v-list-item-title>
                         <strong class="red--text text--lighten-1">Delete Project</strong>
                       </v-list-item-title>

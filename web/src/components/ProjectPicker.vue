@@ -13,26 +13,26 @@
         v-bind="attrs"
         v-on="on"
       >
-        <v-icon>
-          mdi-apps
-        </v-icon>
+        <v-icon>mdi-apps</v-icon>
         <v-icon right>
           mdi-chevron-down
         </v-icon>
       </v-btn>
     </template>
     <v-list dense>
-      <v-subheader>
+      <v-subheader class="mb-1">
         PROJECTS
         <v-spacer /> 
         <v-chip
           small
-          href
-          outlined
+          label
           color="primary"
-          @click="openProjects"
+          @click.stop="openProjects"
         >
-          Manage Projects
+          <v-icon small left>
+            mdi-cogs
+          </v-icon>
+          <strong>Manage Projects</strong>
         </v-chip>
       </v-subheader>
       <v-text-field
@@ -44,24 +44,17 @@
         solo
         single-line
       />
-      <v-list-item-group v-model="selectedProject" color="primary">
-        <v-slide-y-transition
-          group
-          hide-on-leave
-          tag="v-list"
+      <v-slide-y-transition group>
+        <v-list-item
+          v-for="project in filteredProjects"
+          :key="project._id"
+          @click.stop="selectProject(project)"
         >
-          <v-list-item
-            v-for="project in filteredProjects"
-            :key="project._id"
-            href
-            @click="selectProject(project)"
-          >
-            <v-list-item-content>
-              <v-list-item-title v-text="project.displayName" />
-            </v-list-item-content>
-          </v-list-item>
-        </v-slide-y-transition>
-      </v-list-item-group>
+          <v-list-item-content>
+            <v-list-item-title v-text="project.displayName" />
+          </v-list-item-content>
+        </v-list-item>
+      </v-slide-y-transition>
     </v-list>
   </v-menu>
 </template>

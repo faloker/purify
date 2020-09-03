@@ -40,7 +40,7 @@
           <v-btn
             color="quinary"
             text
-            @click="$emit('input', false)"
+            @click.stop="$emit('input', false)"
           >
             Close
           </v-btn>
@@ -49,7 +49,7 @@
             color="quinary"
             text
             :disabled="!displayName || displayName.length < 3"
-            @click="$emit('handle-click')"
+            @click.stop="$emit('handle-click')"
           >
             {{ okButtonText }}
           </v-btn>

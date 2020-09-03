@@ -14,7 +14,7 @@
         <v-btn
           icon
           dark
-          @click="$emit('input', false)"
+          @click.stop="$emit('input', false)"
         >
           <v-icon>close</v-icon>
         </v-btn>
@@ -23,7 +23,7 @@
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items>
-          <v-btn text @click="openFinisher">
+          <v-btn text @click.stop="openFinisher">
             next
             <v-icon class="ml-2">
               mdi-chevron-right
@@ -102,14 +102,14 @@
                 <v-btn
                   color="red darken-1"
                   text
-                  @click="finisher = !finisher"
+                  @click.stop="finisher = !finisher"
                 >
                   Close
                 </v-btn>
                 <v-btn
                   color="green darken-1"
                   text
-                  @click="createTicket()"
+                  @click.stop="createTicket()"
                 >
                   Create
                 </v-btn>

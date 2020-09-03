@@ -10,6 +10,8 @@ import {
   Param,
   Patch,
   NotFoundException,
+  Req,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   CreateUserDto,
@@ -29,7 +31,7 @@ import {
   ApiNotFoundResponse,
   ApiCreatedResponse,
 } from '@nestjs/swagger';
-import { User } from './interfaces/user.interface';
+import { User, Role } from './interfaces/user.interface';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
@@ -58,7 +60,7 @@ export class UsersController {
   }
 
   @Get()
-  @Roles(['owner'])
+  @Roles(['owner', 'admin'])
   @ApiOperation({ summary: 'List users' })
   @ApiOkResponse({
     description: 'List of users',
@@ -69,10 +71,19 @@ export class UsersController {
   }
 
   @Post()
-  @Roles(['owner'])
+  @Roles(['owner', 'admin'])
   @ApiOperation({ summary: 'Create user' })
   @ApiCreatedResponse({ description: 'Created successfully' })
-  async createUser(@Body() createUserDto: CreateUserDto) {
+  async createUser(@Body() createUserDto: CreateUserDto, @Req() req) {
+    if (req.user.role === Role.ADMIN) {
+      if (
+        createUserDto.memberships.length > 1 ||
+        !req.user.memberships.includes(createUserDto.memberships[0]) ||
+        createUserDto.role === Role.OWNER
+      ) {
+        throw new BadRequestException();
+      }
+    }
     const user = await this.usersService.createUser(createUserDto);
     const link = await this.usersService.createInviteLink(user._id);
     return { link };

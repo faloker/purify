@@ -20,7 +20,7 @@
           <v-btn
             class="mx-2"
             outlined
-            @click="reportDialog = true"
+            @click.stop="reportDialog = true"
           >
             View report
           </v-btn>
@@ -29,7 +29,7 @@
             :disabled="!pathToIssues"
             outlined
             color="primary"
-            @click="stepperModel = 2"
+            @click.stop="stepperModel = 2"
           >
             Next
           </v-btn>
@@ -60,14 +60,14 @@
             outlined
             :disabled="!titleFields.length"
             color="primary"
-            @click="stepperModel = 3"
+            @click.stop="stepperModel = 3"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 1"
+            @click.stop="stepperModel = 1"
           >
             Go back
           </v-btn>
@@ -94,14 +94,14 @@
             outlined
             color="primary"
             :disabled="riskField.length > 1"
-            @click="stepperModel = 4"
+            @click.stop="stepperModel = 4"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 2"
+            @click.stop="stepperModel = 2"
           >
             Go back
           </v-btn>
@@ -133,14 +133,14 @@
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 5"
+            @click.stop="stepperModel = 5"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 3"
+            @click.stop="stepperModel = 3"
           >
             Go back
           </v-btn>
@@ -164,14 +164,14 @@
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 6"
+            @click.stop="stepperModel = 6"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 4"
+            @click.stop="stepperModel = 4"
           >
             Go back
           </v-btn>
@@ -207,14 +207,14 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 7"
+            @click.stop="stepperModel = 7"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 5"
+            @click.stop="stepperModel = 5"
           >
             Go back
           </v-btn>
@@ -241,14 +241,14 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 8"
+            @click.stop="stepperModel = 8"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 6"
+            @click.stop="stepperModel = 6"
           >
             Go back
           </v-btn>
@@ -274,14 +274,14 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 9"
+            @click.stop="stepperModel = 9"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 7"
+            @click.stop="stepperModel = 7"
           >
             Go back
           </v-btn>
@@ -308,14 +308,14 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 10"
+            @click.stop="stepperModel = 10"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 8"
+            @click.stop="stepperModel = 8"
           >
             Go back
           </v-btn>
@@ -365,14 +365,14 @@
             outlined
             :loading="loading"
             :disabled="loading"
-            @click="createTemplate()"
+            @click.stop="createTemplate()"
           >
             Save
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 9"
+            @click.stop="stepperModel = 9"
           >
             Go back
           </v-btn>
@@ -404,7 +404,7 @@
             color="green"
             outlined
             block
-            @click="reportDialog = false"
+            @click.stop="reportDialog = false"
           >
             Confirm
           </v-btn>

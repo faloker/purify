@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid style="width: 90%">
+  <v-container>
     <v-row justify="center" align="center">
       <issue-filter
         :keywords="keywordsList"
@@ -11,19 +11,16 @@
         @filter_update="filterOptions = $event"
       />
     </v-row>
-    <v-row justify="center" align="center">
-      <v-col cols="10">
-        <div v-if="loading" class="mt-14">
-          <v-skeleton-loader
-            class="my-3"
-            :loading="loading"
-            transition-group="scale-transition"
-            type="paragraph@5"
-          />
-        </div>
-        <issues-list v-else :raw-items="filtredIssues" />
-      </v-col>
-    </v-row>
+    <!-- <v-row justify="center" align="center"> -->
+    <v-skeleton-loader
+      class="my-3"
+      :loading="loading"
+      transition-group="scale-transition"
+      type="paragraph@5"
+    >
+      <issues-list :raw-items="filtredIssues" />
+    </v-skeleton-loader>
+    <!-- </v-row> -->
   </v-container>
 </template>
 <script lang="ts">

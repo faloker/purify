@@ -26,7 +26,7 @@
               outlined
               rounded
               class="text-none"
-              @click="openStepper(item)"
+              @click.stop="openStepper(item)"
             >
               <v-icon>add</v-icon>Create template
             </v-btn>
@@ -56,7 +56,7 @@
                   color="red darken-1"
                   v-bind="attrs"
                   v-on="on"
-                  @click="openConfirmationDialog(item)"
+                  @click.stop="openConfirmationDialog(item)"
                 >
                   <v-icon>fa-times</v-icon>
                 </v-btn>

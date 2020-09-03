@@ -49,7 +49,6 @@
               <v-slide-y-transition
                 group
                 hide-on-leave
-                tag="v-list"
               >
                 <template v-for="(item, index) in items">
                   <v-list-item
@@ -77,7 +76,7 @@
                         </v-icon>
                       </v-list-item-icon>
 
-                      <v-list-item-content @click="openDialog('issue', item)">
+                      <v-list-item-content @click.stop="openDialog('issue', item)">
                         <v-list-item-title>
                           <!-- <div class="text-truncate"> -->
                           {{ item.title }}
@@ -149,7 +148,7 @@
           <v-btn
             icon
             :disabled="!(currentPage - 1)"
-            @click="prevPage"
+            @click.stop="prevPage"
           >
             <v-icon large>
               chevron_left
@@ -162,7 +161,7 @@
           <v-btn
             icon
             :disabled="currentPage * pageSize >= rawItems.length"
-            @click="nextPage"
+            @click.stop="nextPage"
           >
             <v-icon large>
               chevron_right

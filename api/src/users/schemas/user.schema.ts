@@ -11,7 +11,6 @@ export const UserSchema = new Schema({
   },
   image: {
     type: String,
-    default: `https://api.adorable.io/avatars/285/${nanoid(10)}.png`,
   },
   password: String,
   token: String,

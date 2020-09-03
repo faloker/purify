@@ -53,7 +53,7 @@
                   text
                   icon
                   color="secondary"
-                  @click="openEditor(item)"
+                  @click.stop="openEditor(item)"
                 >
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
@@ -61,7 +61,7 @@
                   text
                   icon
                   color="red darken-1"
-                  @click="openConfirmationDialog(item)"
+                  @click.stop="openConfirmationDialog(item)"
                 >
                   <v-icon>fa-times</v-icon>
                 </v-btn>
@@ -86,7 +86,7 @@
           <v-btn
             icon
             dark
-            @click="closeEditor"
+            @click.stop="closeEditor"
           >
             <v-icon>close</v-icon>
           </v-btn>
@@ -95,7 +95,7 @@
           </v-toolbar-title>
           <v-spacer />
           <v-toolbar-items>
-            <v-btn text @click="saveChanges()">
+            <v-btn text @click.stop="saveChanges()">
               save
               <v-icon right>
                 save

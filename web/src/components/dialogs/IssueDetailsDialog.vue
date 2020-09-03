@@ -16,7 +16,7 @@
                       icon
                       large
                       :color="getRiskColor(issue.risk)"
-                      @click="riskDialog = !riskDialog"
+                      @click.stop="riskDialog = !riskDialog"
                       v-on="on"
                     >
                       <v-icon>fa-bug</v-icon>
@@ -51,7 +51,7 @@
                     <v-btn
                       color="green darken-1"
                       text
-                      @click="updateIssue(issue, 'risk', risk)"
+                      @click.stop="updateIssue(issue, 'risk', risk)"
                     >
                       Confirm
                     </v-btn>
@@ -94,19 +94,19 @@
                 <v-list>
                   <v-list-item
                     key="switch-resolution"
-                    @click="updateIssue(issue, 'resolution', 'resolved')"
+                    @click.stop="updateIssue(issue, 'resolution', 'resolved')"
                   >
                     <v-list-item-title>Resolved</v-list-item-title>
                   </v-list-item>
                   <v-list-item
                     key="switch-as-fp"
-                    @click="updateIssue(issue, 'resolution', 'false positive')"
+                    @click.stop="updateIssue(issue, 'resolution', 'false positive')"
                   >
                     <v-list-item-title>False Positive</v-list-item-title>
                   </v-list-item>
                   <v-list-item
                     key="switch-risk-accepted"
-                    @click="updateIssue(issue, 'resolution', 'accepted risk')"
+                    @click.stop="updateIssue(issue, 'resolution', 'accepted risk')"
                   >
                     <v-list-item-title>Accepted Risk</v-list-item-title>
                   </v-list-item>
@@ -117,7 +117,7 @@
                 outlined
                 class="mr-2"
                 color="primary"
-                @click="updateIssue(issue, 'status', 'open')"
+                @click.stop="updateIssue(issue, 'status', 'open')"
               >
                 Reopen
               </v-btn>
@@ -130,7 +130,7 @@
                       :disabled="!systemConfig.jira"
                       class="mr-2"
                       color="senary"
-                      @click="ticketDialog = !ticketDialog"
+                      @click.stop="ticketDialog = !ticketDialog"
                     >
                       <v-icon color="senary" left>mdi-jira</v-icon>Create Ticket
                     </v-btn>
@@ -159,7 +159,7 @@
                 outlined
                 class="mr-2"
                 color="quaternary"
-                @click="editDialog = true"
+                @click.stop="editDialog = true"
               >
                 <v-icon left>
                   mdi-pencil
@@ -169,7 +169,7 @@
                 outlined
                 class="mr-2"
                 color="secondary"
-                @click="commentDialog = true"
+                @click.stop="commentDialog = true"
               >
                 <v-icon :left="!!comments.length" small>
                   mdi-comment-text-multiple

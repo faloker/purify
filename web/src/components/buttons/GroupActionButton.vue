@@ -7,7 +7,7 @@
           color="red"
           :disabled="!items.length"
           v-on="on"
-          @click="updateIssues(items, 'resolution', 'false positive')"
+          @click.stop="updateIssues(items, 'resolution', 'false positive')"
         >
           <v-icon>thumb_down</v-icon>
         </v-btn>

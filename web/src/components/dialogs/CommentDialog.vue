@@ -27,7 +27,7 @@
                   :disabled="!input"
                   outlined
                   color="primary"
-                  @click="postComment"
+                  @click.stop="postComment"
                 >
                   Post
                 </v-btn>

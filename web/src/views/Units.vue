@@ -22,7 +22,7 @@
           v-permission="['owner', 'admin']"
           color="primary"
           text
-          @click="createDialog = true"
+          @click.stop="createDialog = true"
         >
           <v-icon>mdi-pencil</v-icon>Create unit
         </v-btn>
@@ -100,7 +100,7 @@
                       v-bind="attrs"
                       color="secondary"
                       v-on="on"
-                      @click="openEditDialog(item)"
+                      @click.stop="openEditDialog(item)"
                     >
                       <v-icon>mdi-pencil</v-icon>
                     </v-btn>
@@ -116,7 +116,7 @@
                       color="red darken-1"
                       v-bind="attrs"
                       v-on="on"
-                      @click="openConfirmationDialog(item)"
+                      @click.stop="openConfirmationDialog(item)"
                     >
                       <v-icon>fa-times</v-icon>
                     </v-btn>

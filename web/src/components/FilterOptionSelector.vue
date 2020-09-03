@@ -6,7 +6,7 @@
     <v-sheet
       class="px-2"
       height="150"
-      width="200"
+      width="160"
     >
       <v-container>
         <v-row align="start">
@@ -31,7 +31,7 @@
                   :color="active ? 'grey lighten-3' : 'grey lighten-3'"
                   background-color="white"
                   height="25"
-                  @click="toggle"
+                  @click.stop="toggle"
                 >
                   <span v-if="!active" class="text--disabled pl-1 text-capitalize">{{ item.title }}</span>
                   <strong v-else class="primary--text pl-1 text-capitalize">{{ item.title }}</strong>

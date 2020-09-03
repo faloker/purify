@@ -46,7 +46,7 @@
                 />
               </v-radio-group>
             </v-row>
-            <v-row class="mt-5">
+            <v-row v-if="heading !== 'Invite User'" class="mt-5">
               <v-autocomplete
                 v-model="membershipsModel"
                 :items="projects"
@@ -61,7 +61,7 @@
                 <template v-slot:prepend-item>
                   <v-list-item
                     ripple
-                    @click="toggle"
+                    @click.stop="toggle"
                   >
                     <v-list-item-action>
                       <v-icon :color="membershipsModel.length > 0 ? 'indigo darken-4' : ''">
@@ -104,7 +104,7 @@
           <v-btn
             color="quinary"
             text
-            @click="$emit('input', false)"
+            @click.stop="$emit('input', false)"
           >
             Close
           </v-btn>
@@ -112,7 +112,7 @@
           <v-btn
             color="quinary"
             text
-            @click="$emit('handle-click')"
+            @click.stop="$emit('handle-click')"
           >
             {{ okButtonText }}
           </v-btn>
@@ -145,6 +145,10 @@ export default defineComponent({
       type: String,
       default: 'New User',
     },
+    roles: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
     name: {
       type: String,
       default: '',
@@ -176,8 +180,6 @@ export default defineComponent({
   },
 
   setup(props, { emit }) {
-    const roles = ref(['Owner', 'Admin', 'User', 'Observer']);
-
     const nameModel = computed({
       get: () => props.name,
       set: val => emit('update:name', val),
@@ -251,7 +253,6 @@ export default defineComponent({
       roleModel,
       emailModel,
       ssoBypassModel,
-      roles,
       toggle,
       icon,
       systemConfig,

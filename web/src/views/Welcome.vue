@@ -55,7 +55,7 @@
                   Click 
                   <a
                     class="text-decoration-underline"
-                    @click="forceLogin = !forceLogin"
+                    @click.stop="forceLogin = !forceLogin"
                   >here</a> to sign in with email and password.
                 </p>
               </v-row>

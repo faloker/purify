@@ -42,7 +42,11 @@
               </v-list-item-action>
               <v-list-item-title>Templates</v-list-item-title>
             </v-list-item>
-            <v-list-item active-class="primary--text" :to="{ name: 'Users' }">
+            <v-list-item
+              v-permission="['owner', 'admin']"
+              active-class="primary--text"
+              :to="{ name: 'Users' }"
+            >
               <v-list-item-action>
                 <v-icon>mdi-account-group</v-icon>
               </v-list-item-action>
@@ -87,7 +91,7 @@
                   <v-btn
                     id="btn-logout"
                     icon
-                    @click="killSession"
+                    @click.stop="killSession"
                   >
                     <v-icon>mdi-exit-to-app</v-icon>
                   </v-btn>
