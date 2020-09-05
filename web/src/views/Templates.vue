@@ -1,26 +1,25 @@
 <template>
   <v-container>
+    <v-row justify="space-between" align="center">
+      <v-col>
+        <p class="text-h4 font-weight-black">
+          Templates
+        </p>
+        <p>Templates are code-free and user-friendly structures that parse reports the way you tell them.</p>
+      </v-col>
+    </v-row>
+    <v-divider />
     <v-row>
-      <v-spacer />
       <v-col>
         <v-text-field
           id="search"
           v-model="searchTerm"
-          clearable
+          prepend-inner-icon="search"
+          label="Filter by template"
+          solo
           dense
-          outlined
-        >
-          <template slot="label">
-            <v-icon class="mx-1" style="vertical-align: middle">
-              search
-            </v-icon>Search
-          </template>
-        </v-text-field>
-      </v-col>
-      <v-spacer />
-    </v-row>
-    <v-row>
-      <v-col cols="12">
+          clearable
+        />
         <v-skeleton-loader
           :loading="loading"
           transition="scale-transition"
@@ -48,23 +47,32 @@
               <template v-slot:item.updatedAt="{ item }">
                 <span class="text-none mr-5">{{ formatDate(item.updatedAt) }}</span>
               </template>
-              <template v-slot:item.action="{ item }" class="text-center">
-                <v-btn
-                  text
-                  icon
-                  color="secondary"
-                  @click.stop="openEditor(item)"
+              <template v-slot:item.actions="{ item }">
+                <v-menu
+                  bottom
+                  right
+                  transition="slide-x-transition"
                 >
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                <v-btn
-                  text
-                  icon
-                  color="red darken-1"
-                  @click.stop="openConfirmationDialog(item)"
-                >
-                  <v-icon>fa-times</v-icon>
-                </v-btn>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-permission="['owner']"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item @click.stop="openEditor(item)">
+                      <v-list-item-title>Edit Template</v-list-item-title>
+                    </v-list-item>
+                    <v-divider />
+                    <v-list-item @click.stop="openConfirmationDialog(item)">
+                      <strong class="red--text text--lighten-1">Delete Template</strong>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </template>
             </v-data-table>
           </v-card>
@@ -189,7 +197,7 @@ export default defineComponent({
         text: 'Actions',
         width: '25%',
         align: 'center',
-        value: 'action',
+        value: 'actions',
         sortable: false,
       },
     ]);

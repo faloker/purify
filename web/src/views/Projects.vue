@@ -22,6 +22,7 @@
         </v-row>
       </v-col>
     </v-row>
+    <v-divider />
     <v-row>
       <v-col>
         <v-text-field
@@ -46,6 +47,16 @@
               :search="searchTerm"
               :items-per-page="10"
             >
+              <template v-slot:item.displayName="{ item }">
+                <v-icon
+                  class="mb-1"
+                  left
+                  :color="item.color"
+                >
+                  mdi-square-rounded
+                </v-icon>
+                <span>{{ item.displayName }}</span>
+              </template>
               <template v-slot:item.actions="{ item }">
                 <v-menu
                   bottom

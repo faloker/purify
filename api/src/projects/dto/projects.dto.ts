@@ -27,9 +27,15 @@ export class CreateProjectDto {
 }
 
 export class GetProjectsQueryDto {
-  @IsIn(['true', 'false'])
   @IsOptional()
+  @IsIn(['true', 'false'])
   verbose?: string;
+}
+
+export class GetMetricsQueryDto {
+  @IsOptional()
+  @IsIn(['7', '30', '90', '365'])
+  days: string;
 }
 
 export class EditProjectDto extends CreateProjectDto {}

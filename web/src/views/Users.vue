@@ -108,6 +108,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
+                      v-permission="['owner']"
                       icon
                       v-bind="attrs"
                       v-on="on"
@@ -115,8 +116,7 @@
                       <v-icon>mdi-dots-vertical</v-icon>
                     </v-btn>
                   </template>
-
-                  <v-list v-permission="['owner']">
+                  <v-list>
                     <v-list-item @click.stop="openEditDialog(item)">
                       <v-list-item-title>Edit User</v-list-item-title>
                     </v-list-item>

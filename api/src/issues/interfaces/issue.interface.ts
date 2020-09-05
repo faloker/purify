@@ -21,4 +21,5 @@ export interface Issue extends Document {
   readonly comments: Comment[] | string[];
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  readonly closedAt: Date;
 }

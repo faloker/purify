@@ -50,6 +50,10 @@ export interface AddUserDto {
   userId: string;
 }
 
+export interface FetchMetricsDto {
+  days: number;
+}
+
 export interface Unit {
   _id: string;
   name: string;

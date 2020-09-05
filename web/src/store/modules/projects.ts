@@ -1,7 +1,7 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 import {
   getProjects,
-  getStats,
+  getMetrics,
   createProject,
   deleteProject,
   editProject,
@@ -13,20 +13,25 @@ import {
   FETCH_PROJECTS,
   DELETE_PROJECT,
   CREATE_PROJECT,
-  FETCH_STATS,
+  FETCH_METRICS,
   EDIT_PROJECT,
   FETCH_PROJECT_USERS,
   FETCH_USERS,
   ADD_USER,
   REMOVE_USER,
 } from '@/store/actions';
-import { SET_PROJECTS, SET_STATS, SET_PROJECT_USERS } from '@/store/mutations';
+import {
+  SET_PROJECTS,
+  SET_METRICS,
+  SET_PROJECT_USERS,
+} from '@/store/mutations';
 import {
   Project,
   EditProjectDto,
   CreateProjectDto,
   User,
   AddUserDto,
+  FetchMetricsDto,
 } from '../types';
 
 @Module
@@ -41,7 +46,7 @@ export default class Projects extends VuexModule {
   }
 
   @Mutation
-  [SET_STATS](stats: any) {
+  [SET_METRICS](stats: any) {
     this.stats = stats;
   }
 
@@ -57,9 +62,12 @@ export default class Projects extends VuexModule {
   }
 
   @Action
-  async [FETCH_STATS](slug: string) {
-    const { data } = await getStats(slug);
-    this.context.commit(SET_STATS, data);
+  async [FETCH_METRICS](fetchMetricsDto: FetchMetricsDto) {
+    const { data } = await getMetrics(
+      this.context.rootState.system.projectName,
+      fetchMetricsDto.days
+    );
+    this.context.commit(SET_METRICS, data);
   }
 
   @Action

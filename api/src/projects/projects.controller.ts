@@ -34,6 +34,7 @@ import {
   ProjectDto,
   GetProjectsQueryDto,
   AddUserDto,
+  GetMetricsQueryDto,
 } from './dto/projects.dto';
 import { Project } from './interfaces/project.interface';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -111,7 +112,7 @@ export class ProjectsController {
     return this.projectsService.deleteOne(project._id);
   }
 
-  @Get(':projectName/stats')
+  @Get(':projectName/metrics')
   @Roles(['owner', 'admin', 'user', 'observer'])
   @ApiOperation({ summary: 'Get project statistics' })
   @ApiOkResponse({
@@ -120,8 +121,8 @@ export class ProjectsController {
   })
   @ApiNotFoundResponse({ description: 'No such project' })
   @ApiTags('projects')
-  getStats(@Param('projectName') project: Project) {
-    return this.projectsService.getStats(project);
+  getStats(@Param('projectName') project: Project, @Query() query: GetMetricsQueryDto) {
+    return this.projectsService.getMetrics(project, query);
   }
 
   @Get(':projectName/units')

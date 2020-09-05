@@ -58,40 +58,50 @@ export const router = new Router({
       meta: { title: 'Purify | Users' },
     },
     {
-      path: '/dashboard',
-      name: 'Dashboard',
+      path: '/projects/:projectName',
+      name: 'ProjectPage',
       components: {
-        default: () => import('@/views/Dashboard.vue'),
+        default: () => import('@/views/ProjectPage.vue'),
         header: TheHeader,
       },
-      meta: { title: 'Purify | Dashboard' },
-    },
-    {
-      path: '/projects/:projectName/units',
-      name: 'Units',
-      meta: { title: 'Purify | Units' },
-      components: {
-        default: () => import('@/views/Units.vue'),
-        header: TheHeader,
-      },
-    },
-    {
-      path: '/units/:unitName/issues',
-      name: 'Issues',
-      components: {
-        default: () => import('@/views/Issues.vue'),
-        header: TheHeader,
-      },
-      meta: { title: 'Purify | Issues' },
-    },
-    {
-      path: '/units/:unitName/reports',
-      name: 'Reports',
-      components: {
-        default: () => import('@/views/Reports.vue'),
-        header: TheHeader,
-      },
-      meta: { title: 'Purify | Reports' },
+      children: [
+        {
+          path: 'overview',
+          name: 'ProjectOverview',
+          components: {
+            default: () => import('@/views/ProjectOverview.vue'),
+            header: TheHeader,
+          },
+          meta: { title: 'Purify | Overview' },
+        },
+        {
+          path: 'units/overview',
+          name: 'Units',
+          meta: { title: 'Purify | Units' },
+          components: {
+            default: () => import('@/views/Units.vue'),
+            header: TheHeader,
+          },
+        },
+        {
+          path: 'units/:unitName/issues',
+          name: 'Issues',
+          components: {
+            default: () => import('@/views/Issues.vue'),
+            header: TheHeader,
+          },
+          meta: { title: 'Purify | Issues' },
+        },
+        {
+          path: 'units/:unitName/reports',
+          name: 'Reports',
+          components: {
+            default: () => import('@/views/Reports.vue'),
+            header: TheHeader,
+          },
+          meta: { title: 'Purify | Reports' },
+        },
+      ],
     },
     {
       path: '/saml/login/:token',
@@ -106,10 +116,14 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.params.projectName) {
     store.commit(SET_PROJECT_NAME, to.params.projectName);
+  } else {
+    store.commit(SET_PROJECT_NAME, '');
   }
 
   if (to.params.unitName) {
     store.commit(SET_UNIT_NAME, to.params.unitName);
+  } else {
+    store.commit(SET_UNIT_NAME, '');
   }
 
   if (to.name === 'Welcome') {

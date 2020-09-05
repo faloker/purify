@@ -1,20 +1,23 @@
 /* eslint-disable @typescript-eslint/camelcase */
+const uniqolor = require('uniqolor');
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { groupBy, get } from 'lodash';
-import * as slugify from 'slug';
-
+import { groupBy, get, findIndex } from 'lodash';
+import { sub, eachDayOfInterval, isBefore, isSameDay } from 'date-fns';
 import { Project } from './interfaces/project.interface';
 import {
   CreateProjectDto,
   EditProjectDto,
   GetProjectsQueryDto,
+  GetMetricsQueryDto,
 } from './dto/projects.dto';
-import { Unit } from 'src/units/interfaces/unit.interface';
+import { Unit, Metrics } from 'src/units/interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { Report } from 'src/reports/interfaces/report.interface';
 import { User, Role } from 'src/users/interfaces/user.interface';
+import { Template } from 'src/templates/interfaces/template.interface';
+import { te } from 'date-fns/esm/locale';
 
 @Injectable()
 export class ProjectsService {
@@ -65,7 +68,10 @@ export class ProjectsService {
   }
 
   async create(project: CreateProjectDto) {
-    return new this.projectModel(project).save();
+    return new this.projectModel({
+      ...project,
+      color: uniqolor.random().color,
+    }).save();
   }
 
   async updateOne(projectId: string, editProjectDto: EditProjectDto) {
@@ -89,56 +95,56 @@ export class ProjectsService {
     await this.projectModel.deleteOne({ _id: projectId });
   }
 
-  async getStatisticsForUnit(unit: string) {
-    const uploadedReports = await this.reportModel
+  async getUnitMetrics(unit: string, days: number) {
+    const reports = await this.reportModel
       .find({ unit }, '_id createdAt')
       .lean();
-    let issues = await this.issueModel
-      .find({ unit }, '_id status resolution createdAt risk')
-      .lean();
+    const issues = await this.issueModel
+      .find({ unit }, '_id status resolution createdAt closedAt risk')
+      .lean()
+      .populate('template', 'displayName');
 
-    issues = issues.filter(
-      issue => issue.createdAt.getFullYear() === new Date().getFullYear()
-    );
+    const startDate = sub(new Date(), { days });
+    const interval = eachDayOfInterval({
+      start: startDate,
+      end: new Date(),
+    });
 
-    const open = new Array(12).fill(0);
-    const closed = new Array(12).fill(0);
-    const reports = new Array(12).fill(0);
+    const created: Metrics[] = [];
+    const closed: Metrics[] = [];
+    const reportsVolume: Metrics[] = [];
+    const openVolume: Metrics[] = [];
     const risks = new Array(5).fill(0);
 
-    const openIssues = groupBy(
-      issues.filter(issue => issue.status === 'open'),
-      issue => issue.createdAt.getMonth()
-    );
+    interval.forEach(day => {
+      let date = day.getTime();
 
-    const reportsByDate = groupBy(uploadedReports, report =>
-      report.createdAt.getMonth()
-    );
+      created.push({
+        x: date,
+        y: issues.filter(issue => isSameDay(issue.createdAt.getTime(), date))
+          .length,
+      });
 
-    const closedIssues = groupBy(
-      issues.filter(
-        issue =>
-          issue.status === 'closed' && issue.resolution !== 'false positive'
-      ),
-      issue => issue.createdAt.getMonth()
-    );
+      closed.push({
+        x: date,
+        y: issues.filter(
+          issue =>
+            issue.status === 'closed' &&
+            isSameDay(issue.closedAt.getTime(), date)
+        ).length,
+      });
+
+      reportsVolume.push({
+        x: date,
+        y: reports.filter(report => isSameDay(report.createdAt.getTime(), date))
+          .length,
+      });
+    });
 
     const issuesRisks = groupBy(
       issues.filter(issue => issue.resolution !== 'false positive'),
       issue => issue.risk
-    );
-
-    for (const key of Object.keys(openIssues)) {
-      open[key] = get(openIssues, key).length;
-    }
-
-    for (const key of Object.keys(closedIssues)) {
-      closed[key] = get(closedIssues, key).length;
-    }
-
-    for (const key of Object.keys(reportsByDate)) {
-      reports[key] = get(reportsByDate, key).length;
-    }
+    );    
 
     for (const key of Object.keys(issuesRisks)) {
       switch (key) {
@@ -162,47 +168,94 @@ export class ProjectsService {
       }
     }
 
+    const templates = groupBy(
+      issues.filter(issue => issue.template),
+      issue => (issue.template as Template).displayName
+    );
+    
+    const labels = Object.keys(templates);
+    const series = [];
+    labels.forEach(label => {
+      series.push(templates[label].length);
+    })
+
     return {
-      open,
-      closed,
-      risks,
-      reports,
+      timeseries: {
+        created,
+        closed,
+        reportsVolume,
+      },
+      stats: {
+        risks,
+      },
+      templates: {
+        labels,
+        series,
+      }
     };
   }
 
-  async getStats(project: Project) {
+  async getMetrics(project: Project, options: GetMetricsQueryDto) {
     const units = await this.unitModel
       .find({ project: project._id }, '_id displayName')
       .lean();
 
-    const unitsStat = [];
-    const projectStat = {
-      open: new Array(12).fill(0),
-      closed: new Array(12).fill(0),
+    const unitsMetrics = [];
+    const projectMetrics = {
+      created: [],
+      closed: [],
       risks: new Array(5).fill(0),
-      reports: new Array(12).fill(0),
+      reportsVolume: [],
+      templates: {
+        labels: [],
+        series: [],
+      }
     };
 
     if (units.length) {
       for (const unit of units) {
-        const data = await this.getStatisticsForUnit(unit._id);
+        const data = await this.getUnitMetrics(unit._id, parseInt(options.days));
 
-        unitsStat.push({
+        unitsMetrics.push({
           name: unit.displayName,
-          data,
+          ...data.timeseries,
+          ...data.stats,
+          templates: data.templates,
         });
 
-        Object.keys(data).forEach(key => {
-          const arr = data[key];
-          const updated = projectStat[key].map((a, i) => a + arr[i]);
-          projectStat[key] = updated;
+        Object.keys(data.timeseries).forEach(key => {
+          const metrics: Metrics[] = data.timeseries[key];
+          metrics.forEach((metric, index) => {
+            if (projectMetrics[key][index]) {
+              projectMetrics[key][index].y += metric.y;
+            } else {
+              projectMetrics[key].push(metric);
+            }
+          });
+        });
+
+        Object.keys(data.stats).forEach(key => {
+          const arr = data.stats[key];
+          const updated = projectMetrics[key].map((a, i) => a + arr[i]);
+          projectMetrics[key] = updated;
+        });
+
+        data.templates.labels.forEach((label, index) => {
+          const labelIndex = projectMetrics.templates.labels.indexOf(label);
+          
+          if (labelIndex >= 0) {
+            projectMetrics.templates.series[labelIndex] += data.templates.series[index]
+          } else {
+            projectMetrics.templates.labels.push(label);
+            projectMetrics.templates.series.push(data.templates.series[index]);
+          }
         });
       }
     }
 
     return {
-      project: projectStat,
-      units: unitsStat,
+      project: projectMetrics,
+      units: unitsMetrics,
     };
   }
 

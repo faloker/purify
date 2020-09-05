@@ -6,6 +6,7 @@ export const ProjectSchema = new Schema(
     _id: { type: String, default: () => nanoid() },
     description: String,
     displayName: String,
+    color: String,
     name: { type: String, unique: true },
   },
   { timestamps: true }

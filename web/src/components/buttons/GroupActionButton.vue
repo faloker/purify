@@ -53,7 +53,6 @@ export default defineComponent({
         .dispatch(ISSUE_UPDATE, {
           ids: items,
           change,
-          unitId: context.root.$route.params.slug,
         })
         .then(async () => {
           await store.dispatch(

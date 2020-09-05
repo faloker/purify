@@ -28,6 +28,7 @@ export const IssueSchema = new Schema(
     project: { type: String, ref: 'Project' },
     tags: [{ type: String }],
     comments: [{ type: String, ref: 'Comment' }],
+    closedAt: Date,
   },
   { timestamps: true }
 );

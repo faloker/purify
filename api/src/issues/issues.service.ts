@@ -103,12 +103,20 @@ export class IssuesService {
 
   async updateMany(ids: string[], change: any, allowedProjects?: string[]) {
     const options: any = { _id: { $in: ids } };
+    const payload: any = { $set: change };
 
     if (allowedProjects) {
       options.project = { $in: allowedProjects };
     }
 
-    return this.issueModel.updateMany(options, { $set: change });
+    if (change.status === 'closed') {
+      payload.$set.closedAt = new Date();
+    } else if (change.status === 'open') {
+      payload.$unset = {};
+      payload.$unset.closedAt = '';
+    }
+
+    return this.issueModel.updateMany(options, payload);
   }
 
   async createJiraTicket(issueId: string, jiraIssue: any) {
@@ -148,7 +156,7 @@ export class IssuesService {
     return this.commentModel
       .findOne({ _id: comment._id })
       .lean()
-      .populate('author', ['username', 'image']);
+      .populate('author', ['name', 'image']);
   }
 
   async getComments(issueId: string, allowedProjects?: string[]) {
@@ -157,7 +165,7 @@ export class IssuesService {
       .lean()
       .populate({
         path: 'comments',
-        populate: { path: 'author', select: 'username image' },
+        populate: { path: 'author', select: 'name image' },
       });
     return issue.comments;
   }

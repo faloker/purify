@@ -24,7 +24,7 @@ export const SET_PROJECT_USERS = 'setProjectUsers';
 
 // Projects
 export const SET_PROJECTS = 'setProjects';
-export const SET_STATS = 'setStats';
+export const SET_METRICS = 'setMetrics';
 
 // Units
 export const SET_UNITS = 'setUnits';

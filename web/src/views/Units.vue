@@ -1,42 +1,30 @@
 <template>
   <v-container>
     <v-row>
-      <v-spacer />
-      <v-col>
-        <v-text-field
-          id="search"
-          v-model="searchTerm"
-          clearable
-          dense
-          outlined
-        >
-          <template slot="label">
-            <v-icon class="mx-1" style="vertical-align: middle">
-              search
-            </v-icon>Search
-          </template>
-        </v-text-field>
-      </v-col>
       <v-col>
         <v-btn
           v-permission="['owner', 'admin']"
           color="primary"
-          text
           @click.stop="createDialog = true"
         >
-          <v-icon>mdi-pencil</v-icon>Create unit
+          <v-icon left>
+            add
+          </v-icon>Create unit
         </v-btn>
-        <unit-dialog
-          v-model="createDialog"
-          heading="New Unit"
-          :display-name.sync="displayName"
-          ok-button-text="Create"
-          @handle-click="createUnit"
-        />
       </v-col>
     </v-row>
+    <v-divider />
     <v-row>
-      <v-col cols="12">
+      <v-col>
+        <v-text-field
+          id="search"
+          v-model="searchTerm"
+          prepend-inner-icon="search"
+          label="Filter by unit"
+          solo
+          dense
+          clearable
+        />
         <v-skeleton-loader
           :loading="loading"
           transition="scale-transition"
@@ -90,39 +78,32 @@
                   {{ item.numReports }}
                 </v-btn>
               </template>
-              <template v-slot:item.action="{ item }" class="text-center">
-                <v-tooltip bottom>
+              <template v-slot:item.actions="{ item }">
+                <v-menu
+                  bottom
+                  right
+                  transition="slide-x-transition"
+                >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      v-permission="['owner', 'admin']"
-                      text
+                      v-permission="['owner']"
                       icon
                       v-bind="attrs"
-                      color="secondary"
                       v-on="on"
-                      @click.stop="openEditDialog(item)"
                     >
-                      <v-icon>mdi-pencil</v-icon>
+                      <v-icon>mdi-dots-vertical</v-icon>
                     </v-btn>
                   </template>
-                  <span>Edit</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      v-permission="['owner', 'admin']"
-                      text
-                      icon
-                      color="red darken-1"
-                      v-bind="attrs"
-                      v-on="on"
-                      @click.stop="openConfirmationDialog(item)"
-                    >
-                      <v-icon>fa-times</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Delete</span>
-                </v-tooltip>
+                  <v-list>
+                    <v-list-item @click.stop="openEditDialog(item)">
+                      <v-list-item-title>Edit Unit</v-list-item-title>
+                    </v-list-item>
+                    <v-divider />
+                    <v-list-item @click.stop="openConfirmationDialog(item)">
+                      <strong class="red--text text--lighten-1">Delete Unit</strong>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </template>
             </v-data-table>
           </v-card>
@@ -140,6 +121,13 @@
       heading="Edit Unit"
       :display-name.sync="newDisplayName"
       @handle-click="editUnit"
+    />
+    <unit-dialog
+      v-model="createDialog"
+      heading="New Unit"
+      :display-name.sync="displayName"
+      ok-button-text="Create"
+      @handle-click="createUnit"
     />
   </v-container>
 </template>
@@ -196,7 +184,7 @@ export default defineComponent({
         text: 'Actions',
         width: '15%',
         align: 'center',
-        value: 'action',
+        value: 'actions',
         sortable: false,
       },
     ]);
@@ -213,9 +201,9 @@ export default defineComponent({
         .catch(() => {});
     });
 
-    watch(projectName, async () => {
+    watch(projectName, () => {
       loading.value = true;
-      await store
+      store
         .dispatch(FETCH_UNITS)
         .then(() => {
           loading.value = false;

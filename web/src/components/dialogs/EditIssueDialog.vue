@@ -83,7 +83,6 @@ export default defineComponent({
         .dispatch(ISSUE_UPDATE, {
           ids: [props.issue._id],
           change,
-          unitId: context.root.$route.params.slug,
         })
         .then(async () => {
           const updatedIssue = props.issue;

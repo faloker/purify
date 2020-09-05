@@ -8,11 +8,13 @@ export const getProjects = (verbose: boolean) =>
     params: { verbose },
   });
 
-export const getStats = (projectName: string) =>
-  request({
-    url: `projects/${projectName}/stats`,
+export function getMetrics(projectName: string, days: number) {
+  return request({
+    url: `projects/${projectName}/metrics`,
     method: 'get',
+    params: { days },
   });
+}
 
 export const createProject = (project: CreateProjectDto) =>
   request({

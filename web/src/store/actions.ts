@@ -35,7 +35,7 @@ export const FETCH_CONTENT = 'fetchContent';
 export const POST_COMMENT = 'postComment';
 export const GET_COMMENTS = 'getComments';
 
-export const FETCH_STATS = 'fetchStats';
+export const FETCH_METRICS = 'fetchMetrics';
 
 export const EDIT_PROJECT = 'editProject';
 export const AUTO_REFRESH = 'autoRefresh';

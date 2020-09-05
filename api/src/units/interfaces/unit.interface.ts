@@ -12,3 +12,8 @@ export interface Unit extends Document {
   readonly numTickets?: number;
   readonly numReports?: number;
 }
+
+export interface Metrics {
+  x: number;
+  y: number;
+}

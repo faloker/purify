@@ -51,7 +51,17 @@
           @click.stop="selectProject(project)"
         >
           <v-list-item-content>
-            <v-list-item-title v-text="project.displayName" />
+            <v-list-item-title>
+              <v-icon
+                class="mb-1"
+                left
+                small
+                :color="project.color"
+              >
+                mdi-square-rounded
+              </v-icon>
+              {{ project.displayName }}
+            </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-slide-y-transition>
@@ -65,14 +75,17 @@ import {
   computed,
   ComputedRef,
   watch,
+  onMounted,
 } from '@vue/composition-api';
 import store from '@/store';
 import { Project } from '@/store/types';
 import { toLower } from 'lodash';
 import { router } from '@/router';
+import { FETCH_PROJECTS } from '@/store/actions';
 export default defineComponent({
   name: 'ProjectPicker',
-  setup() {
+
+  setup(props, context) {
     const menu = ref(false);
     const searchTerm = ref('');
     const selectedProject = ref('');
@@ -85,15 +98,25 @@ export default defineComponent({
       );
     });
 
+    onMounted(async () => {
+      await store.dispatch(FETCH_PROJECTS).catch(() => {});
+    });
+
     watch(menu, newValue => {
       if (newValue === false) {
         searchTerm.value = '';
       }
     });
 
-    function selectProject(item: Project) {
+    function selectProject(project: Project) {
       menu.value = false;
-      router.push({ name: 'Units', params: { projectName: item.name } });
+
+      if (context.root.$route.params.projectName !== project.name) {
+        router.push({
+          name: 'ProjectPage',
+          params: { projectName: project.name },
+        });
+      }
     }
 
     function openProjects() {
