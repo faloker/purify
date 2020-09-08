@@ -8,8 +8,6 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Role } from 'src/users/interfaces/user.interface';
-import { UnitsService } from 'src/units/units.service';
-import { Project } from 'src/projects/interfaces/project.interface';
 import { IssuesService } from 'src/issues/issues.service';
 
 @Injectable()

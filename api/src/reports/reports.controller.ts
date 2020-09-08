@@ -6,6 +6,7 @@ import {
   UseGuards,
   UseInterceptors,
   HttpCode,
+  CacheTTL,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
@@ -22,6 +23,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Report } from './interfaces/report.interface';
 import { ReportInterceptor } from 'src/common/interceptors/report.interceptor';
+import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
@@ -35,6 +37,8 @@ export class ReportsController {
 
   @Get(':id/content')
   @Roles(['owner', 'admin', 'user', 'observer'])
+  @UseInterceptors(HttpCacheInterceptor)
+  @CacheTTL(30)
   getContent(@Param('id') report: Report) {
     return this.reportsService.getContent(report._id);
   }

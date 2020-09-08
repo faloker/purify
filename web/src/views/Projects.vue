@@ -217,7 +217,8 @@ function useCreateProject() {
         description: description.value,
         name: name.value,
       })
-      .then(() => {
+      .then(async () => {
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The project has been created');
         displayName.value = '';
         description.value = '';
         name.value = '';

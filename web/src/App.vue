@@ -19,7 +19,7 @@ export default defineComponent({
 
 <style>
 #app {
-  background-color: #fafafa;
+  background-color: #ffffff;
 }
 .router-link-active {
   color: #2c3e50;

@@ -10,6 +10,7 @@ import Auth from './modules/auth';
 import Profile from './modules/profile';
 import Templates from './modules/templates';
 import Users from './modules/users';
+import Events from './modules/events';
 
 Vue.use(Vuex);
 
@@ -24,5 +25,6 @@ export default new Vuex.Store({
     profile: Profile,
     templates: Templates,
     users: Users,
+    events: Events,
   },
 });

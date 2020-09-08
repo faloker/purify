@@ -47,7 +47,6 @@ export class IssuesController {
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
   @ApiOperation({ summary: 'List issues' })
-  @ApiParam({ name: 'unitName', type: 'string', required: true })
   @ApiOkResponse({ description: 'List of issues' })
   @ApiTags('issues')
   getIssues(@Query() query: GetIssuesQueryDto, @Req() req) {

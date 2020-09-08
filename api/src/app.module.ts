@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule, CacheInterceptor } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -18,6 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { SystemModule } from './system/system.module';
 import { UploadModule } from './upload/upload.module';
+import { EventsModule } from './events/events.module';
 import Joi = require('@hapi/joi');
 
 @Module({
@@ -84,6 +85,7 @@ import Joi = require('@hapi/joi');
     SlackModule,
     SystemModule,
     UploadModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [],

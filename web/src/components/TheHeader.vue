@@ -1,12 +1,20 @@
 <template>
   <v-app-bar
     app
-    color="#1a73e8"
+    color="primary"
     dark
     dense
   >
     <v-container>
       <v-row justify="center" align="center">
+        <router-link :to="{ name: 'Overview' }">
+          <v-img
+            class="mr-1"
+            src="@/assets/logo_trans.png"
+            max-width="30"
+            max-height="30"
+          />
+        </router-link>
         <v-toolbar-title>
           <b>Purify</b>
         </v-toolbar-title>

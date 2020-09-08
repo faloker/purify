@@ -8,11 +8,11 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Role } from 'src/users/interfaces/user.interface';
-import { UnitsService } from 'src/units/units.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
-export class UnitInterceptor implements NestInterceptor {
-  constructor(private unitsService: UnitsService) {}
+export class UserInterceptor implements NestInterceptor {
+  constructor(private usersService: UsersService) {}
 
   async intercept(
     context: ExecutionContext,
@@ -20,18 +20,15 @@ export class UnitInterceptor implements NestInterceptor {
   ): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
 
-    if (req.params.unitName) {
-      const unit = await this.unitsService.findOne(req.params.unitName);
+    if (req.params.id) {
+      const user = await this.usersService.findOne({ _id: req.params.id });
 
-      if (!unit) {
-        throw new NotFoundException('Unit not found');
+      if (!user) {
+        throw new NotFoundException('User not found');
       }
 
-      if (
-        req.user.role === Role.OWNER ||
-        req.user.memberships.includes(unit.project)
-      ) {
-        req.params.unitName = unit;
+      if (req.user.role === Role.OWNER) {
+        req.params.id = user;
       } else {
         throw new ForbiddenException();
       }

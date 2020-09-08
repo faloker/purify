@@ -46,7 +46,7 @@
         />
         <v-skeleton-loader
           :loading="loading"
-          transition="scale-transition"
+          transition="slide-y-transition"
           type="table-tbody"
         >
           <v-card outlined>

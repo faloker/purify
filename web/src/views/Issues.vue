@@ -1,26 +1,31 @@
 <template>
   <v-container>
-    <v-row justify="center" align="center">
-      <issue-filter
-        :keywords="keywordsList"
-        :risk-filter-items="valuesForFilter('risk')"
-        :template-filter-items="valuesForFilter('template')"
-        :status-filter-items="valuesForFilter('status')"
-        :resolution-filter-items="valuesForFilter('resolution')"
-        :ticket-filter-items="ticketValuesForFilter()"
-        @filter_update="filterOptions = $event"
-      />
-    </v-row>
-    <!-- <v-row justify="center" align="center"> -->
+    <v-skeleton-loader
+      :loading="loading"
+      transition="slide-y-transition"
+      type="table-thead"
+    >
+      <v-row justify="center" align="center">
+        <issue-filter
+          :keywords="keywordsList"
+          :risk-filter-items="valuesForFilter('risk')"
+          :template-filter-items="valuesForFilter('template')"
+          :status-filter-items="valuesForFilter('status')"
+          :resolution-filter-items="valuesForFilter('resolution')"
+          :ticket-filter-items="ticketValuesForFilter()"
+          @filter_update="filterOptions = $event"
+        />
+      </v-row>
+    </v-skeleton-loader>
     <v-skeleton-loader
       class="my-3"
       :loading="loading"
-      transition-group="scale-transition"
-      type="paragraph@5"
+      transition="slide-y-transition"
+      type="list"
+      :types="{'list': 'table-heading, list-item-avatar-three-line@5'}"
     >
       <issues-list :raw-items="filtredIssues" />
     </v-skeleton-loader>
-    <!-- </v-row> -->
   </v-container>
 </template>
 <script lang="ts">
@@ -70,7 +75,7 @@ export default defineComponent({
       return [...new Set(result)];
     });
 
-    onMounted(async () => {
+    onMounted(() => {
       store
         .dispatch(ISSUES_FETCH)
         .then(() => {

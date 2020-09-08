@@ -1,6 +1,6 @@
 import { get, capitalize, startCase } from 'lodash';
 import { formatDistance, formatRFC7231 } from 'date-fns';
-import { Issue, Template, BodyField } from '@/store/types';
+import { Issue, Template, BodyField, EventType } from '@/store/types';
 
 export function matchPattern(fields: any, pattern: string) {
   if (pattern) {
@@ -144,5 +144,12 @@ export function getRoleColor(role: string) {
       return 'secondary';
     case 'observer':
       return 'quinary';
+  }
+}
+
+export function parseEvent(type: EventType, context: string) {
+  switch (type) {
+    case 'project_created':
+      return { title: 'created a project', body: `${context}` };
   }
 }

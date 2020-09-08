@@ -5,14 +5,16 @@ import { UsersService } from './users.service';
 import { UserSchema } from './schemas/user.schema';
 import { InviteTokenSchema } from './schemas/inviteToken.schema';
 import { ConfigModule } from '@nestjs/config';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
-    ConfigModule,
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([
+      { name: 'User', schema: UserSchema },
       { name: 'InviteToken', schema: InviteTokenSchema },
     ]),
+    EventsModule,
+    ConfigModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

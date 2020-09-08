@@ -9,6 +9,8 @@ import {
   Param,
   HttpCode,
   Query,
+  UseInterceptors,
+  CacheTTL,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -32,6 +34,7 @@ import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import { Template as ITemplate } from './interfaces/template.interface';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
@@ -55,6 +58,8 @@ export class TemplatesController {
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
+  @UseInterceptors(HttpCacheInterceptor)
+  @CacheTTL(10)
   @ApiOperation({ summary: 'List templates' })
   @ApiOkResponse({
     description: 'List of templates',

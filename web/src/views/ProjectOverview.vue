@@ -29,54 +29,82 @@
     </v-row>
     <v-row justify="center" align="center">
       <v-col>
-        <v-card outlined>
-          <v-card-text>
-            <apexchart
-              width="500"
-              type="area"
-              :options="issuesLineChartOptions"
-              :series="issuesLineChartSeries"
-            />
-          </v-card-text>
-        </v-card>
+        <v-skeleton-loader
+          :loading="loading"
+          type="card"
+          width="500"
+          transition="slide-y-transition"
+        >
+          <v-card outlined>
+            <v-card-text>
+              <apexchart
+                width="500"
+                type="area"
+                :options="issuesLineChartOptions"
+                :series="issuesLineChartSeries"
+              />
+            </v-card-text>
+          </v-card>
+        </v-skeleton-loader>
       </v-col>
       <v-col>
-        <v-card outlined>
-          <v-card-text>
-            <apexchart
-              width="500"
-              type="area"
-              :options="reportsLineChartOptions"
-              :series="reportsLineChartSeries"
-            />
-          </v-card-text>
-        </v-card>
+        <v-skeleton-loader
+          :loading="loading"
+          type="card"
+          width="500"
+          transition="slide-y-transition"
+        >
+          <v-card outlined>
+            <v-card-text>
+              <apexchart
+                width="500"
+                type="area"
+                :options="reportsLineChartOptions"
+                :series="reportsLineChartSeries"
+              />
+            </v-card-text>
+          </v-card>
+        </v-skeleton-loader>
       </v-col>
       <v-col>
-        <v-card outlined>
-          <v-card-text>
-            <apexchart
-              height="325"
-              width="500"
-              type="donut"
-              :options="riskDonutChartOptions"
-              :series="riskDonutChartSeries"
-            />
-          </v-card-text>
-        </v-card>
+        <v-skeleton-loader
+          :loading="loading"
+          type="card"
+          width="500"
+          transition="slide-y-transition"
+        >
+          <v-card outlined>
+            <v-card-text>
+              <apexchart
+                height="325"
+                width="500"
+                type="donut"
+                :options="riskDonutChartOptions"
+                :series="riskDonutChartSeries"
+              />
+            </v-card-text>
+          </v-card>
+        </v-skeleton-loader>
       </v-col> 
       <v-col>
-        <v-card outlined>
-          <v-card-text>
-            <apexchart
-              height="325"
-              width="500"
-              type="donut"
-              :options="templatesDonutChartOptions"
-              :series="templatesDonutChartSeries"
-            />
-          </v-card-text>
-        </v-card>
+        <v-skeleton-loader
+          :loading="loading"
+          type="card"
+          width="500"
+          transition="slide-y-transition"
+        >
+          <v-card outlined>
+            <v-card-text>
+              <apexchart
+                height="325"
+                width="500"
+                type="donut"
+                :options="templatesDonutChartOptions"
+                :series="templatesDonutChartSeries"
+              />
+            </v-card-text>
+          </v-card>
+        </v-skeleton-loader>
       </v-col>
     </v-row>
   </v-container>
@@ -243,6 +271,7 @@ export default defineComponent({
 
     return {
       days,
+      loading,
       updateMetrics,
       selectedDays,
       fetchMetrics,

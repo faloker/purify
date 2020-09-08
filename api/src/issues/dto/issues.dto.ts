@@ -9,6 +9,8 @@ import {
   IsObject,
   ValidateNested,
   IsJSON,
+  IsNumber,
+  IsNumberString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -73,6 +75,13 @@ export class GetIssuesQueryDto {
   @IsOptional()
   @IsString()
   readonly unitName?: string;
+
+  @ApiPropertyOptional({
+    description: 'Limit number of results',
+  })
+  @IsOptional()
+  @IsNumberString()
+  readonly limit?: string;
 }
 
 export class UpdateIssuesBodyDto {

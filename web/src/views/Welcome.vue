@@ -93,7 +93,7 @@
                     type="submit"
                     color="primary"
                     :loading="loading"
-                    :disabled="!password || !email"
+                    :disabled="!password || !email || inProgress"
                     @click.prevent="login"
                   >
                     Sign In
@@ -136,6 +136,7 @@ export default defineComponent({
     const email = ref('');
     const password = ref('');
     const loading = ref(false);
+    const inProgress = ref(false);
     const forceLogin = ref(false);
 
     const systemConfig: ComputedRef<SystemConfig> = computed(
@@ -144,16 +145,19 @@ export default defineComponent({
 
     function login() {
       loading.value = true;
+      inProgress.value = true;
+
       store
         .dispatch(LOGIN, {
           email: email.value,
           password: password.value,
         })
         .then(() => {
-          router.push({ name: 'Projects' });
+          router.push({ name: 'Overview' });
         })
         .catch(() => {
           loading.value = false;
+          inProgress.value = false;
         });
     }
 
@@ -162,6 +166,7 @@ export default defineComponent({
       email,
       login,
       loading,
+      inProgress,
       password,
       forceLogin,
       systemConfig,
@@ -169,8 +174,4 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped>
-.grey-form {
-  background-color: #fafafa;
-}
-</style>
+<style scoped></style>

@@ -13,11 +13,13 @@ import { ProjectSchema } from 'src/projects/schemas/project.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Issue', schema: IssueSchema }]),
-    MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
-    MongooseModule.forFeature([{ name: 'Ticket', schema: TicketSchema }]),
-    MongooseModule.forFeature([{ name: 'Comment', schema: CommentSchema }]),
-    MongooseModule.forFeature([{ name: 'Project', schema: ProjectSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Issue', schema: IssueSchema },
+      { name: 'Unit', schema: UnitSchema },
+      { name: 'Ticket', schema: TicketSchema },
+      { name: 'Comment', schema: CommentSchema },
+      { name: 'Project', schema: ProjectSchema },
+    ]),
     JiraModule,
     ProjectsModule,
     UnitsModule,

@@ -26,19 +26,14 @@ export class UsersService {
   }
 
   async delete(userId: string) {
-    const user = await this.userModel.findOne({ _id: userId });
-    if (user) {
-      await this.userModel.deleteOne({ _id: userId });
-    } else {
-      throw new NotFoundException('No such user');
-    }
+    await this.userModel.deleteOne({ _id: userId });
   }
 
   async createUser(newUser: CreateUserDto) {
     return new this.userModel({
       ...newUser,
       salt: randomBytes(16).toString('hex'),
-      image: `https://api.adorable.io/avatars/285/${nanoid(10)}.png`
+      image: `https://api.adorable.io/avatars/285/${nanoid(10)}.png`,
     }).save();
   }
 

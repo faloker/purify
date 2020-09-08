@@ -33,9 +33,10 @@
         />
         <v-card-text style="max-height: 500px;">
           <v-skeleton-loader
+            type="list"
+            :types="{'list': 'list-item-avatar-two-line@3'}"
             :loading="loading"
-            transition-group="scale-transition"
-            type="list-item-avatar-two-line@3"
+            transition="slide-y-transition"
           >
             <v-list>
               <v-slide-y-transition

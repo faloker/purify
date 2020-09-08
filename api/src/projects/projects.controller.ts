@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   Req,
   BadRequestException,
+  CacheTTL,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -43,6 +44,9 @@ import { ProjectInterceptor } from 'src/common/interceptors/project.interceptor'
 import { UnitsService } from 'src/units/units.service';
 import { CreateUnitDto } from 'src/units/dto/units.dto';
 import { Role } from 'src/users/interfaces/user.interface';
+import { EventsService } from 'src/events/events.service';
+import { EventType, Audience } from 'src/events/interfaces/event.interface';
+import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
@@ -53,7 +57,8 @@ import { Role } from 'src/users/interfaces/user.interface';
 export class ProjectsController {
   constructor(
     private readonly projectsService: ProjectsService,
-    private readonly unitsService: UnitsService
+    private readonly unitsService: UnitsService,
+    private readonly eventsService: EventsService
   ) {}
 
   @Post()
@@ -64,12 +69,25 @@ export class ProjectsController {
     type: ProjectDto,
   })
   @ApiTags('projects')
-  createProject(@Body() createProjectDto: CreateProjectDto): Promise<Project> {
-    return this.projectsService.create(createProjectDto);
+  async createProject(
+    @Body() createProjectDto: CreateProjectDto,
+    @Req() req
+  ): Promise<Project> {
+    const project = await this.projectsService.create(createProjectDto);
+    if (project) {
+      await this.eventsService.add(
+        EventType.PROJECT_CREATED,
+        { name: project.name, displayName: project.displayName },
+        req.user._id,
+        Audience.OWNERS
+      );
+    }
+    return project;
   }
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
+  @UseInterceptors(HttpCacheInterceptor)
   @ApiOperation({ summary: 'List projects' })
   @ApiOkResponse({
     description: 'List of projects',
@@ -108,20 +126,31 @@ export class ProjectsController {
   @ApiParam({ name: 'projectName', type: 'string', required: true })
   @ApiTags('projects')
   @HttpCode(204)
-  deleteProject(@Param('projectName') project: Project) {
-    return this.projectsService.deleteOne(project._id);
+  async deleteProject(@Param('projectName') project: Project, @Req() req) {
+    await this.projectsService.deleteOne(project._id);
+    await this.eventsService.add(
+      EventType.PROJECT_DELETED,
+      { name: project.name, displayName: project.displayName },
+      req.user._id,
+      Audience.OWNERS
+    );
   }
 
   @Get(':projectName/metrics')
   @Roles(['owner', 'admin', 'user', 'observer'])
-  @ApiOperation({ summary: 'Get project statistics' })
+  @UseInterceptors(HttpCacheInterceptor)
+  @CacheTTL(30)
+  @ApiOperation({ summary: 'Get project metrics' })
   @ApiOkResponse({
-    description: 'Yearly statistics for the project and units',
+    description: 'Metrics for the project and units',
     type: ProjectStatistics,
   })
   @ApiNotFoundResponse({ description: 'No such project' })
   @ApiTags('projects')
-  getStats(@Param('projectName') project: Project, @Query() query: GetMetricsQueryDto) {
+  getMetrics(
+    @Param('projectName') project: Project,
+    @Query() query: GetMetricsQueryDto
+  ) {
     return this.projectsService.getMetrics(project, query);
   }
 

@@ -12,7 +12,7 @@ export const router = new Router({
   routes: [
     {
       path: '/',
-      redirect: '/projects',
+      redirect: '/overview',
     },
     {
       path: '/welcome',
@@ -21,6 +21,15 @@ export const router = new Router({
         default: () => import('@/views/Welcome.vue'),
       },
       meta: { title: 'Purify | Welcome' },
+    },
+    {
+      path: '/overview',
+      name: 'Overview',
+      components: {
+        default: () => import('@/views/Overview.vue'),
+        header: TheHeader,
+      },
+      meta: { title: 'Purify | Overview' },
     },
     {
       path: '/welcome/:token',
@@ -70,7 +79,6 @@ export const router = new Router({
           name: 'ProjectOverview',
           components: {
             default: () => import('@/views/ProjectOverview.vue'),
-            header: TheHeader,
           },
           meta: { title: 'Purify | Overview' },
         },
@@ -80,7 +88,6 @@ export const router = new Router({
           meta: { title: 'Purify | Units' },
           components: {
             default: () => import('@/views/Units.vue'),
-            header: TheHeader,
           },
         },
         {
@@ -88,7 +95,6 @@ export const router = new Router({
           name: 'Issues',
           components: {
             default: () => import('@/views/Issues.vue'),
-            header: TheHeader,
           },
           meta: { title: 'Purify | Issues' },
         },
@@ -97,7 +103,6 @@ export const router = new Router({
           name: 'Reports',
           components: {
             default: () => import('@/views/Reports.vue'),
-            header: TheHeader,
           },
           meta: { title: 'Purify | Reports' },
         },

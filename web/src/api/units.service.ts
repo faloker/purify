@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import { EditUnitDto } from '@/store/types';
 
 export function getUnits(projectName: string) {
   return request({

@@ -31,3 +31,6 @@ export const SET_UNITS = 'setUnits';
 
 // Users
 export const SET_USERS = 'setUsers';
+
+// Events
+export const SET_EVENTS = 'setEvents';

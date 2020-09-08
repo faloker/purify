@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TemplateSchema } from './schemas/template.schema';
 import { TemplatesService } from './templates.service';
@@ -11,10 +11,13 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Template', schema: TemplateSchema }]),
-    MongooseModule.forFeature([{ name: 'Report', schema: ReportSchema }]),
-    MongooseModule.forFeature([{ name: 'Issue', schema: IssueSchema }]),
-    MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Template', schema: TemplateSchema },
+      { name: 'Report', schema: ReportSchema },
+      { name: 'Issue', schema: IssueSchema },
+      { name: 'Unit', schema: UnitSchema },
+    ]),
+    CacheModule.register(),
     SlackModule,
     ConfigModule,
   ],

@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module, forwardRef, CacheModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectSchema } from './schemas/project.schema';
 import { ProjectsService } from './projects.service';
@@ -8,6 +8,7 @@ import { UnitSchema } from 'src/units/schemas/unit.schema';
 import { ReportSchema } from 'src/reports/schemas/report.schema';
 import { UnitsModule } from 'src/units/units.module';
 import { UserSchema } from 'src/users/schemas/user.schema';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
@@ -18,6 +19,8 @@ import { UserSchema } from 'src/users/schemas/user.schema';
       { name: 'Report', schema: ReportSchema },
       { name: 'User', schema: UserSchema },
     ]),
+    CacheModule.register(),
+    EventsModule,
     forwardRef(() => UnitsModule),
   ],
   providers: [ProjectsService],

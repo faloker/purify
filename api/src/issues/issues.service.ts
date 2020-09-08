@@ -29,23 +29,30 @@ export class IssuesService {
   ) {}
 
   async getIssues(params: GetIssuesQueryDto, allowedProjects?: string[]) {
-    const options: any = {};
+    const conditions: any = {};
+    const options: any = { sort: { createdAt: -1 } };
+
+    if (params.limit) {
+      options.limit = parseInt(params.limit);
+    }
 
     if (params.status) {
-      options.status = params.status;
+      conditions.status = params.status;
     }
     if (params.ticket) {
-      options.ticket = { $exists: params.ticket === 'true' ? true : false };
+      conditions.ticket = { $exists: params.ticket === 'true' ? true : false };
     }
     if (params.risks) {
-      options.risk = { $in: params.risks.split(',').map(r => r.toLowerCase()) };
+      conditions.risk = {
+        $in: params.risks.split(',').map(r => r.toLowerCase()),
+      };
     }
     if (params.unitName) {
       const { _id } = await this.unitModel
         .findOne({ name: params.unitName }, '_id')
         .lean();
       if (_id) {
-        options.unit = _id;
+        conditions.unit = _id;
       } else {
         throw new NotFoundException('Unit not found');
       }
@@ -55,20 +62,22 @@ export class IssuesService {
         .findOne({ name: params.projectName }, '_id')
         .lean();
       if (_id) {
-        options.project = _id;
+        conditions.project = _id;
       } else {
         throw new NotFoundException('Project not found');
       }
     } else if (allowedProjects) {
-      options.project = { $in: allowedProjects };
+      conditions.project = { $in: allowedProjects };
     }
 
     const issues: any = [];
 
     const rawIssues = await this.issueModel
-      .find(options)
+      .find(conditions, null, options)
       .lean()
       .populate('template', ['titlePattern', 'subtitlePattern', 'displayName'])
+      .populate('project', 'name')
+      .populate('unit', 'name')
       .populate('ticket')
       .populate('comments');
 
@@ -94,6 +103,10 @@ export class IssuesService {
           updatedAt: issue.updatedAt,
           ticket: issue.ticket,
           totalComments: issue.comments.length,
+          closedAt: issue.closedAt,
+          project: (issue.project as Project).name,
+          unit: (issue.unit as Unit).name,
+          report: issue.report
         });
       }
     }
@@ -102,11 +115,11 @@ export class IssuesService {
   }
 
   async updateMany(ids: string[], change: any, allowedProjects?: string[]) {
-    const options: any = { _id: { $in: ids } };
+    const conditions: any = { _id: { $in: ids } };
     const payload: any = { $set: change };
 
     if (allowedProjects) {
-      options.project = { $in: allowedProjects };
+      conditions.project = { $in: allowedProjects };
     }
 
     if (change.status === 'closed') {
@@ -116,7 +129,7 @@ export class IssuesService {
       payload.$unset.closedAt = '';
     }
 
-    return this.issueModel.updateMany(options, payload);
+    return this.issueModel.updateMany(conditions, payload);
   }
 
   async createJiraTicket(issueId: string, jiraIssue: any) {
