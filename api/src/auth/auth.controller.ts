@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
-import { CreateUserDto, ChangePasswordDto } from 'src/users/dto/user.dto';
+import { ChangePasswordDto } from 'src/users/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { GenericAuthGuard } from './generic-auth.guard';
 import { CredentialsAuthGuard } from './credentials-auth.guard';
@@ -81,7 +81,7 @@ export class AuthController {
   //     .send({ token: tokens.accessToken });
   // }
 
-  @Get('refreshToken')
+  @Get('refresh_token')
   @ApiExcludeEndpoint()
   async refreshToken(@Request() req, @Res() response) {
     if (req.cookies) {
@@ -127,7 +127,7 @@ export class AuthController {
   @ApiExcludeEndpoint()
   @UseGuards(GenericAuthGuard)
   async logout(@Request() req, @Res() response) {
-    await this.authService.removeRefreshToken(req.user.id);
+    await this.authService.removeRefreshToken(req.user._id);
     response.clearCookie('refreshToken', this.cookiesConfig).send('bye');
   }
 

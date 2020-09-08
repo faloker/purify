@@ -70,14 +70,16 @@ export class AuthService {
 
   async login(user: User) {
     const refreshToken = this.jwtService.sign(
-      { id: user._id, type: 'refreshToken' },
+      { _id: user._id, type: 'refreshToken' },
       { expiresIn: '72h' }
     );
     await this.usersService.saveRefreshToken(user._id, refreshToken);
 
     return {
       accessToken: this.jwtService.sign({
-        id: user._id,
+        _id: user._id,
+        role: user.role,
+        memberships: user.memberships,
         type: 'accessToken',
       }),
       refreshToken,
@@ -89,20 +91,20 @@ export class AuthService {
   }
 
   async refreshToken(token: string) {
-    const { id, type } = await this.jwtService.verify(token);
+    const { _id, type } = await this.jwtService.verify(token);
 
     if (
       type === 'refreshToken' &&
-      this.usersService.validateRefreshToken(id, token)
+      this.usersService.validateRefreshToken(_id, token)
     ) {
       const refreshToken = this.jwtService.sign(
-        { id, type: 'refreshToken' },
+        { _id, type: 'refreshToken' },
         { expiresIn: '72h' }
       );
-      await this.usersService.saveRefreshToken(id, refreshToken);
+      await this.usersService.saveRefreshToken(_id, refreshToken);
 
       return {
-        accessToken: this.jwtService.sign({ id, type: 'accessToken' }),
+        accessToken: this.jwtService.sign({ _id, type: 'accessToken' }),
         refreshToken,
       };
     } else {

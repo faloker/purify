@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     if (payload.type === 'accessToken') {
-      return this.usersService.findOne({ _id: payload.id });
+      return this.usersService.findOne({ _id: payload._id });
     } else {
       throw new UnauthorizedException();
     }

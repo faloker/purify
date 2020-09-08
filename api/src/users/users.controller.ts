@@ -58,12 +58,10 @@ export class UsersController {
       name,
       email,
       image,
-      role,
-      memberships,
     } = await this.usersService.findOne({
-      _id: req.user.id,
+      _id: req.user._id,
     });
-    return { _id, name, email, image, role, memberships };
+    return { _id, name, email, image };
   }
 
   @Get()
