@@ -14,11 +14,12 @@ export default class Profile extends VuexModule {
     ssoBypass: false,
     role: Role.OBSERVER,
     memberships: [],
+    recentProjects: [],
   };
 
   @Mutation
   [SET_PROFILE](user: User) {
-    this.user = user;
+    Object.assign(this.user, user);
   }
 
   @Action

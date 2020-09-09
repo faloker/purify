@@ -19,6 +19,7 @@ import {
   EditUserDto,
   UserList,
   ChangePasswordDto,
+  UserSelfChange,
 } from './dto/user.dto';
 import { UsersService } from './users.service';
 import { GenericAuthGuard } from '../auth/generic-auth.guard';
@@ -51,17 +52,24 @@ export class UsersController {
     private readonly eventsService: EventsService
   ) {}
 
-  @Get('current_user')
-  async currentUser(@Request() req) {
+  @Get('whoami')
+  async getCurrentUser(@Request() req) {
     const {
       _id,
       name,
       email,
       image,
+      recentProjects,
     } = await this.usersService.findOne({
       _id: req.user._id,
     });
-    return { _id, name, email, image };
+    return { _id, name, email, image, recentProjects };
+  }  
+  
+  @Patch('whoami')
+  @HttpCode(204)
+  async changeCurrentUser(@Request() req, @Body() userSelfChange: UserSelfChange) {
+    await this.usersService.changeUser(req.user._id, userSelfChange);
   }
 
   @Get()

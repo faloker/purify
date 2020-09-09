@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
-import { User, ChangePasswordDto } from '../types';
+import { User, ChangePasswordDto, UserSelfChange } from '../types';
 import { SET_USERS } from '../mutations';
 import {
   FETCH_USERS,
@@ -8,12 +8,14 @@ import {
   CHANGE_PASSWORD,
   EDIT_USER,
   RESET_USER_PASSWORD,
+  SELF_CHANGE,
 } from '../actions';
 import {
   getUsers,
   createUser,
   deleteUser,
   editUser,
+  changeWhoami,
   resetUserPassword,
 } from '@/api/users.service';
 import { changePassword } from '@/api/auth.service';
@@ -30,13 +32,6 @@ export default class Users extends VuexModule {
   @Action
   async [FETCH_USERS]() {
     const { data } = await getUsers();
-
-    for (const user of data) {
-      // if (user.memberships) {
-      //   user.memberships = user.memberships.map((m: any) => m.displayName);
-      // }
-    }
-
     this.context.commit(SET_USERS, data);
   }
 
@@ -71,5 +66,10 @@ export default class Users extends VuexModule {
   async [CHANGE_PASSWORD](payload: ChangePasswordDto) {
     const { data } = await changePassword(payload);
     return data;
+  }
+
+  @Action
+  async [SELF_CHANGE](params: UserSelfChange) {
+    await changeWhoami(params);
   }
 }

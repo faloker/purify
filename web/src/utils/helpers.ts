@@ -146,10 +146,3 @@ export function getRoleColor(role: string) {
       return 'quinary';
   }
 }
-
-export function parseEvent(type: EventType, context: string) {
-  switch (type) {
-    case 'project_created':
-      return { title: 'created a project', body: `${context}` };
-  }
-}

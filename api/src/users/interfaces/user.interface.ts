@@ -12,6 +12,7 @@ export interface User extends Document {
   readonly role: Role;
   readonly ssoBypass: boolean;
   memberships: string[];
+  recentProjects: string[];
 }
 
 export enum Role {

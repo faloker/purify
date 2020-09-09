@@ -10,6 +10,7 @@ import { JiraModule } from 'src/plugins/jira/jira.module';
 import { UnitsModule } from 'src/units/units.module';
 import { ProjectsModule } from 'src/projects/projects.module';
 import { ProjectSchema } from 'src/projects/schemas/project.schema';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProjectSchema } from 'src/projects/schemas/project.schema';
       { name: 'Comment', schema: CommentSchema },
       { name: 'Project', schema: ProjectSchema },
     ]),
+    EventsModule,
     JiraModule,
     ProjectsModule,
     UnitsModule,

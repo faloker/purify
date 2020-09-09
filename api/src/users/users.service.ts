@@ -4,7 +4,12 @@ import { pbkdf2Sync, randomBytes } from 'crypto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, Role } from './interfaces/user.interface';
-import { CreateUserDto, ChangePasswordDto, EditUserDto } from './dto/user.dto';
+import {
+  CreateUserDto,
+  ChangePasswordDto,
+  EditUserDto,
+  UserSelfChange,
+} from './dto/user.dto';
 import { InviteToken } from './interfaces/inviteToken.interface';
 import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
@@ -120,6 +125,19 @@ export class UsersService {
       await this.inviteTokenModel.deleteOne({ _id: token._id });
     } else {
       throw new NotFoundException('No such token');
+    }
+  }
+
+  async changeUser(userId: string, userSelfChange: UserSelfChange) {
+    const user = await this.userModel.findOne({ _id: userId });
+    if (userSelfChange.trackMe && !user.recentProjects.includes(userSelfChange.trackMe)) {
+      if (user.recentProjects.length < 4) {
+        user.recentProjects.push(userSelfChange.trackMe);
+      } else {
+        user.recentProjects.shift();
+        user.recentProjects.push(userSelfChange.trackMe);
+      }
+      await user.save();
     }
   }
 }

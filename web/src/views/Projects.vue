@@ -2,7 +2,7 @@
   <v-container>
     <v-row align="center" justify="space-between">
       <v-col>
-        <p class="text-h4 font-weight-black">
+        <p class="text-h5 font-weight-bold">
           Projects
         </p>
         <p>All projects in your Purify installation.</p>

@@ -1,10 +1,11 @@
 import request from '@/utils/request';
+import { GetIssuesQueryDto } from '@/store/types';
 
-export function getIssues(unitName: string) {
+export function getIssues(params: GetIssuesQueryDto) {
   return request({
     url: `/issues`,
     method: 'get',
-    params: { unitName },
+    params: params,
   });
 }
 

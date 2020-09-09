@@ -20,6 +20,7 @@ import {
   EditIssueDto,
   CreateTicketDto,
   PostCommentDto,
+  GetIssuesQueryDto,
 } from '../types';
 
 @Module
@@ -38,21 +39,25 @@ export default class Issues extends VuexModule {
   }
 
   @Action
-  async [ISSUES_FETCH]() {
-    const { data } = await getIssues(this.context.rootState.system.unitName);
+  async [ISSUES_FETCH](payload: GetIssuesQueryDto) {
+    const { data } = await getIssues(payload);
     this.context.commit(SET_ISSUES, data);
   }
 
   @Action
   async [ISSUE_UPDATE](payload: EditIssueDto) {
     await updateIssues(payload.ids, payload.change);
-    this.context.dispatch(ISSUES_FETCH);
+    await this.context.dispatch(ISSUES_FETCH, {
+      unitName: this.context.rootState.system.unitName,
+    });
   }
 
   @Action
   async [CREATE_TICKET](payload: CreateTicketDto) {
     const { data } = await createTicket(payload.issueId, payload.fields);
-    this.context.dispatch(ISSUES_FETCH);
+    await this.context.dispatch(ISSUES_FETCH, {
+      unitName: this.context.rootState.system.unitName,
+    });
     return data;
   }
 

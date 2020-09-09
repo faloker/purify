@@ -52,17 +52,17 @@ export class ProjectsService {
       const units = await this.unitModel
         .find({ project: project._id })
         .lean()
-        .populate('numIssues')
-        .populate('numTickets');
+        .populate('numIssues');
+        // .populate('numTickets');
 
       project['numUnits'] = units.length;
       project['numUsers'] = numUsers;
       project['numIssues'] = units.reduce((total, currentValue) => {
         return total + currentValue.numIssues;
       }, 0);
-      project['numTickets'] = units.reduce((total, currentValue) => {
-        return total + currentValue.numTickets;
-      }, 0);
+      // project['numTickets'] = units.reduce((total, currentValue) => {
+      //   return total + currentValue.numTickets;
+      // }, 0);
     }
     return projects;
   }

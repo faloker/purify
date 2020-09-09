@@ -74,10 +74,11 @@ export default defineComponent({
 
       return [...new Set(result)];
     });
+    const unitName = computed(() => store.state.system.unitName);
 
     onMounted(() => {
       store
-        .dispatch(ISSUES_FETCH)
+        .dispatch(ISSUES_FETCH, { unitName: unitName.value })
         .then(() => {
           loading.value = false;
         })

@@ -67,3 +67,11 @@ export class ChangePasswordDto {
   @IsNotEmpty()
   readonly token: string;
 }
+
+export class UserSelfChange {
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  readonly trackMe?: string;
+}

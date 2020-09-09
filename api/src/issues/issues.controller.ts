@@ -15,7 +15,6 @@ import {
   GetIssuesQueryDto,
   UpdateIssuesBodyDto,
   SaveCommentBodyDto,
-  IdParamDto,
 } from './dto/issues.dto';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import {
@@ -23,17 +22,15 @@ import {
   ApiBearerAuth,
   ApiSecurity,
   ApiOperation,
-  ApiParam,
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { Unit } from 'src/units/interfaces/unit.interface';
-import { UnitInterceptor } from 'src/common/interceptors/unit.interceptor';
 import { Role } from 'src/users/interfaces/user.interface';
 import { IssueInterceptor } from 'src/common/interceptors/issue.interceptor';
 import { Issue } from './interfaces/issue.interface';
+import { EventsService } from 'src/events/events.service';
+import { EventType, Audience } from 'src/events/interfaces/event.interface';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
@@ -42,7 +39,10 @@ import { Issue } from './interfaces/issue.interface';
 @ApiTags('issues')
 @Controller('issues')
 export class IssuesController {
-  constructor(private issuesService: IssuesService) {}
+  constructor(
+    private issuesService: IssuesService,
+    private readonly eventsService: EventsService
+  ) {}
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
@@ -59,30 +59,67 @@ export class IssuesController {
 
   @Patch()
   @Roles(['owner', 'admin', 'user'])
-  updateIssues(@Body() body: UpdateIssuesBodyDto, @Req() req) {
+  async updateIssues(@Body() body: UpdateIssuesBodyDto, @Req() req) {
+    let res: any = {};
     if (req.user.role !== Role.OWNER) {
-      return this.issuesService.updateMany(
+      res = await this.issuesService.updateMany(
         body.ids,
         body.change,
         req.user.memberships
       );
     } else {
-      return this.issuesService.updateMany(body.ids, body.change);
+      res = await this.issuesService.updateMany(body.ids, body.change);
     }
+
+    if (body.change.status === 'closed') {
+      body.ids.forEach(async (id) => {
+        const issue = await this.issuesService.enrichOne(id);
+        if (issue) {
+          await this.eventsService.add(
+            EventType.ISSUE_RESOLVED,
+            { ...issue },
+            req.user._id,
+            Audience.ALL
+          );
+        }
+      })
+    }
+
+    return res;
   }
 
   @Post(':id/ticket')
   @Roles(['owner', 'admin', 'user'])
   @UseInterceptors(IssueInterceptor)
-  createTicket(@Param('id') issue: Issue, @Body() body: any) {
-    return this.issuesService.createJiraTicket(issue._id, body);
+  async createTicket(@Param('id') issue: Issue, @Body() body: any, @Req() req) {
+    const ticket = await this.issuesService.createJiraTicket(issue._id, body);
+    const doc = await this.issuesService.enrichOne(issue._id);
+    await this.eventsService.add(
+      EventType.TICKET_CREATED,
+      { link: ticket.link, key: ticket.key, ...doc },
+      req.user._id,
+      Audience.ALL
+    );
+    return ticket;
   }
 
   @Post(':id/comments')
   @Roles(['owner', 'admin', 'user'])
   @UseInterceptors(IssueInterceptor)
-  saveComment(@Param('id') issue: Issue, @Body() comment: SaveCommentBodyDto) {
-    return this.issuesService.saveComment(issue._id, comment);
+  async saveComment(
+    @Param('id') issue: Issue,
+    @Body() comment: SaveCommentBodyDto,
+    @Req() req
+  ) {
+    const com = await this.issuesService.saveComment(issue._id, comment);
+    const doc = await this.issuesService.enrichOne(issue._id);
+    await this.eventsService.add(
+      EventType.COMMENT_CREATED,
+      { text: com.text, ...doc },
+      req.user._id,
+      Audience.ALL
+    );
+    return com;
   }
 
   @Get(':id/comments')

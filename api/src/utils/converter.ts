@@ -11,7 +11,7 @@ const removeAttribute = (value, parentElement) => {
   }
 };
 
-export const matchPattern = (fields, pattern) => {
+export function matchPattern(fields: any, pattern: string) {
   let result = pattern;
   const matches = pattern
     // eslint-disable-next-line no-useless-escape

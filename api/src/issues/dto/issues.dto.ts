@@ -81,7 +81,14 @@ export class GetIssuesQueryDto {
   })
   @IsOptional()
   @IsNumberString()
-  readonly limit?: string;
+  readonly limit?: string; 
+   
+  @ApiPropertyOptional({
+    description: 'Return issues for a specified number of days',
+  })
+  @IsOptional()
+  @IsNumberString()
+  readonly days?: string;
 }
 
 export class UpdateIssuesBodyDto {

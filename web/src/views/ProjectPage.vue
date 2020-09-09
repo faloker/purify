@@ -69,7 +69,7 @@
             class="mr-2 mb-2"
             text
             :to="{ name: 'Reports' }"
-            color="senary"
+            color="tertiary"
           >
             <v-icon left>
               mdi-file-document
@@ -85,7 +85,7 @@
 <script lang="ts">
 import { router } from '@/router';
 import store from '@/store';
-import { FETCH_PROJECTS } from '@/store/actions';
+import { FETCH_PROJECTS, SELF_CHANGE } from '@/store/actions';
 import { Project, Unit } from '@/store/types';
 import {
   defineComponent,
@@ -97,7 +97,7 @@ import {
 } from '@vue/composition-api';
 export default defineComponent({
   name: 'ProjectPage',
-  setup() {
+  setup(props, context) {
     const projectName = computed(() => store.state.system.projectName);
     const unitName = computed(() => store.state.system.unitName);
     const projects: ComputedRef<Project[]> = computed(
@@ -111,14 +111,19 @@ export default defineComponent({
       units.value.find(u => u.name === unitName.value)
     );
 
-    onMounted(() => {
+    onMounted(async () => {
       store
         .dispatch(FETCH_PROJECTS)
         .then(() => {
-          router.replace({
-            name: 'ProjectOverview',
-          });
+          if (context.root.$route.name === 'ProjectPage') {
+            router.replace({
+              name: 'ProjectOverview',
+            });
+          }
         })
+        .catch(() => {});
+      await store
+        .dispatch(SELF_CHANGE, { trackMe: projectName.value })
         .catch(() => {});
     });
 

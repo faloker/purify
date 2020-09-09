@@ -13,6 +13,7 @@ export const EventSchema = new Schema(
         'user_deleted',
         'ticket_created',
         'issue_resolved',
+        'comment_created',
       ],
     },
     body: String,

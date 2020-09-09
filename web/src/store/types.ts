@@ -84,6 +84,7 @@ export interface User {
   role: Role;
   ssoBypass: boolean;
   memberships: string[];
+  recentProjects: string[];
 }
 
 export enum Role {
@@ -232,4 +233,19 @@ export enum EventType {
   USER_DELETED = 'user_deleted',
   TICKET_CREATED = 'ticket_created',
   ISSUE_RESOLVED = 'issue_resolved',
+  COMMENT_CREATED = 'comment_created',
+}
+
+export interface GetIssuesQueryDto {
+  readonly status?: string;
+  readonly ticket?: string;
+  readonly risks?: string;
+  readonly projectName?: string;
+  readonly unitName?: string;
+  readonly limit?: string;
+  readonly days?: string;
+}
+
+export interface UserSelfChange {
+  readonly trackMe?: string;
 }

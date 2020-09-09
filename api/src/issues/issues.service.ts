@@ -16,6 +16,7 @@ import { JiraService } from 'src/plugins/jira/jira.service';
 import { matchPattern } from 'src/utils/converter';
 import { Project } from 'src/projects/interfaces/project.interface';
 import { Template } from 'src/templates/interfaces/template.interface';
+import { sub } from 'date-fns';
 
 @Injectable()
 export class IssuesService {
@@ -36,33 +37,41 @@ export class IssuesService {
       options.limit = parseInt(params.limit);
     }
 
+    if (params.days) {
+      const startDate = sub(new Date(), { days: parseInt(params.days) });
+      conditions.createdAt = { $gte: startDate };
+    }
+
     if (params.status) {
       conditions.status = params.status;
     }
+
     if (params.ticket) {
       conditions.ticket = { $exists: params.ticket === 'true' ? true : false };
     }
+
     if (params.risks) {
       conditions.risk = {
         $in: params.risks.split(',').map(r => r.toLowerCase()),
       };
     }
+
     if (params.unitName) {
-      const { _id } = await this.unitModel
+      const unit = await this.unitModel
         .findOne({ name: params.unitName }, '_id')
         .lean();
-      if (_id) {
-        conditions.unit = _id;
+      if (unit) {
+        conditions.unit = unit._id;
       } else {
         throw new NotFoundException('Unit not found');
       }
     }
     if (params.projectName) {
-      const { _id } = await this.projectModel
+      const project = await this.projectModel
         .findOne({ name: params.projectName }, '_id')
         .lean();
-      if (_id) {
-        conditions.project = _id;
+      if (project) {
+        conditions.project = project._id;
       } else {
         throw new NotFoundException('Project not found');
       }
@@ -106,7 +115,7 @@ export class IssuesService {
           closedAt: issue.closedAt,
           project: (issue.project as Project).name,
           unit: (issue.unit as Unit).name,
-          report: issue.report
+          report: issue.report,
         });
       }
     }
@@ -185,5 +194,30 @@ export class IssuesService {
 
   async findOne(issueId: string) {
     return this.issueModel.findOne({ _id: issueId }).lean();
+  }
+
+  async enrichOne(issueId: string) {
+    const issue = await this.issueModel
+      .findOne({ _id: issueId }, '_id fields risk resolution')
+      .populate('template', ['titlePattern'])
+      .populate('project', 'name')
+      .populate('unit', 'name')
+      .lean();
+
+    if (issue) {
+      return {
+        _id: issue._id,
+        risk: issue.risk,
+        resolution: issue.resolution,
+        project: (issue.project as Project).name,
+        unit: (issue.unit as Unit).name,
+        title: matchPattern(
+          JSON.parse(issue.fields),
+          (issue.template as Template).titlePattern
+        ),
+      };
+    } else {
+      return null;
+    }
   }
 }

@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="space-between" align="center">
       <v-col>
-        <p class="text-h4 font-weight-black">
+        <p class="text-h5 font-weight-bold">
           Templates
         </p>
         <p>Templates are code-free and user-friendly structures that parse reports the way you tell them.</p>

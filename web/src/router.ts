@@ -3,7 +3,12 @@ import Router from 'vue-router';
 
 import TheHeader from '@/components/TheHeader.vue';
 import store from './store';
-import { REFRESH_TOKEN, FETCH_SYSTEM_SETUP, SAML_LOGIN } from './store/actions';
+import {
+  REFRESH_TOKEN,
+  FETCH_SYSTEM_SETUP,
+  SAML_LOGIN,
+  SELF_CHANGE,
+} from './store/actions';
 import { SET_PROJECT_NAME, SET_UNIT_NAME } from './store/mutations';
 
 Vue.use(Router);
@@ -91,7 +96,8 @@ export const router = new Router({
           },
         },
         {
-          path: 'units/:unitName/issues',
+          path: 'units/:unitName/issues/:issueId?',
+          alias: 'units/:unitName/issues',
           name: 'Issues',
           components: {
             default: () => import('@/views/Issues.vue'),
@@ -118,18 +124,6 @@ export const router = new Router({
 // TODO refactor router
 router.beforeEach(async (to, from, next) => {
   const { isAuthenticated } = store.state.auth;
-
-  if (to.params.projectName) {
-    store.commit(SET_PROJECT_NAME, to.params.projectName);
-  } else {
-    store.commit(SET_PROJECT_NAME, '');
-  }
-
-  if (to.params.unitName) {
-    store.commit(SET_UNIT_NAME, to.params.unitName);
-  } else {
-    store.commit(SET_UNIT_NAME, '');
-  }
 
   if (to.name === 'Welcome') {
     await store.dispatch(FETCH_SYSTEM_SETUP).catch(() => {});
@@ -159,6 +153,18 @@ router.beforeEach(async (to, from, next) => {
   } else if (['Welcome', 'SAML Login'].includes(to.name!) && isAuthenticated) {
     next(false);
   } else {
+    if (to.params.projectName) {
+      store.commit(SET_PROJECT_NAME, to.params.projectName);
+    } else {
+      store.commit(SET_PROJECT_NAME, '');
+    }
+
+    if (to.params.unitName) {
+      store.commit(SET_UNIT_NAME, to.params.unitName);
+    } else {
+      store.commit(SET_UNIT_NAME, '');
+    }
+
     document.title = to.meta.title;
     next();
   }

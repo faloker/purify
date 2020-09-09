@@ -46,10 +46,7 @@
             class="elevation-1"
           >
             <v-list-item-group v-model="selectedIssues" multiple>
-              <v-slide-y-transition
-                group
-                hide-on-leave
-              >
+              <v-slide-y-transition group hide-on-leave>
                 <template v-for="(item, index) in items">
                   <v-list-item
                     :key="`issue-${item._id}`"
@@ -87,12 +84,12 @@
                           >
                             <span class="text-capitalize">{{ item.resolution }}</span>
                           </v-chip>
-                        <!-- </div> -->
+                          <!-- </div> -->
                         </v-list-item-title>
                         <v-list-item-subtitle>
                           <!-- <div class="text-truncate"> -->
                           {{ item.subtitle }}
-                        <!-- </div> -->
+                          <!-- </div> -->
                         </v-list-item-subtitle>
                       </v-list-item-content>
 
@@ -225,7 +222,7 @@ export default defineComponent({
     },
   },
 
-  setup(props) {
+  setup(props, context) {
     const allSelected = ref(false);
     const selectedIssues: Ref<string[]> = ref([]);
     const { currentPage, pageSize, nextPage, prevPage, sizes } = usePagination(
@@ -244,10 +241,6 @@ export default defineComponent({
       Math.ceil(props.rawItems.length / pageSize.value)
     );
 
-    onMounted(async () => {
-      store.dispatch(TEMPLATES_FETCH);
-    });
-
     watch(
       () => [props.rawItems, pageSize.value],
       () => {
@@ -263,6 +256,18 @@ export default defineComponent({
       selectedIssue,
       openDialog,
     } = useIssueDetails();
+
+    onMounted(() => {
+      store.dispatch(TEMPLATES_FETCH);
+      if (context.root.$route.params.issueId) {
+        openDialog(
+          'issue',
+          props.rawItems.find(
+            issue => issue._id === context.root.$route.params.issueId
+          )!
+        );
+      }
+    });
 
     watch(allSelected, newValue => {
       if (newValue) {

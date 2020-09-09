@@ -28,4 +28,5 @@ export const UserSchema = new Schema({
     required: true,
   },
   memberships: [{ type: String, ref: 'Project' }],
+  recentProjects: [{ type: String }]
 });

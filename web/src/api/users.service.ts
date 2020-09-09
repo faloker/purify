@@ -1,10 +1,20 @@
 import request from '@/utils/request';
+import { UserSelfChange } from '@/store/types';
 
-export const currentUser = async () =>
-  request({
-    url: 'users/current_user',
+export function currentUser() {
+  return request({
+    url: 'users/whoami',
     method: 'get',
   });
+}
+
+export function changeWhoami(params: UserSelfChange) {
+  return request({
+    url: 'users/whoami',
+    method: 'patch',
+    data: params,
+  });
+}
 
 export function getUsers() {
   return request({

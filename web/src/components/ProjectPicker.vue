@@ -98,9 +98,9 @@ export default defineComponent({
       );
     });
 
-    onMounted(async () => {
-      await store.dispatch(FETCH_PROJECTS).catch(() => {});
-    });
+    // onMounted(async () => {
+    // await store.dispatch(FETCH_PROJECTS).catch(() => {});
+    // });
 
     watch(menu, newValue => {
       if (newValue === false) {

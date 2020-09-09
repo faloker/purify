@@ -23,4 +23,5 @@ export enum EventType {
   USER_DELETED = 'user_deleted',
   TICKET_CREATED = 'ticket_created',
   ISSUE_RESOLVED = 'issue_resolved',
+  COMMENT_CREATED = 'comment_created',
 }

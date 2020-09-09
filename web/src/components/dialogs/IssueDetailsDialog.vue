@@ -81,7 +81,7 @@
                 <template v-slot:activator="{ on }">
                   <v-btn
                     class="mr-2"
-                    color="tertiary"
+                    color="primary"
                     outlined
                     v-on="on"
                   >
@@ -121,34 +121,31 @@
               >
                 Reopen
               </v-btn>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <span v-on="on">
-                    <v-btn
-                      v-if="!issue.ticket"
-                      outlined
-                      :disabled="!systemConfig.jira"
-                      class="mr-2"
-                      color="senary"
-                      @click.stop="ticketDialog = !ticketDialog"
-                    >
-                      <v-icon color="senary" left>mdi-jira</v-icon>Create Ticket
-                    </v-btn>
-                  </span>
-                </template>
-                <span>Set up Jira to create a ticket</span>
-              </v-tooltip>
+
+              <v-btn
+                v-if="!issue.ticket"
+                outlined
+                :disabled="!systemConfig.jira"
+                class="mr-2"
+                color="quinary"
+                @click.stop="ticketDialog = !ticketDialog"
+              >
+                <v-icon color="quinary" left>
+                  mdi-jira
+                </v-icon>Create Ticket
+              </v-btn>
+ 
               <v-btn
                 v-if="issue.ticket"
                 outlined
                 class="mx-2"
-                color="senary"
+                color="quinary"
                 :href="issue.ticket.link"
                 target="_blank"
               >
                 <v-icon
                   v-if="issue.ticket.type == 'jira'"
-                  color="senary"
+                  color="quinary"
                   left
                 >
                   mdi-jira
@@ -168,7 +165,7 @@
               <v-btn
                 outlined
                 class="mr-2"
-                color="secondary"
+                color="tertiary"
                 @click.stop="commentDialog = true"
               >
                 <v-icon :left="!!comments.length" small>
