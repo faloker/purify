@@ -20,6 +20,8 @@ import {
   UserList,
   ChangePasswordDto,
   UserSelfChange,
+  CreateTokenDto,
+  DeleteTokenDto,
 } from './dto/user.dto';
 import { UsersService } from './users.service';
 import { GenericAuthGuard } from '../auth/generic-auth.guard';
@@ -42,10 +44,9 @@ import { UserInterceptor } from 'src/common/interceptors/user.interceptor';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
-@Controller('users')
+@Controller('/')
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
-@ApiTags('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -53,6 +54,7 @@ export class UsersController {
   ) {}
 
   @Get('whoami')
+  @ApiTags('whoami')
   async getCurrentUser(@Request() req) {
     const {
       _id,
@@ -64,16 +66,46 @@ export class UsersController {
       _id: req.user._id,
     });
     return { _id, name, email, image, recentProjects };
-  }  
-  
+  }
+
   @Patch('whoami')
+  @ApiTags('whoami')
   @HttpCode(204)
-  async changeCurrentUser(@Request() req, @Body() userSelfChange: UserSelfChange) {
+  async changeCurrentUser(
+    @Request() req,
+    @Body() userSelfChange: UserSelfChange
+  ) {
     await this.usersService.changeUser(req.user._id, userSelfChange);
   }
 
-  @Get()
+  @Get('whoami/tokens')
+  @ApiTags('whoami')
+  async getAPIAccessTokens(@Request() req) {
+    return this.usersService.getAPIAccessTokens(req.user);
+  }
+
+  @Post('whoami/tokens')
+  @ApiTags('whoami')
+  async createAPIAccessToken(
+    @Request() req,
+    @Body() createTokenDto: CreateTokenDto
+  ) {
+    return this.usersService.createAPIAccessToken(req.user, createTokenDto);
+  }
+
+  @Delete('whoami/tokens')
+  @ApiTags('whoami')
+  @HttpCode(204)
+  async deleteAPIAccessToken(
+    @Request() req,
+    @Body() deleteTokenDto: DeleteTokenDto
+  ) {
+    return this.usersService.deleteAPIAccessToken(req.user, deleteTokenDto);
+  }
+
+  @Get('users')
   @Roles(['owner', 'admin'])
+  @ApiTags('users')
   @ApiOperation({ summary: 'List users' })
   @ApiOkResponse({
     description: 'List of users',
@@ -83,8 +115,9 @@ export class UsersController {
     return this.usersService.getAll();
   }
 
-  @Post()
+  @Post('users')
   @Roles(['owner', 'admin'])
+  @ApiTags('users')
   @ApiOperation({ summary: 'Create user' })
   @ApiCreatedResponse({ description: 'Created successfully' })
   async createUser(@Body() createUserDto: CreateUserDto, @Req() req) {
@@ -108,8 +141,9 @@ export class UsersController {
     return { link };
   }
 
-  @Post(':id/reset_password')
+  @Post('users/:id/reset_password')
   @Roles(['owner'])
+  @ApiTags('users')
   @UseInterceptors(UserInterceptor)
   @ApiOperation({ summary: "Reset user's password by id" })
   @ApiOkResponse({ description: 'Password reset link', type: String })
@@ -119,21 +153,20 @@ export class UsersController {
     return { link };
   }
 
-  @Patch(':id')
+  @Patch('users/:id')
   @Roles(['owner'])
+  @ApiTags('users')
   @UseInterceptors(UserInterceptor)
   @ApiOperation({ summary: 'Edit user by id' })
   @ApiOkResponse({ description: 'Updated successfully' })
   @ApiNotFoundResponse({ description: 'No such user' })
-  async editUser(
-    @Param('id') user: User,
-    @Body() editUserDto: EditUserDto
-  ) {
+  async editUser(@Param('id') user: User, @Body() editUserDto: EditUserDto) {
     return this.usersService.editUser(user._id, editUserDto);
   }
 
-  @Delete(':id')
+  @Delete('users/:id')
   @Roles(['owner'])
+  @ApiTags('users')
   @UseInterceptors(UserInterceptor)
   @ApiOperation({ summary: 'Delete user by id' })
   @ApiNoContentResponse({ description: 'Removed successfully' })

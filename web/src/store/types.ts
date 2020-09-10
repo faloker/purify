@@ -219,6 +219,8 @@ export interface Event {
   readonly type: EventType;
   readonly byUser: string | User;
   readonly project?: string | Project;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export enum Audience {
@@ -248,4 +250,34 @@ export interface GetIssuesQueryDto {
 
 export interface UserSelfChange {
   readonly trackMe?: string;
+}
+
+export interface Token {
+  _id: string;
+  type: string;
+  name?: string;
+  value: string;
+  lastActivity?: Activity;
+  user: string | User;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export enum TokenType {
+  REFRESH_TOKEN = 'refresh',
+  API_ACCESS_TOKEN = 'api',
+  INVITE_TOKEN = 'invite',
+}
+
+export interface Activity {
+  date: Date;
+  fromIP: string;
+  userAgent: string;
+}
+
+export interface CreateTokenDto {
+  name: string;
+}
+export interface DeleteTokenDto {
+  _id: string;
 }

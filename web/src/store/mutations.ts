@@ -1,6 +1,8 @@
 export const SET_ISSUES = 'setIssues';
 
+// Profile
 export const SET_PROFILE = 'setProfile';
+export const SET_ACCESS_TOKENS = 'setAccessTokens';
 
 export const TEMPLATES_SET = 'templatesSet';
 

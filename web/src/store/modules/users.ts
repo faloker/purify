@@ -17,6 +17,7 @@ import {
   editUser,
   changeWhoami,
   resetUserPassword,
+  getAccessTokens,
 } from '@/api/users.service';
 import { changePassword } from '@/api/auth.service';
 
@@ -66,10 +67,5 @@ export default class Users extends VuexModule {
   async [CHANGE_PASSWORD](payload: ChangePasswordDto) {
     const { data } = await changePassword(payload);
     return data;
-  }
-
-  @Action
-  async [SELF_CHANGE](params: UserSelfChange) {
-    await changeWhoami(params);
   }
 }

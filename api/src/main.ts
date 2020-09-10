@@ -30,7 +30,8 @@ async function bootstrap() {
       forbidUnknownValues: true,
     })
   );
-
+  
+  app.set('trust proxy', true)
   app.use(helmet());
   app.use(compression());
   app.use(cookieParser());

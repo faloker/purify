@@ -64,7 +64,7 @@
         </v-menu>
         <v-menu
           v-model="menu"
-          :close-on-content-click="false"
+          :close-on-content-click="true"
           :nudge-width="200"
           offset-x
           transition="slide-y-transition"
@@ -101,7 +101,7 @@
                     icon
                     @click.stop="killSession"
                   >
-                    <v-icon>mdi-exit-to-app</v-icon>
+                    <v-icon>mdi-exit-run</v-icon>
                   </v-btn>
                 </v-list-item-action>
               </v-list-item>
@@ -113,13 +113,13 @@
                   <v-list-item-icon>
                     <v-icon>mdi-tune</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-content>Account settings</v-list-item-content>
+                  <v-list-item-content>Account Settings</v-list-item-content>
                 </v-list-item>
-                <v-list-item>
+                <v-list-item :to="{ name: 'AccessTokens' }">
                   <v-list-item-icon>
-                    <v-icon>mdi-bell</v-icon>
+                    <v-icon>mdi-key-chain</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-content>Notifications</v-list-item-content>
+                  <v-list-item-content>API Access Tokens</v-list-item-content>
                 </v-list-item>
               </v-list-item-group>
             </v-list>
@@ -151,7 +151,7 @@ export default defineComponent({
       store
         .dispatch(LOGOUT)
         .then(() => {
-          router.replace('welcome');
+          router.replace({ name: 'Welcome' });
         })
         .catch(() => {});
     }

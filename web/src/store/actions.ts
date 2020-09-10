@@ -45,8 +45,6 @@ export const TEMPLATES_DELETE = 'templatesDelete';
 export const TEMPLATES_EDIT = 'templatesEdit';
 export const TEMPLATE_CREATE = 'templateCreate';
 
-export const PROFILE_FETCH = 'profileFetch';
-
 export const FETCH_SYSTEM_SETUP = 'fetchSystemSetup';
 
 export const SAML_LOGIN = 'samlLogin';
@@ -60,7 +58,13 @@ export const CREATE_USER = 'createUser';
 export const EDIT_USER = 'editUser';
 export const DELETE_USER = 'deleteUser';
 export const RESET_USER_PASSWORD = 'resetUserPassword';
+
+// Profile
+export const PROFILE_FETCH = 'profileFetch';
 export const SELF_CHANGE = 'selfChange';
+export const FETCH_ACCESS_TOKENS = 'fetchAccessTokens';
+export const DELETE_ACCESS_TOKEN = 'deleteAccessToken';
+export const CREATE_ACCESS_TOKEN = 'createAccessToken';
 
 // Events
 export const FETCH_EVENTS = 'fetchEvents';

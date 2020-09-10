@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="space-between" align="center">
       <v-col>
-        <p class="text-h5 font-weight-bold">
+        <p class="text-h4 font-weight-bold">
           Users
         </p>
         <p>All the people in your Purify installation.</p>

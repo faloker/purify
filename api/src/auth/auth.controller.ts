@@ -8,7 +8,6 @@ import {
   Res,
   Body,
   Delete,
-  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
@@ -65,22 +64,6 @@ export class AuthController {
       .send({ token: tokens.accessToken });
   }
 
-  // @Post('signup')
-  // async register(@Body() createUserDto: CreateUserDto, @Res() response) {
-  //   if (this.configService.get<string>('ALLOW_REGISTRATION') === 'false') {
-  //     throw new BadRequestException(
-  //       'Registration is disabled for this installation'
-  //     );
-  //   }
-
-  //   const newUser = await this.usersService.createUser(createUserDto);
-  //   const tokens = await this.authService.login(newUser);
-
-  //   response
-  //     .cookie('refreshToken', tokens.refreshToken, this.cookiesConfig)
-  //     .send({ token: tokens.accessToken });
-  // }
-
   @Get('refresh_token')
   @ApiExcludeEndpoint()
   async refreshToken(@Request() req, @Res() response) {
@@ -107,27 +90,11 @@ export class AuthController {
     }
   }
 
-  @Post('token')
-  @ApiBody({
-    description: 'Creates and returns API token for the current user.',
-    schema: {
-      type: 'object',
-      properties: {
-        email: { type: 'string' },
-        password: { type: 'string' },
-      },
-    },
-  })
-  @UseGuards(CredentialsAuthGuard)
-  async issueToken(@Request() req) {
-    return this.authService.issueToken(req.user);
-  }
-
   @Delete()
   @ApiExcludeEndpoint()
   @UseGuards(GenericAuthGuard)
   async logout(@Request() req, @Res() response) {
-    await this.authService.removeRefreshToken(req.user._id);
+    await this.authService.removeRefreshToken(req.user);
     response.clearCookie('refreshToken', this.cookiesConfig).send('bye');
   }
 

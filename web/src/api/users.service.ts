@@ -3,16 +3,39 @@ import { UserSelfChange } from '@/store/types';
 
 export function currentUser() {
   return request({
-    url: 'users/whoami',
+    url: 'whoami',
     method: 'get',
   });
 }
 
 export function changeWhoami(params: UserSelfChange) {
   return request({
-    url: 'users/whoami',
+    url: 'whoami',
     method: 'patch',
     data: params,
+  });
+}
+
+export function getAccessTokens() {
+  return request({
+    url: 'whoami/tokens',
+    method: 'get',
+  });
+}
+
+export function createAccessToken(name: string) {
+  return request({
+    url: 'whoami/tokens',
+    method: 'post',
+    data: { name },
+  });
+}
+
+export function deleteAccessToken(_id: string) {
+  return request({
+    url: 'whoami/tokens',
+    method: 'delete',
+    data: { _id },
   });
 }
 

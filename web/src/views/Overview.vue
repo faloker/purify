@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col>
-        <p class="text-h5 font-weight-bold">
+        <p class="text-h4 font-weight-bold">
           Overview
         </p>
       </v-col>

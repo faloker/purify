@@ -118,6 +118,15 @@ export const router = new Router({
       path: '/saml/login/:token',
       name: 'SAML Login',
     },
+    {
+      path: '/user/tokens',
+      name: 'AccessTokens',
+      components: {
+        default: () => import('@/views/AccessTokens.vue'),
+        header: TheHeader,
+      },
+      meta: { title: 'Purify | Access Tokens' },
+    },
   ],
 });
 

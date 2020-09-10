@@ -9,8 +9,10 @@ import {
   ChangePasswordDto,
   EditUserDto,
   UserSelfChange,
+  CreateTokenDto,
+  DeleteTokenDto,
 } from './dto/user.dto';
-import { InviteToken } from './interfaces/inviteToken.interface';
+import { Token, TokenType } from './interfaces/token.interface';
 import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
 
@@ -18,8 +20,8 @@ import { nanoid } from 'nanoid';
 export class UsersService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
-    @InjectModel('InviteToken')
-    private readonly inviteTokenModel: Model<InviteToken>,
+    @InjectModel('Token')
+    private readonly tokenModel: Model<Token>,
     private readonly configService: ConfigService
   ) {}
 
@@ -68,69 +70,121 @@ export class UsersService {
     return secret === hash;
   }
 
-  async createToken(user: User) {
-    const token = randomBytes(16).toString('hex');
-    const secret = this.genSecret(token, user.salt);
+  async getAPIAccessTokens(user: User) {
+    return this.tokenModel
+      .find(
+        {
+          user: user._id,
+          type: TokenType.API_ACCESS_TOKEN,
+        },
+        { value: 0, user: 0, type: 0 }
+      )
+      .lean();
+  }
 
-    await this.userModel.updateOne(
-      { _id: user._id },
-      { $set: { token: secret } }
-    );
+  async createAPIAccessToken(user: User, createTokenDto: CreateTokenDto) {
+    const token = await new this.tokenModel({
+      user: user._id,
+      name: createTokenDto.name,
+      type: TokenType.API_ACCESS_TOKEN,
+    }).save();
+
     return {
-      apikey: Buffer.from(`${user.name}:${token}`).toString('base64'),
+      value: token.value,
+      _id: token._id,
+      name: token.name,
     };
   }
 
+  async trackTokenUsage(ip: string, ua: string, apikey: string) {
+    const token = await this.tokenModel.findOne({
+      value: apikey,
+      type: TokenType.API_ACCESS_TOKEN,
+    });
+
+    if (token) {
+      token.lastActivity.date = new Date();
+      token.lastActivity.fromIP = ip;
+      token.lastActivity.userAgent = ua;
+      await token.save();
+    }
+  }
+
+  async deleteAPIAccessToken(user: User, deleteTokenDto: DeleteTokenDto) {
+    await this.tokenModel.deleteOne({
+      user: user._id,
+      _id: deleteTokenDto._id,
+      type: TokenType.API_ACCESS_TOKEN,
+    });
+  }
+
+  async validateAPIAccessToken(token: string) {
+    return this.tokenModel.findOne({
+      value: token,
+      type: TokenType.API_ACCESS_TOKEN,
+    });
+  }
+
   async saveRefreshToken(userId: string, token: string) {
-    const user = await this.userModel.findOne({ _id: userId });
-    const secret = this.genSecret(token, user.salt);
-
-    await this.userModel.updateOne(
-      { _id: userId },
-      { $set: { refreshToken: secret } }
-    );
+    return new this.tokenModel({
+      user: userId,
+      value: token,
+      type: TokenType.REFRESH_TOKEN,
+    }).save();
   }
 
-  async validateRefreshToken(userId: string, token: string) {
-    const user = await this.userModel.findOne({ _id: userId });
-    return user
-      ? this.isSecretValid(token, user.refreshToken, user.salt)
-      : false;
+  async validateRefreshToken(userId: string, refreshToken: string) {
+    const token = this.tokenModel
+      .findOne({
+        user: userId,
+        value: refreshToken,
+        type: TokenType.REFRESH_TOKEN,
+      })
+      .lean();
+    return token ? true : false;
   }
 
-  async removeRefreshToken(userId: string) {
-    await this.userModel.updateOne(
-      { _id: userId },
-      { $set: { refreshToken: '' } }
-    );
+  async removeRefreshToken(user: User) {
+    await this.tokenModel.deleteOne({
+      user: user._id,
+      type: TokenType.REFRESH_TOKEN,
+    });
   }
 
   async createInviteLink(userId: string) {
-    const { value } = await new this.inviteTokenModel({ user: userId }).save();
+    const { value } = await new this.tokenModel({
+      user: userId,
+      type: TokenType.INVITE_TOKEN,
+    }).save();
     return `https://${this.configService.get<string>(
       'DOMAIN'
     )}/#/welcome/${value}`;
   }
 
   async changePassword(payload: ChangePasswordDto) {
-    const token = await this.inviteTokenModel.findOne({ value: payload.token });
+    const token = await this.tokenModel
+      .findOne({
+        value: payload.token,
+        type: TokenType.INVITE_TOKEN,
+      })
+      .lean();
     if (token) {
       const user = await this.userModel.findOne({ _id: token.user as string });
       const secret = this.genSecret(payload.password, user.salt);
-
-      await this.userModel.updateOne(
-        { _id: user._id },
-        { $set: { password: secret } }
-      );
-      await this.inviteTokenModel.deleteOne({ _id: token._id });
+      user.password = secret;
+      await user.save();
+      await this.tokenModel.deleteOne({ _id: token._id });
     } else {
-      throw new NotFoundException('No such token');
+      throw new NotFoundException('Token not found');
     }
   }
 
   async changeUser(userId: string, userSelfChange: UserSelfChange) {
     const user = await this.userModel.findOne({ _id: userId });
-    if (userSelfChange.trackMe && !user.recentProjects.includes(userSelfChange.trackMe)) {
+    if (
+      userSelfChange.trackMe &&
+      !user.recentProjects.includes(userSelfChange.trackMe)
+    ) {
       if (user.recentProjects.length < 4) {
         user.recentProjects.push(userSelfChange.trackMe);
       } else {

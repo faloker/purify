@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserSchema } from './schemas/user.schema';
-import { InviteTokenSchema } from './schemas/inviteToken.schema';
+import { TokenSchema } from './schemas/token.schema';
 import { ConfigModule } from '@nestjs/config';
 import { EventsModule } from 'src/events/events.module';
 
@@ -11,7 +11,7 @@ import { EventsModule } from 'src/events/events.module';
   imports: [
     MongooseModule.forFeature([
       { name: 'User', schema: UserSchema },
-      { name: 'InviteToken', schema: InviteTokenSchema },
+      { name: 'Token', schema: TokenSchema },
     ]),
     EventsModule,
     ConfigModule,

@@ -75,3 +75,16 @@ export class UserSelfChange {
   @IsNotEmpty()
   readonly trackMe?: string;
 }
+
+export class CreateTokenDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly name: string;
+}
+export class DeleteTokenDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly _id: string;
+}

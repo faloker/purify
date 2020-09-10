@@ -3,7 +3,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/interfaces/user.interface';
-import { randomBytes } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -56,18 +55,6 @@ export class AuthService {
     }
   }
 
-  async validateAPIKey(apikey: string): Promise<any> {
-    const [username, token] = Buffer.from(apikey, 'base64')
-      .toString()
-      .split(':');
-
-    const user = await this.usersService.findOne({ name: username });
-    if (user && this.usersService.isSecretValid(token, user.token, user.salt)) {
-      return user;
-    }
-    return null;
-  }
-
   async login(user: User) {
     const refreshToken = this.jwtService.sign(
       { _id: user._id, type: 'refreshToken' },
@@ -84,10 +71,6 @@ export class AuthService {
       }),
       refreshToken,
     };
-  }
-
-  issueToken(user: User) {
-    return this.usersService.createToken(user);
   }
 
   async refreshToken(token: string) {
@@ -112,7 +95,7 @@ export class AuthService {
     }
   }
 
-  async removeRefreshToken(userId: string) {
-    await this.usersService.removeRefreshToken(userId);
+  async removeRefreshToken(user: User) {
+    await this.usersService.removeRefreshToken(user);
   }
 }

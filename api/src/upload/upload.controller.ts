@@ -26,12 +26,12 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Unit } from 'src/units/interfaces/unit.interface';
 
 @UseGuards(RolesGuard)
-@UseGuards(GenericAuthGuard)
+// @UseGuards(GenericAuthGuard)
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
 @ApiTags('upload')
 @Controller('upload')
-@UseGuards(GenericAuthGuard)
+// @UseGuards(GenericAuthGuard)
 export class UploadController {
   constructor(private reportsService: ReportsService) {}
 
