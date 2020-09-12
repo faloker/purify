@@ -46,7 +46,7 @@
           <v-list dense>
             <v-list-item active-class="primary--text" :to="{ name: 'Templates' }">
               <v-list-item-action>
-                <v-icon>mdi-file</v-icon>
+                <v-icon>mdi-file-document-multiple</v-icon>
               </v-list-item-action>
               <v-list-item-title>Templates</v-list-item-title>
             </v-list-item>
@@ -76,9 +76,6 @@
               class="text-none"
               v-on="on"
             >
-              <!-- <v-avatar size="40" v-on="on">
-                  <img :src="user.image" alt="ava">
-                </v-avatar> -->
               My profile
               <v-icon small>
                 mdi-chevron-down
