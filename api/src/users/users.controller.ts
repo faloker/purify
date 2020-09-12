@@ -56,13 +56,13 @@ export class UsersController {
   @Get('whoami')
   @ApiTags('whoami')
   async getCurrentUser(@Request() req) {
-    return this.usersService.getUser(req.user._id)
-  }  
-  
+    return this.usersService.getUser(req.user._id);
+  }
+
   @Get('whoami/recent_projects')
   @ApiTags('whoami')
   async getUserRecentProjects(@Request() req) {
-    return this.usersService.getUserRecentProjects(req.user._id)
+    return this.usersService.getUserRecentProjects(req.user._id);
   }
 
   @Patch('whoami')

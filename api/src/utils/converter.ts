@@ -25,7 +25,7 @@ export function matchPattern(fields: any, pattern: string) {
   }
 
   return result;
-};
+}
 
 export function xmlToJson(data) {
   return JSON.parse(

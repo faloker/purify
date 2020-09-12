@@ -53,7 +53,7 @@ export class ProjectsService {
         .find({ project: project._id })
         .lean()
         .populate('numIssues');
-        // .populate('numTickets');
+      // .populate('numTickets');
 
       project['numUnits'] = units.length;
       project['numUsers'] = numUsers;
@@ -144,7 +144,7 @@ export class ProjectsService {
     const issuesRisks = groupBy(
       issues.filter(issue => issue.resolution !== 'false positive'),
       issue => issue.risk
-    );    
+    );
 
     for (const key of Object.keys(issuesRisks)) {
       switch (key) {
@@ -172,12 +172,12 @@ export class ProjectsService {
       issues.filter(issue => issue.template),
       issue => (issue.template as Template).displayName
     );
-    
+
     const labels = Object.keys(templates);
     const series = [];
     labels.forEach(label => {
       series.push(templates[label].length);
-    })
+    });
 
     return {
       timeseries: {
@@ -191,7 +191,7 @@ export class ProjectsService {
       templates: {
         labels,
         series,
-      }
+      },
     };
   }
 
@@ -209,12 +209,15 @@ export class ProjectsService {
       templates: {
         labels: [],
         series: [],
-      }
+      },
     };
 
     if (units.length) {
       for (const unit of units) {
-        const data = await this.getUnitMetrics(unit._id, parseInt(options.days));
+        const data = await this.getUnitMetrics(
+          unit._id,
+          parseInt(options.days)
+        );
 
         unitsMetrics.push({
           name: unit.displayName,
@@ -242,9 +245,10 @@ export class ProjectsService {
 
         data.templates.labels.forEach((label, index) => {
           const labelIndex = projectMetrics.templates.labels.indexOf(label);
-          
+
           if (labelIndex >= 0) {
-            projectMetrics.templates.series[labelIndex] += data.templates.series[index]
+            projectMetrics.templates.series[labelIndex] +=
+              data.templates.series[index];
           } else {
             projectMetrics.templates.labels.push(label);
             projectMetrics.templates.series.push(data.templates.series[index]);

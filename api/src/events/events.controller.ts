@@ -1,7 +1,20 @@
-import { Controller, UseGuards, Get, Query, Req, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Query,
+  Req,
+  UseInterceptors,
+} from '@nestjs/common';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
-import { ApiBearerAuth, ApiSecurity, ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiSecurity,
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { EventsService } from './events.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/users/interfaces/user.interface';
@@ -15,8 +28,7 @@ import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor'
 @ApiTags('events')
 @Controller('events')
 export class EventsController {
-  constructor( private readonly eventsService: EventsService) {}
-
+  constructor(private readonly eventsService: EventsService) {}
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
@@ -27,7 +39,11 @@ export class EventsController {
   })
   getEvents(@Query() query: GetEventsQueryDto, @Req() req) {
     if (req.user.role !== Role.OWNER) {
-      return this.eventsService.getAll(parseInt(query.days), false, req.user.memberships);
+      return this.eventsService.getAll(
+        parseInt(query.days),
+        false,
+        req.user.memberships
+      );
     } else {
       return this.eventsService.getAll(parseInt(query.days), true);
     }
