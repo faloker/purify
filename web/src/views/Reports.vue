@@ -1,82 +1,157 @@
 <template>
   <v-container>
-    <v-skeleton-loader
-      :loading="loading"
-      transition="slide-y-transition"
-      type="table-tbody"
-    >
-      <v-card outlined>
-        <v-data-table
-          :headers="headers"
-          item-key="_id"
-          :sort-by="['createdAt']"
-          :sort-desc="[true]"
-          :items="reports"
-          :search="searchTerm"
-          :items-per-page="5"
+    <v-row>
+      <v-col>
+        <v-btn
+          v-permission="['owner', 'admin', 'user']"
+          color="primary"
+          @click.stop="uploadDialog = true"
         >
-          <template v-slot:item.createdAt="{ item }">
-            <div class="subheading">
-              {{ new Date(item.createdAt).toLocaleDateString() }}
-            </div>
-          </template>
-          <template v-slot:item.template="{ item }" class="text-center">
-            <v-btn
-              v-if="!item.template"
-              outlined
-              rounded
-              class="text-none"
-              @click.stop="openStepper(item)"
+          <v-icon left>
+            mdi-file-upload
+          </v-icon>Upload report
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-divider />
+    <v-row>
+      <v-col>
+        <v-skeleton-loader
+          :loading="loading"
+          transition="slide-y-transition"
+          type="table-tbody"
+        >
+          <v-card outlined>
+            <v-data-table
+              :headers="headers"
+              item-key="_id"
+              :sort-by="['createdAt']"
+              :sort-desc="[true]"
+              :items="reports"
+              :search="searchTerm"
+              :items-per-page="5"
             >
-              <v-icon>add</v-icon>Create template
-            </v-btn>
-            <v-chip
-              v-else
-              outlined
-              color="primary"
-            >
-              {{ item.template.name }}
-            </v-chip>
-          </template>
-          <template v-slot:item.new="{ item }" class="text-center">
-            <b v-if="!item.statistics">--</b>
-            <b v-else>{{ item.statistics.new }}</b>
-          </template>
-          <template v-slot:item.old="{ item }" class="text-center">
-            <b v-if="!item.statistics">--</b>
-            <b v-else>{{ item.statistics.old }}</b>
-          </template>
-          <template v-slot:item.action="{ item }" class="text-center">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  v-permission="['owner', 'admin']"
-                  text
-                  icon
-                  color="red darken-1"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click.stop="openConfirmationDialog(item)"
-                >
-                  <v-icon>fa-times</v-icon>
-                </v-btn>
+              <template v-slot:item.createdAt="{ item }">
+                <div class="subheading">
+                  {{ new Date(item.createdAt).toLocaleDateString() }}
+                </div>
               </template>
-              <span>Delete</span>
-            </v-tooltip>
-          </template>
-          <v-alert v-slot:no-results>
-            Your search for "{{ searchTerm }}" found no results.
-          </v-alert>
-        </v-data-table>
-        <stepper :stepper.sync="stepperDialog" :report="report" />
-      </v-card>
-    </v-skeleton-loader>
+              <template v-slot:item.template="{ item }" class="text-center">
+                <v-btn
+                  v-if="!item.template"
+                  outlined
+                  rounded
+                  class="text-none"
+                  @click.stop="openStepper(item)"
+                >
+                  <v-icon>add</v-icon>Create template
+                </v-btn>
+                <v-chip
+                  v-else
+                  outlined
+                  color="primary"
+                >
+                  {{ item.template.name }}
+                </v-chip>
+              </template>
+              <template v-slot:item.new="{ item }" class="text-center">
+                <b v-if="!item.statistics">--</b>
+                <b v-else>{{ item.statistics.new }}</b>
+              </template>
+              <template v-slot:item.old="{ item }" class="text-center">
+                <b v-if="!item.statistics">--</b>
+                <b v-else>{{ item.statistics.old }}</b>
+              </template>
+              <template v-slot:item.action="{ item }" class="text-center">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-permission="['owner', 'admin']"
+                      text
+                      icon
+                      color="red darken-1"
+                      v-bind="attrs"
+                      v-on="on"
+                      @click.stop="openConfirmationDialog(item)"
+                    >
+                      <v-icon>fa-times</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Delete</span>
+                </v-tooltip>
+              </template>
+              <v-alert v-slot:no-results>
+                Your search for "{{ searchTerm }}" found no results.
+              </v-alert>
+            </v-data-table>
+            <stepper :stepper.sync="stepperDialog" :report="report" />
+          </v-card>
+        </v-skeleton-loader>
+      </v-col>
+    </v-row>
     <confirm-dialog
       v-model="confirmDialog"
       title="Delete this report?"
       message="All issues will be removed as well. Are you sure you want to continue?"
       @handle-click="deleteReport"
     />
+    <v-dialog
+      v-model="uploadDialog"
+      max-width="430"
+      @click:outside="uploadDialog = false"
+      @keydown.esc="uploadDialog = false"
+    >
+      <v-card>
+        <v-card-title>Upload Report</v-card-title>
+        <v-card-text>
+          <v-col>
+            <v-row>
+              <v-file-input
+                v-model="file"
+                outlined
+                dense
+                show-size
+                accept=".xml, .json"
+                label="Report file"
+              />
+            </v-row>
+            <v-row>
+              <v-select
+                id="templateName"
+                v-model="templateName"
+                :items="templates"
+                item-text="displayName"
+                item-value="name"
+                label="Template to apply"
+                dense
+                clearable
+                outlined
+                prepend-icon="mdi-file"
+              />
+            </v-row>
+          </v-col>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-btn
+            color="quinary"
+            text
+            @click.stop="uploadDialog = false"
+          >
+            Close
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            color="quinary"
+            text
+            :disabled="!file"
+            @click.stop="uploadReport"
+          >
+            Upload
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script lang="ts">
@@ -87,6 +162,8 @@ import {
   onMounted,
   computed,
   SetupContext,
+  ComputedRef,
+  Ref,
 } from '@vue/composition-api';
 import store from '@/store';
 import Stepper from '@/components/dialogs/StepperConfigurator.vue';
@@ -96,8 +173,10 @@ import {
   REPORT_DELETE,
   FETCH_CONTENT,
   SHOW_SUCCESS_MSG,
+  TEMPLATES_FETCH,
+  UPLOAD_REPORT,
 } from '@/store/actions';
-import { Report } from '@/store/types';
+import { Report, TemplateWithStats } from '@/store/types';
 
 export default defineComponent({
   name: 'Reports',
@@ -109,6 +188,9 @@ export default defineComponent({
 
   setup(props, context) {
     const searchTerm = ref('');
+    const templates: ComputedRef<TemplateWithStats[]> = computed(
+      () => store.state.templates.items
+    );
     const loading = ref(true);
     const headers = ref([
       { text: 'Date', value: 'createdAt', width: '21%' },
@@ -141,13 +223,14 @@ export default defineComponent({
 
     const reports = computed(() => store.state.reports.items);
 
-    onMounted(() => {
+    onMounted(async () => {
       store
         .dispatch(FETCH_REPORTS)
         .then(() => {
           loading.value = false;
         })
         .catch(() => {});
+      await store.dispatch(TEMPLATES_FETCH).catch(() => {});
     });
 
     const { stepperDialog, report, openStepper } = useStepper();
@@ -166,8 +249,10 @@ export default defineComponent({
       openStepper,
       deleteReport,
       confirmDialog,
+      templates,
       stepperDialog,
       openConfirmationDialog,
+      ...useUploadReport(),
     };
   },
 });
@@ -217,5 +302,29 @@ function useStepper() {
     report,
     openStepper,
   };
+}
+
+function useUploadReport() {
+  const uploadDialog = ref(false);
+  const file = ref(null);
+  const templateName = ref('');
+
+  function uploadReport() {
+    const formData = new FormData();
+    formData.append('file', file.value!);
+    formData.append('template', templateName.value);
+
+    store
+      .dispatch(UPLOAD_REPORT, formData)
+      .then(async () => {
+        uploadDialog.value = false;
+        file.value = null;
+        templateName.value = '';
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The report has been uploaded');
+      })
+      .catch(() => {});
+  }
+
+  return { uploadDialog, file, templateName, uploadReport };
 }
 </script>

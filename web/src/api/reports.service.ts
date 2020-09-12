@@ -20,3 +20,14 @@ export function getReportContent(reportId: string) {
     method: 'get',
   });
 }
+
+export function uploadReport(unitName: string, formData: FormData) {
+  return request({
+    url: `units/${unitName}/reports`,
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}

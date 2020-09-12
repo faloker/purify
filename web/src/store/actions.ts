@@ -7,8 +7,10 @@ export const FETCH_PROJECT_USERS = 'fetchProjectUsers';
 export const ADD_USER = 'addUser';
 export const REMOVE_USER = 'removeUser';
 
+// Reports
 export const FETCH_REPORTS = 'fetchReports';
 export const REPORT_DELETE = 'reportDelete';
+export const UPLOAD_REPORT = 'uploadReport';
 
 export const FETCH_TEMPLATES_NAMES = 'fetchTemplatesNames';
 
