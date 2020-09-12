@@ -5,6 +5,7 @@ import {
   FETCH_ACCESS_TOKENS,
   CREATE_ACCESS_TOKEN,
   DELETE_ACCESS_TOKEN,
+  FETCH_RECENT_PROJECTS,
 } from '@/store/actions';
 import { SET_PROFILE, SET_ACCESS_TOKENS } from '@/store/mutations';
 import {
@@ -13,6 +14,7 @@ import {
   getAccessTokens,
   createAccessToken,
   deleteAccessToken,
+  getRecentProjects,
 } from '@/api/users.service';
 import {
   User,
@@ -50,6 +52,12 @@ export default class Profile extends VuexModule {
   @Action
   async [PROFILE_FETCH]() {
     const { data } = await currentUser();
+    this.context.commit(SET_PROFILE, data);
+  }
+
+  @Action
+  async [FETCH_RECENT_PROJECTS]() {
+    const { data } = await getRecentProjects();
     this.context.commit(SET_PROFILE, data);
   }
 

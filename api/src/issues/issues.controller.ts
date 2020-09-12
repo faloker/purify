@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   Req,
+  CacheTTL,
 } from '@nestjs/common';
 import { IssuesService } from './issues.service';
 import {
@@ -31,6 +32,7 @@ import { IssueInterceptor } from 'src/common/interceptors/issue.interceptor';
 import { Issue } from './interfaces/issue.interface';
 import { EventsService } from 'src/events/events.service';
 import { EventType, Audience } from 'src/events/interfaces/event.interface';
+import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
@@ -46,6 +48,8 @@ export class IssuesController {
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
+  @UseInterceptors(HttpCacheInterceptor)
+  @CacheTTL(3)
   @ApiOperation({ summary: 'List issues' })
   @ApiOkResponse({ description: 'List of issues' })
   @ApiTags('issues')
@@ -72,7 +76,7 @@ export class IssuesController {
     }
 
     if (body.change.status === 'closed') {
-      body.ids.forEach(async (id) => {
+      body.ids.forEach(async id => {
         const issue = await this.issuesService.enrichOne(id);
         if (issue) {
           await this.eventsService.add(
@@ -82,7 +86,7 @@ export class IssuesController {
             Audience.ALL
           );
         }
-      })
+      });
     }
 
     return res;

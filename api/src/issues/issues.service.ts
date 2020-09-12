@@ -42,17 +42,23 @@ export class IssuesService {
       conditions.createdAt = { $gte: startDate };
     }
 
-    if (params.status) {
+    if (params.status && params.status.split(',').length < 2) {
       conditions.status = params.status;
     }
 
-    if (params.ticket) {
+    if (params.ticket && params.ticket.split(',').length < 2) {
       conditions.ticket = { $exists: params.ticket === 'true' ? true : false };
     }
 
-    if (params.risks) {
+    if (params.risk && params.risk.split(',').length < 5) {
       conditions.risk = {
-        $in: params.risks.split(',').map(r => r.toLowerCase()),
+        $in: params.risk.split(',').map(r => r.toLowerCase()),
+      };
+    }
+
+    if (params.resolution && params.resolution.split(',').length < 4) {
+      conditions.resolution = {
+        $in: params.resolution.split(',').map(r => r.toLowerCase()),
       };
     }
 
@@ -93,30 +99,39 @@ export class IssuesService {
     for (const issue of rawIssues) {
       const fieldsAsObject = JSON.parse(issue.fields);
       if (issue.template) {
-        issues.push({
-          _id: issue._id,
-          fields: fieldsAsObject,
-          status: issue.status,
-          resolution: issue.resolution,
-          title: matchPattern(
-            fieldsAsObject,
-            (issue.template as Template).titlePattern
-          ),
-          subtitle: matchPattern(
-            fieldsAsObject,
-            (issue.template as Template).subtitlePattern
-          ),
-          template: (issue.template as Template).displayName,
-          risk: issue.risk,
-          createdAt: issue.createdAt,
-          updatedAt: issue.updatedAt,
-          ticket: issue.ticket,
-          totalComments: issue.comments.length,
-          closedAt: issue.closedAt,
-          project: (issue.project as Project).name,
-          unit: (issue.unit as Unit).name,
-          report: issue.report,
-        });
+        if (
+          !params.template ||
+          (params.template &&
+            params.template
+              .toLowerCase()
+              .split(',')
+              .includes((issue.template as Template).displayName.toLowerCase()))
+        ) {
+          issues.push({
+            _id: issue._id,
+            fields: fieldsAsObject,
+            status: issue.status,
+            resolution: issue.resolution,
+            title: matchPattern(
+              fieldsAsObject,
+              (issue.template as Template).titlePattern
+            ),
+            subtitle: matchPattern(
+              fieldsAsObject,
+              (issue.template as Template).subtitlePattern
+            ),
+            template: (issue.template as Template).displayName,
+            risk: issue.risk,
+            createdAt: issue.createdAt,
+            updatedAt: issue.updatedAt,
+            ticket: issue.ticket,
+            totalComments: issue.comments.length,
+            closedAt: issue.closedAt,
+            project: (issue.project as Project).name,
+            unit: (issue.unit as Unit).name,
+            report: issue.report,
+          });
+        }
       }
     }
 

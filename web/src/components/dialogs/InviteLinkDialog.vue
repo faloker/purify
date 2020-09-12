@@ -14,6 +14,9 @@
           <v-text-field
             id="textToCopy"
             :value="link"
+            label="Login link"
+            dense
+            outlined
             filled
             readonly
             :append-outer-icon="ttcIcon"

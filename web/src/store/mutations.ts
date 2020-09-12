@@ -1,4 +1,6 @@
+// Issues
 export const SET_ISSUES = 'setIssues';
+export const SET_ISSUES_QUERY = 'setIssuesQuery';
 
 // Profile
 export const SET_PROFILE = 'setProfile';

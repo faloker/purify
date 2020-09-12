@@ -56,21 +56,17 @@ export class UsersController {
   @Get('whoami')
   @ApiTags('whoami')
   async getCurrentUser(@Request() req) {
-    const {
-      _id,
-      name,
-      email,
-      image,
-      recentProjects,
-    } = await this.usersService.findOne({
-      _id: req.user._id,
-    });
-    return { _id, name, email, image, recentProjects };
+    return this.usersService.getUser(req.user._id)
+  }  
+  
+  @Get('whoami/recent_projects')
+  @ApiTags('whoami')
+  async getUserRecentProjects(@Request() req) {
+    return this.usersService.getUserRecentProjects(req.user._id)
   }
 
   @Patch('whoami')
   @ApiTags('whoami')
-  @HttpCode(204)
   async changeCurrentUser(
     @Request() req,
     @Body() userSelfChange: UserSelfChange

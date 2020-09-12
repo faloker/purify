@@ -32,3 +32,11 @@ export const IssueSchema = new Schema(
   },
   { timestamps: true }
 );
+
+IssueSchema.index({ status: 1 });
+IssueSchema.index({ resolution: 1 });
+IssueSchema.index({ risk: 1 });
+IssueSchema.index({ unit: 1 });
+IssueSchema.index({ project: 1 });
+IssueSchema.index({ template: 1 });
+IssueSchema.index({ createdAt: -1 });

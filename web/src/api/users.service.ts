@@ -7,6 +7,12 @@ export function currentUser() {
     method: 'get',
   });
 }
+export function getRecentProjects() {
+  return request({
+    url: 'whoami/recent_projects',
+    method: 'get',
+  });
+}
 
 export function changeWhoami(params: UserSelfChange) {
   return request({

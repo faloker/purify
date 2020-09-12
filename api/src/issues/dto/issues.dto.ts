@@ -11,6 +11,8 @@ import {
   IsJSON,
   IsNumber,
   IsNumberString,
+  IsBoolean,
+  IsBooleanString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -38,39 +40,52 @@ export class IssueChange {
 
 export class GetIssuesQueryDto {
   @ApiPropertyOptional({
-    description: 'Filter by issue status.',
-    enum: ['open', 'closed'],
+    description:
+      'Filter by issue status. If multiple, provide a comma-separated list.',
   })
   @IsString()
-  @IsIn(['open', 'closed'])
   @IsOptional()
   readonly status?: string;
 
   @ApiPropertyOptional({
-    type: Boolean,
+    description: 'Filter by resolution.',
+  })
+  @IsString()
+  @IsOptional()
+  readonly resolution?: string;
+
+  @ApiPropertyOptional({
     description: 'Filter by ticket.',
   })
   @IsString()
-  @IsIn(['true', 'false'])
   @IsOptional()
   readonly ticket?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by risks. Provide a comma-separated list of risks.',
+    description:
+      'Filter by risks. If multiple, provide a comma-separated list.',
   })
   @IsOptional()
   @IsString()
-  readonly risks?: string;
+  readonly risk?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by project name',
+    description:
+      'Filter by template. If multiple, provide a comma-separated list.',
+  })
+  @IsOptional()
+  @IsString()
+  readonly template?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter by project name.',
   })
   @IsOptional()
   @IsString()
   readonly projectName?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by unit name',
+    description: 'Filter by unit name.',
   })
   @IsOptional()
   @IsString()
@@ -81,8 +96,8 @@ export class GetIssuesQueryDto {
   })
   @IsOptional()
   @IsNumberString()
-  readonly limit?: string; 
-   
+  readonly limit?: string;
+
   @ApiPropertyOptional({
     description: 'Return issues for a specified number of days',
   })

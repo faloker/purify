@@ -257,17 +257,16 @@ export default defineComponent({
       openDialog,
     } = useIssueDetails();
 
-    onMounted(() => {
-      store.dispatch(TEMPLATES_FETCH);
-      if (context.root.$route.params.issueId) {
-        openDialog(
-          'issue',
-          props.rawItems.find(
-            issue => issue._id === context.root.$route.params.issueId
-          )!
-        );
-      }
-    });
+    // onMounted(() => {
+    //   if (context.root.$route.params.issueId) {
+    //     openDialog(
+    //       'issue',
+    //       props.rawItems.find(
+    //         issue => issue._id === context.root.$route.params.issueId
+    //       )!
+    //     );
+    //   }
+    // });
 
     watch(allSelected, newValue => {
       if (newValue) {

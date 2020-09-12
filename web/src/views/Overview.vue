@@ -118,7 +118,7 @@
                     <v-icon small class="mr-1">
                       mdi-apps
                     </v-icon>
-                    {{ item.body.displayName }}
+                    <span class="text-capitalize font-weight-bold">{{ item.body.displayName }}</span>
                   </v-list-item-subtitle>
                   <v-list-item-subtitle class="font-weight-bold">
                     {{ formatDate(item.createdAt) }}
@@ -132,7 +132,7 @@
                     <v-icon small class="mr-1">
                       mdi-apps
                     </v-icon>
-                    {{ item.body.displayName }}
+                    <span class="text-capitalize font-weight-bold">{{ item.body.displayName }}</span>
                   </v-list-item-subtitle>
                   <v-list-item-subtitle class="font-weight-bold">
                     {{ formatDate(item.createdAt) }}
@@ -146,8 +146,8 @@
                     <v-icon small class="mr-1">
                       mdi-account
                     </v-icon>
-                    {{ item.body.email }}
-                    with the {{ item.body.role }} role
+                    <code>{{ item.body.email }}</code>
+                    with the <code><span class="text-capitalize font-weight-bold">{{ item.body.role }}</span></code> role
                   </v-list-item-subtitle>
                   <v-list-item-subtitle class="font-weight-bold">
                     {{ formatDate(item.createdAt) }}
@@ -161,7 +161,7 @@
                     <v-icon small class="mr-1">
                       mdi-account
                     </v-icon>
-                    {{ item.body.email }}
+                    <code>{{ item.body.email }}</code>
                   </v-list-item-subtitle>
                   <v-list-item-subtitle class="font-weight-bold">
                     {{ formatDate(item.createdAt) }}
@@ -270,6 +270,7 @@ import ProjectCard from '@/components/ProjectCard.vue';
 import {
   FETCH_EVENTS,
   FETCH_PROJECTS,
+  FETCH_RECENT_PROJECTS,
   ISSUES_FETCH,
   PROFILE_FETCH,
 } from '@/store/actions';
@@ -303,7 +304,7 @@ export default defineComponent({
 
     onMounted(() => {
       store
-        .dispatch(ISSUES_FETCH, { limit: 5, days: 1 })
+        .dispatch(ISSUES_FETCH, { limit: 10, days: 1 })
         .then(() => {
           issuesLoading.value = false;
         })
@@ -315,7 +316,7 @@ export default defineComponent({
         })
         .catch(() => {});
       store
-        .dispatch(PROFILE_FETCH)
+        .dispatch(FETCH_RECENT_PROJECTS)
         .then(async () => {
           await store.dispatch(FETCH_PROJECTS, true).catch(() => {});
           projectsLoading.value = false;

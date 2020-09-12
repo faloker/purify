@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Model } from 'mongoose';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, Role } from './interfaces/user.interface';
 import {
@@ -30,6 +34,28 @@ export class UsersService {
       .find({}, { password: 0, token: 0, salt: 0, refreshToken: 0 })
       .lean()
       .populate('memberships', 'displayName');
+  }
+
+  async getUser(userId: string) {
+    return this.userModel
+      .findOne(
+        {
+          _id: userId,
+        },
+        '_id name email image'
+      )
+      .lean();
+  }
+
+  async getUserRecentProjects(userId: string) {
+    return this.userModel
+      .findOne(
+        {
+          _id: userId,
+        },
+        'recentProjects'
+      )
+      .lean();
   }
 
   async delete(userId: string) {
@@ -83,6 +109,18 @@ export class UsersService {
   }
 
   async createAPIAccessToken(user: User, createTokenDto: CreateTokenDto) {
+    const doc = await this.tokenModel
+      .findOne({
+        user: user._id,
+        name: createTokenDto.name,
+        type: TokenType.API_ACCESS_TOKEN,
+      })
+      .lean();
+
+    if (doc) {
+      throw new BadRequestException('Token with this name already exists');
+    }
+
     const token = await new this.tokenModel({
       user: user._id,
       name: createTokenDto.name,
@@ -119,10 +157,12 @@ export class UsersService {
   }
 
   async validateAPIAccessToken(token: string) {
-    return this.tokenModel.findOne({
-      value: token,
-      type: TokenType.API_ACCESS_TOKEN,
-    });
+    return this.tokenModel
+      .findOne({
+        value: token,
+        type: TokenType.API_ACCESS_TOKEN,
+      })
+      .lean();
   }
 
   async saveRefreshToken(userId: string, token: string) {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { IssueSchema } from './schemas/issue.schema';
 import { IssuesController } from './issues.controller';
@@ -21,6 +21,7 @@ import { EventsModule } from 'src/events/events.module';
       { name: 'Comment', schema: CommentSchema },
       { name: 'Project', schema: ProjectSchema },
     ]),
+    CacheModule.register(),
     EventsModule,
     JiraModule,
     ProjectsModule,

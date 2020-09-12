@@ -6,7 +6,7 @@ import {
   postComment,
   getComments,
 } from '@/api/issues.service';
-import { SET_ISSUES, SET_COMMENTS } from '../mutations';
+import { SET_ISSUES, SET_COMMENTS, SET_ISSUES_QUERY } from '../mutations';
 import {
   ISSUES_FETCH,
   ISSUE_UPDATE,
@@ -27,6 +27,7 @@ import {
 export default class Issues extends VuexModule {
   items: Issue[] = [];
   comments: Comment[] = [];
+  queryParams: GetIssuesQueryDto = {};
 
   @Mutation
   [SET_ISSUES](issues: Issue[]) {
@@ -36,6 +37,11 @@ export default class Issues extends VuexModule {
   @Mutation
   [SET_COMMENTS](comments: Comment[]) {
     this.comments = comments;
+  }
+
+  @Mutation
+  [SET_ISSUES_QUERY](query: GetIssuesQueryDto) {
+    this.queryParams = query;
   }
 
   @Action
@@ -49,6 +55,7 @@ export default class Issues extends VuexModule {
     await updateIssues(payload.ids, payload.change);
     await this.context.dispatch(ISSUES_FETCH, {
       unitName: this.context.rootState.system.unitName,
+      ...this.queryParams,
     });
   }
 
@@ -57,6 +64,7 @@ export default class Issues extends VuexModule {
     const { data } = await createTicket(payload.issueId, payload.fields);
     await this.context.dispatch(ISSUES_FETCH, {
       unitName: this.context.rootState.system.unitName,
+      ...this.queryParams,
     });
     return data;
   }

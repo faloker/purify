@@ -61,6 +61,7 @@ export const RESET_USER_PASSWORD = 'resetUserPassword';
 
 // Profile
 export const PROFILE_FETCH = 'profileFetch';
+export const FETCH_RECENT_PROJECTS = 'fetchRecentProjects';
 export const SELF_CHANGE = 'selfChange';
 export const FETCH_ACCESS_TOKENS = 'fetchAccessTokens';
 export const DELETE_ACCESS_TOKEN = 'deleteAccessToken';

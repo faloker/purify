@@ -58,7 +58,6 @@
                 dense
                 hide-no-data
                 clearable
-                @keydown.esc="onEsc"
               >
                 <template slot="label">
                   <v-icon style="vertical-align: middle">
@@ -175,13 +174,6 @@ export default defineComponent({
     const appliedFilters = computed(() => {
       const result: FilterOption[] = [];
 
-      if (search.value) {
-        result.push({
-          name: 'search',
-          value: search.value,
-        });
-      }
-
       if (selectedStatuses.value.length > 0) {
         selectedStatuses.value.forEach(s =>
           result.push({
@@ -230,8 +222,12 @@ export default defineComponent({
       return result;
     });
 
-    watch(appliedFilters, (newValue, oldValue) => {
-      emit('filter_update', newValue);
+    watch(appliedFilters, value => {
+      emit('filter_update', value);
+    });
+
+    watch(search, value => {
+      emit('search_term', value);
     });
 
     function clearSelection(item: FilterOption) {
@@ -260,10 +256,6 @@ export default defineComponent({
           selectedTicketStatus.value = selectedTicketStatus.value.filter(
             s => s !== item.value
           );
-          break;
-        case 'search':
-          searchTerm.value = '';
-          search.value = '';
           break;
       }
     }
