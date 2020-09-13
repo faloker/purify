@@ -60,8 +60,8 @@
                 :to="{ name: 'Issues', params: { projectName: issue.project, unitName: issue.unit, issueId: issue._id } }"
               >
                 <v-list-item-avatar>
-                  <v-icon :color="getRiskColor(issue.risk)">
-                    fa-bug
+                  <v-icon large :color="getRiskColor(issue.risk)">
+                    mdi-fire
                   </v-icon>
                 </v-list-item-avatar>
                 <v-list-item-content>
@@ -183,7 +183,7 @@
                       small
                       class="mr-1"
                     >
-                      fa-bug
+                      mdi-fire
                     </v-icon>
                     {{ item.body.title }}
                   </v-list-item-subtitle>
@@ -201,7 +201,7 @@
                       small
                       class="mr-1"
                     >
-                      fa-bug
+                      mdi-fire
                     </v-icon>
                     {{ item.body.title }}
                     <v-chip class="ml-2" x-small>
@@ -228,7 +228,7 @@
                       small
                       class="mr-1"
                     >
-                      fa-bug
+                      mdi-fire
                     </v-icon>
                     {{ item.body.title }}
                   </v-list-item-subtitle>

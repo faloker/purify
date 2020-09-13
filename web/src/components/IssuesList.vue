@@ -66,10 +66,11 @@
                       <v-list-item-icon>
                         <v-icon
                           left
-                          class="my-3 pr-4"
+                          large
+                          class="pr-4"
                           :color="getRiskColor(item.risk)"
                         >
-                          fa-bug
+                          mdi-fire
                         </v-icon>
                       </v-list-item-icon>
 

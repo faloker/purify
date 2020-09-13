@@ -120,7 +120,7 @@ export function getRiskColor(value: string) {
 export function getFilterIcon(value: string) {
   switch (value) {
     case 'risk':
-      return 'fa-bug';
+      return 'mdi-fire';
     case 'resolution':
       return 'mdi-thumbs-up-down';
     case 'ticket':
