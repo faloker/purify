@@ -165,6 +165,7 @@ export interface Issue {
   comments: Comment[] | string[];
   createdAt: Date;
   updatedAt: Date;
+  closedAt: Date;
 }
 
 export interface EditIssueDto {
