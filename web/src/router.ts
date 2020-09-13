@@ -3,7 +3,13 @@ import Router from 'vue-router';
 
 import TheHeader from '@/components/TheHeader.vue';
 import store from './store';
-import { REFRESH_TOKEN, FETCH_SYSTEM_SETUP, SAML_LOGIN } from './store/actions';
+import {
+  REFRESH_TOKEN,
+  FETCH_SYSTEM_SETUP,
+  SAML_LOGIN,
+  SELF_CHANGE,
+} from './store/actions';
+import { SET_PROJECT_NAME, SET_UNIT_NAME } from './store/mutations';
 
 Vue.use(Router);
 
@@ -11,7 +17,7 @@ export const router = new Router({
   routes: [
     {
       path: '/',
-      redirect: '/projects',
+      redirect: '/overview',
     },
     {
       path: '/welcome',
@@ -20,6 +26,23 @@ export const router = new Router({
         default: () => import('@/views/Welcome.vue'),
       },
       meta: { title: 'Purify | Welcome' },
+    },
+    {
+      path: '/overview',
+      name: 'Overview',
+      components: {
+        default: () => import('@/views/Overview.vue'),
+        header: TheHeader,
+      },
+      meta: { title: 'Purify | Overview' },
+    },
+    {
+      path: '/welcome/:token',
+      name: 'ChangePassword',
+      components: {
+        default: () => import('@/views/ChangePassword.vue'),
+      },
+      meta: { title: 'Purify | Change Password' },
     },
     {
       path: '/projects',
@@ -40,44 +63,78 @@ export const router = new Router({
       meta: { title: 'Purify | Templates' },
     },
     {
-      path: '/dashboard',
-      name: 'Dashboard',
+      path: '/users',
+      name: 'Users',
       components: {
-        default: () => import('@/views/Dashboard.vue'),
+        default: () => import('@/views/Users.vue'),
         header: TheHeader,
       },
-      meta: { title: 'Purify | Dashboard' },
+      meta: { title: 'Purify | Users' },
     },
     {
-      path: '/project/:slug/units',
-      name: 'Units',
+      path: '/projects/:projectName',
+      name: 'ProjectPage',
       components: {
-        default: () => import('@/views/Units.vue'),
+        default: () => import('@/views/ProjectPage.vue'),
         header: TheHeader,
       },
-      meta: { title: 'Purify | Units' },
-    },
-    {
-      path: '/unit/:slug/issues',
-      name: 'Issues',
-      components: {
-        default: () => import('@/views/Issues.vue'),
-        header: TheHeader,
-      },
-      meta: { title: 'Purify | Issues' },
-    },
-    {
-      path: '/unit/:slug/reports',
-      name: 'Reports',
-      components: {
-        default: () => import('@/views/Reports.vue'),
-        header: TheHeader,
-      },
-      meta: { title: 'Purify | Reports' },
+      children: [
+        {
+          path: 'overview',
+          name: 'ProjectOverview',
+          components: {
+            default: () => import('@/views/ProjectOverview.vue'),
+          },
+          meta: { title: 'Purify | Overview' },
+        },
+        {
+          path: 'units/overview',
+          name: 'Units',
+          meta: { title: 'Purify | Units' },
+          components: {
+            default: () => import('@/views/Units.vue'),
+          },
+        },
+        {
+          path: 'units/:unitName/issues/:issueId?',
+          alias: 'units/:unitName/issues',
+          name: 'Issues',
+          components: {
+            default: () => import('@/views/Issues.vue'),
+          },
+          meta: { title: 'Purify | Issues' },
+        },
+        {
+          path: 'units/:unitName/reports',
+          name: 'Reports',
+          components: {
+            default: () => import('@/views/Reports.vue'),
+          },
+          meta: { title: 'Purify | Reports' },
+        },
+      ],
     },
     {
       path: '/saml/login/:token',
       name: 'SAML Login',
+    },
+    {
+      path: '/user/tokens',
+      name: 'AccessTokens',
+      components: {
+        default: () => import('@/views/AccessTokens.vue'),
+        header: TheHeader,
+      },
+      meta: { title: 'Purify | Access Tokens' },
+    },
+    {
+      path: '/user/settings',
+      name: 'AccountSettings',
+      components: {
+        default: () => import('@/views/AccountSettings.vue'),
+        header: TheHeader,
+      },
+      meta: { title: 'Purify | Account Settings' },
     },
   ],
 });
@@ -94,10 +151,13 @@ router.beforeEach(async (to, from, next) => {
     await store.dispatch(SAML_LOGIN, atob(to.params.token));
     // fix router to correctly set page title after redirection
     // sidenote: routing to Projects appears to happen before routing to saml/login/
-    next('Projects');
+    next('/overview');
   }
 
-  if (!['Welcome', 'SAML Login'].includes(to.name!) && !isAuthenticated) {
+  if (
+    !['Welcome', 'SAML Login', 'ChangePassword'].includes(to.name!) &&
+    !isAuthenticated
+  ) {
     store
       .dispatch(REFRESH_TOKEN)
       .then(() => {
@@ -111,6 +171,18 @@ router.beforeEach(async (to, from, next) => {
   } else if (['Welcome', 'SAML Login'].includes(to.name!) && isAuthenticated) {
     next(false);
   } else {
+    if (to.params.projectName) {
+      store.commit(SET_PROJECT_NAME, to.params.projectName);
+    } else {
+      store.commit(SET_PROJECT_NAME, '');
+    }
+
+    if (to.params.unitName) {
+      store.commit(SET_UNIT_NAME, to.params.unitName);
+    } else {
+      store.commit(SET_UNIT_NAME, '');
+    }
+
     document.title = to.meta.title;
     next();
   }

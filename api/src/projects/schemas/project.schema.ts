@@ -1,17 +1,13 @@
 import { Schema } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
-import { slugify } from '../../db/plugins';
+import { nanoid } from 'nanoid';
 
-const ProjectSchema = new Schema(
+export const ProjectSchema = new Schema(
   {
-    _id: { type: String, default: uuidv4 },
-    title: String,
-    subtitle: String,
-    slug: { type: String, lowercase: true, unique: true },
+    _id: { type: String, default: () => nanoid() },
+    description: String,
+    displayName: String,
+    color: String,
+    name: { type: String, unique: true },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
+  { timestamps: true }
 );
-
-ProjectSchema.plugin(slugify);
-
-export { ProjectSchema };

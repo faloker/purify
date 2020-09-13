@@ -24,8 +24,8 @@ export default class Templates extends VuexModule {
   }
 
   @Action
-  async [TEMPLATES_FETCH]() {
-    const { data } = await getTemplates();
+  async [TEMPLATES_FETCH](verbose = false) {
+    const { data } = await getTemplates(verbose);
     this.context.commit(TEMPLATES_SET, data);
   }
 
@@ -35,14 +35,14 @@ export default class Templates extends VuexModule {
   }
 
   @Action
-  async [TEMPLATES_DELETE](slug: string) {
-    await deleteTemplate(slug);
-    this.context.dispatch(TEMPLATES_FETCH);
+  async [TEMPLATES_DELETE](name: string) {
+    await deleteTemplate(name);
+    this.context.dispatch(TEMPLATES_FETCH, true);
   }
 
   @Action
   async [TEMPLATES_EDIT](payload: EditTemplateDto) {
-    await editTemplate(payload.slug, payload.change);
-    this.context.dispatch(TEMPLATES_FETCH);
+    await editTemplate(payload.name, payload.change);
+    this.context.dispatch(TEMPLATES_FETCH, true);
   }
 }

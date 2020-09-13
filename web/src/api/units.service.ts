@@ -1,27 +1,31 @@
 import request from '@/utils/request';
 
-export const getUnits = (slug: string) =>
-  request({
-    url: `projects/${slug}/units`,
+export function getUnits(projectName: string) {
+  return request({
+    url: `projects/${projectName}/units`,
     method: 'get',
   });
+}
 
-export const createUnit = (name: string, project: string) =>
-  request({
-    url: 'units',
+export function createUnit(projectName: string, payload: any) {
+  return request({
+    url: `projects/${projectName}/units`,
     method: 'post',
-    data: { name, project },
+    data: { ...payload },
   });
+}
 
-export const deleteUnit = (slug: string) =>
-  request({
-    url: `units/${slug}`,
+export function deleteUnit(unitName: string) {
+  return request({
+    url: `units/${unitName}`,
     method: 'delete',
   });
+}
 
-export const editUnit = (slug: string, name: string) =>
-  request({
-    url: `units/${slug}`,
+export function editUnit(unitName: string, displayName: string) {
+  return request({
+    url: `units/${unitName}`,
     method: 'patch',
-    data: { name },
+    data: { displayName },
   });
+}

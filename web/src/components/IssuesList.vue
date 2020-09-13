@@ -1,55 +1,59 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <template v-if="rawItems.length">
       <v-row
+        v-permission="['owner', 'admin', 'user']"
         no-gutters
         align="center"
         justify="center"
       >
-        <div>
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-checkbox
-                v-model="allSelected"
-                color="primary"
-                on-icon="done_all"
-                class="pl-6"
-                v-on="on"
+        <v-col cols="10">
+          <v-row
+            no-gutters
+            align="center"
+            justify="center"
+          >
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-checkbox
+                  v-model="allSelected"
+                  color="primary"
+                  on-icon="done_all"
+                  class="pl-6"
+                  v-on="on"
+                />
+              </template>
+              <span v-if="!allSelected">Select All</span>
+              <span v-else>Select None</span>
+            </v-tooltip>
+            <v-divider
+              light
+              class="ma-3"
+              vertical
+            />
+            <group-action-btn :items="selectedIssues" />
+            <v-spacer />
+            <v-col cols="2">
+              <v-select
+                v-model="pageSize"
+                dense
+                outlined
+                :items="sizes"
+                label="Issues per page"
               />
-            </template>
-            <span v-if="!allSelected">Select All</span>
-            <span v-else>Select None</span>
-          </v-tooltip>
-        </div>
-        <v-divider
-          light
-          class="ma-3"
-          vertical
-        />
-        <group-action-btn :items="selectedIssues" />
-        <v-spacer />
-
-        <v-col cols="1">
-          <v-select
-            v-model="pageSize"
-            :items="sizes"
-            label="Issues per page"
-          />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
       <v-row align="center" justify="center">
-        <v-col cols="12">
+        <v-col cols="10">
           <v-list
             flat
             three-line
             class="elevation-1"
           >
             <v-list-item-group v-model="selectedIssues" multiple>
-              <v-slide-y-transition
-                group
-                hide-on-leave
-                tag="v-list"
-              >
+              <v-slide-y-transition group hide-on-leave>
                 <template v-for="(item, index) in items">
                   <v-list-item
                     :key="`issue-${item._id}`"
@@ -58,7 +62,7 @@
                   >
                     <template v-slot:default="{ active }">
                       <v-list-item-action>
-                        <div class="my-3 ml-2">
+                        <div class="mt-5 ml-2">
                           <v-checkbox
                             :input-value="active"
                             color="primary"
@@ -66,76 +70,80 @@
                           />
                         </div>
                       </v-list-item-action>
-                      <v-list-item-icon>
-                        <v-icon
-                          left
-                          class="my-3 pr-4"
-                          :color="getRiskColor(item.risk)"
-                        >
-                          fa-bug
-                        </v-icon>
-                      </v-list-item-icon>
-
-                      <v-list-item-content @click="openDialog('issue', item)">
-                        <v-list-item-title>
-                          <!-- <div class="text-truncate"> -->
+                      <v-list-item-content>
+                        <v-list-item-title class="subtitle-1 font-weight-bold" @click.stop="openDialog('issue', item)">
                           {{ item.title }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle class="subtitle-2 my-2" @click.stop="openDialog('issue', item)">
+                          {{ item.subtitle }}
+                        </v-list-item-subtitle>
+                        <v-list-item-subtitle class="mt-2">
+                          <v-chip
+                            outlined
+                            label
+                            class="mr-2"
+                          >
+                            <v-icon
+                              left
+                              :color="getRiskColor(item.risk)"
+                            >
+                              mdi-fire
+                            </v-icon>
+                            <span class="text-capitalize">
+                              {{ item.risk }}
+                            </span>
+                          </v-chip>
                           <v-chip
                             v-if="item.status === 'closed'"
-                            class="ml-2"
-                            small
+                            outlined
+                            label
+                            class="mr-2"
                           >
+                            <v-icon
+                              left
+                              color="tertiary"
+                            >
+                              mdi-checkbox-marked-circle
+                            </v-icon>
                             <span class="text-capitalize">{{ item.resolution }}</span>
                           </v-chip>
-                        <!-- </div> -->
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                          <!-- <div class="text-truncate"> -->
-                          {{ item.subtitle }}
-                        <!-- </div> -->
+                          <v-chip
+                            v-if="item.ticket"
+                            class="mr-2"
+                            outlined
+                            label
+                            :href="item.ticket.link"
+                            target="_blank"
+                          >
+                            <v-icon
+                              left
+                              small
+                              color="quinary"
+                            >
+                              mdi-jira
+                            </v-icon>
+                            {{ item.ticket.key }}
+                          </v-chip>
+                          <v-chip
+                            v-if="item.totalComments"
+                            class="mr-2"
+                            outlined
+                            label
+                            @click.stop="openDialog('comment', item)"
+                          >
+                            <v-icon left small>
+                              mdi-comment-text-multiple
+                            </v-icon>
+                            <span>{{ item.totalComments }}</span>
+                          </v-chip>
                         </v-list-item-subtitle>
                       </v-list-item-content>
-
-                      <v-list-item-action>
-                        <v-btn
-                          v-if="item.ticket"
-                          outlined
-                          class="mt-2 mr-3"
-                          rounded
-                          color="senary"
-                          :href="item.ticket.link"
-                          target="_blank"
-                        >
-                          <v-icon
-                            v-if="item.ticket.type == 'jira'"
-                            color="senary"
-                            left
-                          >
-                            mdi-jira
-                          </v-icon>
-                          {{ item.ticket.key }}
-                        </v-btn>
-                      </v-list-item-action>
-                      <v-list-item-action>
-                        <v-btn
-                          v-if="item.totalComments"
-                          text
-                          class="mt-2 mr-3"
-                          color="secondary"
-                          @click.stop="openDialog('comment', item)"
-                        >
-                          <v-icon left small>
-                            mdi-comment-text-multiple
-                          </v-icon>
-                          <span>{{ item.totalComments }}</span>
-                        </v-btn>
-                      </v-list-item-action>
                     </template>
                   </v-list-item>
                   <v-divider
                     v-if="index + 1 < items.length"
                     :key="`dvr-${index}`"
-                    class="mx-10"
+                    :inset="true"
                   />
                 </template>
               </v-slide-y-transition>
@@ -148,7 +156,7 @@
           <v-btn
             icon
             :disabled="!(currentPage - 1)"
-            @click="prevPage"
+            @click.stop="prevPage"
           >
             <v-icon large>
               chevron_left
@@ -161,7 +169,7 @@
           <v-btn
             icon
             :disabled="currentPage * pageSize >= rawItems.length"
-            @click="nextPage"
+            @click.stop="nextPage"
           >
             <v-icon large>
               chevron_right
@@ -225,7 +233,7 @@ export default defineComponent({
     },
   },
 
-  setup(props) {
+  setup(props, context) {
     const allSelected = ref(false);
     const selectedIssues: Ref<string[]> = ref([]);
     const { currentPage, pageSize, nextPage, prevPage, sizes } = usePagination(
@@ -244,10 +252,6 @@ export default defineComponent({
       Math.ceil(props.rawItems.length / pageSize.value)
     );
 
-    onMounted(async () => {
-      await store.dispatch(TEMPLATES_FETCH);
-    });
-
     watch(
       () => [props.rawItems, pageSize.value],
       () => {
@@ -263,6 +267,17 @@ export default defineComponent({
       selectedIssue,
       openDialog,
     } = useIssueDetails();
+
+    onMounted(() => {
+      if (context.root.$route.params.issueId) {
+        openDialog(
+          'issue',
+          props.rawItems.find(
+            issue => issue._id === context.root.$route.params.issueId
+          )!
+        );
+      }
+    });
 
     watch(allSelected, newValue => {
       if (newValue) {

@@ -14,7 +14,7 @@
         <v-btn
           icon
           dark
-          @click="$emit('input', false)"
+          @click.stop="$emit('input', false)"
         >
           <v-icon>close</v-icon>
         </v-btn>
@@ -23,7 +23,7 @@
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items>
-          <v-btn text @click="updateIssue()">
+          <v-btn text @click.stop="updateIssue()">
             save
             <v-icon right>
               save
@@ -83,7 +83,6 @@ export default defineComponent({
         .dispatch(ISSUE_UPDATE, {
           ids: [props.issue._id],
           change,
-          unitId: context.root.$route.params.slug,
         })
         .then(async () => {
           const updatedIssue = props.issue;

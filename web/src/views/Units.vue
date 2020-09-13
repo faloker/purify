@@ -1,50 +1,39 @@
 <template>
   <v-container>
     <v-row>
-      <v-spacer />
+      <v-col>
+        <v-btn
+          v-permission="['owner', 'admin']"
+          color="primary"
+          @click.stop="createDialog = true"
+        >
+          <v-icon left>
+            add
+          </v-icon>Create unit
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-divider />
+    <v-row>
       <v-col>
         <v-text-field
           id="search"
           v-model="searchTerm"
-          clearable
+          prepend-inner-icon="search"
+          label="Filter by unit"
+          solo
           dense
-          outlined
-        >
-          <template slot="label">
-            <v-icon class="mx-1" style="vertical-align: middle">
-              search
-            </v-icon>Search
-          </template>
-        </v-text-field>
-      </v-col>
-      <v-col>
-        <v-btn
-          color="primary"
-          text
-          @click="dialog = true"
-        >
-          <v-icon>mdi-pencil</v-icon>Create unit
-        </v-btn>
-        <unit-dialog
-          v-model="dialog"
-          heading="New Unit"
-          :name.sync="unitName"
-          ok-button-text="Create"
-          @handle-click="createUnit"
+          clearable
         />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
         <v-skeleton-loader
           :loading="loading"
-          transition="scale-transition"
+          transition="slide-y-transition"
           type="table-tbody"
         >
           <v-card outlined>
             <v-data-table
               :headers="headers"
-              :items="filtredItems"
+              :items="units"
               :items-per-page="5"
               :search="searchTerm"
               item-key="_id"
@@ -55,14 +44,12 @@
                   color="primary"
                   rounded
                   class="text-none mr-5"
-                  :to="{ name: 'Issues', params: { slug: item.slug } }"
+                  :to="{ name: 'Issues', params: { unitName: item.name } }"
                 >
                   <span
                     class="d-inline-block text-truncate"
                     style="max-width: 130px;"
-                  >
-                    {{ item.name }}
-                  </span>
+                  >{{ item.displayName }}</span>
                 </v-btn>
               </template>
 
@@ -78,50 +65,45 @@
                       v-on="on"
                     />
                   </template>
-                  <span>{{ item.closed_tickets }} / {{ item.tickets }}</span>
+                  <span>{{ item.numClosedIssues }} / {{ item.numIssues }}</span>
                 </v-tooltip>
               </template>
-              <template v-slot:item.reports="{ item }">
+              <template v-slot:item.numReports="{ item }">
                 <v-btn
                   text
                   rounded
                   class="mr-5"
-                  :to="{ name: 'Reports', params: { slug: item.slug } }"
+                  :to="{ name: 'Reports', params: { unitName: item.name } }"
                 >
-                  {{ item.reports }}
+                  {{ item.numReports }}
                 </v-btn>
               </template>
-              <template v-slot:item.action="{ item }" class="text-center">
-                <v-tooltip bottom>
+              <template v-slot:item.actions="{ item }">
+                <v-menu
+                  bottom
+                  right
+                  transition="slide-x-transition"
+                >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      text
+                      v-permission="['owner']"
                       icon
                       v-bind="attrs"
-                      color="secondary"
                       v-on="on"
-                      @click="openEditDialog(item)"
                     >
-                      <v-icon>mdi-pencil</v-icon>
+                      <v-icon>mdi-dots-vertical</v-icon>
                     </v-btn>
                   </template>
-                  <span>Edit</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      text
-                      icon
-                      color="red darken-1"
-                      v-bind="attrs"
-                      v-on="on"
-                      @click="openConfirmationDialog(item)"
-                    >
-                      <v-icon>fa-times</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Delete</span>
-                </v-tooltip>
+                  <v-list>
+                    <v-list-item @click.stop="openEditDialog(item)">
+                      <v-list-item-title>Edit Unit</v-list-item-title>
+                    </v-list-item>
+                    <v-divider />
+                    <v-list-item @click.stop="openConfirmationDialog(item)">
+                      <strong class="red--text text--lighten-1">Delete Unit</strong>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </template>
             </v-data-table>
           </v-card>
@@ -137,8 +119,15 @@
     <unit-dialog
       v-model="editDialog"
       heading="Edit Unit"
-      :name.sync="name"
+      :display-name.sync="newDisplayName"
       @handle-click="editUnit"
+    />
+    <unit-dialog
+      v-model="createDialog"
+      heading="New Unit"
+      :display-name.sync="displayName"
+      ok-button-text="Create"
+      @handle-click="createUnit"
     />
   </v-container>
 </template>
@@ -147,12 +136,12 @@
 import {
   defineComponent,
   ref,
+  watch,
   computed,
   onMounted,
   ComputedRef,
 } from '@vue/composition-api';
 import store from '@/store';
-import { toLower } from 'lodash';
 import {
   FETCH_UNITS,
   CREATE_UNIT,
@@ -189,85 +178,76 @@ export default defineComponent({
         text: 'Reports',
         width: '15%',
         align: 'center',
-        value: 'reports',
+        value: 'numReports',
       },
       {
         text: 'Actions',
         width: '15%',
         align: 'center',
-        value: 'action',
+        value: 'actions',
         sortable: false,
       },
     ]);
 
+    const projectName = computed(() => store.state.system.projectName);
     const units: ComputedRef<Unit[]> = computed(() => store.state.units.items);
-    const project = computed(() => context.root.$route.params.slug);
 
-    const filtredItems = computed(() => {
-      return units.value.filter(item =>
-        toLower(item.name).includes(toLower(searchTerm.value))
-      );
+    onMounted(async () => {
+      await store
+        .dispatch(FETCH_UNITS)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
     });
 
-    onMounted(() => {
-      store.dispatch(FETCH_UNITS, project.value).then(() => {
-        loading.value = false;
-      });
+    watch(projectName, () => {
+      loading.value = true;
+      store
+        .dispatch(FETCH_UNITS)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
     });
-
-    const { unitName, dialog, createUnit } = useCreateUnit(project.value);
-    const { confirmDialog, deleteUnit, openConfirmationDialog } = useDeleteUnit(
-      project.value
-    );
-    const { name, editDialog, editUnit, openEditDialog } = useEditUnit(
-      project.value
-    );
 
     function selectUnit(item: Unit) {
       context.root.$router.push({
         name: 'Issues',
-        params: { slug: item.slug },
+        params: { unitName: item.name },
       });
     }
 
     return {
-      name,
-      unitName,
       selectUnit,
-      dialog,
-      createUnit,
-      confirmDialog,
-      deleteUnit,
-      filtredItems,
+      units,
       searchTerm,
       loading,
       headers,
-      openConfirmationDialog,
-      editDialog,
-      editUnit,
-      openEditDialog,
+      ...useEditUnit(),
+      ...useDeleteUnit(),
+      ...useCreateUnit(),
     };
   },
 });
 
-function useDeleteUnit(project: string) {
+function useDeleteUnit() {
   const confirmDialog = ref(false);
-  const slug = ref('');
+  const unitName = ref('');
 
   async function deleteUnit() {
     store
-      .dispatch(DELETE_UNIT, slug.value)
+      .dispatch(DELETE_UNIT, unitName.value)
       .then(async () => {
         confirmDialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been deleted');
-        await store.dispatch(FETCH_UNITS, project);
       })
       .catch(() => {});
   }
 
   function openConfirmationDialog(item: Unit) {
     confirmDialog.value = true;
-    slug.value = item.slug;
+    unitName.value = item.name;
   }
 
   return {
@@ -276,56 +256,57 @@ function useDeleteUnit(project: string) {
     openConfirmationDialog,
   };
 }
-function useEditUnit(project: string) {
+function useEditUnit() {
   const editDialog = ref(false);
-  const slug = ref('');
+  const newDisplayName = ref('');
   const name = ref('');
 
   async function editUnit() {
     store
-      .dispatch(EDIT_UNIT, { slug: slug.value, name: name.value })
+      .dispatch(EDIT_UNIT, {
+        name: name.value,
+        displayName: newDisplayName.value,
+      })
       .then(async () => {
         editDialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been updated');
-        await store.dispatch(FETCH_UNITS, project);
       })
       .catch(() => {});
   }
 
   function openEditDialog(item: Unit) {
     editDialog.value = true;
-    slug.value = item.slug;
     name.value = item.name;
+    newDisplayName.value = item.displayName;
   }
 
   return {
-    name,
+    editDialog,
+    newDisplayName,
     editUnit,
     openEditDialog,
-    editDialog,
   };
 }
 
-function useCreateUnit(project: string) {
-  const unitName = ref('');
-  const dialog = ref(false);
+function useCreateUnit() {
+  const displayName = ref('');
+  const createDialog = ref(false);
 
   async function createUnit() {
     store
       .dispatch(CREATE_UNIT, {
-        name: unitName.value,
-        project,
+        displayName: displayName.value,
       })
       .then(() => {
-        unitName.value = '';
-        dialog.value = false;
+        displayName.value = '';
+        createDialog.value = false;
       })
       .catch(() => {});
   }
 
   return {
-    unitName,
-    dialog,
+    displayName,
+    createDialog,
     createUnit,
   };
 }

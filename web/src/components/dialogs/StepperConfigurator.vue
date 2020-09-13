@@ -1,6 +1,10 @@
 <template>
   <div>
-    <v-dialog v-model="stepperDialog" max-width="60%">
+    <v-dialog
+      v-model="stepperDialog"
+      max-width="60%"
+      @click:outside="resetDialog"
+    >
       <v-stepper
         v-model="stepperModel"
         non-linear
@@ -16,22 +20,22 @@
           <v-btn
             class="mx-2"
             outlined
-            @click="reportDialog = true"
+            @click.stop="reportDialog = true"
           >
             View report
           </v-btn>
           <v-btn
             class="mx-2"
-            :disabled="!path_to_issues"
+            :disabled="!pathToIssues"
             outlined
             color="primary"
-            @click="stepperModel = 2"
+            @click.stop="stepperModel = 2"
           >
             Next
           </v-btn>
           <v-card-text>
             You have chosen the following:
-            <b class="ml-3">{{ path_to_issues }}</b>
+            <b class="ml-3">{{ pathToIssues }}</b>
           </v-card-text>
         </v-stepper-content>
         <v-stepper-step
@@ -42,7 +46,7 @@
         </v-stepper-step>
         <v-stepper-content step="2">
           <vue-json-pretty
-            v-model="title_fields"
+            v-model="titleFields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -54,16 +58,16 @@
           <v-btn
             class="mx-2 mt-3"
             outlined
-            :disabled="!title_fields.length"
+            :disabled="!titleFields.length"
             color="primary"
-            @click="stepperModel = 3"
+            @click.stop="stepperModel = 3"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 1"
+            @click.stop="stepperModel = 1"
           >
             Go back
           </v-btn>
@@ -76,7 +80,7 @@
         </v-stepper-step>
         <v-stepper-content step="3">
           <vue-json-pretty
-            v-model="risk_field"
+            v-model="riskField"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -89,51 +93,54 @@
             class="mx-2 mt-3"
             outlined
             color="primary"
-            :disabled="risk_field.length > 1"
-            @click="stepperModel = 4"
+            :disabled="riskField.length > 1"
+            @click.stop="stepperModel = 4"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 2"
+            @click.stop="stepperModel = 2"
           >
             Go back
           </v-btn>
         </v-stepper-content>
-        <v-stepper-step :complete="stepperModel > 4" step="4">
+        <v-stepper-step
+          :complete="stepperModel > 4"
+          step="4"
+        >
           Add patterns to display title and subtitle
         </v-stepper-step>
         <v-stepper-content step="4">
           <v-combobox
-            v-model="title_pattern"
+            v-model="titlePattern"
             label="Pattern for a title"
             hint="For example, [issue.severity] -- issue.title"
             persistent-hint
-            :items="title_fields.map(i => i.replace('issue.', ''))"
+            :items="titleFields.map(i => i.replace('issue.', ''))"
           />
           <v-combobox
-            v-model="subtitle_pattern"
+            v-model="subtitlePattern"
             class="pt-4"
             label="Pattern for a subtitle"
             hint="For example, issue.CVSS | issue.short_description"
             persistent-hint
-            :items="title_fields.map(i => i.replace('issue.', ''))"
+            :items="titleFields.map(i => i.replace('issue.', ''))"
           />
           <v-btn
-            :disabled="!title_fields.length"
+            :disabled="!titleFields.length"
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 5"
+            @click.stop="stepperModel = 5"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 3"
+            @click.stop="stepperModel = 3"
           >
             Go back
           </v-btn>
@@ -143,7 +150,7 @@
         </v-stepper-step>
         <v-stepper-content step="5">
           <vue-json-pretty
-            v-model="body_fields"
+            v-model="bodyFields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -153,18 +160,18 @@
             :highlight-selected-node="false"
           />
           <v-btn
-            :disabled="!body_fields.length"
+            :disabled="!bodyFields.length"
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 6"
+            @click.stop="stepperModel = 6"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click="stepperModel = 4"
+            @click.stop="stepperModel = 4"
           >
             Go back
           </v-btn>
@@ -173,11 +180,11 @@
           Select types of fields in issue body
         </v-stepper-step>
         <v-stepper-content step="6">
-          <template v-for="item in body_fields">
+          <template v-for="item in bodyFields">
             <div :key="item" class="my-2">
               <span class="subtitle-1">{{ item }}</span>
               <v-btn-toggle
-                v-model="body_fields_types[item]"
+                v-model="bodyFieldsTypes[item]"
                 color="primary"
                 group
               >
@@ -196,18 +203,18 @@
             </div>
           </template>
           <v-btn
-            :disabled="Object.keys(body_fields_types).length !== body_fields.length"
+            :disabled="Object.keys(bodyFieldsTypes).length !== bodyFields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 7"
+            @click.stop="stepperModel = 7"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 5"
+            @click.stop="stepperModel = 5"
           >
             Go back
           </v-btn>
@@ -220,7 +227,7 @@
         </v-stepper-step>
         <v-stepper-content step="7">
           <vue-json-pretty
-            v-model="internal_comparison_fields"
+            v-model="internalComparisonFields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -230,18 +237,18 @@
             :highlight-selected-node="false"
           />
           <v-btn
-            :disabled="!internal_comparison_fields.length"
+            :disabled="!internalComparisonFields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 8"
+            @click.stop="stepperModel = 8"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 6"
+            @click.stop="stepperModel = 6"
           >
             Go back
           </v-btn>
@@ -254,7 +261,7 @@
         </v-stepper-step>
         <v-stepper-content step="8">
           <vue-json-pretty
-            v-model="merge_fields"
+            v-model="mergeFields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -267,14 +274,14 @@
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 9"
+            @click.stop="stepperModel = 9"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 7"
+            @click.stop="stepperModel = 7"
           >
             Go back
           </v-btn>
@@ -287,7 +294,7 @@
         </v-stepper-step>
         <v-stepper-content step="9">
           <vue-json-pretty
-            v-model="external_comparison_fields"
+            v-model="externalComparisonFields"
             :deep="2"
             :path="'issue'"
             :selectable-type="'multiple'"
@@ -297,18 +304,18 @@
             :highlight-selected-node="false"
           />
           <v-btn
-            :disabled="!external_comparison_fields.length"
+            :disabled="!externalComparisonFields.length"
             color="primary"
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 10"
+            @click.stop="stepperModel = 10"
           >
             Next
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 8"
+            @click.stop="stepperModel = 8"
           >
             Go back
           </v-btn>
@@ -318,13 +325,28 @@
         </v-stepper-step>
         <v-stepper-content step="10">
           <v-text-field
-            v-model="name"
-            class="tname"
+            v-model="displayName"
+            class="tname mt-1"
             :rules="[rules.min]"
             label="Template Name"
             prepend-icon="short_text"
             clearable
+            dense
+            outlined
             required
+          />
+          <v-text-field
+            id="name"
+            v-model="name"
+            class="tname"
+            label="Short name"
+            hint="The short name is used as the unique ID within URLs."
+            dense
+            outlined
+            persistent-hint
+            prepend-icon="mdi-identifier"
+            append-icon="mdi-auto-fix"
+            @click:append="slugifyDisplayName"
           />
           <v-combobox
             v-model="tags"
@@ -334,6 +356,8 @@
             chips
             small-chips
             multiple
+            dense
+            outlined
           />
           <v-btn
             color="primary"
@@ -341,14 +365,14 @@
             outlined
             :loading="loading"
             :disabled="loading"
-            @click="createTemplate()"
+            @click.stop="createTemplate()"
           >
             Save
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click="stepperModel = 9"
+            @click.stop="stepperModel = 9"
           >
             Go back
           </v-btn>
@@ -364,7 +388,7 @@
       <v-card class="fill-height">
         <div class="my-5 ml-5">
           <vue-json-pretty
-            v-model="path_to_issues"
+            v-model="pathToIssues"
             :deep="1"
             path="report"
             show-length
@@ -380,7 +404,7 @@
             color="green"
             outlined
             block
-            @click="reportDialog = false"
+            @click.stop="reportDialog = false"
           >
             Confirm
           </v-btn>
@@ -406,6 +430,7 @@ import VueJsonPretty from 'vue-json-pretty';
 import { TEMPLATE_CREATE, FETCH_REPORTS } from '@/store/actions';
 import { Report } from '@/store/types';
 import store from '@/store';
+import slug from 'slug';
 
 interface BodyField {
   key: string;
@@ -433,151 +458,125 @@ export default defineComponent({
   setup(props, context) {
     const stepperModel = ref(1);
     const reportDialog = ref(false);
+    const loading = ref(false);
     const rules = ref({
       min: (v: string) => v.length >= 3 || 'Min 3 symbols',
     });
 
+    const name = ref('');
+    const displayName = ref('');
+    const mergeFields: Ref<string[]> = ref([]);
+    const internalComparisonFields: Ref<string[]> = ref([]);
+    const externalComparisonFields: Ref<string[]> = ref([]);
+    const titlePattern = ref('');
+    const subtitlePattern = ref('');
+    const tags: Ref<string[]> = ref([]);
+    const pathToIssues = ref('');
+    const titleFields: Ref<string[]> = ref([]);
+    const bodyFields: Ref<BodyField[]> = ref([]);
+    const riskField: Ref<string[]> = ref([]);
+    const bodyFieldsTypes = ref({});
+
+    const stepperDialog = computed({
+      get: () => props.stepper,
+      set: val => context.emit('update:stepper', val),
+    });
     const reportContent = computed(() => store.state.reports.content);
-
-    const {
-      name,
-      tags,
-      loading,
-      risk_field,
-      body_fields,
-      merge_fields,
-      title_fields,
-      title_pattern,
-      stepperDialog,
-      path_to_issues,
-      createTemplate,
-      subtitle_pattern,
-      body_fields_types,
-      external_comparison_fields,
-      internal_comparison_fields,
-    } = useCreateTemplate(props, context);
-
     const exampleIssue = computed(() => {
       return props.report.type === 'file'
-        ? reportContent.value[path_to_issues.value.replace('report.', '')]
+        ? reportContent.value[pathToIssues.value.replace('report.', '')]
         : reportContent.value;
     });
 
+    function resetDialog() {
+      stepperDialog.value = false;
+      name.value = titlePattern.value = subtitlePattern.value = pathToIssues.value =
+        '';
+      bodyFieldsTypes.value = {};
+      tags.value = internalComparisonFields.value = externalComparisonFields.value = [];
+      mergeFields.value = riskField.value = titleFields.value = bodyFields.value = [];
+    }
+
+    function slugifyDisplayName() {
+      name.value = slug(displayName.value);
+    }
+
+    function createTemplate() {
+      loading.value = true;
+      bodyFields.value = [];
+
+      for (const key of Object.keys(bodyFieldsTypes.value)) {
+        bodyFields.value.push({
+          key: key.replace('issue.', ''),
+          // @ts-ignore
+          type: bodyFieldsTypes.value[key],
+        });
+      }
+
+      store
+        .dispatch(TEMPLATE_CREATE, {
+          pathToIssues: pathToIssues.value
+            .replace('report.root.', '')
+            .replace('[0]', '')
+            .replace('report.root', ''),
+          report: props.report._id,
+          name: name.value,
+          displayName: displayName.value,
+          titlePattern: titlePattern.value,
+          subtitlePattern: subtitlePattern.value,
+          tags: tags.value,
+          bodyFields: bodyFields.value,
+          riskField: riskField.value.map(i => i.replace('issue.', ''))[0],
+          mergeFields: mergeFields.value.map(i => i.replace('issue.', '')),
+          titleFields: titleFields.value.map(i => i.replace('issue.', '')),
+          internalComparisonFields: internalComparisonFields.value.map(i =>
+            i.replace('issue.', '')
+          ),
+          externalComparisonFields: externalComparisonFields.value.map(i =>
+            i.replace('issue.', '')
+          ),
+        })
+        .then(async () => {
+          loading.value = false;
+          await store.dispatch(FETCH_REPORTS).catch(() => {});
+          stepperDialog.value = false;
+        })
+        .catch(() => {
+          loading.value = false;
+        });
+    }
+
     watch(stepperDialog, () => {
       stepperModel.value = props.report.type === 'file' ? 1 : 2;
-      name.value = title_pattern.value = subtitle_pattern.value = path_to_issues.value =
-        '';
-      body_fields_types.value = {};
-      tags.value = internal_comparison_fields.value = external_comparison_fields.value = [];
-      merge_fields.value = risk_field.value = title_fields.value = body_fields.value = [];
     });
 
     return {
-      name,
-      tags,
       rules,
-      loading,
-      risk_field,
-      body_fields,
-      merge_fields,
-      exampleIssue,
-      title_fields,
       stepperModel,
       reportDialog,
-      title_pattern,
+      name,
+      displayName,
       reportContent,
+      resetDialog,
+      tags,
+      exampleIssue,
+      loading,
+      slugifyDisplayName,
+      riskField,
+      bodyFields,
+      mergeFields,
+      titleFields,
+      titlePattern,
       stepperDialog,
-      path_to_issues,
+      pathToIssues,
       createTemplate,
-      subtitle_pattern,
-      body_fields_types,
-      external_comparison_fields,
-      internal_comparison_fields,
+      subtitlePattern,
+      bodyFieldsTypes,
+      externalComparisonFields,
+      internalComparisonFields,
     };
   },
 });
-
-function useCreateTemplate(props: any, context: SetupContext) {
-  const loading = ref(false);
-  const name = ref('');
-  const merge_fields: Ref<string[]> = ref([]);
-  const internal_comparison_fields: Ref<string[]> = ref([]);
-  const external_comparison_fields: Ref<string[]> = ref([]);
-  const title_pattern = ref('');
-  const subtitle_pattern = ref('');
-  const tags: Ref<string[]> = ref([]);
-  const path_to_issues = ref('');
-  const title_fields: Ref<string[]> = ref([]);
-  const body_fields: Ref<BodyField[]> = ref([]);
-  const risk_field: Ref<string[]> = ref([]);
-  const body_fields_types = ref({});
-  const stepperDialog = computed({
-    get: () => props.stepper,
-    set: val => context.emit('update:stepper', val),
-  });
-
-  function createTemplate() {
-    loading.value = true;
-    body_fields.value = [];
-
-    for (const key of Object.keys(body_fields_types.value)) {
-      body_fields.value.push({
-        key: key.replace('issue.', ''),
-        // @ts-ignore
-        type: body_fields_types.value[key],
-      });
-    }
-
-    store
-      .dispatch(TEMPLATE_CREATE, {
-        path_to_issues: path_to_issues.value
-          .replace('report.root.', '')
-          .replace('[0]', '')
-          .replace('report.root', ''),
-        report: props.report._id,
-        name: name.value,
-        title_pattern: title_pattern.value,
-        subtitle_pattern: subtitle_pattern.value,
-        tags: tags.value,
-        body_fields: body_fields.value,
-        risk_field: risk_field.value.map(i => i.replace('issue.', ''))[0],
-        merge_fields: merge_fields.value.map(i => i.replace('issue.', '')),
-        title_fields: title_fields.value.map(i => i.replace('issue.', '')),
-        internal_comparison_fields: internal_comparison_fields.value.map(i =>
-          i.replace('issue.', '')
-        ),
-        external_comparison_fields: external_comparison_fields.value.map(i =>
-          i.replace('issue.', '')
-        ),
-      })
-      .then(async () => {
-        loading.value = false;
-        await store.dispatch(FETCH_REPORTS, context.root.$route.params.slug);
-        stepperDialog.value = false;
-      })
-      .catch(() => {
-        loading.value = false;
-      });
-  }
-
-  return {
-    name,
-    tags,
-    loading,
-    risk_field,
-    body_fields,
-    merge_fields,
-    title_fields,
-    title_pattern,
-    stepperDialog,
-    path_to_issues,
-    createTemplate,
-    subtitle_pattern,
-    body_fields_types,
-    external_comparison_fields,
-    internal_comparison_fields,
-  };
-}
 </script>
 
 <style scoped>

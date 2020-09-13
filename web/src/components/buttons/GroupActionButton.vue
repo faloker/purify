@@ -7,7 +7,7 @@
           color="red"
           :disabled="!items.length"
           v-on="on"
-          @click="updateIssues(items, 'resolution', 'false positive')"
+          @click.stop="updateIssues(items, 'resolution', 'false positive')"
         >
           <v-icon>thumb_down</v-icon>
         </v-btn>
@@ -53,7 +53,6 @@ export default defineComponent({
         .dispatch(ISSUE_UPDATE, {
           ids: items,
           change,
-          unitId: context.root.$route.params.slug,
         })
         .then(async () => {
           await store.dispatch(

@@ -1,29 +1,32 @@
 import { Schema } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 export const UserSchema = new Schema({
-  _id: { type: String, default: uuidv4 },
-  username: {
-    type: String,
-    lowercase: true,
-    unique: true,
-    required: true,
-  },
+  _id: { type: String, default: () => nanoid() },
+  name: String,
   email: {
     type: String,
-    lowercase: true,
     unique: true,
     required: true,
   },
-  image: String,
+  image: {
+    type: String,
+  },
   password: String,
   token: String,
   salt: String,
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  refresh_token: String,
+  ssoBypass: Boolean,
+  refreshToken: String,
   type: {
     type: String,
     enum: ['local', 'ldap', 'saml'],
     default: 'local',
   },
+  role: {
+    type: String,
+    enum: ['owner', 'admin', 'user', 'observer'],
+    required: true,
+  },
+  memberships: [{ type: String, ref: 'Project' }],
+  recentProjects: [{ type: String }],
 });

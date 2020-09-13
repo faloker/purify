@@ -4,6 +4,7 @@
     max-width="650"
     @input="$emit('input', $event.target.value)"
     @click:outside="$emit('input', false)"
+    @keydown.esc="$emit('input', false)"
   >
     <v-card>
       <v-container style="max-width: 600px;">
@@ -27,7 +28,7 @@
                   :disabled="!input"
                   outlined
                   color="primary"
-                  @click="postComment"
+                  @click.stop="postComment"
                 >
                   Post
                 </v-btn>
@@ -38,21 +39,18 @@
           <v-slide-x-transition group>
             <v-timeline-item
               v-for="event in timeline"
-              :key="event.created_at"
+              :key="event.createdAt"
               class="mb-4"
               small
             >
               <template v-slot:icon>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-avatar v-if="event.author.username === 'purify'" v-on="on">
-                      <img src="@/assets/logo_trans.png">
-                    </v-avatar>
-                    <v-avatar v-else v-on="on">
+                    <v-avatar v-on="on">
                       <img :src="event.author.image">
                     </v-avatar>
                   </template>
-                  <span>{{ event.author.username }}</span>
+                  <span>{{ event.author.name }}</span>
                 </v-tooltip>
               </template>
               <v-row justify="space-between">
@@ -60,7 +58,7 @@
                 <v-col
                   class="text-right"
                   cols="5"
-                  v-text="formatDate(event.created_at)"
+                  v-text="formatDate(event.createdAt)"
                 />
               </v-row>
             </v-timeline-item>

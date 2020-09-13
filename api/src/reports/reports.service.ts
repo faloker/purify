@@ -24,7 +24,7 @@ export class ReportsService {
     private readonly templatesService: TemplatesService
   ) {}
 
-  async save(file: any, unitSlug: string, templateSlug = '') {
+  async saveFileReport(file: any, unit: Unit, templateName = '') {
     if (!file) {
       throw new BadRequestException('Nothing to save, file was not provided');
     }
@@ -42,10 +42,10 @@ export class ReportsService {
       throw new NotAcceptableException('Unsupported format');
     }
 
-    return this.saveReport(ReportType.FILE, data, unitSlug, templateSlug);
+    return this.saveReport(ReportType.FILE, data, unit, templateName);
   }
 
-  async saveOneshot(body: any, unitSlug: string, templateSlug = '') {
+  async saveOneshot(body: any, unit: Unit, templateName = '') {
     if (!Object.keys(body).length) {
       throw new BadRequestException('Request body is not valid JSON');
     } else if (Array.isArray(body)) {
@@ -54,40 +54,32 @@ export class ReportsService {
       );
     }
 
-    return this.saveReport(ReportType.ONESHOT, body, unitSlug, templateSlug);
+    return this.saveReport(ReportType.ONESHOT, body, unit, templateName);
   }
 
-  async delete(reportId: string) {
-    const res = await this.reportModel.deleteOne({ _id: reportId });
+  async deleteOne(reportId: string) {
     await this.issueModel.deleteMany({ report: reportId });
-
-    if (res) {
-      return res;
-    } else {
-      throw new NotFoundException();
-    }
+    await this.reportModel.deleteOne({ _id: reportId });
   }
 
-  async get(unitSlug: string) {
-    const unit = await this.unitModel.findOne({ slug: unitSlug });
-
-    if (!unit) {
-      throw new NotFoundException();
-    } else {
-      return this.reportModel
-        .find({ unit: unit._id }, '-content')
-        .populate('template', 'name');
-    }
+  async getReports(unitId: string) {
+    return this.reportModel
+      .find({ unit: unitId }, '-content')
+      .lean()
+      .populate('template', 'name');
   }
 
   async getContent(reportId: string) {
-    const report = await this.reportModel.findOne({ _id: reportId });
-
-    const result = {};
+    const report = await this.reportModel.findOne({ _id: reportId }).lean();
+    if (!report) {
+      throw new NotFoundException('No such report');
+    }
 
     if (report.type === 'oneshot') {
       return JSON.parse(report.content);
     }
+
+    const result = {};
 
     function recur(obj, path) {
       if (Array.isArray(obj) && Object.keys(obj).length) {
@@ -110,40 +102,35 @@ export class ReportsService {
     }
 
     recur(JSON.parse(report.content), 'root');
-
     return result;
   }
 
-  async saveReport(
-    type: ReportType,
-    data: any,
-    unitSlug: string,
-    templateSlug = ''
-  ) {
-    const unit = await this.unitModel.findOne({ slug: unitSlug });
+  async saveReport(type: ReportType, data: any, unit: Unit, templateName = '') {
+    const report = await new this.reportModel({
+      unit: unit._id,
+      project: unit.project,
+      type: type,
+      content: JSON.stringify(data),
+    }).save();
 
-    if (unit) {
-      const report = await new this.reportModel({
-        unit: unit._id,
-        type: type,
-        content: JSON.stringify(data),
-      }).save();
+    if (templateName) {
+      const template = await this.templateModel
+        .findOne({
+          name: templateName,
+        })
+        .lean();
 
-      if (templateSlug) {
-        const template = await this.templateModel.findOne({
-          slug: templateSlug,
-        });
-
-        if (template) {
-          await this.templatesService.apply(report, template);
-        } else {
-          throw new NotFoundException('No such template');
-        }
+      if (template) {
+        await this.templatesService.apply(report, template);
+      } else {
+        throw new NotFoundException('No such template');
       }
-
-      return this.reportModel.findOne({ _id: report._id }, '-content');
-    } else {
-      throw new NotFoundException('No such unit');
     }
+
+    return this.reportModel.findOne({ _id: report._id }, '-content').lean();
+  }
+
+  async findOne(reportId: string) {
+    return this.reportModel.findOne({ _id: reportId }, '-content').lean();
   }
 }

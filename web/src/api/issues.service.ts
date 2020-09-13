@@ -1,11 +1,13 @@
 import request from '@/utils/request';
+import { GetIssuesQueryDto } from '@/store/types';
 
-export const getIssues = (unit: string) =>
-  request({
-    url: 'issues',
+export function getIssues(params: GetIssuesQueryDto) {
+  return request({
+    url: `/issues`,
     method: 'get',
-    params: { unit },
+    params: params,
   });
+}
 
 export const updateIssues = (ids: string[], change: any) =>
   request({

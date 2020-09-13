@@ -17,6 +17,7 @@ export class MongoExceptionFilter implements ExceptionFilter {
       case 11000:
         response.status(status).send({
           statusCode: status,
+          error: 'Bad Request',
           message: `${exception.errmsg.match(/\{\s.+\s\}/g)[0]} already exists`,
         });
     }

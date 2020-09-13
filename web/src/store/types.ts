@@ -24,58 +24,74 @@ export interface Credentials {
 
 export interface Project {
   _id: string;
-  title: string;
-  subtitle: string;
-  slug: string;
-  created_at: Date;
-  updated_at: Date;
-  units: number;
-  issues: number;
-  tickets: number;
+  displayName: string;
+  description: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  numUnits: number;
+  numIssues: number;
+  numTickets: number;
 }
 
 export interface CreateProjectDto {
-  title: string;
-  subtitle: string;
+  name: string;
+  displayName: string;
+  description: string;
 }
 
 export interface EditProjectDto extends CreateProjectDto {
-  slug: string;
+  name: string;
   change: CreateProjectDto;
+}
+
+export interface AddUserDto {
+  projectName: string;
+  userId: string;
+}
+
+export interface FetchMetricsDto {
+  days: number;
 }
 
 export interface Unit {
   _id: string;
   name: string;
-  slug: string;
+  displayName: string;
   project: string;
-  created_at: Date;
-  updated_at: Date;
-  reports: number;
-  closed_tickets: number;
-  tickets: number;
+  createdAt: Date;
+  updatedAt: Date;
+  numReports: number;
+  numIssues: number;
+  numTickets: number;
+  numClosedIssues: number;
   progress?: number;
 }
 
 export interface CreateUnitDto {
-  name: string;
-  project: string;
-}
-
-export interface EditUnitDto {
-  slug: string;
+  displayName: string;
   name: string;
 }
 
-export interface DeleteUnitDto {
-  slug: string;
-}
+// eslint-disable-next-line
+export interface EditUnitDto extends CreateUnitDto {}
 
 export interface User {
   _id: string;
-  username: string;
+  name: string;
   email: string;
   image: string;
+  role: Role;
+  ssoBypass: boolean;
+  memberships: string[];
+  recentProjects: string[];
+}
+
+export enum Role {
+  OWNER = 'owner',
+  ADMIN = 'admin',
+  USER = 'user',
+  OBSERVER = 'observer',
 }
 
 export interface BodyField {
@@ -85,26 +101,25 @@ export interface BodyField {
 
 export interface Template {
   _id: string;
-  slug: string;
   name: string;
-  path_to_issues: string;
-  title_fields: string[];
-  body_fields: BodyField[];
-  risk_field: string;
-  internal_comparison_fields: string[];
-  external_comparison_fields: string[];
-  merge_fields: string[];
-  title_pattern: string;
-  subtitle_pattern: string;
+  displayName: string;
+  pathToIssues: string;
+  titleFields: string[];
+  bodyFields: BodyField[];
+  riskField: string;
+  internalComparisonFields: string[];
+  externalComparisonFields: string[];
+  mergeFields: string[];
+  titlePattern: string;
+  subtitlePattern: string;
   tags: string[];
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface TemplateWithStats {
-  issues: number;
-  reports: number;
-  template: Template;
+export interface TemplateWithStats extends Template {
+  numIssues: number;
+  numReports: number;
 }
 
 interface Statistics {
@@ -119,12 +134,12 @@ export interface Report {
   unit: string;
   type: string;
   template: string;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface EditTemplateDto {
-  slug: string;
+  name: string;
   change: Template;
 }
 
@@ -148,8 +163,9 @@ export interface Issue {
   unit: Unit | string;
   tags: string[];
   comments: Comment[] | string[];
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  closedAt: Date;
 }
 
 export interface EditIssueDto {
@@ -173,8 +189,8 @@ export interface Comment {
   _id: string;
   text: string;
   author: string | User;
-  created_at?: Date;
-  updated_at?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface FilterOption {
@@ -186,4 +202,89 @@ export interface FilterValue {
   title: string;
   total: number;
   value: number;
+}
+
+export interface ChangePasswordDto {
+  password: string;
+  token: string;
+}
+
+export interface GetEventsDto {
+  days: number;
+}
+
+export interface Event {
+  readonly _id: string;
+  body: any;
+  readonly audience: Audience;
+  readonly type: EventType;
+  readonly byUser: string | User;
+  readonly project?: string | Project;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export enum Audience {
+  OWNERS = 'owners',
+  ALL = 'all',
+}
+
+export enum EventType {
+  PROJECT_CREATED = 'project_created',
+  PROJECT_DELETED = 'project_deleted',
+  USER_CREATED = 'user_created',
+  USER_DELETED = 'user_deleted',
+  TICKET_CREATED = 'ticket_created',
+  ISSUE_RESOLVED = 'issue_resolved',
+  COMMENT_CREATED = 'comment_created',
+}
+
+export interface GetIssuesQueryDto {
+  readonly status?: string;
+  readonly ticket?: string;
+  readonly risks?: string;
+  readonly projectName?: string;
+  readonly unitName?: string;
+  readonly limit?: string;
+  readonly days?: string;
+}
+
+export interface UserSelfChange {
+  readonly trackMe?: string;
+  readonly name?: string;
+}
+
+export interface Token {
+  _id: string;
+  type: string;
+  name?: string;
+  value: string;
+  lastActivity?: Activity;
+  user: string | User;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export enum TokenType {
+  REFRESH_TOKEN = 'refresh',
+  API_ACCESS_TOKEN = 'api',
+  INVITE_TOKEN = 'invite',
+}
+
+export interface Activity {
+  date: Date;
+  fromIP: string;
+  userAgent: string;
+}
+
+export interface CreateTokenDto {
+  name: string;
+}
+export interface DeleteTokenDto {
+  _id: string;
+}
+
+export interface UserChangePasswordDto {
+  oldPassword: string;
+  newPassword: string;
 }

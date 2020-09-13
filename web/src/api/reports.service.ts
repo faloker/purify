@@ -1,20 +1,33 @@
 import request from '@/utils/request';
 
-export const getReports = (unit: string) =>
-  request({
-    url: 'reports',
+export function getReports(unitName: string) {
+  return request({
+    url: `units/${unitName}/reports`,
     method: 'get',
-    params: { unit },
   });
+}
 
-export const deleteReport = (id: string) =>
-  request({
-    url: `reports/${id}`,
+export function deleteReport(reportId: string) {
+  return request({
+    url: `reports/${reportId}`,
     method: 'delete',
   });
+}
 
-export const getReportContent = (id: string) =>
-  request({
-    url: `reports/${id}/content`,
+export function getReportContent(reportId: string) {
+  return request({
+    url: `reports/${reportId}/content`,
     method: 'get',
   });
+}
+
+export function uploadReport(unitName: string, formData: FormData) {
+  return request({
+    url: `units/${unitName}/reports`,
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}

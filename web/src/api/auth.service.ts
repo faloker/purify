@@ -32,3 +32,11 @@ export const initSAML = () =>
     url: 'auth/saml',
     method: 'get',
   });
+
+export function changePassword(payload: any) {
+  return request({
+    url: 'auth/change_password',
+    method: 'post',
+    data: payload,
+  });
+}

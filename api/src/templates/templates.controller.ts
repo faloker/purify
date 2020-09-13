@@ -8,6 +8,9 @@ import {
   Delete,
   Param,
   HttpCode,
+  Query,
+  UseInterceptors,
+  CacheTTL,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,22 +25,28 @@ import {
 import { TemplatesService } from './templates.service';
 import {
   CreateTemplateDto,
-  EditTemplateBodyDto,
+  EditTemplateDto,
   TemplateList,
   Template,
+  GetTemplatesQueryDto,
 } from './dto/templates.dto';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
 import { Template as ITemplate } from './interfaces/template.interface';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor';
 
+@UseGuards(RolesGuard)
+@UseGuards(GenericAuthGuard)
 @ApiBearerAuth()
 @ApiSecurity('api_key', ['apikey'])
 @ApiTags('templates')
 @Controller('templates')
-@UseGuards(GenericAuthGuard)
 export class TemplatesController {
   constructor(private readonly templatesService: TemplatesService) {}
 
   @Post()
+  @Roles(['owner', 'admin', 'user'])
   @ApiOperation({ summary: 'Create template' })
   @ApiCreatedResponse({
     description: 'Created successfully',
@@ -48,35 +57,40 @@ export class TemplatesController {
   }
 
   @Get()
+  @Roles(['owner', 'admin', 'user', 'observer'])
+  @UseInterceptors(HttpCacheInterceptor)
+  @CacheTTL(10)
   @ApiOperation({ summary: 'List templates' })
   @ApiOkResponse({
     description: 'List of templates',
     type: [TemplateList],
   })
-  findAll() {
-    return this.templatesService.findAll();
+  findAll(@Query() query: GetTemplatesQueryDto) {
+    return this.templatesService.findAll(query);
   }
 
-  @Patch(':slug')
-  @ApiOperation({ summary: 'Update template by slug' })
+  @Patch(':templateName')
+  @Roles(['owner', 'admin', 'user'])
+  @ApiOperation({ summary: 'Update template' })
   @ApiOkResponse({
     description: 'Update successful',
     type: Template,
   })
   @ApiNotFoundResponse({ description: 'No such template' })
   updateOne(
-    @Param('slug') slug: string,
-    @Body() template: EditTemplateBodyDto
-  ): Promise<ITemplate> {
-    return this.templatesService.updateOne(slug, template);
+    @Param('templateName') name: string,
+    @Body() template: EditTemplateDto
+  ) {
+    return this.templatesService.updateOne(name, template);
   }
 
-  @Delete(':slug')
-  @ApiOperation({ summary: 'Delete template by slug' })
-  @ApiNoContentResponse({ description: 'Delete successful' })
+  @Delete(':templateName')
+  @Roles(['owner', 'admin', 'user'])
+  @ApiOperation({ summary: 'Delete template' })
+  @ApiNoContentResponse({ description: 'Removed successfully' })
   @ApiNotFoundResponse({ description: 'No such template' })
   @HttpCode(204)
-  deleteOne(@Param('slug') slug: string) {
-    return this.templatesService.deleteOne(slug);
+  deleteOne(@Param('templateName') name: string) {
+    return this.templatesService.deleteOne(name);
   }
 }

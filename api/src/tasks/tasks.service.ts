@@ -26,7 +26,7 @@ export class TasksService {
   async dailyReport() {
     const issues = await this.issueModel.find({
       status: 'open',
-      created_at: { $gt: sub(new Date(), { hours: 24 }) },
+      createdAt: { $gt: sub(new Date(), { hours: 24 }) },
     });
 
     // this.smtpService.send(

@@ -11,7 +11,13 @@ import {
   PROFILE_FETCH,
   SAML_LOGIN,
 } from '../actions';
-import { SET_AUTH, PURGE_AUTH, SET_REFRESH_TASK } from '../mutations';
+import {
+  SET_AUTH,
+  PURGE_AUTH,
+  SET_REFRESH_TASK,
+  SET_PROFILE,
+} from '../mutations';
+import { currentUser } from '@/api/users.service';
 
 @Module
 export default class Auth extends VuexModule {
@@ -27,32 +33,35 @@ export default class Auth extends VuexModule {
 
   @Action
   async [LOGIN](credentials: Credentials) {
-    const { data } = await login(credentials);
+    const { token } = (await login(credentials)).data;
+    this.context.commit(SET_AUTH, token);
 
-    this.context.commit(SET_AUTH, data.token);
-    this.context.dispatch(AUTO_REFRESH);
+    const { role, memberships } = jwt_decode(this.token);
+    const { data } = await currentUser();
+    const user = { ...data, role, memberships };
+    this.context.commit(SET_PROFILE, user);
+
+    await this.context.dispatch(AUTO_REFRESH);
   }
 
-  @Action
-  async [REGISTER](credentials: Credentials) {
-    const { data } = await signup(credentials);
+  // @Action
+  // async [REGISTER](credentials: Credentials) {
+  //   const { data } = await signup(credentials);
 
-    this.context.commit(SET_AUTH, data.token);
-    this.context.dispatch(AUTO_REFRESH);
-  }
+  //   this.context.commit(SET_AUTH, data.token);
+  //   await this.context.dispatch(AUTO_REFRESH);
+  // }
 
   @Action
   async [REFRESH_TOKEN]() {
     const { data } = await refreshToken();
 
     this.context.commit(SET_AUTH, data.token);
-    this.context.dispatch(AUTO_REFRESH);
+    await this.context.dispatch(AUTO_REFRESH);
   }
 
   @Action
   async [AUTO_REFRESH]() {
-    this.context.dispatch(PROFILE_FETCH);
-
     const { exp } = jwt_decode(this.token);
     const now = Date.now();
 
@@ -69,7 +78,13 @@ export default class Auth extends VuexModule {
   @Action
   async [SAML_LOGIN](token: string) {
     this.context.commit(SET_AUTH, token);
-    this.context.dispatch(AUTO_REFRESH);
+
+    const { role, memberships } = jwt_decode(this.token);
+    const { data } = await currentUser();
+    const user = { ...data, role, memberships };
+    this.context.commit(SET_PROFILE, user);
+
+    await this.context.dispatch(AUTO_REFRESH);
   }
 
   @Mutation

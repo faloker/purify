@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/interfaces/user.interface';
-import { randomBytes } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -14,8 +13,8 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne({ username, type: 'local' });
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOne({ email, type: 'local' });
 
     if (
       user &&
@@ -29,96 +28,74 @@ export class AuthService {
 
   async validateADUser(user: any): Promise<any> {
     const entity = await this.usersService.findOne({
-      username: user.uid,
+      email: user.uid,
       type: 'ldap',
     });
 
     if (!entity) {
-      return this.usersService.createUser({
-        username: user.uid,
-        password: randomBytes(16).toString('hex'),
-        email: user.mail,
-        type: 'ldap',
-      });
+      // return this.usersService.createUser({
+      //   username: user.uid,
+      //   password: randomBytes(16).toString('hex'),
+      //   email: user.mail,
+      //   type: 'ldap',
+      // });
     } else {
       return entity;
     }
   }
 
-  async validateSAMLUser(user: any): Promise<any> {
-    const entity = await this.usersService.findOne({
-      email: user.email,
-      type: 'saml',
+  async validateSAMLUser(user: any) {
+    const doc = await this.usersService.findOne({
+      email: user[this.configService.get<string>('SAML_EMAIL_FIELD_NAME')],
     });
-
-    if (!entity) {
-      return this.usersService.createUser({
-        username:
-          user[this.configService.get<string>('SAML_USERNAME_FIELD_NAME')],
-        password: randomBytes(16).toString('hex'),
-        email: user[this.configService.get<string>('SAML_EMAIL_FIELD_NAME')],
-        type: 'saml',
-      });
+    if (doc) {
+      return doc;
     } else {
-      return entity;
+      throw new NotFoundException('No such user');
     }
-  }
-
-  async validateAPIKey(apikey: string): Promise<any> {
-    const [username, token] = Buffer.from(apikey, 'base64')
-      .toString()
-      .split(':');
-
-    const user = await this.usersService.findOne({ username });
-    if (user && this.usersService.isSecretValid(token, user.token, user.salt)) {
-      return user;
-    }
-    return null;
   }
 
   async login(user: User) {
-    const refresh_token = this.jwtService.sign(
-      { id: user._id, type: 'refresh_token' },
+    const refreshToken = this.jwtService.sign(
+      { _id: user._id, type: 'refreshToken' },
       { expiresIn: '72h' }
     );
-    await this.usersService.saveRefreshToken(user._id, refresh_token);
+    await this.usersService.saveRefreshToken(user._id, refreshToken);
 
     return {
-      access_token: this.jwtService.sign({
-        id: user._id,
-        type: 'access_token',
+      accessToken: this.jwtService.sign({
+        _id: user._id,
+        role: user.role,
+        memberships: user.memberships,
+        type: 'accessToken',
       }),
-      refresh_token,
+      refreshToken,
     };
   }
 
-  issueToken(user: User) {
-    return this.usersService.createToken(user);
-  }
-
   async refreshToken(token: string) {
-    const { id, type } = await this.jwtService.verify(token);
+    const { _id, type } = await this.jwtService.verify(token);
 
     if (
-      type === 'refresh_token' &&
-      this.usersService.validateRefreshToken(id, token)
+      type === 'refreshToken' &&
+      this.usersService.validateRefreshToken(_id, token)
     ) {
-      const refresh_token = this.jwtService.sign(
-        { id, type: 'refresh_token' },
+      const refreshToken = this.jwtService.sign(
+        { _id, type: 'refreshToken' },
         { expiresIn: '72h' }
       );
-      await this.usersService.saveRefreshToken(id, refresh_token);
+      await this.usersService.saveRefreshToken(_id, refreshToken);
 
       return {
-        access_token: this.jwtService.sign({ id, type: 'access_token' }),
-        refresh_token,
+        accessToken: this.jwtService.sign({ _id, type: 'accessToken' }),
+        refreshToken,
       };
     } else {
       throw new Error('Invalid refresh token');
     }
   }
 
-  async removeRefreshToken(userId: string) {
-    await this.usersService.removeRefreshToken(userId);
+  async removeRefreshToken(user: User) {
+    await this.usersService.removeRefreshToken(user);
   }
 }

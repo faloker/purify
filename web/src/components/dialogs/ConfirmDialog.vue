@@ -19,14 +19,14 @@
           <v-btn
             text
             color="quinary"
-            @click="$emit('input', false)"
+            @click.stop="$emit('input', false)"
           >
             {{ cancelButtonText }}
           </v-btn>
           <v-btn
             text
             color="quinary"
-            @click="$emit('handle-click')"
+            @click.stop="$emit('handle-click')"
           >
             {{ okButtonText }}
           </v-btn>

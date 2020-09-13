@@ -1,6 +1,11 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 import { SystemConfig, Message, APIMessage } from '../types';
-import { SET_CONFIG, SET_MESSAGE } from '../mutations';
+import {
+  SET_CONFIG,
+  SET_MESSAGE,
+  SET_PROJECT_NAME,
+  SET_UNIT_NAME,
+} from '../mutations';
 import { getSystemConfig } from '../../api/system.service';
 import {
   FETCH_SYSTEM_SETUP,
@@ -11,17 +16,28 @@ import {
 @Module
 export default class System extends VuexModule {
   config: SystemConfig = { jira: false, registration: true, saml: false };
-
   message: Message = {
     text: '',
     title: '',
     type: '',
     icon: '',
   };
+  projectName = '';
+  unitName = '';
 
   @Mutation
   [SET_CONFIG](config: SystemConfig) {
     this.config = config;
+  }
+
+  @Mutation
+  [SET_PROJECT_NAME](name: string) {
+    this.projectName = name;
+  }
+
+  @Mutation
+  [SET_UNIT_NAME](name: string) {
+    this.unitName = name;
   }
 
   @Mutation

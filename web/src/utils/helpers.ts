@@ -1,6 +1,11 @@
 import { get, capitalize, startCase } from 'lodash';
-import { formatDistance, formatRFC7231 } from 'date-fns';
-import { Issue, Template, BodyField } from '@/store/types';
+import {
+  differenceInDays,
+  format,
+  formatDistance,
+  formatRFC7231,
+} from 'date-fns';
+import { Issue, Template, BodyField, EventType } from '@/store/types';
 
 export function matchPattern(fields: any, pattern: string) {
   if (pattern) {
@@ -30,7 +35,15 @@ export function getValue(fields: any, key: string) {
 }
 
 export function formatDate(date: Date) {
-  return `${formatDistance(new Date(date), new Date())} ago`;
+  if (!date) {
+    return '';
+  }
+
+  if (differenceInDays(new Date(), new Date(date)) > 7) {
+    return format(new Date(date), 'dd MMM yyyy');
+  } else {
+    return `${formatDistance(new Date(date), new Date())} ago`;
+  }
 }
 
 export function formatDateTooltip(date: Date) {
@@ -93,7 +106,7 @@ function parseField(field: any, fieldValue: any) {
 export function prepareMarkdown(issue: Issue, template: Template) {
   let result = '';
 
-  for (const field of template.body_fields) {
+  for (const field of template.bodyFields) {
     result += parseField(field, getValue(issue.fields, field.key));
   }
 
@@ -120,7 +133,7 @@ export function getRiskColor(value: string) {
 export function getFilterIcon(value: string) {
   switch (value) {
     case 'risk':
-      return 'fa-bug';
+      return 'mdi-fire';
     case 'resolution':
       return 'mdi-thumbs-up-down';
     case 'ticket':
@@ -131,5 +144,18 @@ export function getFilterIcon(value: string) {
       return 'mdi-file';
     case 'search':
       return 'short_text';
+  }
+}
+
+export function getRoleColor(role: string) {
+  switch (role) {
+    case 'owner':
+      return 'senary';
+    case 'admin':
+      return 'quaternary';
+    case 'user':
+      return 'secondary';
+    case 'observer':
+      return 'quinary';
   }
 }

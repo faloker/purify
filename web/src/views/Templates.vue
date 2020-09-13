@@ -1,71 +1,81 @@
 <template>
   <v-container>
+    <v-row justify="space-between" align="center">
+      <v-col>
+        <p class="text-h4 font-weight-bold">
+          Templates
+        </p>
+        <p>Templates are code-free and user-friendly structures that parse reports the way you tell them.</p>
+      </v-col>
+    </v-row>
+    <v-divider />
     <v-row>
-      <v-spacer />
       <v-col>
         <v-text-field
           id="search"
           v-model="searchTerm"
-          clearable
+          prepend-inner-icon="search"
+          label="Filter by template"
+          solo
           dense
-          outlined
-        >
-          <template slot="label">
-            <v-icon class="mx-1" style="vertical-align: middle">
-              search
-            </v-icon>Search
-          </template>
-        </v-text-field>
-      </v-col>
-      <v-spacer />
-    </v-row>
-    <v-row>
-      <v-col cols="12">
+          clearable
+        />
         <v-skeleton-loader
           :loading="loading"
-          transition="scale-transition"
+          transition="slide-y-transition"
           type="table-tbody"
         >
-          <v-data-table
-            :headers="headers"
-            :items="filtredItems"
-            :items-per-page="5"
-            :search="searchTerm"
-            item-key="_id"
-          >
-            <template v-slot:item.template.name="{ item }">
-              <span
-                class="d-inline-block text-truncate"
-                style="max-width: 130px;"
-              >
-                {{ item.template.name }}
-              </span>
-            </template>
-            <template v-slot:item.created_at="{ item }">
-              <span class="text-none mr-5">{{ formatDate(item.template.created_at) }}</span>
-            </template>
-            <template v-slot:item.updated_at="{ item }">
-              <span class="text-none mr-5">{{ formatDate(item.template.updated_at) }}</span>
-            </template>
-            <template v-slot:item.action="{ item }" class="text-center">
-              <v-btn
-                text
-                icon
-                color="secondary"
-                @click="openEditor(item)"
-              >
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn
-                text
-                icon
-                color="red darken-1"
-                @click="openConfirmationDialog(item)"
-              >
-                <v-icon>fa-times</v-icon>
-              </v-btn>
-            </template>
-          </v-data-table>
+          <v-card outlined>
+            <v-data-table
+              :headers="headers"
+              :items="filtredItems"
+              :items-per-page="5"
+              :search="searchTerm"
+              item-key="_id"
+            >
+              <template v-slot:item.displayName="{ item }">
+                <span
+                  class="d-inline-block text-truncate"
+                  style="max-width: 130px;"
+                >
+                  {{ item.displayName }}
+                </span>
+              </template>
+              <template v-slot:item.createdAt="{ item }">
+                <span class="text-none mr-5">{{ formatDate(item.createdAt) }}</span>
+              </template>
+              <template v-slot:item.updatedAt="{ item }">
+                <span class="text-none mr-5">{{ formatDate(item.updatedAt) }}</span>
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-menu
+                  bottom
+                  right
+                  transition="slide-x-transition"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-permission="['owner']"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item @click.stop="openEditor(item)">
+                      <v-list-item-title>Edit Template</v-list-item-title>
+                    </v-list-item>
+                    <v-divider />
+                    <v-list-item @click.stop="openConfirmationDialog(item)">
+                      <strong class="red--text text--lighten-1">Delete Template</strong>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </template>
+            </v-data-table>
+          </v-card>
         </v-skeleton-loader>
       </v-col>
     </v-row>
@@ -84,7 +94,7 @@
           <v-btn
             icon
             dark
-            @click="closeEditor"
+            @click.stop="closeEditor"
           >
             <v-icon>close</v-icon>
           </v-btn>
@@ -93,7 +103,7 @@
           </v-toolbar-title>
           <v-spacer />
           <v-toolbar-items>
-            <v-btn text @click="saveChanges()">
+            <v-btn text @click.stop="saveChanges()">
               save
               <v-icon right>
                 save
@@ -155,39 +165,39 @@ export default defineComponent({
         text: 'Name',
         width: '20%',
         align: 'center',
-        value: 'template.name',
+        value: 'displayName',
       },
       {
         text: 'Issues',
         width: '15%',
         align: 'center',
-        value: 'issues',
+        value: 'numIssues',
       },
       {
         text: 'Reports',
         width: '15%',
         align: 'center',
-        value: 'reports',
+        value: 'numReports',
       },
       {
         text: 'Created',
         width: '15%',
         align: 'center',
-        value: 'created_at',
+        value: 'createdAt',
         sortable: false,
       },
       {
         text: 'Updated',
         width: '15%',
         align: 'center',
-        value: 'updated_at',
+        value: 'updatedAt',
         sortable: false,
       },
       {
         text: 'Actions',
         width: '25%',
         align: 'center',
-        value: 'action',
+        value: 'actions',
         sortable: false,
       },
     ]);
@@ -198,14 +208,17 @@ export default defineComponent({
 
     const filtredItems = computed(() =>
       templates.value.filter(item =>
-        toLower(item.template.name).includes(toLower(searchTerm.value))
+        toLower(item.displayName).includes(toLower(searchTerm.value))
       )
     );
 
-    onMounted(() => {
-      store.dispatch(TEMPLATES_FETCH).then(() => {
-        loading.value = false;
-      });
+    onMounted(async () => {
+      await store
+        .dispatch(TEMPLATES_FETCH, true)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
     });
 
     const {
@@ -249,13 +262,19 @@ function useEditTemplate() {
 
   function saveChanges() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { updated_at, created_at, _id, __v, ...fields } = JSON.parse(
-      editedTemplate.value
-    );
+    const {
+      updatedAt,
+      numReports,
+      numIssues,
+      createdAt,
+      _id,
+      __v,
+      ...fields
+    } = JSON.parse(editedTemplate.value);
 
     store
       .dispatch(TEMPLATES_EDIT, {
-        slug: (templateToEdit.value as Template).slug,
+        name: (templateToEdit.value as Template).name,
         change: fields,
       })
       .then(async () => {
@@ -266,8 +285,8 @@ function useEditTemplate() {
 
   function openEditor(item: TemplateWithStats) {
     editorDialog.value = true;
-    templateToEdit.value = item.template;
-    editedTemplate.value = JSON.stringify(item.template, null, 2);
+    templateToEdit.value = item;
+    editedTemplate.value = JSON.stringify(item, null, 2);
   }
 
   function closeEditor() {
@@ -289,12 +308,12 @@ function useDeleteTemplate() {
 
   function openConfirmationDialog(item: TemplateWithStats) {
     confirmDialog.value = true;
-    templateToDelete.value = item.template;
+    templateToDelete.value = item;
   }
 
   function deleteTemplate() {
     store
-      .dispatch(TEMPLATES_DELETE, (templateToDelete.value as Template).slug)
+      .dispatch(TEMPLATES_DELETE, (templateToDelete.value as Template).name)
       .then(async () => {
         confirmDialog.value = false;
         templateToDelete.value = {};

@@ -1,17 +1,20 @@
 import request from '@/utils/request';
-import { CreateProjectDto } from '@/store/types';
+import { CreateProjectDto, AddUserDto } from '@/store/types';
 
-export const getProjects = () =>
+export const getProjects = (verbose: boolean) =>
   request({
-    url: 'projects',
+    url: `projects`,
     method: 'get',
+    params: { verbose },
   });
 
-export const getStats = (slug: string) =>
-  request({
-    url: `projects/${slug}/stats`,
+export function getMetrics(projectName: string, days: number) {
+  return request({
+    url: `projects/${projectName}/metrics`,
     method: 'get',
+    params: { days },
   });
+}
 
 export const createProject = (project: CreateProjectDto) =>
   request({
@@ -20,15 +23,39 @@ export const createProject = (project: CreateProjectDto) =>
     data: project,
   });
 
-export const deleteProject = (slug: string) =>
-  request({
-    url: `projects/${slug}`,
+export function deleteProject(projectName: string) {
+  return request({
+    url: `projects/${projectName}`,
     method: 'delete',
   });
+}
 
-export const editProject = (slug: string, change: CreateProjectDto) =>
+export const editProject = (projectName: string, change: CreateProjectDto) =>
   request({
-    url: `projects/${slug}`,
+    url: `projects/${projectName}`,
     method: 'patch',
     data: change,
   });
+
+export function getUsers(projectName: string) {
+  return request({
+    url: `projects/${projectName}/users`,
+    method: 'get',
+  });
+}
+
+export function addUser(payload: AddUserDto) {
+  return request({
+    url: `projects/${payload.projectName}/users`,
+    method: 'post',
+    data: { userId: payload.userId },
+  });
+}
+
+export function removeUser(payload: AddUserDto) {
+  return request({
+    url: `projects/${payload.projectName}/users`,
+    method: 'delete',
+    data: { userId: payload.userId },
+  });
+}

@@ -6,7 +6,7 @@ import {
   postComment,
   getComments,
 } from '@/api/issues.service';
-import { SET_ISSUES, SET_COMMENTS } from '../mutations';
+import { SET_ISSUES, SET_COMMENTS, SET_ISSUES_QUERY } from '../mutations';
 import {
   ISSUES_FETCH,
   ISSUE_UPDATE,
@@ -20,12 +20,14 @@ import {
   EditIssueDto,
   CreateTicketDto,
   PostCommentDto,
+  GetIssuesQueryDto,
 } from '../types';
 
 @Module
 export default class Issues extends VuexModule {
   items: Issue[] = [];
   comments: Comment[] = [];
+  queryParams: GetIssuesQueryDto = {};
 
   @Mutation
   [SET_ISSUES](issues: Issue[]) {
@@ -37,28 +39,39 @@ export default class Issues extends VuexModule {
     this.comments = comments;
   }
 
+  @Mutation
+  [SET_ISSUES_QUERY](query: GetIssuesQueryDto) {
+    this.queryParams = query;
+  }
+
   @Action
-  async [ISSUES_FETCH](unit: string) {
-    const { data } = await getIssues(unit);
+  async [ISSUES_FETCH](payload: GetIssuesQueryDto) {
+    const { data } = await getIssues(payload);
     this.context.commit(SET_ISSUES, data);
   }
 
   @Action
   async [ISSUE_UPDATE](payload: EditIssueDto) {
     await updateIssues(payload.ids, payload.change);
-    this.context.dispatch(ISSUES_FETCH, payload.unitId);
+    await this.context.dispatch(ISSUES_FETCH, {
+      unitName: this.context.rootState.system.unitName,
+      ...this.queryParams,
+    });
   }
 
   @Action
   async [CREATE_TICKET](payload: CreateTicketDto) {
     const { data } = await createTicket(payload.issueId, payload.fields);
-    this.context.dispatch(ISSUES_FETCH, payload.unitId);
+    await this.context.dispatch(ISSUES_FETCH, {
+      unitName: this.context.rootState.system.unitName,
+      ...this.queryParams,
+    });
     return data;
   }
 
   @Action
   async [POST_COMMENT](payload: PostCommentDto) {
-    const { data } = await postComment(payload.issueId, payload.comment);
+    await postComment(payload.issueId, payload.comment);
     this.context.dispatch(GET_COMMENTS, payload.issueId);
   }
 

@@ -7,18 +7,18 @@ export interface BodyField {
 
 export interface Template extends Document {
   readonly _id: string;
-  readonly slug: string;
   readonly name: string;
-  readonly path_to_issues: string;
-  readonly title_fields: string[];
-  readonly body_fields: BodyField[];
-  readonly risk_field: string;
-  readonly internal_comparison_fields: string[];
-  readonly external_comparison_fields: string[];
-  readonly merge_fields: string[];
-  readonly title_pattern: string;
-  readonly subtitle_pattern: string;
+  readonly displayName: string;
+  readonly pathToIssues: string;
+  readonly titleFields: string[];
+  readonly bodyFields: BodyField[];
+  readonly riskField: string;
+  readonly internalComparisonFields: string[];
+  readonly externalComparisonFields: string[];
+  readonly mergeFields: string[];
+  readonly titlePattern: string;
+  readonly subtitlePattern: string;
   readonly tags: string[];
-  readonly created_at: Date;
-  readonly updated_at: Date;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
 }

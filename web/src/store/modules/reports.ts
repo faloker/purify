@@ -3,8 +3,14 @@ import {
   getReports,
   deleteReport,
   getReportContent,
+  uploadReport,
 } from '@/api/reports.service';
-import { FETCH_REPORTS, REPORT_DELETE, FETCH_CONTENT } from '../actions';
+import {
+  FETCH_REPORTS,
+  REPORT_DELETE,
+  FETCH_CONTENT,
+  UPLOAD_REPORT,
+} from '../actions';
 import { SET_REPORTS, SET_CONTENT } from '../mutations';
 import { Report, Template } from '../types';
 
@@ -24,14 +30,24 @@ export default class Reports extends VuexModule {
   }
 
   @Action
-  async [FETCH_REPORTS](unitSlug: string) {
-    const { data } = await getReports(unitSlug);
+  async [FETCH_REPORTS]() {
+    const { data } = await getReports(this.context.rootState.system.unitName);
     this.context.commit(SET_REPORTS, data);
+  }
+
+  @Action
+  async [UPLOAD_REPORT](formData: FormData) {
+    const { data } = await uploadReport(
+      this.context.rootState.system.unitName,
+      formData
+    );
+    await this.context.dispatch(FETCH_REPORTS).catch(() => {});
   }
 
   @Action
   async [REPORT_DELETE](reportId: string) {
     await deleteReport(reportId);
+    await this.context.dispatch(FETCH_REPORTS).catch(() => {});
   }
 
   @Action
