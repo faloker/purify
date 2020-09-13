@@ -9,6 +9,7 @@ import { ReportSchema } from 'src/reports/schemas/report.schema';
 import { ProjectSchema } from 'src/projects/schemas/project.schema';
 import { ProjectsModule } from 'src/projects/projects.module';
 import { ReportsModule } from 'src/reports/reports.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ReportsModule } from 'src/reports/reports.module';
     ]),
     forwardRef(() => ProjectsModule),
     forwardRef(() => ReportsModule),
+    forwardRef(() => UsersModule),
   ],
   providers: [UnitsService],
   controllers: [UnitsController],

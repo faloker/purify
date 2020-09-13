@@ -9,6 +9,7 @@ import { TemplateSchema } from 'src/templates/schemas/template.schema';
 import { TemplatesModule } from 'src/templates/templates.module';
 import { ProjectsModule } from 'src/projects/projects.module';
 import { UnitsModule } from 'src/units/units.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UnitsModule } from 'src/units/units.module';
     CacheModule.register(),
     TemplatesModule,
     forwardRef(() => UnitsModule),
+    forwardRef(() => UsersModule),
   ],
   controllers: [ReportsController],
   providers: [ReportsService],

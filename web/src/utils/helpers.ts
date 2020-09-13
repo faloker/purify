@@ -1,5 +1,10 @@
 import { get, capitalize, startCase } from 'lodash';
-import { formatDistance, formatRFC7231 } from 'date-fns';
+import {
+  differenceInDays,
+  format,
+  formatDistance,
+  formatRFC7231,
+} from 'date-fns';
 import { Issue, Template, BodyField, EventType } from '@/store/types';
 
 export function matchPattern(fields: any, pattern: string) {
@@ -30,7 +35,15 @@ export function getValue(fields: any, key: string) {
 }
 
 export function formatDate(date: Date) {
-  return `${formatDistance(new Date(date), new Date())} ago`;
+  if (!date) {
+    return '';
+  }
+
+  if (differenceInDays(new Date(), new Date(date)) > 7) {
+    return format(new Date(date), 'dd MMM yyyy');
+  } else {
+    return `${formatDistance(new Date(date), new Date())} ago`;
+  }
 }
 
 export function formatDateTooltip(date: Date) {

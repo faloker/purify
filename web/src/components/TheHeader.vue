@@ -106,7 +106,7 @@
             <v-divider />
             <v-list dense>
               <v-list-item-group v-model="item" color="primary">
-                <v-list-item>
+                <v-list-item :to="{ name: 'AccountSettings' }">
                   <v-list-item-icon>
                     <v-icon>mdi-tune</v-icon>
                   </v-list-item-icon>

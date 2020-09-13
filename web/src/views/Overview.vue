@@ -1,38 +1,36 @@
 <template>
   <v-container>
     <v-row>
-      <v-col>
-        <p class="text-h4 font-weight-bold">
-          Overview
-        </p>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-card outlined>
-          <v-card-title class="font-weight-bold">
-            <v-icon left>
-              mdi-apps
-            </v-icon>Recent Projects
-          </v-card-title>
-          <v-row>
-            <template v-for="project in filteredProjects">
-              <v-col :key="project._id">
-                <v-skeleton-loader
-                  type="card"
-                  class="mx-auto"
-                  :loading="projectsLoading"
-                  width="250"
-                  height="150"
-                  transition="scale-transition"
-                >
-                  <project-card :project="project" />
-                </v-skeleton-loader>
-              </v-col>
-            </template>
-          </v-row>
-        </v-card>
-      </v-col>
+      <v-card flat>
+        <v-card-title class="font-weight-bold">
+          <v-icon left>
+            mdi-apps
+          </v-icon>Recent Projects
+        </v-card-title>
+        <v-row
+          class="ml-1"
+          justify="start"
+          align="center"
+        >
+          <v-col
+            v-for="project in filteredProjects"
+            :key="project._id"
+          >
+            <project-card v-if="!projectsLoading" :project="project" />
+          </v-col>
+          <v-col
+            v-for="i in [1,2,3,4]"
+            :key="`skl-${i}`"
+          >
+            <v-skeleton-loader
+              v-if="projectsLoading"
+              type="card"
+              width="250"
+              height="140"
+            />
+          </v-col>
+        </v-row>
+      </v-card>
     </v-row>
     <v-row>
       <v-col>

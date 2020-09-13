@@ -7,7 +7,7 @@
         align="center"
         justify="center"
       >
-        <v-col cols="8">
+        <v-col cols="10">
           <v-row
             no-gutters
             align="center"
@@ -46,7 +46,7 @@
         </v-col>
       </v-row>
       <v-row align="center" justify="center">
-        <v-col cols="8">
+        <v-col cols="10">
           <v-list
             flat
             three-line
@@ -74,14 +74,14 @@
                         <v-list-item-title class="subtitle-1 font-weight-bold" @click.stop="openDialog('issue', item)">
                           {{ item.title }}
                         </v-list-item-title>
-                        <v-list-item-subtitle class="subtitle-2 my-1" @click.stop="openDialog('issue', item)">
+                        <v-list-item-subtitle class="subtitle-2 my-2" @click.stop="openDialog('issue', item)">
                           {{ item.subtitle }}
                         </v-list-item-subtitle>
                         <v-list-item-subtitle class="mt-2">
                           <v-chip
                             outlined
                             label
-                            class="mr-1"
+                            class="mr-2"
                           >
                             <v-icon
                               left
@@ -97,7 +97,7 @@
                             v-if="item.status === 'closed'"
                             outlined
                             label
-                            class="mr-1"
+                            class="mr-2"
                           >
                             <v-icon
                               left
@@ -109,7 +109,7 @@
                           </v-chip>
                           <v-chip
                             v-if="item.ticket"
-                            class="mr-1"
+                            class="mr-2"
                             outlined
                             label
                             :href="item.ticket.link"
@@ -126,7 +126,7 @@
                           </v-chip>
                           <v-chip
                             v-if="item.totalComments"
-                            class="mr-1"
+                            class="mr-2"
                             outlined
                             label
                             @click.stop="openDialog('comment', item)"
@@ -268,16 +268,16 @@ export default defineComponent({
       openDialog,
     } = useIssueDetails();
 
-    // onMounted(() => {
-    //   if (context.root.$route.params.issueId) {
-    //     openDialog(
-    //       'issue',
-    //       props.rawItems.find(
-    //         issue => issue._id === context.root.$route.params.issueId
-    //       )!
-    //     );
-    //   }
-    // });
+    onMounted(() => {
+      if (context.root.$route.params.issueId) {
+        openDialog(
+          'issue',
+          props.rawItems.find(
+            issue => issue._id === context.root.$route.params.issueId
+          )!
+        );
+      }
+    });
 
     watch(allSelected, newValue => {
       if (newValue) {

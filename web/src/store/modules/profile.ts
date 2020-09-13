@@ -6,6 +6,8 @@ import {
   CREATE_ACCESS_TOKEN,
   DELETE_ACCESS_TOKEN,
   FETCH_RECENT_PROJECTS,
+  CHANGE_PASSWORD,
+  SELF_CHANGE_PASSWORD,
 } from '@/store/actions';
 import { SET_PROFILE, SET_ACCESS_TOKENS } from '@/store/mutations';
 import {
@@ -15,6 +17,7 @@ import {
   createAccessToken,
   deleteAccessToken,
   getRecentProjects,
+  changeMyPassword,
 } from '@/api/users.service';
 import {
   User,
@@ -23,6 +26,7 @@ import {
   Token,
   CreateTokenDto,
   DeleteTokenDto,
+  UserChangePasswordDto,
 } from '../types';
 
 @Module
@@ -46,6 +50,14 @@ export default class Profile extends VuexModule {
 
   @Mutation
   [SET_ACCESS_TOKENS](tokens: Token[]) {
+    tokens.forEach(token => {
+      // @ts-ignore
+      token.accessDate = token.lastActivity?.date;
+      // @ts-ignore
+      token.fromIP = token.lastActivity?.fromIP;
+      // @ts-ignore
+      token.userAgent = token.lastActivity?.userAgent;
+    });
     this.accessTokens = tokens;
   }
 
@@ -83,5 +95,10 @@ export default class Profile extends VuexModule {
   async [DELETE_ACCESS_TOKEN](deleteTokenDto: DeleteTokenDto) {
     await deleteAccessToken(deleteTokenDto._id);
     this.context.dispatch(FETCH_ACCESS_TOKENS);
+  }
+
+  @Action
+  async [SELF_CHANGE_PASSWORD](userChangePasswordDto: UserChangePasswordDto) {
+    await changeMyPassword(userChangePasswordDto);
   }
 }

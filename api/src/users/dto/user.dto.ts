@@ -59,7 +59,8 @@ export class UserList extends EditUserDto {
 export class ChangePasswordDto {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @MinLength(6)
+  @MaxLength(40)
   readonly password: string;
 
   @ApiProperty()
@@ -68,12 +69,31 @@ export class ChangePasswordDto {
   readonly token: string;
 }
 
-export class UserSelfChange {
+export class UserChangePasswordDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly oldPassword: string;
+
+  @ApiProperty()
+  @IsString()
+  @MinLength(6)
+  @MaxLength(40)
+  readonly newPassword: string;
+}
+
+export class UserSelfChangeDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   readonly trackMe?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  readonly name?: string;
 }
 
 export class CreateTokenDto {

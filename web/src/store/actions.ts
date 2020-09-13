@@ -68,6 +68,7 @@ export const SELF_CHANGE = 'selfChange';
 export const FETCH_ACCESS_TOKENS = 'fetchAccessTokens';
 export const DELETE_ACCESS_TOKEN = 'deleteAccessToken';
 export const CREATE_ACCESS_TOKEN = 'createAccessToken';
+export const SELF_CHANGE_PASSWORD = 'selfChangePassword';
 
 // Events
 export const FETCH_EVENTS = 'fetchEvents';

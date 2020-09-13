@@ -12,9 +12,10 @@ import {
   CreateUserDto,
   ChangePasswordDto,
   EditUserDto,
-  UserSelfChange,
+  UserSelfChangeDto,
   CreateTokenDto,
   DeleteTokenDto,
+  UserChangePasswordDto,
 } from './dto/user.dto';
 import { Token, TokenType } from './interfaces/token.interface';
 import { ConfigService } from '@nestjs/config';
@@ -42,7 +43,7 @@ export class UsersService {
         {
           _id: userId,
         },
-        '_id name email image'
+        '_id name email image ssoBypass'
       )
       .lean();
   }
@@ -219,7 +220,17 @@ export class UsersService {
     }
   }
 
-  async changeUser(userId: string, userSelfChange: UserSelfChange) {
+  async selfChangePassword(user: User, payload: UserChangePasswordDto) {
+    if (this.isSecretValid(payload.oldPassword, user.password, user.salt)) {
+      const secret = this.genSecret(payload.newPassword, user.salt);
+      user.password = secret;
+      await user.save();
+    } else {
+      throw new NotFoundException('Bad passwords');
+    }
+  }
+
+  async changeUser(userId: string, userSelfChange: UserSelfChangeDto) {
     const user = await this.userModel.findOne({ _id: userId });
     if (
       userSelfChange.trackMe &&
@@ -231,6 +242,11 @@ export class UsersService {
         user.recentProjects.shift();
         user.recentProjects.push(userSelfChange.trackMe);
       }
+      await user.save();
+    }
+
+    if (userSelfChange.name) {
+      user.name = userSelfChange.name;
       await user.save();
     }
   }

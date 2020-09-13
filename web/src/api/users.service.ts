@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { UserSelfChange } from '@/store/types';
+import { UserChangePasswordDto, UserSelfChange } from '@/store/types';
 
 export function currentUser() {
   return request({
@@ -17,6 +17,14 @@ export function getRecentProjects() {
 export function changeWhoami(params: UserSelfChange) {
   return request({
     url: 'whoami',
+    method: 'patch',
+    data: params,
+  });
+}
+
+export function changeMyPassword(params: UserChangePasswordDto) {
+  return request({
+    url: 'whoami/password',
     method: 'patch',
     data: params,
   });

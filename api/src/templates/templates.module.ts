@@ -1,4 +1,4 @@
-import { Module, CacheModule } from '@nestjs/common';
+import { Module, CacheModule, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TemplateSchema } from './schemas/template.schema';
 import { TemplatesService } from './templates.service';
@@ -8,6 +8,7 @@ import { IssueSchema } from 'src/issues/schemas/issue.schema';
 import { SlackModule } from 'src/plugins/slack/slack.module';
 import { UnitSchema } from 'src/units/schemas/unit.schema';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
     CacheModule.register(),
     SlackModule,
     ConfigModule,
+    forwardRef(() => UsersModule),
   ],
   providers: [TemplatesService],
   controllers: [TemplatesController],

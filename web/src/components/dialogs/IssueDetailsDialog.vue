@@ -301,8 +301,7 @@ import FieldsParser from '@/components/FieldsParser.vue';
 import JiraTicketDialog from '@/components/dialogs/JiraTicketDialog.vue';
 import EditIssueDialog from '@/components/dialogs/EditIssueDialog.vue';
 import CommentDialog from '@/components/dialogs/CommentDialog.vue';
-import { getRiskColor } from '@/utils/helpers';
-import { differenceInDays, format, formatDistance } from 'date-fns';
+import { getRiskColor, formatDate } from '@/utils/helpers';
 import { ISSUE_UPDATE, SHOW_SUCCESS_MSG } from '@/store/actions';
 import { parseKey, getValue, matchPattern, isPrintable } from '@/utils/helpers';
 import {
@@ -395,18 +394,6 @@ export default defineComponent({
       }
       return result;
     });
-
-    function formatDate(date: Date) {
-      if (!date) {
-        return '';
-      }
-
-      if (differenceInDays(new Date(), new Date(date)) > 7) {
-        return format(new Date(date), 'dd MMM yyyy');
-      } else {
-        return `${formatDistance(new Date(date), new Date())} ago`;
-      }
-    }
 
     function updateIssue(item: Issue, field: string, value: string) {
       const change: any = {};

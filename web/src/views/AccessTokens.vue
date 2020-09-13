@@ -43,6 +43,9 @@
               :search="searchTerm"
               :items-per-page="5"
             >
+              <template v-slot:item.accessDate="{ item }">
+                <span class="text-none mr-5">{{ formatDate(item.accessDate) }}</span>
+              </template>              
               <template v-slot:item.createdAt="{ item }">
                 <span class="text-none mr-5">{{ formatDate(item.createdAt) }}</span>
               </template>
@@ -221,15 +224,18 @@ export default defineComponent({
       { text: 'Token name', value: 'name' },
       {
         text: 'Logged IP',
-        value: 'lastActivity.fromIP',
+        align: 'center',
+        value: 'fromIP',
       },
       {
         text: 'User Agent',
-        value: 'lastActivity.userAgent',
+        value: 'userAgent',
+        align: 'center',
       },
       {
         text: 'Last used',
-        value: 'lastActivity.date',
+        value: 'accessDate',
+        align: 'center',
       },
       {
         text: 'Created At',

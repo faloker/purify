@@ -78,6 +78,12 @@ export default class Auth extends VuexModule {
   @Action
   async [SAML_LOGIN](token: string) {
     this.context.commit(SET_AUTH, token);
+
+    const { role, memberships } = jwt_decode(this.token);
+    const { data } = await currentUser();
+    const user = { ...data, role, memberships };
+    this.context.commit(SET_PROFILE, user);
+
     await this.context.dispatch(AUTO_REFRESH);
   }
 

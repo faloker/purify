@@ -251,6 +251,7 @@ export interface GetIssuesQueryDto {
 
 export interface UserSelfChange {
   readonly trackMe?: string;
+  readonly name?: string;
 }
 
 export interface Token {
@@ -281,4 +282,9 @@ export interface CreateTokenDto {
 }
 export interface DeleteTokenDto {
   _id: string;
+}
+
+export interface UserChangePasswordDto {
+  oldPassword: string;
+  newPassword: string;
 }

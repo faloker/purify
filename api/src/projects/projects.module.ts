@@ -9,6 +9,7 @@ import { ReportSchema } from 'src/reports/schemas/report.schema';
 import { UnitsModule } from 'src/units/units.module';
 import { UserSchema } from 'src/users/schemas/user.schema';
 import { EventsModule } from 'src/events/events.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EventsModule } from 'src/events/events.module';
     CacheModule.register(),
     EventsModule,
     forwardRef(() => UnitsModule),
+    forwardRef(() => UsersModule),
   ],
   providers: [ProjectsService],
   controllers: [ProjectsController],

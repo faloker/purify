@@ -1,59 +1,61 @@
 <template>
   <v-container>
     <v-row align="center" justify="center">
-      <v-col cols="4" class="mt-12">
-        <v-card min-width="400px">
-          <v-row align="center" justify="center">
-            <v-img
-              class="mt-2"
-              src="@/assets/logo_trans.png"
-              max-width="90"
-              max-height="90"
-            />
-          </v-row>
-          <v-divider class="my-5" />
-          <v-col class="cp-block">
-            <v-row>
-              <v-spacer />
-              <v-text-field
-                id="password"
-                v-model="password1"
-                label="New Password"
-                required
-                type="password"
-                dense
-                outlined
+      <v-col cols="3" class="mt-12">
+        <v-card
+          outlined
+          min-width="250"
+          max-height="600"
+        >
+          <v-card-title>
+            <v-row align="center" justify="center">
+              <v-img
+                src="@/assets/logo_trans.png"
+                max-width="80"
+                max-height="80"
               />
-              <v-spacer />
             </v-row>
-            <v-row>
-              <v-spacer />
-              <v-text-field
-                id="repeat-password"
-                v-model="password2"
-                label="Repeat Password"
-                required
-                outlined
-                dense
-                type="password"
-                @keydown.enter="changePassword"
-              />
-              <v-spacer />
-            </v-row>
-            <v-row justify="center" align="center">
-              <v-btn
-                width="320"
-                class="mx-5 mb-4"
-                type="submit"
-                color="primary"
-                :loading="loading"
-                :disabled="password1 !== password2"
-                @click.prevent="changePassword"
-              >
-                Change Password
-              </v-btn>
-            </v-row>
-          </v-col>
+          </v-card-title>
+          <v-card-text>
+            <v-col class="cp-block">
+              <v-row>
+                <v-text-field
+                  id="password"
+                  v-model="password1"
+                  label="New Password"
+                  required
+                  type="password"
+                  dense
+                  outlined
+                />
+              </v-row>
+              <v-row>
+                <v-text-field
+                  id="repeat-password"
+                  v-model="password2"
+                  label="Repeat Password"
+                  required
+                  outlined
+                  dense
+                  type="password"
+                  @keydown.enter="changePassword"
+                />
+              </v-row>
+              <v-row justify="center" align="center">
+                <v-btn
+                  block
+                  class="mx-5 mb-4"
+                  type="submit"
+                  color="primary"
+                  :loading="loading"
+                  :disabled="password1 !== password2"
+                  @click.prevent="changePassword"
+                >
+                  Change Password
+                </v-btn>
+              </v-row>
+            </v-col>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -83,7 +85,7 @@ export default defineComponent({
             SHOW_SUCCESS_MSG,
             'The password has been changed'
           );
-          router.push({ name: 'Welcome' });
+          router.replace({ name: 'Welcome' });
         })
         .catch(() => {});
     }

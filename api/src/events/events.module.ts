@@ -9,6 +9,7 @@ import { UsersModule } from 'src/users/users.module';
   imports: [
     MongooseModule.forFeature([{ name: 'Event', schema: EventSchema }]),
     CacheModule.register(),
+    forwardRef(() => UsersModule),
   ],
   providers: [EventsService],
   exports: [EventsService],

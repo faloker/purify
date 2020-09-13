@@ -1,4 +1,4 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule, forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { IssueSchema } from './schemas/issue.schema';
 import { IssuesController } from './issues.controller';
@@ -11,6 +11,7 @@ import { UnitsModule } from 'src/units/units.module';
 import { ProjectsModule } from 'src/projects/projects.module';
 import { ProjectSchema } from 'src/projects/schemas/project.schema';
 import { EventsModule } from 'src/events/events.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EventsModule } from 'src/events/events.module';
       { name: 'Project', schema: ProjectSchema },
     ]),
     CacheModule.register(),
+    forwardRef(() => UsersModule),
     EventsModule,
     JiraModule,
     ProjectsModule,

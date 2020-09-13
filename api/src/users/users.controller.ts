@@ -19,9 +19,10 @@ import {
   EditUserDto,
   UserList,
   ChangePasswordDto,
-  UserSelfChange,
+  UserSelfChangeDto,
   CreateTokenDto,
   DeleteTokenDto,
+  UserChangePasswordDto,
 } from './dto/user.dto';
 import { UsersService } from './users.service';
 import { GenericAuthGuard } from '../auth/generic-auth.guard';
@@ -67,11 +68,22 @@ export class UsersController {
 
   @Patch('whoami')
   @ApiTags('whoami')
+  @HttpCode(204)
   async changeCurrentUser(
     @Request() req,
-    @Body() userSelfChange: UserSelfChange
+    @Body() userSelfChange: UserSelfChangeDto
   ) {
     await this.usersService.changeUser(req.user._id, userSelfChange);
+  }
+
+  @Patch('whoami/password')
+  @ApiTags('whoami')
+  @HttpCode(204)
+  async changePassword(
+    @Request() req,
+    @Body() userChangePasswordDto: UserChangePasswordDto
+  ) {
+    await this.usersService.selfChangePassword(req.user, userChangePasswordDto);
   }
 
   @Get('whoami/tokens')

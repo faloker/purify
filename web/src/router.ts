@@ -127,6 +127,15 @@ export const router = new Router({
       },
       meta: { title: 'Purify | Access Tokens' },
     },
+    {
+      path: '/user/settings',
+      name: 'AccountSettings',
+      components: {
+        default: () => import('@/views/AccountSettings.vue'),
+        header: TheHeader,
+      },
+      meta: { title: 'Purify | Account Settings' },
+    },
   ],
 });
 
@@ -142,7 +151,7 @@ router.beforeEach(async (to, from, next) => {
     await store.dispatch(SAML_LOGIN, atob(to.params.token));
     // fix router to correctly set page title after redirection
     // sidenote: routing to Projects appears to happen before routing to saml/login/
-    next('Projects');
+    next('/overview');
   }
 
   if (
