@@ -1,16 +1,16 @@
 <template>
-  <v-hover>
-    <v-card
-      :key="project._id"
-      slot-scope="{ hover }"
-      :class="`elevation-${hover ? 3 : 0}`"
-      class="mx-auto"
-      outlined
-      width="250"
-      height="150"
-      :to="{ name: 'ProjectPage', params: { projectName: project.name } }"
-    >
-      <v-card-title>
+  <v-card
+    :key="project._id"
+    class="mx-auto"
+    outlined
+    width="250"
+    max-height="170"
+  >
+    <v-card-title>
+      <span
+        class="d-inline-block text-truncate"
+        style="max-width: 220;"
+      >
         <v-icon
           left
           :color="project.color"
@@ -18,51 +18,59 @@
           mdi-square-rounded
         </v-icon>
         {{ project.displayName }}
-      </v-card-title>
-      <v-card-subtitle>
-        {{ project.description }}
-      </v-card-subtitle>
-      <v-divider class="mx-2" />
-      <v-card-text>
-        <v-row no-gutters dense>
-          <v-col>
-            <v-icon
-              small
-              left
-              class="mr-2 mb-1"
-            >
-              mdi-checkbox-multiple-blank
-            </v-icon>
-            <span class="subtitle-1 font-weight-bold">Units</span>
-            <span class="title font-weight-bold ml-1">
-              <countTo
-                :start-val="0"
-                :end-val="project.numUnits"
-                :duration="2000"
-              />
-            </span>
-          </v-col>
-          <v-col>
-            <v-icon
-              small
-              left
-              class="mr-2 mb-1"
-            >
-              fa-bug
-            </v-icon>
-            <span class="subtitle-1 font-weight-bold">Issues</span>
-            <span class="title font-weight-bold ml-1">
-              <countTo
-                :start-val="0"
-                :end-val="project.numIssues"
-                :duration="2000"
-              />
-            </span>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-  </v-hover>
+      </span>
+    </v-card-title>
+    <v-card-subtitle class="text-truncate">
+      {{ project.description }}
+    </v-card-subtitle>
+    <v-divider class="mx-2" />
+    <v-card-actions>
+      <v-btn
+        text
+        class="text-none"
+        :to="{ name: 'ProjectPage', params: { projectName: project.name } }"
+      >
+        <v-icon
+          left
+        >
+          mdi-poll
+        </v-icon>
+      </v-btn>
+      <v-btn
+        text
+        class="text-none"
+        :to="{ name: 'Units', params: { projectName: project.name } }"
+      >
+        <v-icon
+          left
+        >
+          mdi-checkbox-multiple-blank
+        </v-icon>
+        <span class="title font-weight-bold ml-1">
+          <countTo
+            :start-val="0"
+            :end-val="project.numUnits"
+            :duration="2000"
+          />
+        </span>
+      </v-btn>
+      <v-btn
+        text
+        class="text-none"
+      >
+        <v-icon left>
+          mdi-fire
+        </v-icon>
+        <span class="title font-weight-bold ml-1">
+          <countTo
+            :start-val="0"
+            :end-val="project.numIssues"
+            :duration="2000"
+          />
+        </span>
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-use-before-define */

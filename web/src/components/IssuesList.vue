@@ -1,45 +1,52 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <template v-if="rawItems.length">
       <v-row
+        v-permission="['owner', 'admin', 'user']"
         no-gutters
         align="center"
         justify="center"
       >
-        <div v-permission="['owner', 'admin', 'user']">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-checkbox
-                v-model="allSelected"
-                color="primary"
-                on-icon="done_all"
-                class="pl-6"
-                v-on="on"
+        <v-col cols="8">
+          <v-row
+            no-gutters
+            align="center"
+            justify="center"
+          >
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-checkbox
+                  v-model="allSelected"
+                  color="primary"
+                  on-icon="done_all"
+                  class="pl-6"
+                  v-on="on"
+                />
+              </template>
+              <span v-if="!allSelected">Select All</span>
+              <span v-else>Select None</span>
+            </v-tooltip>
+            <v-divider
+              light
+              class="ma-3"
+              vertical
+            />
+            <group-action-btn :items="selectedIssues" />
+            <v-spacer />
+            <v-col cols="2">
+              <v-select
+                v-model="pageSize"
+                dense
+                outlined
+                :items="sizes"
+                label="Issues per page"
               />
-            </template>
-            <span v-if="!allSelected">Select All</span>
-            <span v-else>Select None</span>
-          </v-tooltip>
-        </div>
-        <v-divider
-          v-permission="['owner', 'admin', 'user']"
-          light
-          class="ma-3"
-          vertical
-        />
-        <group-action-btn v-permission="['owner', 'admin', 'user']" :items="selectedIssues" />
-        <v-spacer />
-
-        <v-col cols="1">
-          <v-select
-            v-model="pageSize"
-            :items="sizes"
-            label="Issues per page"
-          />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
       <v-row align="center" justify="center">
-        <v-col cols="12">
+        <v-col cols="8">
           <v-list
             flat
             three-line
@@ -55,7 +62,7 @@
                   >
                     <template v-slot:default="{ active }">
                       <v-list-item-action>
-                        <div class="my-3 ml-2">
+                        <div class="mt-5 ml-2">
                           <v-checkbox
                             :input-value="active"
                             color="primary"
@@ -63,77 +70,80 @@
                           />
                         </div>
                       </v-list-item-action>
-                      <v-list-item-icon>
-                        <v-icon
-                          left
-                          large
-                          class="pr-4"
-                          :color="getRiskColor(item.risk)"
-                        >
-                          mdi-fire
-                        </v-icon>
-                      </v-list-item-icon>
-
-                      <v-list-item-content @click.stop="openDialog('issue', item)">
-                        <v-list-item-title>
-                          <!-- <div class="text-truncate"> -->
+                      <v-list-item-content>
+                        <v-list-item-title class="subtitle-1 font-weight-bold" @click.stop="openDialog('issue', item)">
                           {{ item.title }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle class="subtitle-2 my-1" @click.stop="openDialog('issue', item)">
+                          {{ item.subtitle }}
+                        </v-list-item-subtitle>
+                        <v-list-item-subtitle class="mt-2">
+                          <v-chip
+                            outlined
+                            label
+                            class="mr-1"
+                          >
+                            <v-icon
+                              left
+                              :color="getRiskColor(item.risk)"
+                            >
+                              mdi-fire
+                            </v-icon>
+                            <span class="text-capitalize">
+                              {{ item.risk }}
+                            </span>
+                          </v-chip>
                           <v-chip
                             v-if="item.status === 'closed'"
-                            class="ml-2"
-                            small
+                            outlined
+                            label
+                            class="mr-1"
                           >
+                            <v-icon
+                              left
+                              color="tertiary"
+                            >
+                              mdi-checkbox-marked-circle
+                            </v-icon>
                             <span class="text-capitalize">{{ item.resolution }}</span>
                           </v-chip>
-                          <!-- </div> -->
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                          <!-- <div class="text-truncate"> -->
-                          {{ item.subtitle }}
-                          <!-- </div> -->
+                          <v-chip
+                            v-if="item.ticket"
+                            class="mr-1"
+                            outlined
+                            label
+                            :href="item.ticket.link"
+                            target="_blank"
+                          >
+                            <v-icon
+                              left
+                              small
+                              color="quinary"
+                            >
+                              mdi-jira
+                            </v-icon>
+                            {{ item.ticket.key }}
+                          </v-chip>
+                          <v-chip
+                            v-if="item.totalComments"
+                            class="mr-1"
+                            outlined
+                            label
+                            @click.stop="openDialog('comment', item)"
+                          >
+                            <v-icon left small>
+                              mdi-comment-text-multiple
+                            </v-icon>
+                            <span>{{ item.totalComments }}</span>
+                          </v-chip>
                         </v-list-item-subtitle>
                       </v-list-item-content>
-
-                      <v-list-item-action>
-                        <v-btn
-                          v-if="item.ticket"
-                          outlined
-                          class="mt-2 mr-3"
-                          rounded
-                          color="senary"
-                          :href="item.ticket.link"
-                          target="_blank"
-                        >
-                          <v-icon
-                            v-if="item.ticket.type == 'jira'"
-                            color="senary"
-                            left
-                          >
-                            mdi-jira
-                          </v-icon>
-                          {{ item.ticket.key }}
-                        </v-btn>
-                      </v-list-item-action>
-                      <v-list-item-action>
-                        <v-btn
-                          v-if="item.totalComments"
-                          text
-                          class="mt-2 mr-3"
-                          color="secondary"
-                          @click.stop="openDialog('comment', item)"
-                        >
-                          <v-icon left small>
-                            mdi-comment-text-multiple
-                          </v-icon>
-                          <span>{{ item.totalComments }}</span>
-                        </v-btn>
-                      </v-list-item-action>
                     </template>
                   </v-list-item>
                   <v-divider
                     v-if="index + 1 < items.length"
                     :key="`dvr-${index}`"
-                    class="mx-10"
+                    :inset="true"
                   />
                 </template>
               </v-slide-y-transition>
