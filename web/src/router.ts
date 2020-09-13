@@ -82,20 +82,22 @@ export const router = new Router({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+// TODO refactor router
+router.beforeEach(async (to, from, next) => {
   const { isAuthenticated } = store.state.auth;
 
-  if (to.path === '/welcome') {
-    store.dispatch(FETCH_SYSTEM_SETUP).catch(() => {});
+  if (to.name === 'Welcome') {
+    await store.dispatch(FETCH_SYSTEM_SETUP).catch(() => {});
   }
 
   if (to.name === 'SAML Login') {
-    store.dispatch(SAML_LOGIN, { token: atob(to.params.token) });
-    store.dispatch(FETCH_SYSTEM_SETUP).catch(() => {});
-    next('/projects');
+    await store.dispatch(SAML_LOGIN, atob(to.params.token));
+    // fix router to correctly set page title after redirection
+    // sidenote: routing to Projects appears to happen before routing to saml/login/
+    next('Projects');
   }
 
-  if (to.path !== '/welcome' && !isAuthenticated) {
+  if (!['Welcome', 'SAML Login'].includes(to.name!) && !isAuthenticated) {
     store
       .dispatch(REFRESH_TOKEN)
       .then(() => {
@@ -106,10 +108,7 @@ router.beforeEach((to, from, next) => {
         document.title = 'Purify | Welcome';
         next('/welcome');
       });
-  } else if (
-    (to.path === '/welcome' || to.name === 'SAML Login') &&
-    isAuthenticated
-  ) {
+  } else if (['Welcome', 'SAML Login'].includes(to.name!) && isAuthenticated) {
     next(false);
   } else {
     document.title = to.meta.title;
