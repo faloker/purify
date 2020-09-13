@@ -8,6 +8,7 @@
           </v-icon>Recent Projects
         </v-card-title>
         <v-row
+          v-if="!projectsLoading"
           class="ml-1"
           justify="start"
           align="center"
@@ -16,14 +17,20 @@
             v-for="project in filteredProjects"
             :key="project._id"
           >
-            <project-card v-if="!projectsLoading" :project="project" />
+            <project-card :project="project" />
           </v-col>
+        </v-row>
+        <v-row
+          v-if="projectsLoading"
+          class="ml-1"
+          justify="start"
+          align="center"
+        >
           <v-col
             v-for="i in [1,2,3,4]"
             :key="`skl-${i}`"
           >
             <v-skeleton-loader
-              v-if="projectsLoading"
               type="card"
               width="250"
               height="140"
