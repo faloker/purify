@@ -83,7 +83,8 @@ export class IssuesController {
             EventType.ISSUE_RESOLVED,
             { ...issue },
             req.user._id,
-            Audience.ALL
+            Audience.ALL,
+            issue.project,
           );
         }
       });
@@ -102,7 +103,8 @@ export class IssuesController {
       EventType.TICKET_CREATED,
       { link: ticket.link, key: ticket.key, ...doc },
       req.user._id,
-      Audience.ALL
+      Audience.ALL,
+      doc.project,
     );
     return ticket;
   }
@@ -121,7 +123,8 @@ export class IssuesController {
       EventType.COMMENT_CREATED,
       { text: com.text, ...doc },
       req.user._id,
-      Audience.ALL
+      Audience.ALL,
+      doc.project,
     );
     return com;
   }
