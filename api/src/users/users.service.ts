@@ -186,7 +186,7 @@ export class UsersService {
   }
 
   async removeRefreshToken(user: User) {
-    await this.tokenModel.deleteOne({
+    await this.tokenModel.deleteMany({
       user: user._id,
       type: TokenType.REFRESH_TOKEN,
     });
