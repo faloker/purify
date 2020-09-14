@@ -33,24 +33,11 @@ export default class Auth extends VuexModule {
 
   @Action
   async [LOGIN](credentials: Credentials) {
-    const { token } = (await login(credentials)).data;
-    this.context.commit(SET_AUTH, token);
+    const { data } = await login(credentials);
 
-    const { role, memberships } = jwt_decode(this.token);
-    const { data } = await currentUser();
-    const user = { ...data, role, memberships };
-    this.context.commit(SET_PROFILE, user);
-
+    this.context.commit(SET_AUTH, data.token);
     await this.context.dispatch(AUTO_REFRESH);
   }
-
-  // @Action
-  // async [REGISTER](credentials: Credentials) {
-  //   const { data } = await signup(credentials);
-
-  //   this.context.commit(SET_AUTH, data.token);
-  //   await this.context.dispatch(AUTO_REFRESH);
-  // }
 
   @Action
   async [REFRESH_TOKEN]() {
@@ -65,6 +52,11 @@ export default class Auth extends VuexModule {
     const { exp } = jwt_decode(this.token);
     const now = Date.now();
 
+    const { role, memberships } = jwt_decode(this.token);
+    const { data } = await currentUser();
+    const user = { ...data, role, memberships };
+    this.context.commit(SET_PROFILE, user);
+
     let timeUntilRefresh = exp * 1000 - now;
     timeUntilRefresh -= 120000;
 
@@ -78,12 +70,6 @@ export default class Auth extends VuexModule {
   @Action
   async [SAML_LOGIN](token: string) {
     this.context.commit(SET_AUTH, token);
-
-    const { role, memberships } = jwt_decode(this.token);
-    const { data } = await currentUser();
-    const user = { ...data, role, memberships };
-    this.context.commit(SET_PROFILE, user);
-
     await this.context.dispatch(AUTO_REFRESH);
   }
 

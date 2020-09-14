@@ -147,6 +147,18 @@ router.beforeEach(async (to, from, next) => {
     await store.dispatch(FETCH_SYSTEM_SETUP).catch(() => {});
   }
 
+  if (to.params.projectName) {
+    store.commit(SET_PROJECT_NAME, to.params.projectName);
+  } else {
+    store.commit(SET_PROJECT_NAME, '');
+  }
+
+  if (to.params.unitName) {
+    store.commit(SET_UNIT_NAME, to.params.unitName);
+  } else {
+    store.commit(SET_UNIT_NAME, '');
+  }
+
   if (to.name === 'SAML Login') {
     await store.dispatch(SAML_LOGIN, atob(to.params.token));
     // fix router to correctly set page title after redirection
@@ -171,18 +183,6 @@ router.beforeEach(async (to, from, next) => {
   } else if (['Welcome', 'SAML Login'].includes(to.name!) && isAuthenticated) {
     next(false);
   } else {
-    if (to.params.projectName) {
-      store.commit(SET_PROJECT_NAME, to.params.projectName);
-    } else {
-      store.commit(SET_PROJECT_NAME, '');
-    }
-
-    if (to.params.unitName) {
-      store.commit(SET_UNIT_NAME, to.params.unitName);
-    } else {
-      store.commit(SET_UNIT_NAME, '');
-    }
-
     document.title = to.meta.title;
     next();
   }
