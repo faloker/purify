@@ -346,7 +346,7 @@ export default defineComponent({
           return {
             name: 'Issues',
             params: {
-              projectName: event.body.project,
+              projectName: event.body.project.name,
               unitName: event.body.unit,
               issueId: event.body._id,
             },

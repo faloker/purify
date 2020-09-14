@@ -33,6 +33,7 @@ import { Issue } from './interfaces/issue.interface';
 import { EventsService } from 'src/events/events.service';
 import { EventType, Audience } from 'src/events/interfaces/event.interface';
 import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor';
+import { Project } from 'src/projects/interfaces/project.interface';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
@@ -84,7 +85,7 @@ export class IssuesController {
             { ...issue },
             req.user._id,
             Audience.ALL,
-            issue.project,
+            (issue.project as Project)._id,
           );
         }
       });
@@ -104,7 +105,7 @@ export class IssuesController {
       { link: ticket.link, key: ticket.key, ...doc },
       req.user._id,
       Audience.ALL,
-      doc.project,
+      (doc.project as Project)._id,
     );
     return ticket;
   }
@@ -124,7 +125,7 @@ export class IssuesController {
       { text: com.text, ...doc },
       req.user._id,
       Audience.ALL,
-      doc.project,
+      (doc.project as Project)._id,
     );
     return com;
   }

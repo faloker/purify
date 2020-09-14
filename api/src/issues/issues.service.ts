@@ -215,7 +215,7 @@ export class IssuesService {
     const issue = await this.issueModel
       .findOne({ _id: issueId }, '_id fields risk resolution')
       .populate('template', ['titlePattern'])
-      .populate('project', 'name')
+      .populate('project', 'name _id')
       .populate('unit', 'name')
       .lean();
 
@@ -224,7 +224,7 @@ export class IssuesService {
         _id: issue._id,
         risk: issue.risk,
         resolution: issue.resolution,
-        project: (issue.project as Project).name,
+        project: issue.project,
         unit: (issue.unit as Unit).name,
         title: matchPattern(
           JSON.parse(issue.fields),
