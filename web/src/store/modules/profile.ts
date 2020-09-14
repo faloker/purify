@@ -50,7 +50,7 @@ export default class Profile extends VuexModule {
 
   @Mutation
   [SET_ACCESS_TOKENS](tokens: Token[]) {
-    tokens.forEach(token => {
+    tokens.forEach((token) => {
       // @ts-ignore
       token.accessDate = token.lastActivity?.date;
       // @ts-ignore

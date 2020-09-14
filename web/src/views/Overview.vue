@@ -302,7 +302,7 @@ export default defineComponent({
     const projectsLoading = ref(true);
 
     const filteredProjects = computed(() => {
-      return projects.value.filter(project =>
+      return projects.value.filter((project) =>
         user.value.recentProjects.includes(project.name)
       );
     });

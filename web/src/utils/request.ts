@@ -12,20 +12,20 @@ const service = axios.create({
 });
 
 service.interceptors.request.use(
-  config => {
+  (config) => {
     if (store.state.auth.token) {
       config.headers.Authorization = `Bearer ${store.state.auth.token}`;
     }
     return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
   }
 );
 
 service.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     let msg = error.response
       ? error.response.data.message
       : 'An unrecognized error has occurred';

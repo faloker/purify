@@ -175,7 +175,7 @@ export default defineComponent({
       const result: FilterOption[] = [];
 
       if (selectedStatuses.value.length > 0) {
-        selectedStatuses.value.forEach(s =>
+        selectedStatuses.value.forEach((s) =>
           result.push({
             name: 'status',
             value: s,
@@ -184,7 +184,7 @@ export default defineComponent({
       }
 
       if (selectedTemplates.value.length > 0) {
-        selectedTemplates.value.forEach(t =>
+        selectedTemplates.value.forEach((t) =>
           result.push({
             name: 'template',
             value: t,
@@ -193,7 +193,7 @@ export default defineComponent({
       }
 
       if (selectedTicketStatus.value.length > 0) {
-        selectedTicketStatus.value.forEach(t =>
+        selectedTicketStatus.value.forEach((t) =>
           result.push({
             name: 'ticket',
             value: t,
@@ -202,7 +202,7 @@ export default defineComponent({
       }
 
       if (selectedResolutions.value.length > 0) {
-        selectedResolutions.value.forEach(r =>
+        selectedResolutions.value.forEach((r) =>
           result.push({
             name: 'resolution',
             value: r,
@@ -211,7 +211,7 @@ export default defineComponent({
       }
 
       if (selectedRisks.value.length > 0) {
-        selectedRisks.value.forEach(r =>
+        selectedRisks.value.forEach((r) =>
           result.push({
             name: 'risk',
             value: r,
@@ -222,11 +222,11 @@ export default defineComponent({
       return result;
     });
 
-    watch(appliedFilters, value => {
+    watch(appliedFilters, (value) => {
       emit('filter_update', value);
     });
 
-    watch(search, value => {
+    watch(search, (value) => {
       emit('search_term', value);
     });
 
@@ -234,27 +234,27 @@ export default defineComponent({
       switch (item.name) {
         case 'risk':
           selectedRisks.value = selectedRisks.value.filter(
-            r => r !== item.value
+            (r) => r !== item.value
           );
           break;
         case 'template':
           selectedTemplates.value = selectedTemplates.value.filter(
-            t => t !== item.value
+            (t) => t !== item.value
           );
           break;
         case 'status':
           selectedStatuses.value = selectedStatuses.value.filter(
-            s => s !== item.value
+            (s) => s !== item.value
           );
           break;
         case 'resolution':
           selectedResolutions.value = selectedResolutions.value.filter(
-            r => r !== item.value
+            (r) => r !== item.value
           );
           break;
         case 'ticket':
           selectedTicketStatus.value = selectedTicketStatus.value.filter(
-            s => s !== item.value
+            (s) => s !== item.value
           );
           break;
       }

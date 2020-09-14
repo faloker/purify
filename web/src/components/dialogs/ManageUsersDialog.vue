@@ -171,8 +171,8 @@ export default defineComponent({
     );
     const filteredUsers = computed(() =>
       users.value
-        .filter(user => user._id !== currentUser.value._id)
-        .filter(user => {
+        .filter((user) => user._id !== currentUser.value._id)
+        .filter((user) => {
           return (
             toLower(user.name).includes(toLower(searchTerm.value)) ||
             toLower(user.role).includes(toLower(searchTerm.value)) ||
@@ -184,7 +184,7 @@ export default defineComponent({
 
     watch(
       () => props.value,
-      newValue => {
+      (newValue) => {
         if (newValue === true) {
           store
             .dispatch(FETCH_USERS)

@@ -93,7 +93,7 @@ export default defineComponent({
       () => store.state.projects.items
     );
     const filteredProjects = computed(() => {
-      return projects.value.filter(item =>
+      return projects.value.filter((item) =>
         toLower(item.displayName).includes(toLower(searchTerm.value))
       );
     });
@@ -102,7 +102,7 @@ export default defineComponent({
     // await store.dispatch(FETCH_PROJECTS).catch(() => {});
     // });
 
-    watch(menu, newValue => {
+    watch(menu, (newValue) => {
       if (newValue === false) {
         searchTerm.value = '';
       }

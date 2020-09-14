@@ -479,7 +479,7 @@ export default defineComponent({
 
     const stepperDialog = computed({
       get: () => props.stepper,
-      set: val => context.emit('update:stepper', val),
+      set: (val) => context.emit('update:stepper', val),
     });
     const reportContent = computed(() => store.state.reports.content);
     const exampleIssue = computed(() => {
@@ -526,13 +526,13 @@ export default defineComponent({
           subtitlePattern: subtitlePattern.value,
           tags: tags.value,
           bodyFields: bodyFields.value,
-          riskField: riskField.value.map(i => i.replace('issue.', ''))[0],
-          mergeFields: mergeFields.value.map(i => i.replace('issue.', '')),
-          titleFields: titleFields.value.map(i => i.replace('issue.', '')),
-          internalComparisonFields: internalComparisonFields.value.map(i =>
+          riskField: riskField.value.map((i) => i.replace('issue.', ''))[0],
+          mergeFields: mergeFields.value.map((i) => i.replace('issue.', '')),
+          titleFields: titleFields.value.map((i) => i.replace('issue.', '')),
+          internalComparisonFields: internalComparisonFields.value.map((i) =>
             i.replace('issue.', '')
           ),
-          externalComparisonFields: externalComparisonFields.value.map(i =>
+          externalComparisonFields: externalComparisonFields.value.map((i) =>
             i.replace('issue.', '')
           ),
         })

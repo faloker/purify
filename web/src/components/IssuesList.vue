@@ -273,15 +273,15 @@ export default defineComponent({
         openDialog(
           'issue',
           props.rawItems.find(
-            issue => issue._id === context.root.$route.params.issueId
+            (issue) => issue._id === context.root.$route.params.issueId
           )!
         );
       }
     });
 
-    watch(allSelected, newValue => {
+    watch(allSelected, (newValue) => {
       if (newValue) {
-        selectedIssues.value = items.value.map(i => i._id);
+        selectedIssues.value = items.value.map((i) => i._id);
       } else {
         selectedIssues.value = [];
       }

@@ -116,19 +116,19 @@ export class ProjectsService {
     const openVolume: Metrics[] = [];
     const risks = new Array(5).fill(0);
 
-    interval.forEach(day => {
+    interval.forEach((day) => {
       let date = day.getTime();
 
       created.push({
         x: date,
-        y: issues.filter(issue => isSameDay(issue.createdAt.getTime(), date))
+        y: issues.filter((issue) => isSameDay(issue.createdAt.getTime(), date))
           .length,
       });
 
       closed.push({
         x: date,
         y: issues.filter(
-          issue =>
+          (issue) =>
             issue.status === 'closed' &&
             isSameDay(issue.closedAt.getTime(), date)
         ).length,
@@ -136,14 +136,15 @@ export class ProjectsService {
 
       reportsVolume.push({
         x: date,
-        y: reports.filter(report => isSameDay(report.createdAt.getTime(), date))
-          .length,
+        y: reports.filter((report) =>
+          isSameDay(report.createdAt.getTime(), date)
+        ).length,
       });
     });
 
     const issuesRisks = groupBy(
-      issues.filter(issue => issue.resolution !== 'false positive'),
-      issue => issue.risk
+      issues.filter((issue) => issue.resolution !== 'false positive'),
+      (issue) => issue.risk
     );
 
     for (const key of Object.keys(issuesRisks)) {
@@ -169,13 +170,13 @@ export class ProjectsService {
     }
 
     const templates = groupBy(
-      issues.filter(issue => issue.template),
-      issue => (issue.template as Template).displayName
+      issues.filter((issue) => issue.template),
+      (issue) => (issue.template as Template).displayName
     );
 
     const labels = Object.keys(templates);
     const series = [];
-    labels.forEach(label => {
+    labels.forEach((label) => {
       series.push(templates[label].length);
     });
 
@@ -226,7 +227,7 @@ export class ProjectsService {
           templates: data.templates,
         });
 
-        Object.keys(data.timeseries).forEach(key => {
+        Object.keys(data.timeseries).forEach((key) => {
           const metrics: Metrics[] = data.timeseries[key];
           metrics.forEach((metric, index) => {
             if (projectMetrics[key][index]) {
@@ -237,7 +238,7 @@ export class ProjectsService {
           });
         });
 
-        Object.keys(data.stats).forEach(key => {
+        Object.keys(data.stats).forEach((key) => {
           const arr = data.stats[key];
           const updated = projectMetrics[key].map((a, i) => a + arr[i]);
           projectMetrics[key] = updated;
@@ -303,7 +304,7 @@ export class ProjectsService {
       throw new NotFoundException('User not found');
     }
 
-    user.memberships = user.memberships.filter(m => m !== project._id);
+    user.memberships = user.memberships.filter((m) => m !== project._id);
     user.save();
   }
 }

@@ -182,23 +182,23 @@ export default defineComponent({
   setup(props, { emit }) {
     const nameModel = computed({
       get: () => props.name,
-      set: val => emit('update:name', val),
+      set: (val) => emit('update:name', val),
     });
     const emailModel = computed({
       get: () => props.email,
-      set: val => emit('update:email', val),
+      set: (val) => emit('update:email', val),
     });
     const roleModel = computed({
       get: () => props.role,
-      set: val => emit('update:role', val),
+      set: (val) => emit('update:role', val),
     });
     const membershipsModel = computed({
       get: () => props.memberships,
-      set: val => emit('update:memberships', val),
+      set: (val) => emit('update:memberships', val),
     });
     const ssoBypassModel = computed({
       get: () => props.ssoBypass,
-      set: val => emit('update:sso-bypass', val),
+      set: (val) => emit('update:sso-bypass', val),
     });
 
     const systemConfig: ComputedRef<SystemConfig> = computed(

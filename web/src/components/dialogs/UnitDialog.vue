@@ -87,7 +87,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const displayNameModel = computed({
       get: () => props.displayName,
-      set: val => emit('update:display-name', val),
+      set: (val) => emit('update:display-name', val),
     });
     const projectName = computed(() => store.state.system.projectName);
     const idPreview = computed(() => {

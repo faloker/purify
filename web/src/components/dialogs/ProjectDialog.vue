@@ -109,15 +109,15 @@ export default defineComponent({
   setup(props, { emit }) {
     const descriptionModel = computed({
       get: () => props.description,
-      set: val => emit('update:description', val),
+      set: (val) => emit('update:description', val),
     });
     const displayNameModel = computed({
       get: () => props.displayName,
-      set: val => emit('update:displayName', val),
+      set: (val) => emit('update:displayName', val),
     });
     const nameModel = computed({
       get: () => props.name,
-      set: val => emit('update:name', val),
+      set: (val) => emit('update:name', val),
     });
 
     function slugifyDisplayName() {

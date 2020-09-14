@@ -83,16 +83,16 @@ export class ReportsService {
 
     function recur(obj, path) {
       if (Array.isArray(obj) && Object.keys(obj).length) {
-        const len = Math.max(...obj.map(o => Object.keys(o).length), 0);
-        result[path] = find(obj, k => Object.keys(k).length === len);
+        const len = Math.max(...obj.map((o) => Object.keys(o).length), 0);
+        result[path] = find(obj, (k) => Object.keys(k).length === len);
       }
       forOwn(obj, (value, key) => {
         if (Array.isArray(value) && Object.keys(value).length) {
           if (isObject(value[0])) {
-            const len = Math.max(...value.map(o => Object.keys(o).length), 0);
+            const len = Math.max(...value.map((o) => Object.keys(o).length), 0);
             result[`${path}.${key}[0]`] = find(
               value,
-              k => Object.keys(k).length === len
+              (k) => Object.keys(k).length === len
             );
           }
         } else if (isObject(value)) {

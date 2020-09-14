@@ -105,10 +105,10 @@ export default defineComponent({
     );
     const units: ComputedRef<Unit[]> = computed(() => store.state.units.items);
     const project = computed(() =>
-      projects.value.find(p => p.name === projectName.value)
+      projects.value.find((p) => p.name === projectName.value)
     );
     const unit = computed(() =>
-      units.value.find(u => u.name === unitName.value)
+      units.value.find((u) => u.name === unitName.value)
     );
 
     onMounted(async () => {

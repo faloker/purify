@@ -75,7 +75,7 @@ export default defineComponent({
     const keywordsList = computed(() => {
       let result: string[] = [];
 
-      filtredIssues.value.forEach(issue => {
+      filtredIssues.value.forEach((issue) => {
         const list = Object.values(issue.fields)
           .toString()
           .match(/[a-zA-Z0-9\._-]{3,}/gm);
@@ -87,7 +87,7 @@ export default defineComponent({
     const unitName = computed(() => store.state.system.unitName);
 
     const queryParams = computed(() => {
-      return filterOptions.value.reduce(function(r, a) {
+      return filterOptions.value.reduce(function (r, a) {
         // @ts-ignore
         r[a.name] = r[a.name] || '';
         // @ts-ignore
@@ -158,7 +158,7 @@ function useFiltres() {
     let issuesToDisplay = issues.value;
 
     issuesToDisplay = searchTerm.value
-      ? issues.value.filter(i =>
+      ? issues.value.filter((i) =>
           JSON.stringify(Object.values(i.fields))
             .toLowerCase()
             .includes(searchTerm.value.toLowerCase())
@@ -171,10 +171,10 @@ function useFiltres() {
   function valuesForFilter(fieldName: string, values: string[]) {
     const result: FilterValue[] = [];
 
-    values.forEach(value => {
+    values.forEach((value) => {
       const total = filtredIssues.value.filter(
         // @ts-ignore
-        issue => issue[fieldName] === value
+        (issue) => issue[fieldName] === value
       ).length;
       result.push({
         title: value,
@@ -189,7 +189,7 @@ function useFiltres() {
   function ticketValuesForFilter() {
     const result: FilterValue[] = [];
 
-    const totalTickets = filtredIssues.value.filter(issue => issue['ticket'])
+    const totalTickets = filtredIssues.value.filter((issue) => issue['ticket'])
       .length;
     result.push(
       {
@@ -214,10 +214,10 @@ function useFiltres() {
     const result: FilterValue[] = [];
 
     templates.value
-      .map(template => template.displayName)
-      .forEach(templateName => {
+      .map((template) => template.displayName)
+      .forEach((templateName) => {
         const total = filtredIssues.value.filter(
-          issue => issue.template === templateName
+          (issue) => issue.template === templateName
         ).length;
         result.push({
           title: templateName,

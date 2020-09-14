@@ -207,7 +207,7 @@ export default defineComponent({
     );
 
     const filtredItems = computed(() =>
-      templates.value.filter(item =>
+      templates.value.filter((item) =>
         toLower(item.displayName).includes(toLower(searchTerm.value))
       )
     );

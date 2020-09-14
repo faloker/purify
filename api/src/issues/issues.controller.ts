@@ -77,7 +77,7 @@ export class IssuesController {
     }
 
     if (body.change.status === 'closed') {
-      body.ids.forEach(async id => {
+      body.ids.forEach(async (id) => {
         const issue = await this.issuesService.enrichOne(id);
         if (issue) {
           await this.eventsService.add(
@@ -85,7 +85,7 @@ export class IssuesController {
             { ...issue },
             req.user._id,
             Audience.ALL,
-            (issue.project as Project)._id,
+            (issue.project as Project)._id
           );
         }
       });
@@ -105,7 +105,7 @@ export class IssuesController {
       { link: ticket.link, key: ticket.key, ...doc },
       req.user._id,
       Audience.ALL,
-      (doc.project as Project)._id,
+      (doc.project as Project)._id
     );
     return ticket;
   }
@@ -125,7 +125,7 @@ export class IssuesController {
       { text: com.text, ...doc },
       req.user._id,
       Audience.ALL,
-      (doc.project as Project)._id,
+      (doc.project as Project)._id
     );
     return com;
   }

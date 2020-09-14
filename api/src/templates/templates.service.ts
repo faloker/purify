@@ -78,7 +78,7 @@ export class TemplatesService {
       // Do external comparison first to avoid duplicate issues between templates
       let filteredUnitIssues = allIssuesInUnit;
       for (const comparisonField of template.externalComparisonFields) {
-        filteredUnitIssues = filteredUnitIssues.filter(existingIssue =>
+        filteredUnitIssues = filteredUnitIssues.filter((existingIssue) =>
           existingIssue.fields
             .toLowerCase()
             .includes(get(issue, comparisonField).toLowerCase())
@@ -90,7 +90,7 @@ export class TemplatesService {
         let filteredTemplateIssues = allTemplateIssuesInUnit;
         for (const comparisonField of template.internalComparisonFields) {
           filteredTemplateIssues = filteredTemplateIssues.filter(
-            existingIssue =>
+            (existingIssue) =>
               get(JSON.parse(existingIssue.fields), comparisonField) ===
               get(issue, comparisonField)
           );

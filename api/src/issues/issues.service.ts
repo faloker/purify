@@ -52,13 +52,13 @@ export class IssuesService {
 
     if (params.risk && params.risk.split(',').length < 5) {
       conditions.risk = {
-        $in: params.risk.split(',').map(r => r.toLowerCase()),
+        $in: params.risk.split(',').map((r) => r.toLowerCase()),
       };
     }
 
     if (params.resolution && params.resolution.split(',').length < 4) {
       conditions.resolution = {
-        $in: params.resolution.split(',').map(r => r.toLowerCase()),
+        $in: params.resolution.split(',').map((r) => r.toLowerCase()),
       };
     }
 
@@ -161,7 +161,7 @@ export class IssuesService {
     if (settings) {
       const jiraTicket = await this.jiraService
         .createIssue(jiraIssue)
-        .catch(err => {
+        .catch((err) => {
           throw new BadRequestException(JSON.stringify(JSON.parse(err).body));
         });
 

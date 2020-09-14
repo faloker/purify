@@ -10,7 +10,7 @@ export default class Events extends VuexModule {
 
   @Mutation
   [SET_EVENTS](events: Event[]) {
-    events.forEach(event => {
+    events.forEach((event) => {
       event.body = JSON.parse(event.body);
     });
     this.items = events;

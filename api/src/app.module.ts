@@ -44,25 +44,15 @@ import Joi = require('@hapi/joi');
     }),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('local', 'production')
-          .default('local'),
+        NODE_ENV: Joi.string().valid('local', 'production').default('local'),
         MONGODB_URI: Joi.string().required(),
         DB_NAME: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         DOMAIN: Joi.string().required(),
-        SECURE: Joi.string()
-          .valid('true', 'false')
-          .default('true'),
-        ALLOW_REGISTRATION: Joi.string()
-          .valid('true', 'false')
-          .default('true'),
-        USE_LDAP: Joi.string()
-          .valid('true', 'false')
-          .default('false'),
-        USE_SSO: Joi.string()
-          .valid('true', 'false')
-          .default('false'),
+        SECURE: Joi.string().valid('true', 'false').default('true'),
+        ALLOW_REGISTRATION: Joi.string().valid('true', 'false').default('true'),
+        USE_LDAP: Joi.string().valid('true', 'false').default('false'),
+        USE_SSO: Joi.string().valid('true', 'false').default('false'),
         SAML_IDP_CERT_ONELINE: Joi.string().default('xxx'),
       }),
       validationOptions: {

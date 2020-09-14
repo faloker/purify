@@ -57,7 +57,7 @@ export default {
       this.editor.refresh();
     }, 1);
 
-    this.editor.on('change', cm => {
+    this.editor.on('change', (cm) => {
       this.$emit('changed', cm.getValue());
       this.$emit('input', cm.getValue());
     });

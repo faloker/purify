@@ -19,7 +19,7 @@ Vue.prototype.API_URL =
       window.DOMAIN
     : 'http://localhost:3000/api';
 
-Object.keys(directives).forEach(key => {
+Object.keys(directives).forEach((key) => {
   Vue.directive(key, (directives as { [key: string]: DirectiveOptions })[key]);
 });
 
@@ -27,5 +27,5 @@ new Vue({
   store,
   router,
   vuetify,
-  render: h => h(App),
+  render: (h) => h(App),
 }).$mount('#app');
