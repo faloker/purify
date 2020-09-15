@@ -2,7 +2,7 @@ const slug = require('slug');
 
 module.exports = {
   async up(db, client) {
-    await db.collection('units').dropIndex('slug_1');
+    await db.collection('units').dropIndex('slug_1').catch(() => {});
     await db
       .collection('units')
       .find()

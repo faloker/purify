@@ -1,6 +1,6 @@
 module.exports = {
   async up(db, client) {
-    await db.collection('projects').dropIndex('slug_1');
+    await db.collection('projects').dropIndex('slug_1').catch(() => {});
     await db
       .collection('projects')
       .find()
