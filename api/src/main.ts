@@ -38,6 +38,7 @@ async function bootstrap() {
         directives: {
           defaultSrc: ["'self'", 'cdn.jsdelivr.net'],
           objectSrc: ["'none'"],
+          styleSrc: ["'self'", 'use.fontawesome.com', 'fonts.googleapis.com'],
         },
       },
     })
