@@ -40,7 +40,7 @@ async function bootstrap() {
           imgSrc: ["'self'", 'api.adorable.io'],
           objectSrc: ["'none'"],
           styleSrc: ["'self'", 'use.fontawesome.com', 'fonts.googleapis.com', 'cdn.jsdelivr.net'],
-          fontSrc: ["'self'", 'use.fontawesome.com', 'fonts.googleapis.com', 'fonts.gstatic.com'],
+          fontSrc: ["'self'", 'use.fontawesome.com', 'fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'],
         },
       },
     })
