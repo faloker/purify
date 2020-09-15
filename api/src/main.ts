@@ -32,7 +32,16 @@ async function bootstrap() {
   );
 
   app.set('trust proxy', true);
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'", 'cdn.jsdelivr.net'],
+          objectSrc: ["'none'"],
+        },
+      },
+    })
+  );
   app.use(compression());
   app.use(cookieParser());
 
