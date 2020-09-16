@@ -67,6 +67,7 @@ export class AuthService {
         _id: user._id,
         role: user.role,
         memberships: user.memberships,
+        ssoBypass: user.ssoBypass,
         type: 'accessToken',
       }),
       refreshToken,
@@ -86,8 +87,16 @@ export class AuthService {
       );
       await this.usersService.saveRefreshToken(_id, refreshToken);
 
+      const user = await this.usersService.findOne({ _id });
+
       return {
-        accessToken: this.jwtService.sign({ _id, type: 'accessToken' }),
+        accessToken: this.jwtService.sign({
+          _id,
+          type: 'accessToken',
+          ssoBypass: user.ssoBypass,
+          role: user.role,
+          memberships: user.memberships,
+        }),
         refreshToken,
       };
     } else {

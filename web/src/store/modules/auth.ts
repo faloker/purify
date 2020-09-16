@@ -1,14 +1,12 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
-import { login, signup, refreshToken, logout } from '@/api/auth.service';
+import { login, refreshToken, logout } from '@/api/auth.service';
 import { Credentials } from '../types';
 import jwt_decode from 'jwt-decode';
 import {
   LOGIN,
   LOGOUT,
-  REGISTER,
   REFRESH_TOKEN,
   AUTO_REFRESH,
-  PROFILE_FETCH,
   SAML_LOGIN,
 } from '../actions';
 import {
@@ -52,16 +50,16 @@ export default class Auth extends VuexModule {
     const { exp } = jwt_decode(this.token);
     const now = Date.now();
 
-    const { role, memberships } = jwt_decode(this.token);
+    const { role, memberships, ssoBypass } = jwt_decode(this.token);
     const { data } = await currentUser();
-    const user = { ...data, role, memberships };
+    const user = { ...data, role, memberships, ssoBypass };
     this.context.commit(SET_PROFILE, user);
 
     let timeUntilRefresh = exp * 1000 - now;
     timeUntilRefresh -= 120000;
 
     const refreshTask = setTimeout(
-      () => this.context.dispatch(REFRESH_TOKEN).catch(() => {}),
+      async () => await this.context.dispatch(REFRESH_TOKEN).catch(() => {}),
       timeUntilRefresh
     );
     this.context.commit(SET_REFRESH_TASK, refreshTask);

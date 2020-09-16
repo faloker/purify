@@ -43,7 +43,7 @@ export class UsersService {
         {
           _id: userId,
         },
-        '_id name email image ssoBypass'
+        '_id name email image'
       )
       .lean();
   }

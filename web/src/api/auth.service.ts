@@ -7,13 +7,6 @@ export const login = (data: any) =>
     data,
   });
 
-export const signup = (data: any) =>
-  request({
-    url: 'auth/signup',
-    method: 'post',
-    data,
-  });
-
 export const refreshToken = () =>
   request({
     url: 'auth/refresh_token',
