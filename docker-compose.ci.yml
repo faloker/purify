@@ -6,7 +6,7 @@ services:
     restart: always
 
   api:
-    image: "faloker/purify-api-test:${GITHUB_RUN_ID}"
+    image: faloker/purify-api-test
     restart: always
     depends_on:
       - mongo
@@ -14,7 +14,7 @@ services:
       - ./api/.env.dev
 
   nginx:
-    image: "faloker/purify-nginx-test:${GITHUB_RUN_ID}"
+    image: faloker/purify-nginx-test
     restart: always
     depends_on:
       - api
