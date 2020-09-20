@@ -24,6 +24,7 @@ jobs:
           password: '${{ secrets.DOCKER_HUB_KEY }}'
           image_name: faloker/purify-nginx-test
           dockerfile: nginx.dockerfile
+          build_extra_args: "--build-arg=env=dev"
 
   cypress-run:
     needs: ['build-api-image', 'build-nginx-image']
