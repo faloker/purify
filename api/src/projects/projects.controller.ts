@@ -87,7 +87,6 @@ export class ProjectsController {
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
-  @UseInterceptors(HttpCacheInterceptor)
   @ApiOperation({ summary: 'List projects' })
   @ApiOkResponse({
     description: 'List of projects',

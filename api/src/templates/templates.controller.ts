@@ -58,8 +58,6 @@ export class TemplatesController {
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
-  @UseInterceptors(HttpCacheInterceptor)
-  @CacheTTL(10)
   @ApiOperation({ summary: 'List templates' })
   @ApiOkResponse({
     description: 'List of templates',

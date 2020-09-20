@@ -1,11 +1,12 @@
-describe('Project creation', () => {
+describe('Projects / Create', () => {
   before(() => {
-    cy.task('flush:db');
-    cy.apiCreateUser();
+    cy.task('db:drop');
   });
 
   beforeEach(() => {
-    cy.login();
+    cy.loginAsSystem();
+    cy.contains('Recent Projects');
+    cy.visit('http://localhost:8080/#/projects')
   });
 
   it('Create project with all fields', () => {

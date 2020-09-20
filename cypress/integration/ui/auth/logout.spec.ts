@@ -1,20 +1,19 @@
-describe('Logout', () => {
+describe('Authentication / Logout', () => {
   before(() => {
-    cy.task('flush:db');
-    cy.apiCreateUser();
+    // cy.task('flush:db');
+    // cy.apiCreateUser();
   });
   
   it('Do logout', () => {
-    cy.login();
-    cy.contains('Search');
+    cy.loginAsSystem();
 
     cy.get('#btn-mini-profile').click();
     cy.get('#menu-mini-profile').should('be.visible');
     cy.get('#btn-logout').click();
 
-    cy.contains('Login');
+    cy.contains('Sign In');
 
     cy.visit('http://localhost:8080/#/projects');
-    cy.contains('Login');
+    cy.contains('Sign In');
   });
 });

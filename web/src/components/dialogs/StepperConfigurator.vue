@@ -427,7 +427,11 @@ import {
 } from '@vue/composition-api';
 // @ts-ignore
 import VueJsonPretty from 'vue-json-pretty';
-import { TEMPLATE_CREATE, FETCH_REPORTS } from '@/store/actions';
+import {
+  TEMPLATE_CREATE,
+  FETCH_REPORTS,
+  APPLY_TEMPLATE,
+} from '@/store/actions';
 import { Report } from '@/store/types';
 import store from '@/store';
 import slug from 'slug';
@@ -519,7 +523,6 @@ export default defineComponent({
             .replace('report.root.', '')
             .replace('[0]', '')
             .replace('report.root', ''),
-          report: props.report._id,
           name: name.value,
           displayName: displayName.value,
           titlePattern: titlePattern.value,
@@ -536,10 +539,17 @@ export default defineComponent({
             i.replace('issue.', '')
           ),
         })
-        .then(async () => {
-          loading.value = false;
-          await store.dispatch(FETCH_REPORTS).catch(() => {});
-          stepperDialog.value = false;
+        .then(() => {
+          store
+            .dispatch(APPLY_TEMPLATE, {
+              reportId: props.report._id,
+              templateName: name.value,
+            })
+            .then(async () => {
+              loading.value = false;
+              await store.dispatch(FETCH_REPORTS).catch(() => {});
+              stepperDialog.value = false;
+            });
         })
         .catch(() => {
           loading.value = false;

@@ -4,4 +4,8 @@ module.exports = {
       .collection('issues')
       .updateMany({}, [{ $set: { risk: { $toLower: '$risk' } } }]);
   },
+
+  async down(db, client) {
+  //  
+  },
 };

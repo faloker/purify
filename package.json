@@ -14,7 +14,7 @@
     "cy:version": "cypress version",
     "cy:open": "cypress open",
     "cy:coverage": "wait-on http://localhost:8080/#/welcome && cypress run -C cypress.cover.json",
-    "cy:run": "wait-on http://localhost:8080/#/welcome && cypress run"
+    "cy:run": "wait-on http://localhost:8080/#/welcome && cypress run --browser chrome --record --key fb3c6806-340f-4621-b19a-235876278336"
   },
   "repository": {
     "type": "git",
@@ -30,18 +30,19 @@
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",
     "@cypress/code-coverage": "^3.8.1",
     "@types/mongoose": "^5.7.36",
-    "@types/node": "^14.0.27",
+    "@types/node": "^14.10.2",
     "babel-plugin-istanbul": "^6.0.0",
-    "cypress": "^4.12.0",
+    "cypress": "^5.2.0",
+    "cypress-file-upload": "^4.1.1",
     "istanbul-lib-coverage": "^3.0.0",
     "nyc": "^15.1.0",
-    "typescript": "^3.9.7",
-    "webpack": "^4.18.1"
+    "typescript": "^4.0.2",
+    "webpack": "^4.44.1"
   },
   "dependencies": {
-    "concurrently": "^5.1.0",
-    "mongoose": "^5.9.5",
-    "wait-on": "^4.0.1"
+    "concurrently": "^5.3.0",
+    "mongoose": "^5.10.5",
+    "wait-on": "^5.2.0"
   },
   "nyc": {
     "extension": [

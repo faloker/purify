@@ -43,8 +43,17 @@
               :search="searchTerm"
               :items-per-page="5"
             >
+              <template v-slot:item.fromIP="{ item }" class="text-center">
+                <b v-if="!item.fromIP">--</b>
+                <span v-else>{{ item.fromIP }}</span>
+              </template>              
+              <template v-slot:item.userAgent="{ item }" class="text-center">
+                <b v-if="!item.userAgent">--</b>
+                <span v-else>{{ item.userAgent }}</span>
+              </template>
               <template v-slot:item.accessDate="{ item }">
-                <span class="text-none mr-5">{{ formatDate(item.accessDate) }}</span>
+                <b v-if="!item.accessDate">--</b>
+                <span v-else class="text-none mr-4">{{ formatDate(item.accessDate) }}</span>
               </template>              
               <template v-slot:item.createdAt="{ item }">
                 <span class="text-none mr-5">{{ formatDate(item.createdAt) }}</span>

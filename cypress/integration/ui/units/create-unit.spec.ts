@@ -1,27 +1,19 @@
-describe('Unit creation', () => {
+describe('Units / Create', () => {
   before(() => {
-    cy.task('flush:db');
-    
-    cy.request('POST', `${Cypress.env('apiUrl')}/api/auth/signup`, {
-      username: 'test',
-      email: 'test@example.com',
-      password: 'testtest',
-    })
-      .its('body')
-      .then((response) => {
-        cy.apiCreateProject(response.token);
-      });
+    cy.task('db:drop');
+    cy.apiCreateProject();
   });
 
   beforeEach(() => {
-    cy.login();
-    cy.contains('test title').click();
+    cy.loginAsSystem();
+    cy.contains('Recent Projects');
+    cy.visit('http://localhost:8080/#/projects/test-name/units/overview');
   });
 
   it('Create unit', () => {
     cy.createUnit('dast');
 
-    cy.get('.v-dialog').should('not.be.visible');
+    cy.get('.v-dialog--active').should('not.be.visible');
     cy.get('.v-data-table').within(() => {
       cy.contains('dast').should('be.visible');
     });

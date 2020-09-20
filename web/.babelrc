@@ -5,7 +5,11 @@
       "plugins": [
         [
           "istanbul",
-          { "extends": "@istanbuljs/nyc-config-typescript", "all": true }
+          {
+            "extends": "@istanbuljs/nyc-config-typescript",
+            "all": true,
+            "extension": [".vue", ".ts"]
+          }
         ]
       ]
     }

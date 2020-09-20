@@ -2,5 +2,8 @@
   "env": {
     "apiUrl": "http://localhost:8080",
     "webUrl": "http://localhost:8080"
-  }
+  },
+  "viewportWidth": 1280,
+  "viewportHeight": 800,
+  "projectId": "okxjr8"
 }

@@ -34,12 +34,7 @@ async function bootstrap() {
   app.set('trust proxy', true);
   app.use(
     helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'", 'cdn.jsdelivr.net'],
-          objectSrc: ["'none'"],
-        },
-      },
+      contentSecurityPolicy: false,
     })
   );
   app.use(compression());

@@ -13,7 +13,17 @@ declare namespace Cypress {
      * // login with custom credentials
      * cy.login('username', 'password')
      */
-    login(username?: string, password?: string): void;
+    login(username?: string, password?: string): void;    
+    
+    /**
+     * Perform login as System user via the UI.
+     *
+     *
+     * @example
+     * // login with default credentials
+     * cy.loginAsSystem()
+     */
+    loginAsSystem(): void;
 
     /**
      * Register a new user through the UI.
@@ -71,27 +81,26 @@ declare namespace Cypress {
     /**
      * Create a new project through the API.
      *
-     * @param {string} jwtToken The JWT token to use for authentication.
-     * @param {string} title The name of the project. Defaults to "test title".
-     * @param {string} subtitle Optional description of the project. Defaults to "test desc".
+     * @param {string} displayName The name of the project. Defaults to "test name".
+     * @param {string} name The name of the project. Defaults to "test-name".
+     * @param {string} description Optional description of the project. Defaults to "test desc".
      *
      * @example
      * // create a new project with default params
-     * cy.apiCreateProject(token);
+     * cy.apiCreateProject();
      */
-    apiCreateProject(jwtToken: string, title?: string, subtitle?: string): void;
+    apiCreateProject(displayName?: string, name?: string, description?: string): void;
 
     /**
      * Create a new unit through the API.
      *
-     * @param {string} jwtToken The JWT token to use for authentication.
-     * @param {string} name The name of the unit. Defaults to "unit".
+     * @param {string} displayName The name of the unit. Defaults to "unit".
      *
      * @example
      * // create a new unit with default params
      * cy.apiCreateUnit(token);
      */
-    apiCreateUnit(jwtToken: string, name?: string): void;
+    apiCreateUnit(displayName?: string): void;
 
     /**
      * Upload the JSON object into the "test-title-unit" unit. A JSON object located at ../fixtures/oneshot-example.json.
@@ -115,6 +124,19 @@ declare namespace Cypress {
      * // create a new template
      * cy.apiCreateTemplate(apiToken, resp.body._id);
      */
-    apiCreateTemplate(apiToken: string, reportId: string, name?: string): void;
+    apiCreateTemplate(name: string, displayName: string): void;
+
+    /**
+     * Create a new API access token via UI.
+     *
+     * @param {string} name The name of the token.
+     *
+     * @example
+     * // create a new token
+     * cy.createAccessToken('monitoring');
+     */
+    createAccessToken(name: string): void;
+
+    uploadReport(filename: string): void;
   }
 }

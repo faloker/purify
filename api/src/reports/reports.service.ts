@@ -113,18 +113,8 @@ export class ReportsService {
       content: JSON.stringify(data),
     }).save();
 
-    if (templateName) {
-      const template = await this.templateModel
-        .findOne({
-          name: templateName,
-        })
-        .lean();
-
-      if (template) {
-        await this.templatesService.apply(report, template);
-      } else {
-        throw new NotFoundException('No such template');
-      }
+    if (templateName !== '') {
+      await this.templatesService.apply(report._id, templateName);
     }
 
     return this.reportModel.findOne({ _id: report._id }, '-content').lean();

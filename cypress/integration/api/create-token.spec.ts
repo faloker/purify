@@ -1,4 +1,4 @@
-describe('Request API token', () => {
+describe.skip('Request API token', () => {
   before(() => {
     cy.task('flush:db');
     cy.apiCreateUser();

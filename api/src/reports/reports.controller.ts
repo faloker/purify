@@ -7,6 +7,8 @@ import {
   UseInterceptors,
   HttpCode,
   CacheTTL,
+  Patch,
+  Body,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { GenericAuthGuard } from 'src/auth/generic-auth.guard';
@@ -24,6 +26,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Report } from './interfaces/report.interface';
 import { ReportInterceptor } from 'src/common/interceptors/report.interceptor';
 import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor';
+import { ApplyTemplateDto } from 'src/templates/dto/templates.dto';
+import { TemplatesService } from 'src/templates/templates.service';
 
 @UseGuards(RolesGuard)
 @UseGuards(GenericAuthGuard)
@@ -33,7 +37,10 @@ import { HttpCacheInterceptor } from 'src/common/interceptors/cache.interceptor'
 @ApiTags('reports')
 @Controller('reports')
 export class ReportsController {
-  constructor(private reportsService: ReportsService) {}
+  constructor(
+    private reportsService: ReportsService,
+    private templatesService: TemplatesService
+  ) {}
 
   @Get(':id/content')
   @Roles(['owner', 'admin', 'user', 'observer'])
@@ -41,6 +48,18 @@ export class ReportsController {
   @CacheTTL(30)
   getContent(@Param('id') report: Report) {
     return this.reportsService.getContent(report._id);
+  }
+
+  @Patch(':id/template')
+  @Roles(['owner', 'admin', 'user'])
+  applyTemplate(
+    @Param('id') report: Report,
+    @Body() applyTemplateDto: ApplyTemplateDto
+  ) {
+    return this.templatesService.apply(
+      report._id,
+      applyTemplateDto.templateName
+    );
   }
 
   @Delete(':id')

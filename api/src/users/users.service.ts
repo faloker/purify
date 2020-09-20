@@ -167,11 +167,17 @@ export class UsersService {
   }
 
   async saveRefreshToken(userId: string, token: string) {
-    return new this.tokenModel({
-      user: userId,
-      value: token,
-      type: TokenType.REFRESH_TOKEN,
-    }).save();
+    return this.tokenModel.findOneAndUpdate(
+      { user: userId, type: TokenType.REFRESH_TOKEN },
+      {
+        user: userId,
+        value: token,
+        type: TokenType.REFRESH_TOKEN,
+      },
+      {
+        upsert: true,
+      }
+    );
   }
 
   async validateRefreshToken(userId: string, refreshToken: string) {

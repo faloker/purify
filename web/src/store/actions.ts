@@ -42,10 +42,12 @@ export const FETCH_METRICS = 'fetchMetrics';
 export const EDIT_PROJECT = 'editProject';
 export const AUTO_REFRESH = 'autoRefresh';
 
+// Templates
 export const TEMPLATES_FETCH = 'templatesFetch';
 export const TEMPLATES_DELETE = 'templatesDelete';
 export const TEMPLATES_EDIT = 'templatesEdit';
 export const TEMPLATE_CREATE = 'templateCreate';
+export const APPLY_TEMPLATE = 'applyTemplate';
 
 export const FETCH_SYSTEM_SETUP = 'fetchSystemSetup';
 
