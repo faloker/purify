@@ -1,52 +1,26 @@
-name: e2e tests
+name: E2E on Chrome
 on: [pull_request]
 jobs:
-  test:
+  cypress-run:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3]
     steps:
     - name: Checkout
       uses: actions/checkout@master
 
-    - name: Setup ndoe
-      uses: actions/setup-node@master
-      with:
-        node-version: '14'
-
-    - name: Install root dependencies
-      run: npm i
-
-    - name: Start test server and db with docker-compose
-      run:  npm run start:test
-
     - name: Run tests
       uses: cypress-io/github-action@v2
       with:
+        build: npm run start:test
         browser: chrome
         record: true
+        parallel: true
+        group: 'Chrome'
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  coverage:
-    needs: [ test ]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@master
-      with:
-        node-version: '14'
-    - name: Install root dependencies
-      run: npm i
-    - name: Start test server and db in dev mode
-      run:  npm run start:coverage
-      env:
-        DB_NAME: nest
-        JWT_SECRET: secret
-        MONGODB_URI: mongodb://localhost:27017
-        DOMAIN: localhost
-    - uses: paambaati/codeclimate-action@v2.5.2
-      env:
-        CC_TEST_REPORTER_ID: 04813de6fa543be4690a43a1dd09a4561eaa6d2f421e715e78c2a013d7455e84
-      with:
-        coverageCommand: npm run cy:coverage
       
 
