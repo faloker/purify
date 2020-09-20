@@ -3,10 +3,6 @@ on: [pull_request]
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        containers: [1, 2, 3]
     steps:
     - name: Checkout
       uses: actions/checkout@master
@@ -17,7 +13,6 @@ jobs:
         build: npm run start:test
         browser: chrome
         record: true
-        parallel: true
         group: 'Chrome'
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
