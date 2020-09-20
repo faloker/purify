@@ -74,4 +74,19 @@ Cypress.Commands.add('uploadReport', (filename: string) => {
   });
 });
 
+Cypress.Commands.add('createUser', (email: string) => {
+  cy.contains('Create user').click();
+
+  cy.get('.v-dialog--active').within(() => {
+    cy.contains('New User').should('be.visible');
+
+    cy.get('#email').type(email);
+    cy.get('.v-input--selection-controls__ripple').first().click();
+    cy.get('.v-chip__content').contains('test name').should('be.visible');
+    cy.get('.v-input--selection-controls__ripple').last().click();
+    cy.contains('Create').click();
+    cy.contains('button', 'Create').should('not.be.disabled').click();
+  });
+});
+
 export {};

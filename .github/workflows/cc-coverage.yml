@@ -1,0 +1,33 @@
+name: Code Climate Coverage
+on: [pull_request]
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@master
+        with:
+          node-version: '14'
+
+      - name: Install root dependencies
+        run: npm i && npm install -g migrate-mongo
+
+      - name: Start test server and db in dev mode
+        run: npm run start:coverage
+        env:
+          DB_NAME: nest
+          JWT_SECRET: secret
+          MONGODB_URI: mongodb://localhost:27017
+          DOMAIN: localhost
+
+      - name: Apply DB migrations
+        run: npm run db:migrate
+        env:
+          DB_NAME: nest
+          MONGODB_URI: mongodb://localhost:27017
+
+      - uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: 04813de6fa543be4690a43a1dd09a4561eaa6d2f421e715e78c2a013d7455e84
+        with:
+          coverageCommand: npm run cy:coverage

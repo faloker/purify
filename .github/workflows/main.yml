@@ -1,52 +1,50 @@
-name: e2e tests
+name: E2E tests
 on: [pull_request]
 jobs:
-  test:
+  build-api-image:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@master
+      - uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: '${{ secrets.DOCKER_HUB_USERNAME }}'
+          password: '${{ secrets.DOCKER_HUB_KEY }}'
+          image_name: faloker/purify-api-test
+          dockerfile: api.dockerfile
 
-    - name: Setup ndoe
-      uses: actions/setup-node@master
-      with:
-        node-version: '14'
-
-    - name: Install root dependencies
-      run: npm i
-
-    - name: Start test server and db with docker-compose
-      run:  npm run start:test
-
-    - name: Run tests
-      uses: cypress-io/github-action@v2
-      with:
-        browser: chrome
-        record: true
-      env:
-        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  coverage:
-    needs: [ test ]
+  build-nginx-image:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@master
-      with:
-        node-version: '14'
-    - name: Install root dependencies
-      run: npm i
-    - name: Start test server and db in dev mode
-      run:  npm run start:coverage
-      env:
-        DB_NAME: nest
-        JWT_SECRET: secret
-        MONGODB_URI: mongodb://localhost:27017
-        DOMAIN: localhost
-    - uses: paambaati/codeclimate-action@v2.5.2
-      env:
-        CC_TEST_REPORTER_ID: 04813de6fa543be4690a43a1dd09a4561eaa6d2f421e715e78c2a013d7455e84
-      with:
-        coverageCommand: npm run cy:coverage
-      
+      - name: Checkout
+        uses: actions/checkout@master
+      - uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: '${{ secrets.DOCKER_HUB_USERNAME }}'
+          password: '${{ secrets.DOCKER_HUB_KEY }}'
+          image_name: faloker/purify-nginx-test
+          dockerfile: nginx.dockerfile
+          build_extra_args: '--build-arg=env=dev'
 
+  chrome-run:
+    needs: ['build-api-image', 'build-nginx-image']
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Run tests
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run start:ci
+          browser: chrome
+          record: true
+          parallel: true
+          group: 'Chrome'
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
