@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { Template } from '@/store/types';
+import { ApplyTemplateDto, Template } from '@/store/types';
 
 export const createTemplate = (template: Template) =>
   request({
@@ -27,3 +27,11 @@ export const editTemplate = (slug: string, template: Template) =>
     method: 'patch',
     data: template,
   });
+
+export function applyTemplate(applyTemplateDto: ApplyTemplateDto) {
+  return request({
+    url: `reports/${applyTemplateDto.reportId}/template`,
+    method: 'patch',
+    data: { templateName: applyTemplateDto.templateName },
+  });
+}

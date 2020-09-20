@@ -4,15 +4,23 @@ import {
   deleteTemplate,
   editTemplate,
   createTemplate,
+  applyTemplate,
 } from '@/api/templates.service';
 import {
   TEMPLATES_FETCH,
   TEMPLATES_DELETE,
   TEMPLATES_EDIT,
   TEMPLATE_CREATE,
+  APPLY_TEMPLATE,
+  FETCH_REPORTS,
 } from '@/store/actions';
 import { TEMPLATES_SET } from '@/store/mutations';
-import { Template, TemplateWithStats, EditTemplateDto } from '../types';
+import {
+  Template,
+  TemplateWithStats,
+  EditTemplateDto,
+  ApplyTemplateDto,
+} from '../types';
 
 @Module
 export default class Templates extends VuexModule {
@@ -37,12 +45,18 @@ export default class Templates extends VuexModule {
   @Action
   async [TEMPLATES_DELETE](name: string) {
     await deleteTemplate(name);
-    this.context.dispatch(TEMPLATES_FETCH, true);
+    await this.context.dispatch(TEMPLATES_FETCH, true);
   }
 
   @Action
   async [TEMPLATES_EDIT](payload: EditTemplateDto) {
     await editTemplate(payload.name, payload.change);
-    this.context.dispatch(TEMPLATES_FETCH, true);
+    await this.context.dispatch(TEMPLATES_FETCH, true);
+  }
+
+  @Action
+  async [APPLY_TEMPLATE](applyTemplateDto: ApplyTemplateDto) {
+    await applyTemplate(applyTemplateDto);
+    await this.context.dispatch(FETCH_REPORTS).catch(() => {});
   }
 }

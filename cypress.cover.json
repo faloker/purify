@@ -5,5 +5,8 @@
     },
     "apiUrl": "http://localhost:3000",
     "webUrl": "http://localhost:8080"
-  }
+  },
+  "viewportWidth": 1280,
+  "viewportHeight": 800,
+  "projectId": "okxjr8"
 }

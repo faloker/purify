@@ -49,8 +49,6 @@ export class IssuesController {
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
-  @UseInterceptors(HttpCacheInterceptor)
-  @CacheTTL(3)
   @ApiOperation({ summary: 'List issues' })
   @ApiOkResponse({ description: 'List of issues' })
   @ApiTags('issues')

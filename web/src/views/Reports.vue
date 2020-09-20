@@ -33,18 +33,35 @@
             >
               <template v-slot:item.createdAt="{ item }">
                 <div class="subheading">
-                  {{ new Date(item.createdAt).toLocaleDateString() }}
+                  {{ formatDate(item.createdAt, 'dd MMM yyyy') }}
                 </div>
               </template>
-              <template v-slot:item.template="{ item }" class="text-center">
+              <template v-slot:item.template="{ item }">
                 <v-btn
                   v-if="!item.template"
+                  class="mx-1"
                   outlined
-                  rounded
-                  class="text-none"
+                  label
+                  small
                   @click.stop="openStepper(item)"
                 >
-                  <v-icon>add</v-icon>Create template
+                  <v-icon left>
+                    mdi-new-box
+                  </v-icon>
+                  Create
+                </v-btn>
+                <v-btn
+                  v-if="!item.template"
+                  class="mx-1"
+                  outlined
+                  label
+                  small
+                  @click.stop="openTemplateSelector(item)"
+                >
+                  <v-icon left>
+                    mdi-connection
+                  </v-icon>
+                  Apply
                 </v-btn>
                 <v-chip
                   v-else
@@ -107,6 +124,7 @@
           <v-col>
             <v-row>
               <v-file-input
+                id="file-input"
                 v-model="file"
                 outlined
                 dense
@@ -116,10 +134,11 @@
               />
             </v-row>
             <v-row>
-              <v-select
-                id="templateName"
+              <v-autocomplete
+                id="template-name"
                 v-model="templateName"
                 :items="templates"
+                :search-input.sync="templateSearch"
                 item-text="displayName"
                 item-value="name"
                 label="Template to apply"
@@ -152,6 +171,54 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="applyTemplateDialog"
+      max-width="430"
+      @click:outside="applyTemplateDialog = false"
+      @keydown.esc="applyTemplateDialog = false"
+    >
+      <v-card>
+        <v-card-title>Select Template</v-card-title>
+        <v-card-text>
+          <v-col>
+            <v-row>
+              <v-autocomplete
+                id="apply-template-name"
+                v-model="templateNameToApply"
+                :search-input.sync="templateSearch"
+                :items="templates"
+                item-text="displayName"
+                item-value="name"
+                label="Template to apply"
+                dense
+                clearable
+                outlined
+                prepend-icon="mdi-file"
+              />
+            </v-row>
+          </v-col>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-btn
+            color="quinary"
+            text
+            @click.stop="applyTemplateDialog = false"
+          >
+            Close
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            color="quinary"
+            text
+            :disabled="!templateNameToApply"
+            @click.stop="applyTemplate"
+          >
+            Apply
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script lang="ts">
@@ -161,9 +228,7 @@ import {
   ref,
   onMounted,
   computed,
-  SetupContext,
   ComputedRef,
-  Ref,
 } from '@vue/composition-api';
 import store from '@/store';
 import Stepper from '@/components/dialogs/StepperConfigurator.vue';
@@ -175,8 +240,10 @@ import {
   SHOW_SUCCESS_MSG,
   TEMPLATES_FETCH,
   UPLOAD_REPORT,
+  APPLY_TEMPLATE,
 } from '@/store/actions';
 import { Report, TemplateWithStats } from '@/store/types';
+import { formatDate } from '@/utils/helpers';
 
 export default defineComponent({
   name: 'Reports',
@@ -186,7 +253,7 @@ export default defineComponent({
     ConfirmDialog,
   },
 
-  setup(props, context) {
+  setup() {
     const searchTerm = ref('');
     const templates: ComputedRef<TemplateWithStats[]> = computed(
       () => store.state.templates.items
@@ -242,6 +309,7 @@ export default defineComponent({
 
     return {
       report,
+      formatDate,
       reports,
       loading,
       headers,
@@ -253,6 +321,7 @@ export default defineComponent({
       stepperDialog,
       openConfirmationDialog,
       ...useUploadReport(),
+      ...useApplyTemplate(),
     };
   },
 });
@@ -326,5 +395,40 @@ function useUploadReport() {
   }
 
   return { uploadDialog, file, templateName, uploadReport };
+}
+
+function useApplyTemplate() {
+  const applyTemplateDialog = ref(false);
+  const templateNameToApply = ref('');
+  const reportId = ref('');
+  const templateSearch = ref('');
+
+  function openTemplateSelector(report: Report) {
+    reportId.value = report._id;
+    applyTemplateDialog.value = true;
+  }
+
+  function applyTemplate() {
+    store
+      .dispatch(APPLY_TEMPLATE, {
+        reportId: reportId.value,
+        templateName: templateNameToApply.value,
+      })
+      .then(async () => {
+        applyTemplateDialog.value = false;
+        reportId.value = '';
+        templateNameToApply.value = '';
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The template has been applied');
+      })
+      .catch(() => {});
+  }
+
+  return {
+    applyTemplateDialog,
+    openTemplateSelector,
+    templateNameToApply,
+    applyTemplate,
+    templateSearch,
+  };
 }
 </script>

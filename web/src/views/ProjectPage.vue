@@ -19,16 +19,12 @@
             v-if="unit"
             key="unitName"
             class="text-h6 font-weight-black mr-3"
-          >
-            {{ unit.displayName }}
-          </span>        
+          >{{ unit.displayName }}</span>
           <span
             v-else
             key="projectName"
             class="text-h6 font-weight-black mr-3"
-          >
-            {{ project.displayName }}
-          </span>
+          >{{ project.displayName }}</span>
           <v-btn
             key="overview"
             class="mx-2 mb-2"
@@ -85,7 +81,7 @@
 <script lang="ts">
 import { router } from '@/router';
 import store from '@/store';
-import { FETCH_PROJECTS, SELF_CHANGE } from '@/store/actions';
+import { FETCH_PROJECTS, FETCH_UNITS, SELF_CHANGE } from '@/store/actions';
 import { Project, Unit } from '@/store/types';
 import {
   defineComponent,
@@ -125,12 +121,15 @@ export default defineComponent({
       await store
         .dispatch(SELF_CHANGE, { trackMe: projectName.value })
         .catch(() => {});
+      await store.dispatch(FETCH_UNITS).catch(() => {});
     });
 
-    watch(projectName, () => {
-      router.replace({
-        name: 'ProjectOverview',
-      });
+    watch(projectName, (value) => {
+      if (value) {
+        router.replace({
+          name: 'ProjectOverview',
+        });
+      }
     });
 
     return {

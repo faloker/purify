@@ -288,3 +288,8 @@ export interface UserChangePasswordDto {
   oldPassword: string;
   newPassword: string;
 }
+
+export interface ApplyTemplateDto {
+  templateName: string;
+  reportId: string;
+}

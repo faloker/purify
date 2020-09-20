@@ -2,21 +2,33 @@ name: e2e tests
 on: [pull_request]
 jobs:
   test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@master
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Setup ndoe
+      uses: actions/setup-node@master
       with:
         node-version: '14'
+
     - name: Install root dependencies
       run: npm i
+
     - name: Start test server and db with docker-compose
       run:  npm run start:test
-    - name: Execute tests
-      run:  npm run cy:run
+
+    - name: Run tests
+      uses: cypress-io/github-action@v2
+      with:
+        browser: chrome
+        record: true
+      env:
+        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   coverage:
     needs: [ test ]
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
     - uses: actions/setup-node@master

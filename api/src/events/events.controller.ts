@@ -32,7 +32,6 @@ export class EventsController {
 
   @Get()
   @Roles(['owner', 'admin', 'user', 'observer'])
-  @UseInterceptors(HttpCacheInterceptor)
   @ApiOperation({ summary: 'List events' })
   @ApiOkResponse({
     description: 'List of events',

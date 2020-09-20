@@ -59,10 +59,12 @@ export class EditTemplateDto {
   readonly bodyFields: BodyField[];
 }
 
-export class CreateTemplateDto extends EditTemplateDto {
+export class CreateTemplateDto extends EditTemplateDto {}
+
+export class ApplyTemplateDto {
   @IsString()
   @IsNotEmpty()
-  readonly report: string;
+  templateName: string;
 }
 
 export class Template extends EditTemplateDto {

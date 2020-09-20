@@ -3,7 +3,7 @@ import * as oneshotExample from '../../fixtures/oneshot-example.json';
 let apiToken = '';
 let reportId = '';
 
-describe('Upload oneshot', () => {
+describe.skip('Upload oneshot', () => {
   before(() => {
     cy.task('flush:db');
 

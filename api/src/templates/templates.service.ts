@@ -28,19 +28,23 @@ export class TemplatesService {
   ) {}
 
   async save(createTemplateDto: CreateTemplateDto) {
-    const template = await new this.templateModel(createTemplateDto).save();
+    return new this.templateModel(createTemplateDto).save();
+  }
+
+  async apply(reportId: string, templateName: string) {
+    const template = await this.templateModel
+      .findOne({ name: templateName })
+      .lean();
+
+    if (!template) {
+      throw new NotFoundException('Template not found');
+    }
     const report = await this.reportModel
       .findOne({
-        _id: createTemplateDto.report,
+        _id: reportId,
       })
       .lean();
 
-    await this.apply(report, template);
-
-    return template;
-  }
-
-  async apply(report: any, template: any) {
     const content = JSON.parse(report.content);
     let issues: any = [];
 
@@ -53,7 +57,11 @@ export class TemplatesService {
           : content;
     }
 
-    const stat = await this.saveIssues(issues, template, report);
+    const stat = await this.saveIssues(
+      issues,
+      template as Template,
+      report as Report
+    );
 
     return this.reportModel.updateOne(
       { _id: report._id },
