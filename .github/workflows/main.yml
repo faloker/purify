@@ -1,21 +1,39 @@
 name: E2E on Chrome
 on: [pull_request]
 jobs:
-  cypress-run:
+  build-api-image:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@master
+      - uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: '${{ secrets.DOCKER_HUB_USERNAME }}'
+          password: '${{ secrets.DOCKER_HUB_KEY }}'
+          image_name: faloker/purify-api-test
+          dockerfile: api.dockerfile
 
-    - name: Run tests
-      uses: cypress-io/github-action@v2
-      with:
-        build: npm run start:test
-        browser: chrome
-        record: true
-        group: 'Chrome'
-      env:
-        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+  build-nginx-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: '${{ secrets.DOCKER_HUB_USERNAME }}'
+          password: '${{ secrets.DOCKER_HUB_KEY }}'
+          image_name: faloker/purify-nginx-test
+          dockerfile: nginx.dockerfile
 
+  cypress-run:
+    needs: ['build-api-image', 'build-nginx-image']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Run tests
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run start:ci
+          browser: chrome
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
