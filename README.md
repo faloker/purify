@@ -58,9 +58,9 @@ Collect all your findings in one place, review/validate/track them, collaborate 
 ## Getting started
 
 - [Official Documentation](https://faloker.gitbook.io/purify)
-- [Live Demo](https://purify-demo.herokuapp.com)
-  - email: system@purify.com
-  - password: secret
+- [Live Demo](https://purify-develop.herokuapp.com)
+  - email: demo@user.com
+  - password: 123456
 
 ## Questions
 
