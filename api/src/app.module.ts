@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule, CacheInterceptor } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -18,6 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { SystemModule } from './system/system.module';
 import { UploadModule } from './upload/upload.module';
+import { EventsModule } from './events/events.module';
 import Joi = require('@hapi/joi');
 
 @Module({
@@ -43,27 +44,16 @@ import Joi = require('@hapi/joi');
     }),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('local', 'production')
-          .default('local'),
+        NODE_ENV: Joi.string().valid('local', 'production').default('local'),
         MONGODB_URI: Joi.string().required(),
         DB_NAME: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         DOMAIN: Joi.string().required(),
-        SECURE: Joi.string()
-          .valid('true', 'false')
-          .default('true'),
-        ALLOW_REGISTRATION: Joi.string()
-          .valid('true', 'false')
-          .default('true'),
-        USE_LDAP: Joi.string()
-          .valid('true', 'false')
-          .default('false'),
-        USE_SSO: Joi.string()
-          .valid('true', 'false')
-          .default('false'),
-        SAML_IDP_CERT_ONELINE: Joi.string()
-          .default('xxx'),
+        SECURE: Joi.string().valid('true', 'false').default('true'),
+        ALLOW_REGISTRATION: Joi.string().valid('true', 'false').default('true'),
+        USE_LDAP: Joi.string().valid('true', 'false').default('false'),
+        USE_SSO: Joi.string().valid('true', 'false').default('false'),
+        SAML_IDP_CERT_ONELINE: Joi.string().default('xxx'),
       }),
       validationOptions: {
         allowUnknown: true,
@@ -85,6 +75,7 @@ import Joi = require('@hapi/joi');
     SlackModule,
     SystemModule,
     UploadModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [],

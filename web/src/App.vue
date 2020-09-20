@@ -3,28 +3,23 @@
     <router-view name="header" />
     <v-main>
       <snackbar />
-      <vue-page-transition name="fade">
-        <router-view />
-      </vue-page-transition>
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import Snackbar from '@/components/Snackbar.vue';
 
-export default {
-  name: 'App',
+export default defineComponent({
   components: { Snackbar },
-  data: () => ({
-    drawer: null,
-  }),
-};
+});
 </script>
 
 <style>
 #app {
-  background-color: #fafafa;
+  background-color: #ffffff;
 }
 .router-link-active {
   color: #2c3e50;

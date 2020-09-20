@@ -10,10 +10,11 @@ export interface Report extends Document {
   readonly content: any;
   statistics: Statistics;
   readonly unit: string;
+  readonly project: string;
   readonly type: string;
   template: string;
-  readonly created_at: Date;
-  readonly updated_at: Date;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
 }
 
 export enum ReportType {

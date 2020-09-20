@@ -1,56 +1,103 @@
 <template>
-  <v-card>
-    <v-card-title>
-      <span class="title mb-2">Edit issue</span>
-    </v-card-title>
-    <v-card-text>
-      <v-textarea
-        id="raw-issue-text"
-        v-model="rawIssue"
-        filled
-        label="Raw issue"
-        auto-grow
-      />
-    </v-card-text>
-    <v-divider />
-    <v-card-actions>
-      <v-spacer />
-      <v-btn
-        color="green darken-1"
-        text
-        @click="updateIssue()"
+  <v-dialog
+    v-model="value"
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+  >
+    <v-card>
+      <v-toolbar
+        color="primary"
+        dark
+        dense
       >
-        Confirm
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+        <v-btn
+          icon
+          dark
+          @click.stop="$emit('input', false)"
+        >
+          <v-icon>close</v-icon>
+        </v-btn>
+        <v-toolbar-title class="title">
+          <b>Issue Editor</b>
+        </v-toolbar-title>
+        <v-spacer />
+        <v-toolbar-items>
+          <v-btn text @click.stop="updateIssue()">
+            save
+            <v-icon right>
+              save
+            </v-icon>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
+      <editor
+        ref="IssueEditor"
+        v-model="rawIssue"
+        mode="application/json"
+      />
+    </v-card>
+  </v-dialog>
 </template>
-<script>
-import { ISSUE_UPDATE } from '@/store/actions';
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  PropType,
+  onMounted,
+} from '@vue/composition-api';
+import { ISSUE_UPDATE, SHOW_SUCCESS_MSG } from '@/store/actions';
+import Editor from '@/components/Editor.vue';
+import { Issue } from '@/store/types';
+import store from '@/store';
 
-export default {
+export default defineComponent({
   name: 'EditIssueDialog',
+
   props: {
     issue: {
-      type: Object,
-      default: null,
+      type: Object as PropType<Issue>,
+      required: true,
+    },
+    value: {
+      type: Boolean,
+      default: false,
     },
   },
-  data: () => ({
-    rawIssue: null,
-  }),
-  mounted() {
-    this.rawIssue = JSON.stringify(this.issue.fields, null, 2);
-  },
-  methods: {
-    updateIssue() {
-      const change = { fields: this.rawIssue };
 
-      this.$store.dispatch(ISSUE_UPDATE, { ids: [this.issue._id], change }).then(() => {
-        this.issue.fields = JSON.parse(change.fields);
-        this.$emit('update:issue', this.issue);
-      });
-    },
+  components: {
+    Editor,
   },
-};
+
+  setup(props, context) {
+    const rawIssue = ref('');
+
+    onMounted(() => {
+      rawIssue.value = JSON.stringify(props.issue.fields, null, 2);
+    });
+
+    function updateIssue() {
+      const change = { fields: rawIssue.value };
+
+      store
+        .dispatch(ISSUE_UPDATE, {
+          ids: [props.issue._id],
+          change,
+        })
+        .then(async () => {
+          const updatedIssue = props.issue;
+          updatedIssue.fields = JSON.parse(change.fields);
+
+          await store.dispatch(SHOW_SUCCESS_MSG, 'The issue has been updated');
+          context.emit('update:issue', updatedIssue);
+          context.emit('input', false);
+        });
+    }
+
+    return {
+      rawIssue,
+      updateIssue,
+    };
+  },
+});
 </script>

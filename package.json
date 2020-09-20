@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:test": "docker-compose -f docker-compose.tests.yml up -d --build",
+    "start:test": "COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f docker-compose.tests.yml up -d --build",
+    "start:ci": "docker-compose -f docker-compose.ci.yml up -d",
     "start:coverage": "concurrently npm:start:db npm:start:client npm:start:server:coverage 1>/dev/null 2>&1 &",
     "start:client": "cd web && npm i && npm test",
     "start:db": "docker run -d -p 27017:27017 --name test_mongo mongo",
@@ -13,8 +14,9 @@
     "cy:verify": "cypress verify",
     "cy:version": "cypress version",
     "cy:open": "cypress open",
+    "db:migrate": "wait-on http://localhost:8080/#/welcome && cd api && migrate-mongo up",
     "cy:coverage": "wait-on http://localhost:8080/#/welcome && cypress run -C cypress.cover.json",
-    "cy:run": "wait-on http://localhost:8080/#/welcome && cypress run"
+    "cy:run": "wait-on http://localhost:8080/#/welcome && cypress run --browser chrome --record --key fb3c6806-340f-4621-b19a-235876278336"
   },
   "repository": {
     "type": "git",
@@ -27,16 +29,22 @@
   },
   "homepage": "https://github.com/faloker/purify#readme",
   "devDependencies": {
+    "@bahmutov/add-typescript-to-cypress": "^2.1.2",
     "@cypress/code-coverage": "^3.8.1",
+    "@types/mongoose": "^5.7.36",
+    "@types/node": "^14.10.2",
     "babel-plugin-istanbul": "^6.0.0",
-    "cypress": "^4.8.0",
+    "cypress": "^5.2.0",
+    "cypress-file-upload": "^4.1.1",
     "istanbul-lib-coverage": "^3.0.0",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "typescript": "^4.0.2",
+    "webpack": "^4.44.1"
   },
   "dependencies": {
-    "concurrently": "^5.1.0",
-    "mongoose": "^5.9.5",
-    "wait-on": "^4.0.1"
+    "concurrently": "^5.3.0",
+    "mongoose": "^5.10.5",
+    "wait-on": "^5.2.0"
   },
   "nyc": {
     "extension": [

@@ -1,8 +1,10 @@
 <template>
   <v-dialog
-    v-model="dialog"
+    v-model="value"
     max-width="650"
-    @click:outside="$emit('update:dialog', false)"
+    @input="$emit('input', $event.target.value)"
+    @click:outside="$emit('input', false)"
+    @keydown.esc="$emit('input', false)"
   >
     <v-card>
       <v-container style="max-width: 600px;">
@@ -10,7 +12,7 @@
           <v-timeline-item class="mb-7" large>
             <template v-slot:icon>
               <v-avatar>
-                <img :src="currentUser.image">
+                <img :src="user.image">
               </v-avatar>
             </template>
             <v-text-field
@@ -26,7 +28,7 @@
                   :disabled="!input"
                   outlined
                   color="primary"
-                  @click="postComment"
+                  @click.stop="postComment"
                 >
                   Post
                 </v-btn>
@@ -37,21 +39,18 @@
           <v-slide-x-transition group>
             <v-timeline-item
               v-for="event in timeline"
-              :key="event.created_at"
+              :key="event.createdAt"
               class="mb-4"
               small
             >
               <template v-slot:icon>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-avatar v-if="event.author.username === 'purify'" v-on="on">
-                      <img src="@/assets/logo_trans.png">
-                    </v-avatar>
-                    <v-avatar v-else v-on="on">
+                    <v-avatar v-on="on">
                       <img :src="event.author.image">
                     </v-avatar>
                   </template>
-                  <span>{{ event.author.username }}</span>
+                  <span>{{ event.author.name }}</span>
                 </v-tooltip>
               </template>
               <v-row justify="space-between">
@@ -59,7 +58,7 @@
                 <v-col
                   class="text-right"
                   cols="5"
-                  v-text="formatDate(event.created_at)"
+                  v-text="formatDate(event.createdAt)"
                 />
               </v-row>
             </v-timeline-item>
@@ -69,59 +68,67 @@
     </v-card>
   </v-dialog>
 </template>
-<script>
-import { mapGetters, mapState } from 'vuex';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  computed,
+  ComputedRef,
+} from '@vue/composition-api';
+import store from '@/store';
 import { POST_COMMENT } from '@/store/actions';
-import { formatDate } from '@/utils/helpers';
+import { formatDate, formatDateTooltip } from '@/utils/helpers';
+import { User, Comment } from '@/store/types';
 
-export default {
+export default defineComponent({
   name: 'CommentDialog',
+
   props: {
     issueId: {
       type: String,
       required: true,
-      default: () => '',
+      default: '',
     },
-    dialog: {
-      required: true,
+    value: {
       type: Boolean,
+      default: false,
     },
   },
 
-  data() {
-    return {
-      commentDialog: false,
-      input: null,
-    };
-  },
+  setup(props) {
+    const input = ref('');
+    const user: ComputedRef<User> = computed(() => store.state.profile.user);
+    const comments: ComputedRef<Comment[]> = computed(
+      () => store.state.issues.comments
+    );
+    const timeline = computed(() =>
+      comments.value ? comments.value.slice().reverse() : []
+    );
 
-  computed: {
-    ...mapGetters(['currentUser']),
-
-    ...mapState({
-      issueComments: (state) => state.issues.comments,
-    }),
-
-    timeline() {
-      return this.issueComments ? this.issueComments.slice().reverse() : [];
-    },
-  },
-
-  methods: {
-    postComment() {
-      if (this.input) {
+    function postComment() {
+      if (input.value) {
         const comment = {
-          author: this.currentUser.id,
-          text: this.input,
+          author: user.value._id,
+          text: input.value,
         };
 
-        this.$store.dispatch(POST_COMMENT, { issueId: this.issueId, comment }).then(() => {
-          this.input = null;
-        });
+        store
+          .dispatch(POST_COMMENT, { issueId: props.issueId, comment })
+          .then(() => {
+            input.value = '';
+          });
       }
-    },
+    }
 
-    formatDate,
+    return {
+      input,
+      user,
+      comments,
+      timeline,
+      formatDate,
+      postComment,
+    };
   },
-};
+});
 </script>

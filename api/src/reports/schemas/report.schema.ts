@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Schema } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 export const ReportSchema = new Schema(
   {
-    _id: { type: String, default: uuidv4 },
+    _id: { type: String, default: () => nanoid() },
     content: Object,
     statistics: Object,
     unit: { type: String, ref: 'Unit' },
+    project: { type: String, ref: 'Project' },
     template: { type: String, ref: 'Template' },
     type: {
       type: String,
       enum: ['file', 'oneshot'],
     },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
+  { timestamps: true }
 );

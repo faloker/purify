@@ -7,7 +7,11 @@ import * as slugify from 'slug';
 
 import { Report, ReportType } from 'src/reports/interfaces/report.interface';
 import { Template } from './interfaces/template.interface';
-import { CreateTemplateDto, EditTemplateBodyDto } from './dto/templates.dto';
+import {
+  CreateTemplateDto,
+  EditTemplateDto,
+  GetTemplatesQueryDto,
+} from './dto/templates.dto';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { SlackService } from 'src/plugins/slack/slack.service';
 import { Unit } from 'src/units/interfaces/unit.interface';
@@ -24,18 +28,23 @@ export class TemplatesService {
   ) {}
 
   async save(createTemplateDto: CreateTemplateDto) {
-    const template = await new this.templateModel(createTemplateDto).save();
-    const report = await this.reportModel.findOne({
-      _id: createTemplateDto.report,
-    });
-
-    await this.apply(report, template);
-
-    return template;
+    return new this.templateModel(createTemplateDto).save();
   }
 
-  async apply(report: Report, template: Template) {
-    const rep = report;
+  async apply(reportId: string, templateName: string) {
+    const template = await this.templateModel
+      .findOne({ name: templateName })
+      .lean();
+
+    if (!template) {
+      throw new NotFoundException('Template not found');
+    }
+    const report = await this.reportModel
+      .findOne({
+        _id: reportId,
+      })
+      .lean();
+
     const content = JSON.parse(report.content);
     let issues: any = [];
 
@@ -43,33 +52,41 @@ export class TemplatesService {
       issues = [content];
     } else {
       issues =
-        template.path_to_issues !== ''
-          ? get(content, template.path_to_issues)
+        template.pathToIssues !== ''
+          ? get(content, template.pathToIssues)
           : content;
     }
 
-    const stat = await this.saveIssues(issues, template, report);
+    const stat = await this.saveIssues(
+      issues,
+      template as Template,
+      report as Report
+    );
 
-    rep.statistics = stat;
-    rep.template = template._id;
-
-    return rep.save();
+    return this.reportModel.updateOne(
+      { _id: report._id },
+      { statistics: stat, template: template._id }
+    );
   }
 
   async saveIssues(issues: object[], template: Template, report: Report) {
     let newOnes = 0;
 
-    const allIssuesInUnit = await this.issueModel.find({ unit: report.unit });
-    const allTemplateIssuesInUnit = await this.issueModel.find({
-      unit: report.unit,
-      template: template._id,
-    });
+    const allIssuesInUnit = await this.issueModel
+      .find({ unit: report.unit })
+      .lean();
+    const allTemplateIssuesInUnit = await this.issueModel
+      .find({
+        unit: report.unit,
+        template: template._id,
+      })
+      .lean();
 
     for (const issue of issues) {
       // Do external comparison first to avoid duplicate issues between templates
       let filteredUnitIssues = allIssuesInUnit;
-      for (const comparisonField of template.external_comparison_fields) {
-        filteredUnitIssues = filteredUnitIssues.filter(existingIssue =>
+      for (const comparisonField of template.externalComparisonFields) {
+        filteredUnitIssues = filteredUnitIssues.filter((existingIssue) =>
           existingIssue.fields
             .toLowerCase()
             .includes(get(issue, comparisonField).toLowerCase())
@@ -79,20 +96,20 @@ export class TemplatesService {
       // There are no issues similar to the new one in the unit, move to the template comparison
       if (filteredUnitIssues.length === 0) {
         let filteredTemplateIssues = allTemplateIssuesInUnit;
-        for (const comparisonField of template.internal_comparison_fields) {
+        for (const comparisonField of template.internalComparisonFields) {
           filteredTemplateIssues = filteredTemplateIssues.filter(
-            existingIssue =>
+            (existingIssue) =>
               get(JSON.parse(existingIssue.fields), comparisonField) ===
               get(issue, comparisonField)
           );
         }
 
         // There is an issue similar to the new one
-        if (filteredTemplateIssues.length && template.merge_fields.length) {
+        if (filteredTemplateIssues.length && template.mergeFields.length) {
           const issueToUpdate = filteredTemplateIssues[0];
           const oldIssue = JSON.parse(issueToUpdate.fields);
 
-          for (const field of template.merge_fields) {
+          for (const field of template.mergeFields) {
             let originalField = get(oldIssue, field);
             const newField = get(issue, field);
 
@@ -115,14 +132,15 @@ export class TemplatesService {
             { $set: { fields: JSON.stringify(oldIssue) } }
           );
         } else {
-          let risk = get(issue, template.risk_field, '').toLowerCase();
+          let risk = get(issue, template.riskField, '').toLowerCase();
 
-          if (risk === 'negligible') {
+          if (['negligible', 'informative'].includes(risk)) {
             risk = 'info';
           }
 
           const newIssue = await new this.issueModel({
             unit: report.unit,
+            project: report.project,
             risk: ['low', 'medium', 'high', 'critical', 'info'].includes(risk)
               ? risk
               : 'medium',
@@ -139,15 +157,15 @@ export class TemplatesService {
     }
 
     if (newOnes > 0) {
-      const unit = await this.unitsModel.findOne({ _id: report.unit });
+      const unit = await this.unitsModel.findOne({ _id: report.unit }).lean();
       await this.slackService.sendMsg(
         `🆕 You have *${newOnes}* new issues\n📄 Template: ${
-          template.name
+          template.displayName
         }\n🗃️ Unit: ${
-          unit.name
+          unit.displayName
         }\n👀 Take a look at them <https://${this.configService.get<string>(
           'DOMAIN'
-        )}/#/unit/${unit.slug}/issues|*here*>`
+        )}/#/unit/${unit.name}/issues|*here*>`
       );
     }
 
@@ -157,45 +175,33 @@ export class TemplatesService {
     };
   }
 
-  async findAll() {
-    const templates = await this.templateModel.find();
-    const result = [];
-
-    for (const template of templates) {
-      const numberOfIsues = await this.issueModel.countDocuments({
-        template: template._id,
-      });
-      const numberOfReports = await this.reportModel.countDocuments({
-        template: template._id,
-      });
-
-      result.push({
-        template,
-        issues: numberOfIsues,
-        reports: numberOfReports,
-      });
+  async findAll(params: GetTemplatesQueryDto) {
+    if (params.verbose) {
+      return this.templateModel
+        .find()
+        .lean()
+        .populate('numIssues')
+        .populate('numReports');
+    } else {
+      return this.templateModel.find().lean();
     }
-
-    return result;
   }
 
-  async updateOne(slug: string, template: EditTemplateBodyDto) {
-    const oldTemplate = await this.templateModel.findOne({ slug });
+  async updateOne(name: string, template: EditTemplateDto) {
+    const oldTemplate = await this.templateModel
+      .findOne({ name }, '_id')
+      .lean();
 
     if (oldTemplate) {
-      if (oldTemplate.name !== template.name) {
-        template.slug = slugify(template.name);
-      }
-
-      await this.templateModel.updateOne({ slug }, template);
-      return this.templateModel.findOne({ slug });
+      await this.templateModel.updateOne({ name }, template);
+      return this.templateModel.findOne({ name }).lean();
     } else {
-      throw new NotFoundException('No such template');
+      throw new NotFoundException('Template not found');
     }
   }
 
-  async deleteOne(slug: string) {
-    const template = await this.templateModel.findOne({ slug });
+  async deleteOne(name: string) {
+    const template = await this.templateModel.findOne({ name }).lean();
 
     if (template) {
       await this.issueModel.updateMany(
@@ -206,9 +212,9 @@ export class TemplatesService {
         { template: template._id },
         { $unset: { template: '' } }
       );
-      await this.templateModel.deleteOne({ slug });
+      await this.templateModel.deleteOne({ name });
     } else {
-      throw new NotFoundException('No such template');
+      throw new NotFoundException('Template not found');
     }
   }
 }

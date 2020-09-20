@@ -1,248 +1,104 @@
 <template>
-  <div>
-    <v-hover>
-      <v-card
-        :key="project._id"
-        slot-scope="{ hover }"
-        :class="`elevation-${hover ? 12 : 3}`"
-        shaped
-        class="mx-auto my-3"
-        width="400"
+  <v-card
+    :key="project._id"
+    class="mx-auto"
+    outlined
+    width="250"
+    max-height="170"
+  >
+    <v-card-title>
+      <span
+        class="d-inline-block text-truncate"
+        style="max-width: 220;"
       >
-        <div class="px-3 pt-3">
-          <div class="text-center font-weight-light mb-2 text-truncate">
-            <v-btn
-              text
-              color="primary"
-              rounded
-              class="text-none title"
-              :to="{name: 'Units', params: { slug: project.slug }}"
-            >
-              <span
-                class="d-inline-block text-truncate"
-                style="max-width: 300px;"
-              >
-                {{ project.title }}
-              </span>
-            </v-btn>
-          </div>
-          <div
-            class="text-center subheading font-weight-light grey--text text-truncate"
-          >
-            {{ project.subtitle }}
-          </div>
-          <v-divider class="mt-2" />
-          <v-container fluid>
-            <v-row dense class="text-center">
-              <v-col>
-                <p class="display-1 font-weight-black">
-                  <countTo
-                    :start-val="0"
-                    :end-val="project.issues"
-                    :duration="2000"
-                  />
-                </p>
-                <span class="subheading">
-                  <v-icon class="mx-1" small>fa-bug</v-icon>Issues
-                </span>
-              </v-col>
-              <v-col>
-                <p class="display-1 font-weight-black">
-                  <countTo
-                    :start-val="0"
-                    :end-val="project.tickets"
-                    :duration="2000"
-                  />
-                </p>
-                <span class="subheading">
-                  <v-icon class="mx-1" small>mdi-cards</v-icon>Tickets
-                </span>
-              </v-col>
-              <v-col>
-                <p class="display-1 font-weight-black">
-                  <countTo
-                    :start-val="0"
-                    :end-val="project.units"
-                    :duration="2000"
-                  />
-                </p>
-                <span class="subheading font-weight-medium">
-                  <v-icon class="mx-1" small>mdi-folder</v-icon>Units
-                </span>
-              </v-col>
-            </v-row>
-          </v-container>
-        </div>
-        <v-divider />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            class="edit-btn"
-            color="primary"
-            text
-            @click="dialog = true"
-          >
-            Edit
-          </v-btn>
-          <v-btn
-            class="delete-btn"
-            color="tertiary"
-            text
-            @click="confirmDialog = true"
-          >
-            Delete
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-hover>
-    <v-dialog v-model="dialog" max-width="400">
-      <v-card>
-        <v-card-title>
-          <span class="title">Edit project</span>
-        </v-card-title>
-        <v-spacer />
-        <v-card-text>
-          <v-layout wrap>
-            <v-flex xs12>
-              <v-text-field
-                id="project-title-edit-input"
-                v-model="title"
-                label="Project title"
-                outlined
-                dense
-                clearable
-                required
-                @keydown.enter="editProject"
-              />
-            </v-flex>
-            <v-flex xs12>
-              <v-text-field
-                id="project-subtitle-edit-input"
-                v-model="subtitle"
-                label="Project short description"
-                clearable
-                dense
-                outlined
-                hint="For example, a tech stack: django, react, e.t.c"
-                required
-                @keydown.enter="editProject"
-              />
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-        <v-divider />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="tertiary"
-            text
-            @click="dialog = false"
-          >
-            Close
-          </v-btn>
-          <v-btn
-            color="primary"
-            :disabled="!title || title.length < 3"
-            text
-            @click="editProject"
-          >
-            Save
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="confirmDialog" max-width="350">
-      <v-card>
-        <v-card-title>
-          Delete project
-          <v-chip
-            label
-            class="mx-1"
-          >
-            <span
-              class="d-inline-block text-truncate"
-              style="max-width: 150px;"
-            >
-              <b>{{ project.title }}</b>
-            </span>
-          </v-chip>
-          ?
-        </v-card-title>
-        <v-divider />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            class="confirm-delete-btn"
-            color="tertiary"
-            text
-            block
-            @click="deleteProject"
-          >
-            Delete
-          </v-btn>
-          <v-spacer />
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+        <v-icon
+          left
+          :color="project.color"
+        >
+          mdi-square-rounded
+        </v-icon>
+        {{ project.displayName }}
+      </span>
+    </v-card-title>
+    <v-card-subtitle class="text-truncate">
+      {{ project.description }}
+    </v-card-subtitle>
+    <v-divider class="mx-2" />
+    <v-card-actions>
+      <v-btn
+        text
+        class="text-none"
+        :to="{ name: 'ProjectPage', params: { projectName: project.name } }"
+      >
+        <v-icon
+          left
+        >
+          mdi-poll
+        </v-icon>
+      </v-btn>
+      <v-btn
+        text
+        class="text-none"
+        :to="{ name: 'Units', params: { projectName: project.name } }"
+      >
+        <v-icon
+          left
+        >
+          mdi-checkbox-multiple-blank
+        </v-icon>
+        <span class="title font-weight-bold ml-1">
+          <countTo
+            :start-val="0"
+            :end-val="project.numUnits"
+            :duration="2000"
+          />
+        </span>
+      </v-btn>
+      <v-btn
+        text
+        class="text-none"
+      >
+        <v-icon left>
+          mdi-fire
+        </v-icon>
+        <span class="title font-weight-bold ml-1">
+          <countTo
+            :start-val="0"
+            :end-val="project.numIssues"
+            :duration="2000"
+          />
+        </span>
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
-<script>
-import { DELETE_PROJECT, EDIT_PROJECT } from '@/store/actions';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import { defineComponent, PropType } from '@vue/composition-api';
+import ProjectDialog from '@/components/dialogs/ProjectDialog.vue';
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
+import { Project } from '@/store/types';
+// @ts-ignore
 import countTo from 'vue-count-to';
 
-export default {
+export default defineComponent({
   name: 'ProjectCard',
+
   components: {
     countTo,
+    ConfirmDialog,
+    ProjectDialog,
   },
+
   props: {
     project: {
-      type: Object,
-      required: true,
-    },
-    dialogs: {
-      type: Boolean,
+      type: Object as PropType<Project>,
       required: true,
     },
   },
-  data() {
-    return {
-      title: this.project.title || '',
-      subtitle: this.project.subtitle || '',
-      dialog: false,
-      confirmDialog: false,
-    };
-  },
-  watch: {
-    // eslint-disable-next-line no-unused-vars
-    confirmDialog(newValue, oldValue) {
-      this.$emit('update:dialogs', newValue);
-    },
 
-    // eslint-disable-next-line no-unused-vars
-    dialog(newValue, oldValue) {
-      this.$emit('update:dialogs', newValue);
-    },
+  setup(props) {
+    return {};
   },
-  methods: {
-    deleteProject() {
-      this.$store.dispatch(DELETE_PROJECT, this.project.slug).then(() => {
-        this.confirmDialog = false;
-        this.$showSuccessMessage('The project has been deleted');
-      });
-    },
-
-    editProject() {
-      this.$store
-        .dispatch(EDIT_PROJECT, {
-          slug: this.project.slug,
-          change: { title: this.title, subtitle: this.subtitle },
-        })
-        .then(() => {
-          this.dialog = false;
-          this.$showSuccessMessage('The project has been updated');
-        });
-    },
-  },
-};
+});
 </script>

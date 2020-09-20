@@ -5,7 +5,7 @@ import { SystemService } from './system.service';
 export class SystemController {
   constructor(private readonly systemService: SystemService) {}
 
-  @Get('setup') 
+  @Get('setup')
   getSystemStatus() {
     return this.systemService.getSystemStatus();
   }

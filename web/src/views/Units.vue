@@ -1,292 +1,313 @@
 <template>
   <v-container>
     <v-row>
-      <v-spacer />
+      <v-col>
+        <v-btn
+          v-permission="['owner', 'admin']"
+          color="primary"
+          @click.stop="createDialog = true"
+        >
+          <v-icon left>
+            add
+          </v-icon>Create unit
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-divider />
+    <v-row>
       <v-col>
         <v-text-field
           id="search"
-          ref="search"
-          v-model="search"
-          clearable
+          v-model="searchTerm"
+          prepend-inner-icon="search"
+          label="Filter by unit"
+          solo
           dense
-          outlined
-          @keydown.esc="onEsc"
-        >
-          <template slot="label">
-            <v-icon style="vertical-align: middle">
-              search
-            </v-icon>Search for unit
-          </template>
-        </v-text-field>
-      </v-col>
-      <v-col>
-        <v-btn
-          color="primary"
-          text
-          @click="dialog = true"
-        >
-          <v-icon>mdi-pencil</v-icon>Create unit
-        </v-btn>
-        <v-dialog v-model="dialog" max-width="400px">
-          <v-card>
-            <v-card-title>
-              <span class="title">New Unit</span>
-            </v-card-title>
-            <v-card-text>
-              <v-layout wrap>
-                <v-flex xs12>
-                  <v-text-field
-                    id="unit-name-input"
-                    v-model="unitName"
-                    outlined
-                    dense
-                    label="Unit name"
-                    clearable
-                    required
-                    @keydown.enter="createUnit"
-                  />
-                </v-flex>
-              </v-layout>
-            </v-card-text>
-            <v-divider />
-            <v-card-actions>
-              <v-spacer />
-              <v-btn
-                color="tertiary"
-                text
-                @click="dialog = false"
-              >
-                Close
-              </v-btn>
-              <v-btn
-                color="primary"
-                text
-                :disabled="!unitName || unitName.length < 3"
-                @click="createUnit"
-              >
-                Create
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
+          clearable
+        />
         <v-skeleton-loader
           :loading="loading"
-          transition="scale-transition"
+          transition="slide-y-transition"
           type="table-tbody"
         >
-          <v-data-table
-            :headers="headers"
-            :items="filtredItems"
-            :items-per-page="5"
-            :search="search"
-            class="elevation-1"
-            item-key="_id"
-          >
-            <template v-slot:item.name="{ item }">
-              <v-btn
-                text
-                color="primary"
-                rounded
-                class="text-none mr-5"
-                :to="{ name: 'Issues', params: { slug: item.slug } }"
-              >
-                <span
-                  class="d-inline-block text-truncate"
-                  style="max-width: 130px;"
+          <v-card outlined>
+            <v-data-table
+              :headers="headers"
+              :items="units"
+              :items-per-page="5"
+              :search="searchTerm"
+              item-key="_id"
+            >
+              <template v-slot:item.name="{ item }">
+                <v-btn
+                  text
+                  color="primary"
+                  rounded
+                  class="text-none mr-5"
+                  :to="{ name: 'Issues', params: { unitName: item.name } }"
                 >
-                  {{ item.name }}
-                </span>
-              </v-btn>
-            </template>
+                  <span
+                    class="d-inline-block text-truncate"
+                    style="max-width: 130px;"
+                  >{{ item.displayName }}</span>
+                </v-btn>
+              </template>
 
-            <template v-slot:item.progress="{ item }">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-progress-linear
-                    background-color="blue lighten-4"
-                    height="14"
-                    color="primary"
-                    rounded
-                    :value="calcProgress(item)"
-                    v-on="on"
-                  />
-                </template>
-                <span>{{ item.closed_tickets }} / {{ item.tickets }}</span>
-              </v-tooltip>
-            </template>
-            <template v-slot:item.reports="{ item }">
-              <v-btn
-                text
-                rounded
-                class="mr-5"
-                :to="{ name: 'Reports', params: { slug: item.slug } }"
-              >
-                {{ item.reports }}
-              </v-btn>
-            </template>
-            <template v-slot:item.action="{ item }" class="text-center">
-              <v-btn
-                text
-                icon
-                color="red darken-1"
-                @click="openConfirmationDialog(item)"
-              >
-                <v-icon>fa-times</v-icon>
-              </v-btn>
-            </template>
-          </v-data-table>
+              <template v-slot:item.progress="{ item }">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-progress-linear
+                      background-color="blue lighten-4"
+                      height="14"
+                      color="primary"
+                      rounded
+                      :value="item.progress"
+                      v-on="on"
+                    />
+                  </template>
+                  <span>{{ item.numClosedIssues }} / {{ item.numIssues }}</span>
+                </v-tooltip>
+              </template>
+              <template v-slot:item.numReports="{ item }">
+                <v-btn
+                  text
+                  rounded
+                  class="mr-5"
+                  :to="{ name: 'Reports', params: { unitName: item.name } }"
+                >
+                  {{ item.numReports }}
+                </v-btn>
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-menu
+                  bottom
+                  right
+                  transition="slide-x-transition"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-permission="['owner']"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item @click.stop="openEditDialog(item)">
+                      <v-list-item-title>Edit Unit</v-list-item-title>
+                    </v-list-item>
+                    <v-divider />
+                    <v-list-item @click.stop="openConfirmationDialog(item)">
+                      <strong class="red--text text--lighten-1">Delete Unit</strong>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </template>
+            </v-data-table>
+          </v-card>
         </v-skeleton-loader>
       </v-col>
     </v-row>
-    <v-dialog v-model="confirmDialog" max-width="350">
-      <v-card>
-        <v-card-title>
-          Delete unit
-          <v-chip
-            label
-            class="mx-1"
-          >
-            <span
-              class="d-inline-block text-truncate"
-              style="max-width: 150px;"
-            >
-              <b>{{ unitToDelete.name }}</b>
-            </span>
-          </v-chip>
-          ?
-        </v-card-title>
-        <v-divider />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="tertiary"
-            text
-            block
-            @click="deleteUnit(unitToDelete.slug)"
-          >
-            Delete
-          </v-btn>
-          <v-spacer />
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <confirm-dialog
+      v-model="confirmDialog"
+      title="Delete this unit?"
+      message="All issues will be removed as well. Are you sure you want to continue?"
+      @handle-click="deleteUnit()"
+    />
+    <unit-dialog
+      v-model="editDialog"
+      heading="Edit Unit"
+      :display-name.sync="newDisplayName"
+      @handle-click="editUnit"
+    />
+    <unit-dialog
+      v-model="createDialog"
+      heading="New Unit"
+      :display-name.sync="displayName"
+      ok-button-text="Create"
+      @handle-click="createUnit"
+    />
   </v-container>
 </template>
-<script>
-import { mapState } from 'vuex';
-import { toLower } from 'lodash';
-import { FETCH_UNITS, CREATE_UNIT, DELETE_UNIT } from '@/store/actions';
-import { SET_ACTIVE_PROJECT } from '@/store/mutations';
+<script lang="ts">
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {
+  defineComponent,
+  ref,
+  watch,
+  computed,
+  onMounted,
+  ComputedRef,
+} from '@vue/composition-api';
+import store from '@/store';
+import {
+  FETCH_UNITS,
+  CREATE_UNIT,
+  DELETE_UNIT,
+  EDIT_UNIT,
+  SHOW_SUCCESS_MSG,
+} from '@/store/actions';
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
+import UnitDialog from '@/components/dialogs/UnitDialog.vue';
+import { Unit } from '@/store/types';
 
-export default {
+export default defineComponent({
   name: 'Units',
-  data() {
-    return {
-      search: '',
-      loading: true,
-      confirmDialog: false,
-      dialog: false,
-      unitToDelete: '',
-      unitName: '',
-      headers: [
-        {
-          text: 'Name',
-          width: '30%',
-          align: 'center',
-          value: 'name',
-        },
-        {
-          text: 'Progress',
-          width: '40%',
-          align: 'center',
-          value: 'progress',
-          sortable: false,
-        },
-        {
-          text: 'Reports',
-          width: '15%',
-          align: 'center',
-          value: 'reports',
-        },
-        {
-          text: 'Actions',
-          width: '15%',
-          align: 'center',
-          value: 'action',
-          sortable: false,
-        },
-      ],
-    };
-  },
-  computed: {
-    ...mapState({
-      units: (state) => state.units.units,
-    }),
-    filtredItems() {
-      return this.units.filter((item) => toLower(item.name).includes(toLower(this.search)));
-    },
-  },
-  mounted() {
-    this.$store.commit(SET_ACTIVE_PROJECT, this.$route.params.slug);
-    this.$store.dispatch(FETCH_UNITS).then(() => {
-      this.loading = false;
+
+  components: { ConfirmDialog, UnitDialog },
+
+  setup(props, context) {
+    const searchTerm = ref('');
+    const loading = ref(true);
+    const headers = ref([
+      {
+        text: 'Name',
+        width: '30%',
+        align: 'center',
+        value: 'name',
+      },
+      {
+        text: 'Progress',
+        width: '40%',
+        align: 'center',
+        value: 'progress',
+      },
+      {
+        text: 'Reports',
+        width: '15%',
+        align: 'center',
+        value: 'numReports',
+      },
+      {
+        text: 'Actions',
+        width: '15%',
+        align: 'center',
+        value: 'actions',
+        sortable: false,
+      },
+    ]);
+
+    const projectName = computed(() => store.state.system.projectName);
+    const units: ComputedRef<Unit[]> = computed(() => store.state.units.items);
+
+    onMounted(async () => {
+      await store
+        .dispatch(FETCH_UNITS)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
     });
 
-    document.onkeydown = (e) => {
-      // eslint-disable-next-line no-param-reassign
-      e = e || window.event;
-      if (
-        e.keyCode === 191 && // Forward Slash '/'
-        e.target !== this.$refs.search.$refs.input &&
-        !this.dialog &&
-        !this.confirmDialog
-      ) {
-        e.preventDefault();
-        this.$refs.search.focus();
-      } else if (
-        e.keyCode === 67 &&
-        !this.dialog &&
-        !this.confirmDialog &&
-        e.target !== this.$refs.search.$refs.input
-      ) {
-        this.dialog = true;
-      }
+    watch(projectName, () => {
+      loading.value = true;
+      store
+        .dispatch(FETCH_UNITS)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch(() => {});
+    });
+
+    function selectUnit(item: Unit) {
+      context.root.$router.push({
+        name: 'Issues',
+        params: { unitName: item.name },
+      });
+    }
+
+    return {
+      selectUnit,
+      units,
+      searchTerm,
+      loading,
+      headers,
+      ...useEditUnit(),
+      ...useDeleteUnit(),
+      ...useCreateUnit(),
     };
   },
-  methods: {
-    selectUnit(item) {
-      this.$router.push({ name: 'Issues', params: { slug: item.slug } });
-    },
+});
 
-    createUnit() {
-      this.$store.dispatch(CREATE_UNIT, this.unitName).then(() => {
-        this.unitName = '';
-        this.dialog = false;
-      });
-    },
-    onEsc() {
-      this.$refs.search.blur();
-    },
-    calcProgress(item) {
-      return (item.closed_tickets / item.tickets) * 100;
-    },
+function useDeleteUnit() {
+  const confirmDialog = ref(false);
+  const unitName = ref('');
 
-    openConfirmationDialog(item) {
-      this.confirmDialog = true;
-      this.unitToDelete = item;
-    },
+  async function deleteUnit() {
+    store
+      .dispatch(DELETE_UNIT, unitName.value)
+      .then(async () => {
+        confirmDialog.value = false;
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been deleted');
+      })
+      .catch(() => {});
+  }
 
-    deleteUnit(slug) {
-      this.$store.dispatch(DELETE_UNIT, slug).then(() => {
-        this.confirmDialog = false;
-        this.unitToDelete = '';
-        this.$showSuccessMessage('The unit has been deleted');
-      });
-    },
-  },
-};
+  function openConfirmationDialog(item: Unit) {
+    confirmDialog.value = true;
+    unitName.value = item.name;
+  }
+
+  return {
+    confirmDialog,
+    deleteUnit,
+    openConfirmationDialog,
+  };
+}
+function useEditUnit() {
+  const editDialog = ref(false);
+  const newDisplayName = ref('');
+  const name = ref('');
+
+  async function editUnit() {
+    store
+      .dispatch(EDIT_UNIT, {
+        name: name.value,
+        displayName: newDisplayName.value,
+      })
+      .then(async () => {
+        editDialog.value = false;
+        await store.dispatch(SHOW_SUCCESS_MSG, 'The unit has been updated');
+      })
+      .catch(() => {});
+  }
+
+  function openEditDialog(item: Unit) {
+    editDialog.value = true;
+    name.value = item.name;
+    newDisplayName.value = item.displayName;
+  }
+
+  return {
+    editDialog,
+    newDisplayName,
+    editUnit,
+    openEditDialog,
+  };
+}
+
+function useCreateUnit() {
+  const displayName = ref('');
+  const createDialog = ref(false);
+
+  async function createUnit() {
+    store
+      .dispatch(CREATE_UNIT, {
+        displayName: displayName.value,
+      })
+      .then(() => {
+        displayName.value = '';
+        createDialog.value = false;
+      })
+      .catch(() => {});
+  }
+
+  return {
+    displayName,
+    createDialog,
+    createUnit,
+  };
+}
 </script>

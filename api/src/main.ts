@@ -6,8 +6,9 @@ import { ConfigService } from '@nestjs/config';
 import cors = require('cors');
 import cookieParser = require('cookie-parser');
 import * as helmet from 'helmet';
+import * as compression from 'compression';
 import { AppModule } from './app.module';
-import { MongoExceptionFilter } from './filters/mongo-exception.filter';
+import { MongoExceptionFilter } from './common/filters/mongo-exception.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
@@ -30,7 +31,13 @@ async function bootstrap() {
     })
   );
 
-  app.use(helmet());
+  app.set('trust proxy', true);
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+    })
+  );
+  app.use(compression());
   app.use(cookieParser());
 
   const options = new DocumentBuilder()

@@ -1,15 +1,23 @@
 /* eslint-disable @typescript-eslint/camelcase */
+const uniqolor = require('uniqolor');
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { groupBy, get } from 'lodash';
-import * as slugify from 'slug';
-
+import { groupBy, get, findIndex } from 'lodash';
+import { sub, eachDayOfInterval, isBefore, isSameDay } from 'date-fns';
 import { Project } from './interfaces/project.interface';
-import { CreateProjectDto, EditProjectDto } from './dto/projects.dto';
-import { Unit } from 'src/units/interfaces/unit.interface';
+import {
+  CreateProjectDto,
+  EditProjectDto,
+  GetProjectsQueryDto,
+  GetMetricsQueryDto,
+} from './dto/projects.dto';
+import { Unit, Metrics } from 'src/units/interfaces/unit.interface';
 import { Issue } from 'src/issues/interfaces/issue.interface';
 import { Report } from 'src/reports/interfaces/report.interface';
+import { User, Role } from 'src/users/interfaces/user.interface';
+import { Template } from 'src/templates/interfaces/template.interface';
+import { te } from 'date-fns/esm/locale';
 
 @Injectable()
 export class ProjectsService {
@@ -17,130 +25,127 @@ export class ProjectsService {
     @InjectModel('Project') private readonly projectModel: Model<Project>,
     @InjectModel('Unit') private readonly unitModel: Model<Unit>,
     @InjectModel('Issue') private readonly issueModel: Model<Issue>,
-    @InjectModel('Report') private readonly reportModel: Model<Report>
+    @InjectModel('Report') private readonly reportModel: Model<Report>,
+    @InjectModel('User') private readonly userModel: Model<User>
   ) {}
 
-  async getAll() {
-    const projects = await this.projectModel.find();
-    const result = [];
+  async getAll(query: GetProjectsQueryDto, allowedProjects?: string[]) {
+    const projects = await this.projectModel
+      .find(allowedProjects ? { _id: { $in: allowedProjects } } : {})
+      .lean();
+
+    if (query.verbose !== 'true') {
+      return projects;
+    }
 
     for (const project of projects) {
-      const units = await this.unitModel.find({ project: project._id }, '_id');
-      const numberOfIsues = await this.issueModel.countDocuments({
-        unit: { $in: units },
+      const numUsers = await this.userModel.countDocuments({
+        $or: [
+          {
+            memberships: { $elemMatch: { $eq: project._id } },
+          },
+          {
+            role: { $eq: Role.OWNER },
+          },
+        ],
       });
-      const numberOfTickets = await this.issueModel.countDocuments({
-        unit: { $in: units },
-        ticket: { $exists: true },
-      });
+      const units = await this.unitModel
+        .find({ project: project._id })
+        .lean()
+        .populate('numIssues');
+      // .populate('numTickets');
 
-      result.push({
-        _id: project._id,
-        title: project.title,
-        subtitle: project.subtitle,
-        slug: project.slug,
-        created_at: project.created_at,
-        updated_at: project.updated_at,
-        units: units.length,
-        issues: numberOfIsues,
-        tickets: numberOfTickets,
-      });
+      project['numUnits'] = units.length;
+      project['numUsers'] = numUsers;
+      project['numIssues'] = units.reduce((total, currentValue) => {
+        return total + currentValue.numIssues;
+      }, 0);
+      // project['numTickets'] = units.reduce((total, currentValue) => {
+      //   return total + currentValue.numTickets;
+      // }, 0);
     }
-    return result;
+    return projects;
   }
 
   async create(project: CreateProjectDto) {
-    return new this.projectModel(project).save();
+    return new this.projectModel({
+      ...project,
+      color: uniqolor.random().color,
+    }).save();
   }
 
-  async edit(slug: string, fields: EditProjectDto) {
-    const project = await this.projectModel.findOne({ slug });
-    const change: any = fields;
+  async updateOne(projectId: string, editProjectDto: EditProjectDto) {
+    await this.projectModel.updateOne({ _id: projectId }, editProjectDto);
+    return this.projectModel.findOne({ _id: projectId }).lean();
+  }
 
-    if (project) {
-      if (project.title !== fields.title) {
-        change.slug = slugify(fields.title);
-      }
+  async deleteOne(projectId: string) {
+    const units = await this.unitModel
+      .find({ project: projectId }, '_id')
+      .lean();
 
-      await this.projectModel.updateOne({ slug }, change);
-      return this.projectModel.findOne({ slug });
-    } else {
-      throw new NotFoundException('No such project');
+    if (units.length) {
+      const ids = units.map((unit: any) => unit._id);
+      // update memeberships
+      await this.reportModel.deleteMany({ unit: { $in: ids } });
+      await this.issueModel.deleteMany({ unit: { $in: ids } });
+      await this.unitModel.deleteMany({ _id: { $in: ids } });
     }
+
+    await this.projectModel.deleteOne({ _id: projectId });
   }
 
-  async delete(slug: string) {
-    const project = await this.projectModel.findOne({ slug });
+  async getUnitMetrics(unit: string, days: number) {
+    const reports = await this.reportModel
+      .find({ unit }, '_id createdAt')
+      .lean();
+    const issues = await this.issueModel
+      .find({ unit }, '_id status resolution createdAt closedAt risk')
+      .lean()
+      .populate('template', 'displayName');
 
-    if (project) {
-      const units = await this.unitModel.find({ project: project._id }, '_id');
+    const startDate = sub(new Date(), { days });
+    const interval = eachDayOfInterval({
+      start: startDate,
+      end: new Date(),
+    });
 
-      if (units.length) {
-        // @ts-ignore
-        this.reportModel.deleteMany({ unit: { $in: units } });
-        this.issueModel.deleteMany({ unit: { $in: units } });
-        // @ts-ignore
-        this.unitModel.deleteMany({ _id: { $in: units } });
-      }
-
-      await this.projectModel.deleteOne({ slug });
-    } else {
-      throw new NotFoundException('No such project');
-    }
-  }
-
-  async getStatisticsForUnit(unit: string) {
-    const uploadedReports = await this.reportModel.find(
-      { unit },
-      '_id created_at'
-    );
-    let issues = await this.issueModel.find(
-      { unit },
-      '_id status resolution created_at risk'
-    );
-
-    issues = issues.filter(
-      issue => issue.created_at.getFullYear() === new Date().getFullYear()
-    );
-
-    const open = new Array(12).fill(0);
-    const closed = new Array(12).fill(0);
-    const reports = new Array(12).fill(0);
+    const created: Metrics[] = [];
+    const closed: Metrics[] = [];
+    const reportsVolume: Metrics[] = [];
+    const openVolume: Metrics[] = [];
     const risks = new Array(5).fill(0);
 
-    const openIssues = groupBy(
-      issues.filter(issue => issue.status === 'open'),
-      issue => issue.created_at.getMonth()
-    );
+    interval.forEach((day) => {
+      let date = day.getTime();
 
-    const reportsByDate = groupBy(uploadedReports, report =>
-      report.created_at.getMonth()
-    );
+      created.push({
+        x: date,
+        y: issues.filter((issue) => isSameDay(issue.createdAt.getTime(), date))
+          .length,
+      });
 
-    const closedIssues = groupBy(
-      issues.filter(
-        issue =>
-          issue.status === 'closed' && issue.resolution !== 'false positive'
-      ),
-      issue => issue.created_at.getMonth()
-    );
+      closed.push({
+        x: date,
+        y: issues.filter(
+          (issue) =>
+            issue.status === 'closed' &&
+            isSameDay(issue.closedAt.getTime(), date)
+        ).length,
+      });
+
+      reportsVolume.push({
+        x: date,
+        y: reports.filter((report) =>
+          isSameDay(report.createdAt.getTime(), date)
+        ).length,
+      });
+    });
 
     const issuesRisks = groupBy(
-      issues.filter(issue => issue.resolution !== 'false positive'),
-      issue => issue.risk
+      issues.filter((issue) => issue.resolution !== 'false positive'),
+      (issue) => issue.risk
     );
-
-    for (const key of Object.keys(openIssues)) {
-      open[key] = get(openIssues, key).length;
-    }
-
-    for (const key of Object.keys(closedIssues)) {
-      closed[key] = get(closedIssues, key).length;
-    }
-
-    for (const key of Object.keys(reportsByDate)) {
-      reports[key] = get(reportsByDate, key).length;
-    }
 
     for (const key of Object.keys(issuesRisks)) {
       switch (key) {
@@ -164,93 +169,142 @@ export class ProjectsService {
       }
     }
 
+    const templates = groupBy(
+      issues.filter((issue) => issue.template),
+      (issue) => (issue.template as Template).displayName
+    );
+
+    const labels = Object.keys(templates);
+    const series = [];
+    labels.forEach((label) => {
+      series.push(templates[label].length);
+    });
+
     return {
-      open,
-      closed,
-      risks,
-      reports,
+      timeseries: {
+        created,
+        closed,
+        reportsVolume,
+      },
+      stats: {
+        risks,
+      },
+      templates: {
+        labels,
+        series,
+      },
     };
   }
 
-  async getStats(slug: string) {
-    const project = await this.projectModel.findOne({ slug });
+  async getMetrics(project: Project, options: GetMetricsQueryDto) {
+    const units = await this.unitModel
+      .find({ project: project._id }, '_id displayName')
+      .lean();
 
-    if (project) {
-      const units = await this.unitModel.find(
-        { project: project._id },
-        '_id name'
-      );
+    const unitsMetrics = [];
+    const projectMetrics = {
+      created: [],
+      closed: [],
+      risks: new Array(5).fill(0),
+      reportsVolume: [],
+      templates: {
+        labels: [],
+        series: [],
+      },
+    };
 
-      const unitsStat = [];
-      const projectStat = {
-        open: new Array(12).fill(0),
-        closed: new Array(12).fill(0),
-        risks: new Array(5).fill(0),
-        reports: new Array(12).fill(0),
-      };
+    if (units.length) {
+      for (const unit of units) {
+        const data = await this.getUnitMetrics(
+          unit._id,
+          parseInt(options.days)
+        );
 
-      if (units.length) {
-        for (const unit of units) {
-          const data = await this.getStatisticsForUnit(unit._id);
+        unitsMetrics.push({
+          name: unit.displayName,
+          ...data.timeseries,
+          ...data.stats,
+          templates: data.templates,
+        });
 
-          unitsStat.push({
-            name: unit.name,
-            data,
+        Object.keys(data.timeseries).forEach((key) => {
+          const metrics: Metrics[] = data.timeseries[key];
+          metrics.forEach((metric, index) => {
+            if (projectMetrics[key][index]) {
+              projectMetrics[key][index].y += metric.y;
+            } else {
+              projectMetrics[key].push(metric);
+            }
           });
+        });
 
-          Object.keys(data).forEach(key => {
-            const arr = data[key];
-            const updated = projectStat[key].map((a, i) => a + arr[i]);
-            projectStat[key] = updated;
-          });
-        }
+        Object.keys(data.stats).forEach((key) => {
+          const arr = data.stats[key];
+          const updated = projectMetrics[key].map((a, i) => a + arr[i]);
+          projectMetrics[key] = updated;
+        });
+
+        data.templates.labels.forEach((label, index) => {
+          const labelIndex = projectMetrics.templates.labels.indexOf(label);
+
+          if (labelIndex >= 0) {
+            projectMetrics.templates.series[labelIndex] +=
+              data.templates.series[index];
+          } else {
+            projectMetrics.templates.labels.push(label);
+            projectMetrics.templates.series.push(data.templates.series[index]);
+          }
+        });
       }
-
-      return {
-        project: projectStat,
-        units: unitsStat,
-      };
-    } else {
-      throw new NotFoundException('No such project');
     }
+
+    return {
+      project: projectMetrics,
+      units: unitsMetrics,
+    };
   }
 
-  async getUnits(slug: string) {
-    const project = await this.projectModel.findOne({ slug });
+  async findOne(projectName: string) {
+    return this.projectModel.findOne({ name: projectName }).lean();
+  }
 
-    if (project) {
-      const units = await this.unitModel.find({ project: project._id });
-      const result = [];
+  async getUsers(project: Project) {
+    return this.userModel
+      .find(
+        {
+          $or: [
+            {
+              memberships: { $elemMatch: { $eq: project._id } },
+            },
+            {
+              role: { $eq: Role.OWNER },
+            },
+          ],
+        },
+        { _id: 1, role: 1, name: 1, email: 1, image: 1 }
+      )
+      .lean();
+  }
 
-      for (const unit of units) {
-        // @ts-ignore
-        const numOfReports = await this.reportModel.countDocuments({
-          unit: { $eq: unit },
-        });
-        const numberOfClosedTickets = await this.issueModel.countDocuments({
-          unit: { $eq: unit },
-          status: 'closed',
-        });
-        const numberOfAllTickets = await this.issueModel.countDocuments({
-          unit: { $eq: unit },
-        });
+  async addUser(project: Project, userId: string) {
+    const user = await this.userModel.findOne({ _id: userId });
 
-        result.push({
-          _id: unit._id,
-          name: unit.name,
-          slug: unit.slug,
-          project: unit.project,
-          created_at: unit.created_at,
-          updated_at: unit.updated_at,
-          reports: numOfReports,
-          closed_tickets: numberOfClosedTickets,
-          tickets: numberOfAllTickets,
-        });
-      }
-
-      return result;
-    } else {
-      throw new NotFoundException('No such project');
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+
+    user.memberships.push(project._id);
+    user.save();
+  }
+
+  async removeUser(project: Project, userId: string) {
+    const user = await this.userModel.findOne({ _id: userId });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.memberships = user.memberships.filter((m) => m !== project._id);
+    user.save();
   }
 }

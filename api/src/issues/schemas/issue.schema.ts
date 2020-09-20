@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Schema } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 export const IssueSchema = new Schema(
   {
-    _id: { type: String, default: uuidv4 },
+    _id: { type: String, default: () => nanoid() },
     fields: String,
     status: {
       type: String,
@@ -25,8 +25,18 @@ export const IssueSchema = new Schema(
     report: { type: String, ref: 'Report' },
     ticket: { type: String, ref: 'Ticket' },
     unit: { type: String, ref: 'Unit' },
+    project: { type: String, ref: 'Project' },
     tags: [{ type: String }],
     comments: [{ type: String, ref: 'Comment' }],
+    closedAt: Date,
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
+  { timestamps: true }
 );
+
+IssueSchema.index({ status: 1 });
+IssueSchema.index({ resolution: 1 });
+IssueSchema.index({ risk: 1 });
+IssueSchema.index({ unit: 1 });
+IssueSchema.index({ project: 1 });
+IssueSchema.index({ template: 1 });
+IssueSchema.index({ createdAt: -1 });

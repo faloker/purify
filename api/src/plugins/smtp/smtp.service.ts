@@ -8,7 +8,7 @@ import { SMTPSettings } from './interfaces/smtp.interface';
 export class SmtpService {
   constructor(
     @InjectModel('SMTPSettings')
-    private readonly smtpSettingsModel: Model<SMTPSettings>,
+    private readonly smtpSettingsModel: Model<SMTPSettings>
   ) {}
 
   async saveSettings(config: any) {

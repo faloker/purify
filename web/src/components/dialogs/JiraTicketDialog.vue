@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="dialog"
+    v-model="value"
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
@@ -14,7 +14,7 @@
         <v-btn
           icon
           dark
-          @click="$emit('update:dialog', false)"
+          @click.stop="$emit('input', false)"
         >
           <v-icon>close</v-icon>
         </v-btn>
@@ -23,7 +23,7 @@
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items>
-          <v-btn text @click="openFinisher">
+          <v-btn text @click.stop="openFinisher">
             next
             <v-icon class="ml-2">
               mdi-chevron-right
@@ -102,14 +102,14 @@
                 <v-btn
                   color="red darken-1"
                   text
-                  @click="finisher = !finisher"
+                  @click.stop="finisher = !finisher"
                 >
                   Close
                 </v-btn>
                 <v-btn
                   color="green darken-1"
                   text
-                  @click="createTicket()"
+                  @click.stop="createTicket()"
                 >
                   Create
                 </v-btn>
@@ -118,105 +118,133 @@
           </v-dialog>
         </v-toolbar-items>
       </v-toolbar>
-      <vue-simplemde
-        ref="markdownEditor"
-        v-model="preparedMarkdown"
-        :configs="configs"
-      />
+      <v-row>
+        <v-col cols="6">
+          <editor
+            ref="JiraTicketEditor"
+            v-model="markdown"
+            mode="text/x-markdown"
+          />
+        </v-col>
+        <v-divider vertical />
+        <v-col cols="5">
+          <div class="ma-3 preview-html" v-html="compiledMarkdown" />
+        </v-col>
+      </v-row>
     </v-card>
   </v-dialog>
 </template>
-
-<script>
+<script lang="ts">
+import {
+  defineComponent,
+  computed,
+  ComputedRef,
+  PropType,
+  ref,
+  onMounted,
+} from '@vue/composition-api';
+// @ts-ignore
 import j2md from 'jira2md';
-import { mapGetters } from 'vuex';
-import VueSimpleMDE from 'vue-simplemde';
-import { CREATE_TICKET } from '@/store/actions';
-import { matchPattern, prepareMarkdown } from '@//utils/helpers';
+import marked from 'marked';
+import Editor from '@/components/Editor.vue';
+import { CREATE_TICKET, SHOW_SUCCESS_MSG } from '@/store/actions';
+import { prepareMarkdown } from '@/utils/helpers';
+import { Template, TemplateWithStats, Issue } from '@/store/types';
+import store from '@/store';
 
-export default {
+export default defineComponent({
   name: 'JiraTicketDialog',
 
   components: {
-    'vue-simplemde': VueSimpleMDE,
+    Editor,
   },
 
   props: {
     issue: {
       required: true,
-      type: Object,
+      type: Object as PropType<Issue>,
     },
-    dialog: {
-      required: true,
+    value: {
       type: Boolean,
+      default: false,
     },
   },
 
-  data: () => ({
-    content: '',
-    finisher: false,
-    configs: {
-      spellChecker: false, // disable spell check
-    },
-    summary: '',
-    issuesTypes: ['Bug', 'Task'],
-    projects: [{ key: 'DEV' }],
-    components: [{ name: 'kek' }],
-    assignee: [{ name: 'DDDDD' }, { name: 'Jon Doe' }],
-    selectedIssueType: '',
-    selectedProject: '',
-    selectedAssignee: { name: 'Jon Doe' },
-    selectedComponents: [],
-    labels: [],
-  }),
+  setup(props, context) {
+    const finisher = ref(false);
+    const summary = ref('');
+    const configs = ref({ spellChecker: false });
+    const issuesTypes = ref(['Bug', 'Task', 'Epic']);
+    const components = ref([{ name: 'kek' }]);
+    const selectedIssueType = ref('');
+    const selectedProject = ref('');
+    // const selectedAssignee
+    const selectedComponents = ref([]);
+    const labels = ref([]);
+    const markdown = ref('');
 
-  computed: {
-    ...mapGetters(['findTemplateByName']),
+    const issueTemplate: ComputedRef<Template> = computed(() => {
+      const doc = store.state.templates.items.find(
+        (item: TemplateWithStats) => item.displayName === props.issue.template
+      );
+      return doc ? doc : {};
+    });
 
-    issueTemplate() {
-      return this.findTemplateByName(this.issue.template).template;
-    },
+    const compiledMarkdown = computed(() => marked(markdown.value));
 
-    preparedMarkdown() {
-      return this.prepareMarkdown(this.issue, this.issueTemplate);
-    },
-  },
+    onMounted(() => {
+      markdown.value = prepareMarkdown(props.issue, issueTemplate.value);
+    });
 
-  methods: {
-    matchPattern,
-
-    prepareMarkdown,
-
-    async createTicket() {
-      const payload = {};
-      payload.project = { key: this.selectedProject };
+    async function createTicket() {
+      const payload: any = {};
+      payload.project = { key: selectedProject.value };
       payload.assignee = { name: null };
-      payload.issuetype = { name: this.selectedIssueType };
-      payload.labels = this.labels;
-      payload.summary = this.summary;
-      payload.description = j2md.to_jira(this.preparedMarkdown);
+      payload.issuetype = { name: selectedIssueType.value };
+      payload.labels = labels.value;
+      payload.summary = summary.value;
+      payload.description = j2md.to_jira(markdown.value);
       // payload.components = this.components;
 
-      const ticket = await this.$store.dispatch(CREATE_TICKET, {
-        id: this.issue._id,
+      const ticket = await store.dispatch(CREATE_TICKET, {
+        issueId: props.issue._id,
         fields: payload,
       });
 
       if (ticket) {
-        this.$showSuccessMessage('Jira ticket has been created');
-        this.issue.ticket = ticket;
-        this.$emit('update:dialog', false);
+        const updatedIssue = props.issue;
+        updatedIssue.ticket = ticket;
+        context.emit('update:issue', updatedIssue);
+        context.emit('input', false);
+        await store.dispatch(SHOW_SUCCESS_MSG, 'Jira ticket has been created');
       }
-    },
+    }
 
-    openFinisher() {
-      this.summary = this.issue.title;
-      this.finisher = true;
-    },
+    function openFinisher() {
+      summary.value = props.issue.title;
+      finisher.value = true;
+    }
+
+    return {
+      openFinisher,
+      compiledMarkdown,
+      createTicket,
+      markdown,
+      finisher,
+      configs,
+      summary,
+      issuesTypes,
+      components,
+      selectedIssueType,
+      selectedProject,
+      selectedComponents,
+      labels,
+    };
   },
-};
+});
 </script>
-
 <style>
-@import '~simplemde/dist/simplemde.min.css';
+.preview-html {
+  font-size: 14px;
+}
 </style>

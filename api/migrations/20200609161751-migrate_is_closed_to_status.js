@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const uuid = require('uuid');
-
 module.exports = {
   async up(db, client) {
     // set a new field called status based on the value of is_closed

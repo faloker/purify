@@ -1,28 +1,60 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+  Matches,
+  IsOptional,
+  IsBoolean,
+  IsIn,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateProjectDto {
+  @Matches(RegExp(/^[a-z0-9_-]+$/))
+  @MinLength(3)
+  @MaxLength(40)
+  readonly name: string;
+
   @IsString()
   @MinLength(3)
   @MaxLength(40)
-  readonly title: string;
+  readonly displayName: string;
 
   @IsString()
-  readonly subtitle: string;
+  @IsOptional()
+  readonly description?: string;
+}
+
+export class GetProjectsQueryDto {
+  @IsOptional()
+  @IsIn(['true', 'false'])
+  verbose?: string;
+}
+
+export class GetMetricsQueryDto {
+  @IsOptional()
+  @IsIn(['7', '30', '90', '365'])
+  days: string;
 }
 
 export class EditProjectDto extends CreateProjectDto {}
 
-export class Project extends CreateProjectDto {
-  readonly _id: string;
-  readonly slug: string;
-  readonly created_at: Date;
-  readonly updated_at: Date;
+export class AddUserDto {
+  @IsString()
+  userId: string;
 }
 
-export class ProjectList extends Project {
-  readonly issues: number;
-  readonly units: number;
-  readonly tickets: number;
+export class ProjectDto extends CreateProjectDto {
+  readonly _id: string;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+}
+
+export class ProjectList extends ProjectDto {
+  readonly numIssues: number;
+  readonly numUnits: number;
+  readonly numTickets: number;
 }
 
 class Statistics {

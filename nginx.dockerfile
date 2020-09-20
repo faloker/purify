@@ -1,4 +1,4 @@
-FROM node:14-alpine as build-static
+FROM node:14.10-alpine as build-static
 
 WORKDIR /web
 COPY ./web/package*.json ./
@@ -7,7 +7,7 @@ COPY ./web/ .
 RUN sed -i "/enbale_cdn/d" public/index.html 
 RUN npm run build
 
-FROM nginx:alpine as production-stage
+FROM nginx:1.19-alpine as production-stage
 
 ARG env=prod
 

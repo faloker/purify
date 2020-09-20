@@ -9,6 +9,10 @@ import {
   IsObject,
   ValidateNested,
   IsJSON,
+  IsNumber,
+  IsNumberString,
+  IsBoolean,
+  IsBooleanString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -35,41 +39,75 @@ export class IssueChange {
 }
 
 export class GetIssuesQueryDto {
-  @ApiProperty({
-    description: 'The slug of a unit you want to get issues for.',
-  })
-  @IsString()
-  @IsNotEmpty()
-  readonly unit: string;
-
   @ApiPropertyOptional({
-    description: 'Filter by issue status.',
-    enum: ['open', 'closed'],
+    description:
+      'Filter by issue status. If multiple, provide a comma-separated list.',
   })
   @IsString()
-  @IsIn(['open', 'closed'])
   @IsOptional()
   readonly status?: string;
 
   @ApiPropertyOptional({
-    type: Boolean,
+    description: 'Filter by resolution.',
+  })
+  @IsString()
+  @IsOptional()
+  readonly resolution?: string;
+
+  @ApiPropertyOptional({
     description: 'Filter by ticket.',
   })
   @IsString()
-  @IsIn(['true', 'false'])
   @IsOptional()
   readonly ticket?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by risks. Provide a comma-separated list of risks.',
+    description:
+      'Filter by risks. If multiple, provide a comma-separated list.',
   })
   @IsOptional()
   @IsString()
-  readonly risks?: string;
+  readonly risk?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Filter by template. If multiple, provide a comma-separated list.',
+  })
+  @IsOptional()
+  @IsString()
+  readonly template?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter by project name.',
+  })
+  @IsOptional()
+  @IsString()
+  readonly projectName?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter by unit name.',
+  })
+  @IsOptional()
+  @IsString()
+  readonly unitName?: string;
+
+  @ApiPropertyOptional({
+    description: 'Limit number of results',
+  })
+  @IsOptional()
+  @IsNumberString()
+  readonly limit?: string;
+
+  @ApiPropertyOptional({
+    description: 'Return issues for a specified number of days',
+  })
+  @IsOptional()
+  @IsNumberString()
+  readonly days?: string;
 }
 
 export class UpdateIssuesBodyDto {
-  @IsUUID('4', { each: true })
+  @IsString({ each: true })
   readonly ids: string[];
 
   @ValidateNested()
@@ -78,7 +116,7 @@ export class UpdateIssuesBodyDto {
 }
 
 export class IdParamDto {
-  @IsUUID('4')
+  @IsString()
   readonly id: string;
 }
 

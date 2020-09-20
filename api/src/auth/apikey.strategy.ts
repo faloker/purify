@@ -1,19 +1,20 @@
 import { Strategy } from 'passport-localapikey-update';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class APIKeyStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly authService: AuthService) {
+  constructor(private readonly usersService: UsersService) {
     super();
   }
 
   async validate(apikey: string): Promise<any> {
-    const user = await this.authService.validateAPIKey(apikey);
-    if (!user) {
+    const token = await this.usersService.validateAPIAccessToken(apikey);
+    if (!token) {
       throw new UnauthorizedException();
     }
+    const user = await this.usersService.findOne({ _id: token.user });
     return user;
   }
 }

@@ -18,7 +18,7 @@ export class SettingsService {
     private readonly jiraSettingsModel: Model<JiraSettings>,
     private jiraService: JiraService,
     private smtpService: SmtpService,
-    private slackService: SlackService,
+    private slackService: SlackService
   ) {}
 
   async saveJiraSettings(settings: JiraSettingsBodyDto) {
@@ -26,12 +26,12 @@ export class SettingsService {
       const conf = await this.jiraService.saveSettings(
         settings.host,
         settings.username,
-        settings.api_key,
+        settings.api_key
       );
       return { id: conf._id };
     } catch (err) {
       throw new BadRequestException(
-        'Unable to connect to the Jira instance. Check the provided parameters.',
+        'Unable to connect to the Jira instance. Check the provided parameters.'
       );
     }
   }
@@ -42,7 +42,7 @@ export class SettingsService {
       return { id: conf._id };
     } catch (err) {
       throw new BadRequestException(
-        'Unable to connect to the SMTP server. Check the provided parameters.',
+        'Unable to connect to the SMTP server. Check the provided parameters.'
       );
     }
   }

@@ -2,7 +2,16 @@
   "presets": ["@vue/cli-plugin-babel/preset"],
   "env": {
     "test": {
-      "plugins": [["istanbul", { "extension": [".js", ".vue"] }]]
+      "plugins": [
+        [
+          "istanbul",
+          {
+            "extends": "@istanbuljs/nyc-config-typescript",
+            "all": true,
+            "extension": [".vue", ".ts"]
+          }
+        ]
+      ]
     }
   }
 }
