@@ -29,6 +29,10 @@ jobs:
   cypress-run:
     needs: ['build-api-image', 'build-nginx-image']
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3]
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -39,6 +43,8 @@ jobs:
           build: npm run start:ci
           browser: chrome
           record: true
+          parallel: true
+          group: 'Chrome'
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
