@@ -4,6 +4,8 @@ jobs:
   build-api-image:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@master
       - uses: whoan/docker-build-with-cache-action@v5
         with:
           username: '${{ secrets.DOCKER_HUB_USERNAME }}'
@@ -14,6 +16,8 @@ jobs:
   build-nginx-image:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@master
       - uses: whoan/docker-build-with-cache-action@v5
         with:
           username: '${{ secrets.DOCKER_HUB_USERNAME }}'
