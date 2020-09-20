@@ -26,7 +26,7 @@ jobs:
           dockerfile: nginx.dockerfile
           build_extra_args: "--build-arg=env=dev"
 
-  cypress-run:
+  chrome-run:
     needs: ['build-api-image', 'build-nginx-image']
     runs-on: ubuntu-latest
     strategy:
@@ -45,6 +45,32 @@ jobs:
           record: true
           parallel: true
           group: 'Chrome'
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  firefox-run:
+    needs: ['build-api-image', 'build-nginx-image']
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node12.14.1-chrome83-ff77
+      options: --user 1001
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Run tests
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run start:ci
+          browser: firefox
+          record: true
+          parallel: true
+          group: 'Firefox'
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
