@@ -9,12 +9,12 @@
     "start:ci": "docker-compose -f docker-compose.ci.yml up -d",
     "start:coverage": "concurrently npm:start:db npm:start:client npm:start:server:coverage 1>/dev/null 2>&1 &",
     "start:client": "cd web && npm i && npm test",
-    "db:migrate": "wait-on http://localhost:8080/#/welcome && cd api && migrate-mongo up",
     "start:db": "docker run -d -p 27017:27017 --name test_mongo mongo",
     "start:server:coverage": "cd api && npm i && npm run start:coverage",
     "cy:verify": "cypress verify",
     "cy:version": "cypress version",
     "cy:open": "cypress open",
+    "db:migrate": "wait-on http://localhost:8080/#/welcome && cd api && migrate-mongo up",
     "cy:coverage": "wait-on http://localhost:8080/#/welcome && cypress run -C cypress.cover.json",
     "cy:run": "wait-on http://localhost:8080/#/welcome && cypress run --browser chrome --record --key fb3c6806-340f-4621-b19a-235876278336"
   },

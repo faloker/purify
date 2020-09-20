@@ -10,7 +10,7 @@ jobs:
           node-version: '14'
 
       - name: Install root dependencies
-        run: npm i
+        run: npm i && npm install -g migrate-mongo
 
       - name: Start test server and db in dev mode
         run: npm run start:coverage
