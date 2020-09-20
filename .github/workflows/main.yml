@@ -22,6 +22,10 @@ jobs:
       uses: cypress-io/github-action@v2
       with:
         browser: chrome
+        record: true
+      env:
+        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   coverage:
     needs: [ test ]
     runs-on: ubuntu-latest
