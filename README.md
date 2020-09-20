@@ -11,15 +11,15 @@
 
 <p align="center">
    🎮
-  <a href="https://purify-develop.herokuapp.com/">Demo</a>
+  <a href="https://purify-develop.herokuapp.com/" target="_blank">Demo</a>
   </p>
   <p align="center">
    📃
-  <a href="https://faloker.gitbook.io/purify-docs/">Docs</a>
+  <a href="https://faloker.gitbook.io/purify-docs/" target="_blank">Docs</a>
     </p>
     <p align="center">
    📹
-  <a href="https://player.vimeo.com/video/459964549">Quick Vimeo</a>
+  <a href="https://player.vimeo.com/video/459964549" target="_blank">Quick Vimeo</a>
 </p>
 
 <p align="center">
