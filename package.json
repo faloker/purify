@@ -9,6 +9,7 @@
     "start:ci": "docker-compose -f docker-compose.ci.yml up -d",
     "start:coverage": "concurrently npm:start:db npm:start:client npm:start:server:coverage 1>/dev/null 2>&1 &",
     "start:client": "cd web && npm i && npm test",
+    "db:migrate": "wait-on http://localhost:8080/#/welcome && cd api && migrate-mongo up",
     "start:db": "docker run -d -p 27017:27017 --name test_mongo mongo",
     "start:server:coverage": "cd api && npm i && npm run start:coverage",
     "cy:verify": "cypress verify",
