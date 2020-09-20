@@ -10,10 +10,16 @@
 <h4 align="center">All-in-one tool for managing vulnerability reports</h4>
 
 <p align="center">
-  <a href="https://purify-demo.herokuapp.com/">Demo</a>
-</p>
-<p align="center">
+   🎮
+  <a href="https://purify-develop.herokuapp.com/">Demo</a>
+  </p>
+  <p align="center">
+   📃
   <a href="https://faloker.gitbook.io/purify-docs/">Docs</a>
+    </p>
+    <p align="center">
+   📹
+  <a href="https://player.vimeo.com/video/459964549">Quick Vimeo</a>
 </p>
 
 <p align="center">
