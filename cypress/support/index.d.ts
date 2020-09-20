@@ -138,5 +138,7 @@ declare namespace Cypress {
     createAccessToken(name: string): void;
 
     uploadReport(filename: string): void;
+
+    createUser(email: string): void;
   }
 }

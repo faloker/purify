@@ -23,6 +23,16 @@
             @click:append-outer="copyText"
           />
         </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="quinary"
+            text
+            @click.stop="$emit('input', false)"
+          >
+            OK
+          </v-btn>
+        </v-card-actions>
       </template>
       <v-template v-else>
         <v-card-title>User has been created</v-card-title>
