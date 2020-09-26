@@ -68,15 +68,13 @@ declare namespace Cypress {
     /**
      * Register a new user through the API.
      *
-     * @param {string} username The username to use for registration. Default is "test".
      * @param {string} email The email to use for registration. Default is "test＠example.com".
-     * @param {string} password The password to use for registration. Default is "testtest".
      *
      * @example
      * // create a new user with default credentials via API
      * cy.apiCreateUser();
      */
-    apiCreateUser(username?: string, email?: string, password?: string): void;
+    apiCreateUser(user: any): Chainable<Response>;
 
     /**
      * Create a new project through the API.
@@ -140,5 +138,7 @@ declare namespace Cypress {
     uploadReport(filename: string): void;
 
     createUser(email: string): void;
+
+    assumeRole(role: string, memberships?: string[]): Chainable<string>;
   }
 }
