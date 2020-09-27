@@ -28,10 +28,10 @@ export class CreateUserDto {
   @IsBoolean()
   readonly ssoBypass: boolean;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsArray()
-  @ArrayNotEmpty()
-  readonly memberships: string[];
+  @IsOptional()
+  readonly memberships?: string[];
 }
 
 export class EditUserDto extends CreateUserDto {

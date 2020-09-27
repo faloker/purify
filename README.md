@@ -10,10 +10,16 @@
 <h4 align="center">All-in-one tool for managing vulnerability reports</h4>
 
 <p align="center">
-  <a href="https://purify-demo.herokuapp.com/">Demo</a>
-</p>
-<p align="center">
-  <a href="https://faloker.gitbook.io/purify-docs/">Docs</a>
+   🎮
+  <a href="https://purify-develop.herokuapp.com/" target="_blank">Demo</a>
+  </p>
+  <p align="center">
+   📃
+  <a href="https://faloker.gitbook.io/purify-docs/" target="_blank">Docs</a>
+    </p>
+    <p align="center">
+   📹
+  <a href="https://player.vimeo.com/video/459964549" target="_blank">Quick Vimeo</a>
 </p>
 
 <p align="center">
@@ -58,9 +64,9 @@ Collect all your findings in one place, review/validate/track them, collaborate 
 ## Getting started
 
 - [Official Documentation](https://faloker.gitbook.io/purify)
-- [Live Demo](https://purify-demo.herokuapp.com)
-  - email: system@purify.com
-  - password: secret
+- [Live Demo](https://purify-develop.herokuapp.com)
+  - email: demo@user.com
+  - password: 123456
 
 ## Questions
 
