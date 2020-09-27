@@ -13,9 +13,11 @@ const removeAttribute = (value, parentElement) => {
 
 export function matchPattern(fields: any, pattern: string) {
   let result = pattern;
-  const matches = pattern
-    // eslint-disable-next-line no-useless-escape
-    .match(/[a-zA-Z0-9\_\.\[\]]+/gm);
+  const matches = pattern.match(/[a-zA-Z0-9\_\.\[\]]+/gm);
+
+  if (!matches) {
+    return result;
+  }
 
   for (let match of matches) {
     if (match.startsWith('[') && match.endsWith(']')) {
