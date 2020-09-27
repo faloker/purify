@@ -55,7 +55,12 @@
                 >
                   mdi-square-rounded
                 </v-icon>
-                <span>{{ item.displayName }}</span>
+                <router-link
+                  :to="{ name: 'ProjectOverview', params: { projectName: item.name } }"
+                  class="text-decoration-none"
+                >
+                  {{ item.displayName }}
+                </router-link>
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-menu
