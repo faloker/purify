@@ -72,10 +72,10 @@ export class TemplatesService {
   async saveIssues(issues: object[], template: Template, report: Report) {
     let newOnes = 0;
 
-    const allIssuesInUnit = await this.issueModel
+    let allIssuesInUnit = await this.issueModel
       .find({ unit: report.unit })
       .lean();
-    const allTemplateIssuesInUnit = await this.issueModel
+    let allTemplateIssuesInUnit = await this.issueModel
       .find({
         unit: report.unit,
         template: template._id,
@@ -107,10 +107,10 @@ export class TemplatesService {
         // There is an issue similar to the new one
         if (filteredTemplateIssues.length && template.mergeFields.length) {
           const issueToUpdate = filteredTemplateIssues[0];
-          const oldIssue = JSON.parse(issueToUpdate.fields);
+          const oldIssueFields = JSON.parse(issueToUpdate.fields);
 
           for (const field of template.mergeFields) {
-            let originalField = get(oldIssue, field);
+            let originalField = get(oldIssueFields, field);
             const newField = get(issue, field);
 
             if (originalField) {
@@ -124,12 +124,26 @@ export class TemplatesService {
               }
             }
 
-            set(oldIssue, field, originalField);
+            set(oldIssueFields, field, originalField);
           }
 
           await this.issueModel.updateOne(
             { _id: issueToUpdate._id },
-            { $set: { fields: JSON.stringify(oldIssue) } }
+            { $set: { fields: JSON.stringify(oldIssueFields) } }
+          );
+
+          newOnes += 1;
+
+          allTemplateIssuesInUnit = allTemplateIssuesInUnit.map((issue) =>
+            issue._id === issueToUpdate._id
+              ? { ...issue, fields: JSON.stringify(oldIssueFields) }
+              : issue
+          );
+          
+          allIssuesInUnit = allIssuesInUnit.map((issue) =>
+            issue._id === issueToUpdate._id
+              ? { ...issue, fields: JSON.stringify(oldIssueFields) }
+              : issue
           );
         } else {
           let risk = get(issue, template.riskField, '').toLowerCase();
@@ -149,24 +163,29 @@ export class TemplatesService {
             report: report._id,
           }).save();
 
+          const leanIssue = await this.issueModel
+            .findOne({ _id: newIssue._id })
+            .lean();
+
           newOnes += 1;
-          allTemplateIssuesInUnit.push(newIssue);
-          allIssuesInUnit.push(newIssue);
+          allTemplateIssuesInUnit.push(leanIssue);
+          allIssuesInUnit.push(leanIssue);
         }
       }
     }
 
     if (newOnes > 0) {
-      const unit = await this.unitsModel.findOne({ _id: report.unit }).lean();
-      await this.slackService.sendMsg(
-        `🆕 You have *${newOnes}* new issues\n📄 Template: ${
-          template.displayName
-        }\n🗃️ Unit: ${
-          unit.displayName
-        }\n👀 Take a look at them <https://${this.configService.get<string>(
-          'DOMAIN'
-        )}/#/unit/${unit.name}/issues|*here*>`
-      );
+      // TODO Rewrite to use EventsService
+      // const unit = await this.unitsModel.findOne({ _id: report.unit }).lean();
+      // await this.slackService.sendMsg(
+      //   `🆕 You have *${newOnes}* new issues\n📄 Template: ${
+      //     template.displayName
+      //   }\n🗃️ Unit: ${
+      //     unit.displayName
+      //   }\n👀 Take a look at them <https://${this.configService.get<string>(
+      //     'DOMAIN'
+      //   )}/#/unit/${unit.name}/issues|*here*>`
+      // );
     }
 
     return {
