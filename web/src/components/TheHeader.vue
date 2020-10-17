@@ -15,13 +15,10 @@
             max-height="30"
           />
         </router-link>
-        <v-toolbar-title>
-          <b>Purify</b>
-        </v-toolbar-title>
-        <v-divider
-          class="ml-4 my-2 mr-1"
-          vertical
-        />
+        <router-link :to="{ name: 'Overview' }">
+          <b class="ml-2 title font-weight-bold white--text">Purify </b>
+        </router-link>
+        <v-divider class="ml-4 my-2 mr-1" vertical />
         <project-picker />
         <v-spacer />
         <v-menu
@@ -44,7 +41,10 @@
             </v-btn>
           </template>
           <v-list dense>
-            <v-list-item active-class="primary--text" :to="{ name: 'Templates' }">
+            <v-list-item
+              active-class="primary--text"
+              :to="{ name: 'Templates' }"
+            >
               <v-list-item-action>
                 <v-icon>mdi-file-document-multiple</v-icon>
               </v-list-item-action>
