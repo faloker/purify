@@ -5,7 +5,23 @@
         <p class="text-h4 font-weight-bold">
           Templates
         </p>
-        <p>Templates are code-free and user-friendly structures that parse reports the way you tell them.</p>
+        <p>
+          Templates are code-free and user-friendly structures that parse
+          reports the way you tell them.
+        </p>
+      </v-col>
+      <v-col class="mr-3">
+        <v-row align="center" justify="end">
+          <v-btn
+            v-permission="['owner']"
+            color="primary"
+            @click.stop="importDialog = true"
+          >
+            <v-icon left>
+              mdi-application-import
+            </v-icon>Import templates
+          </v-btn>
+        </v-row>
       </v-col>
     </v-row>
     <v-divider />
@@ -36,21 +52,26 @@
               <template v-slot:item.displayName="{ item }">
                 <span
                   class="d-inline-block text-truncate"
-                  style="max-width: 130px;"
+                  style="max-width: 130px"
                 >
                   {{ item.displayName }}
                 </span>
               </template>
               <template v-slot:item.createdAt="{ item }">
-                <span class="text-none mr-5">{{ formatDate(item.createdAt) }}</span>
+                <span class="text-none mr-5">{{
+                  formatDate(item.createdAt)
+                }}</span>
               </template>
               <template v-slot:item.updatedAt="{ item }">
-                <span class="text-none mr-5">{{ formatDate(item.updatedAt) }}</span>
+                <span class="text-none mr-5">{{
+                  formatDate(item.updatedAt)
+                }}</span>
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-menu
                   bottom
                   right
+                  :close-on-click="true"
                   transition="slide-x-transition"
                 >
                   <template v-slot:activator="{ on, attrs }">
@@ -64,12 +85,17 @@
                     </v-btn>
                   </template>
                   <v-list>
-                    <v-list-item @click.stop="openEditor(item)">
+                    <v-list-item @click="openEditor(item)">
                       <v-list-item-title>Edit Template</v-list-item-title>
                     </v-list-item>
+                    <v-list-item @click="exportTemplate(item)">
+                      <v-list-item-title>Export Template</v-list-item-title>
+                    </v-list-item>
                     <v-divider />
-                    <v-list-item @click.stop="openConfirmationDialog(item)">
-                      <strong class="red--text text--lighten-1">Delete Template</strong>
+                    <v-list-item @click="openConfirmationDialog(item)">
+                      <strong
+                        class="red--text text--lighten-1"
+                      >Delete Template</strong>
                     </v-list-item>
                   </v-list>
                 </v-menu>
@@ -124,6 +150,62 @@
       message="Template will be deattached from reports and issues. You will need to apply a new template. Are you sure you want to continue?"
       @handle-click="deleteTemplate()"
     />
+    <v-dialog
+      v-model="importDialog"
+      max-width="600"
+      @click:outside="$emit('input', false)"
+      @keydown.esc="$emit('input', false)"
+    >
+      <v-card>
+        <v-card-title>
+          <span>Import Templates</span>
+        </v-card-title>
+        <v-card-text>
+          <v-file-input
+            v-model="files"
+            counter
+            label="File input"
+            multiple
+            placeholder="Select your files"
+            prepend-icon="mdi-paperclip"
+            outlined
+            accept=".json"
+            :show-size="1000"
+          >
+            <template v-slot:selection="{ index, text }">
+              <v-chip
+                v-if="index < 2"
+                color="primary"
+                label
+                small
+              >
+                {{ text }}
+              </v-chip>
+
+              <span
+                v-else-if="index === 2"
+                class="overline grey--text text--darken-3 mx-2"
+              >
+                +{{ files.length - 2 }} File(s)
+              </span>
+            </template>
+          </v-file-input>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            class="mr-2 mt-3"
+            outlined
+            :loading="uploading"
+            :disabled="uploading"
+            @click="importTemplates()"
+          >
+            Import
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script lang="ts">
@@ -141,6 +223,7 @@ import {
   TEMPLATES_EDIT,
   TEMPLATES_DELETE,
   SHOW_SUCCESS_MSG,
+  TEMPLATE_CREATE,
 } from '@/store/actions';
 import { toLower } from 'lodash';
 import { formatDate } from '@/utils/helpers';
@@ -221,36 +304,16 @@ export default defineComponent({
         .catch(() => {});
     });
 
-    const {
-      editorDialog,
-      editedTemplate,
-      saveChanges,
-      openEditor,
-      closeEditor,
-    } = useEditTemplate();
-
-    const {
-      confirmDialog,
-      templateToDelete,
-      openConfirmationDialog,
-      deleteTemplate,
-    } = useDeleteTemplate();
-
     return {
-      editorDialog,
-      loading,
       filtredItems,
       headers,
       searchTerm,
-      editedTemplate,
-      saveChanges,
-      openEditor,
-      closeEditor,
-      confirmDialog,
-      templateToDelete,
-      openConfirmationDialog,
-      deleteTemplate,
+      loading,
       formatDate,
+      ...useEditTemplate(),
+      ...useDeleteTemplate(),
+      ...useExportTemplate(),
+      ...useImportTemplates(),
     };
   },
 });
@@ -328,5 +391,68 @@ function useDeleteTemplate() {
     openConfirmationDialog,
     deleteTemplate,
   };
+}
+
+function useExportTemplate() {
+  function exportTemplate(template: TemplateWithStats) {
+    const filename = `${template.name}-template.json`;
+    const {
+      createdAt,
+      updatedAt,
+      _id,
+      numIssues,
+      numReports,
+      ...fields
+    } = template;
+    const jsonStr = JSON.stringify(fields);
+
+    const element = document.createElement('a');
+    element.setAttribute(
+      'href',
+      'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr)
+    );
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
+  return {
+    exportTemplate,
+  };
+}
+
+function useImportTemplates() {
+  const importDialog = ref(false);
+  const files: Ref<File[]> = ref([]);
+  const uploading = ref(false);
+
+  async function importTemplates() {
+    const uploadJob = new Promise((resolve, reject) => {
+      files.value.forEach(async (file, index, array) => {
+        store
+          .dispatch(TEMPLATE_CREATE, JSON.parse(await file.text()))
+          .catch(() => {
+            uploading.value = false;
+            reject();
+          });
+        if (index === array.length - 1) resolve();
+      });
+    });
+
+    uploadJob.then(async () => {
+      uploading.value = false;
+      importDialog.value = false;
+      files.value = [];
+      await store.dispatch(SHOW_SUCCESS_MSG, 'Templates have been imported');
+      await store.dispatch(TEMPLATES_FETCH, true).catch(() => {});
+    });
+  }
+
+  return { importDialog, uploading, files, importTemplates };
 }
 </script>
