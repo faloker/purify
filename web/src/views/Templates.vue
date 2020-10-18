@@ -343,7 +343,8 @@ function useEditTemplate() {
       .then(async () => {
         editorDialog.value = false;
         await store.dispatch(SHOW_SUCCESS_MSG, 'The template has been updated');
-      });
+      })
+      .catch(() => {});
   }
 
   function openEditor(item: TemplateWithStats) {
@@ -382,7 +383,8 @@ function useDeleteTemplate() {
         templateToDelete.value = {};
 
         await store.dispatch(SHOW_SUCCESS_MSG, 'The template has been deleted');
-      });
+      })
+      .catch(() => {});
   }
 
   return {
@@ -444,13 +446,15 @@ function useImportTemplates() {
       });
     });
 
-    uploadJob.then(async () => {
-      uploading.value = false;
-      importDialog.value = false;
-      files.value = [];
-      await store.dispatch(SHOW_SUCCESS_MSG, 'Templates have been imported');
-      await store.dispatch(TEMPLATES_FETCH, true).catch(() => {});
-    });
+    uploadJob
+      .then(async () => {
+        uploading.value = false;
+        importDialog.value = false;
+        files.value = [];
+        await store.dispatch(SHOW_SUCCESS_MSG, 'Templates have been imported');
+        await store.dispatch(TEMPLATES_FETCH, true).catch(() => {});
+      })
+      .catch(() => {});
   }
 
   return { importDialog, uploading, files, importTemplates };
