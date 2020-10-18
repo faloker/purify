@@ -197,12 +197,12 @@ export class TemplatesService {
   async findAll(params: GetTemplatesQueryDto) {
     if (params.verbose) {
       return this.templateModel
-        .find()
+        .find({}, '-__v')
         .lean()
         .populate('numIssues')
         .populate('numReports');
     } else {
-      return this.templateModel.find().lean();
+      return this.templateModel.find({}, '-__v').lean();
     }
   }
 
