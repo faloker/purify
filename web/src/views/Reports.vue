@@ -101,7 +101,7 @@
                 Your search for "{{ searchTerm }}" found no results.
               </v-alert>
             </v-data-table>
-            <stepper :stepper.sync="stepperDialog" :report="report" />
+            <stepper v-model="stepperDialog" :report="report" />
           </v-card>
         </v-skeleton-loader>
       </v-col>
