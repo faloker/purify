@@ -2,7 +2,7 @@
   <div>
     <template v-if="isPrintable(ivalue)">
       <div class="headline font-weight-bold">
-        {{ parseKey(fieldKey) }}
+        {{ fieldName }}
       </div>
       <v-divider class="my-1" />
       <p v-if="fieldType === 'text'" style="white-space: pre-line;">
@@ -22,7 +22,7 @@
     <template v-else-if="Array.isArray(ivalue)">
       <template v-if="isPrintable(ivalue[0])">
         <div class="headline font-weight-bold">
-          {{ parseKey(fieldKey) }}
+          {{ fieldName }}
         </div>
         <v-divider class="my-1" />
         <ul :id="`list-${fieldKey}`" class="ml-2 my-3">
@@ -37,7 +37,7 @@
       </template>
       <template v-else-if="typeof ivalue[0] === 'object'">
         <div class="headline font-weight-bold">
-          {{ parseKey(fieldKey) }}
+          {{ fieldName }}
         </div>
         <v-divider class="my-1" />
         <v-expansion-panels
@@ -86,6 +86,9 @@ export default defineComponent({
   setup(props) {
     const fieldKey = computed(() => props.ikey.key || props.ikey);
     const fieldType = computed(() => props.ikey.type || 'text');
+    const fieldName = computed(
+      () => props.ikey.alias || parseKey(fieldKey.value)
+    );
 
     function isPrintable(obj: any) {
       return ['string', 'boolean', 'number'].includes(typeof obj);
@@ -100,7 +103,7 @@ export default defineComponent({
       fieldType,
       isPrintable,
       decodeValue,
-      parseKey,
+      fieldName,
     };
   },
 });

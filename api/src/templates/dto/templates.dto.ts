@@ -82,6 +82,7 @@ export class TemplateList {
 class BodyField {
   readonly key: string;
   readonly type: string;
+  readonly alias?: string;
 }
 
 export class GetTemplatesQueryDto {

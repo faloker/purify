@@ -3,6 +3,7 @@ import { Document } from 'mongoose';
 export interface BodyField {
   key: string;
   type: string;
+  alias?: string;
 }
 
 export interface Template extends Document {

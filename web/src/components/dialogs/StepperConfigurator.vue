@@ -1,9 +1,11 @@
 <template>
   <div>
     <v-dialog
-      v-model="stepperDialog"
+      v-model="value"
       max-width="60%"
+      @input="$emit('input', $event.target.value)"
       @click:outside="resetDialog"
+      @keydown.esc="resetDialog"
     >
       <v-stepper
         v-model="stepperModel"
@@ -164,14 +166,14 @@
             color="primary"
             class="mx-2 mt-3"
             outlined
-            @click.stop="stepperModel = 6"
+            @click="prepareBodyFields"
           >
             Next
           </v-btn>
           <v-btn
             class="mx-2 mt-3"
             outlined
-            @click.stop="stepperModel = 4"
+            @click="stepperModel = 4"
           >
             Go back
           </v-btn>
@@ -181,26 +183,33 @@
         </v-stepper-step>
         <v-stepper-content step="6">
           <template v-for="item in bodyFields">
-            <div :key="item" class="my-2">
-              <span class="subtitle-1">{{ item }}</span>
-              <v-btn-toggle
-                v-model="bodyFieldsTypes[item]"
-                color="primary"
-                group
-              >
-                <v-btn small value="text">
-                  Text
-                </v-btn>
-
-                <v-btn small value="html">
-                  Html
-                </v-btn>
-
-                <v-btn small value="base64">
-                  Base64
-                </v-btn>
-              </v-btn-toggle>
-            </div>
+            <v-row
+              :key="item"
+              dense
+              align="start"
+              justify="start"
+            >
+              <v-col cols="2">
+                <span class="subtitle-1">{{ item.replace('issue.', '') }}</span>
+              </v-col>
+              <v-col cols="1">
+                <v-select
+                  v-model="bodyFieldsTypes[item]"
+                  :items="fieldTypes"
+                  label="Type"
+                  outlined
+                  dense
+                />
+              </v-col>
+              <v-col cols="2">
+                <v-text-field
+                  v-model="bodyFieldsNames[item]"
+                  label="Display Name"
+                  outlined
+                  dense
+                />
+              </v-col>
+            </v-row>
           </template>
           <v-btn
             :disabled="Object.keys(bodyFieldsTypes).length !== bodyFields.length"
@@ -365,14 +374,14 @@
             outlined
             :loading="loading"
             :disabled="loading"
-            @click.stop="createTemplate()"
+            @click="createTemplate()"
           >
             Save
           </v-btn>
           <v-btn
             class="mr-2 mt-3"
             outlined
-            @click.stop="stepperModel = 9"
+            @click="stepperModel = 9"
           >
             Go back
           </v-btn>
@@ -435,6 +444,7 @@ import {
 import { Report } from '@/store/types';
 import store from '@/store';
 import slug from 'slug';
+import { parseKey } from '@/utils/helpers';
 
 interface BodyField {
   key: string;
@@ -449,9 +459,9 @@ export default defineComponent({
   },
 
   props: {
-    stepper: {
-      required: true,
+    value: {
       type: Boolean,
+      default: false,
     },
     report: {
       type: Object as PropType<Report>,
@@ -459,7 +469,7 @@ export default defineComponent({
     },
   },
 
-  setup(props, context) {
+  setup(props, { emit }) {
     const stepperModel = ref(1);
     const reportDialog = ref(false);
     const loading = ref(false);
@@ -480,11 +490,9 @@ export default defineComponent({
     const bodyFields: Ref<BodyField[]> = ref([]);
     const riskField: Ref<string[]> = ref([]);
     const bodyFieldsTypes = ref({});
+    const bodyFieldsNames = ref({});
+    const fieldTypes = ref(['text', 'html', 'base64']);
 
-    const stepperDialog = computed({
-      get: () => props.stepper,
-      set: (val) => context.emit('update:stepper', val),
-    });
     const reportContent = computed(() => store.state.reports.content);
     const exampleIssue = computed(() => {
       return props.report.type === 'file'
@@ -493,7 +501,8 @@ export default defineComponent({
     });
 
     function resetDialog() {
-      stepperDialog.value = false;
+      emit('input', false);
+      stepperModel.value = props.report.type === 'file' ? 1 : 2;
       name.value = titlePattern.value = subtitlePattern.value = pathToIssues.value =
         '';
       bodyFieldsTypes.value = {};
@@ -514,6 +523,8 @@ export default defineComponent({
           key: key.replace('issue.', ''),
           // @ts-ignore
           type: bodyFieldsTypes.value[key],
+          // @ts-ignore
+          alias: bodyFieldsNames.value[key],
         });
       }
 
@@ -545,22 +556,42 @@ export default defineComponent({
               reportId: props.report._id,
               templateName: name.value,
             })
-            .then(async () => {
+            .then(() => {
               loading.value = false;
-              await store.dispatch(FETCH_REPORTS).catch(() => {});
-              stepperDialog.value = false;
             });
         })
         .catch(() => {
           loading.value = false;
         });
+
+      store
+        .dispatch(FETCH_REPORTS)
+        .then(() => {
+          resetDialog();
+        })
+        .catch(() => {});
+    }
+    watch(
+      () => props.value,
+      () => {
+        stepperModel.value = props.report.type === 'file' ? 1 : 2;
+      }
+    );
+
+    function prepareBodyFields() {
+      // @ts-ignore
+      bodyFields.value.forEach((field: string) => {
+        // @ts-ignore
+        bodyFieldsTypes.value[field] = 'text';
+        // @ts-ignore
+        bodyFieldsNames.value[field] = parseKey(field.replace('issue.', ''));
+      });
+      stepperModel.value = 6;
     }
 
-    watch(stepperDialog, () => {
-      stepperModel.value = props.report.type === 'file' ? 1 : 2;
-    });
-
     return {
+      fieldTypes,
+      prepareBodyFields,
       rules,
       stepperModel,
       reportDialog,
@@ -577,13 +608,14 @@ export default defineComponent({
       mergeFields,
       titleFields,
       titlePattern,
-      stepperDialog,
       pathToIssues,
       createTemplate,
       subtitlePattern,
       bodyFieldsTypes,
+      bodyFieldsNames,
       externalComparisonFields,
       internalComparisonFields,
+      parseKey,
     };
   },
 });

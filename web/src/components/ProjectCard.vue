@@ -7,17 +7,19 @@
     max-height="170"
   >
     <v-card-title>
-      <span
-        class="d-inline-block text-truncate"
-        style="max-width: 220;"
-      >
+      <span class="d-inline-block text-truncate" style="max-width: 220">
         <v-icon
+          class="mb-1"
           left
           :color="project.color"
+        >mdi-square-rounded</v-icon>
+        <!-- {{ project.displayName }} -->
+        <router-link
+          :to="{ name: 'ProjectOverview', params: { projectName: project.name } }"
+          class="text-decoration-none"
         >
-          mdi-square-rounded
-        </v-icon>
-        {{ project.displayName }}
+          {{ project.displayName }}
+        </router-link>
       </span>
     </v-card-title>
     <v-card-subtitle class="text-truncate">
@@ -30,9 +32,7 @@
         class="text-none"
         :to="{ name: 'ProjectPage', params: { projectName: project.name } }"
       >
-        <v-icon
-          left
-        >
+        <v-icon left>
           mdi-poll
         </v-icon>
       </v-btn>
@@ -41,9 +41,7 @@
         class="text-none"
         :to="{ name: 'Units', params: { projectName: project.name } }"
       >
-        <v-icon
-          left
-        >
+        <v-icon left>
           mdi-checkbox-multiple-blank
         </v-icon>
         <span class="title font-weight-bold ml-1">
@@ -54,10 +52,7 @@
           />
         </span>
       </v-btn>
-      <v-btn
-        text
-        class="text-none"
-      >
+      <v-btn text class="text-none">
         <v-icon left>
           mdi-fire
         </v-icon>
