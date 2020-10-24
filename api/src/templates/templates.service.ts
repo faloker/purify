@@ -229,7 +229,7 @@ export class TemplatesService {
       );
       await this.reportModel.updateMany(
         { template: template._id },
-        { $unset: { template: '' } }
+        { $unset: { template: '', statistics: '' } }
       );
       await this.templateModel.deleteOne({ name });
     } else {
