@@ -60,11 +60,12 @@ function decodeValue(str: string) {
 
 function parseField(field: any, fieldValue: any) {
   let mkdwn = '';
-  const fieldKey = field.key || field;
   const fieldType = field.type || 'text';
+  console.log(field.type);
+  const fieldName = field.alias || parseKey(field.key);
 
   if (isPrintable(fieldValue)) {
-    mkdwn += `## ${parseKey(fieldKey)}\n`;
+    mkdwn += `## ${fieldName}\n`;
 
     if (fieldType === 'base64') {
       mkdwn += `${decodeValue(fieldValue)}\n\n`;
@@ -73,7 +74,7 @@ function parseField(field: any, fieldValue: any) {
     }
   } else if (Array.isArray(fieldValue)) {
     if (isPrintable(fieldValue[0])) {
-      mkdwn += `## ${parseKey(fieldKey)}\n`;
+      mkdwn += `## ${fieldName}\n`;
 
       for (const element of fieldValue) {
         mkdwn += `* ${element}\n`;
@@ -81,7 +82,7 @@ function parseField(field: any, fieldValue: any) {
 
       mkdwn += '\n';
     } else if (typeof fieldValue[0] === 'object') {
-      mkdwn += `## ${parseKey(fieldKey)}\n`;
+      mkdwn += `## ${fieldName}\n`;
 
       for (const [index, element] of fieldValue.entries()) {
         mkdwn += `<details><summary><b># ${index}</b></summary><p>\n\n`;

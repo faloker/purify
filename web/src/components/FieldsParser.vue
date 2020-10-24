@@ -70,6 +70,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api';
+import { parseKey } from '@/utils/helpers';
 
 export default defineComponent({
   name: 'FieldsParser',
@@ -85,7 +86,9 @@ export default defineComponent({
   setup(props) {
     const fieldKey = computed(() => props.ikey.key || props.ikey);
     const fieldType = computed(() => props.ikey.type || 'text');
-    const fieldName = computed(() => props.ikey.alias);
+    const fieldName = computed(
+      () => props.ikey.alias || parseKey(fieldKey.value)
+    );
 
     function isPrintable(obj: any) {
       return ['string', 'boolean', 'number'].includes(typeof obj);
