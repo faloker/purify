@@ -61,7 +61,6 @@ function decodeValue(str: string) {
 function parseField(field: any, fieldValue: any) {
   let mkdwn = '';
   const fieldType = field.type || 'text';
-  console.log(field.type);
   const fieldName = field.alias || parseKey(field.key);
 
   if (isPrintable(fieldValue)) {
