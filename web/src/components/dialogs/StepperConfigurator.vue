@@ -431,7 +431,6 @@ import {
   computed,
   PropType,
   watch,
-  SetupContext,
   Ref,
 } from '@vue/composition-api';
 // @ts-ignore
@@ -444,11 +443,13 @@ import {
 import { Report } from '@/store/types';
 import store from '@/store';
 import slug from 'slug';
+import { get } from 'lodash';
 import { parseKey } from '@/utils/helpers';
 
 interface BodyField {
   key: string;
   type: string;
+  alias?: string;
 }
 
 export default defineComponent({
@@ -496,18 +497,25 @@ export default defineComponent({
     const reportContent = computed(() => store.state.reports.content);
     const exampleIssue = computed(() => {
       return props.report.type === 'file'
-        ? reportContent.value[pathToIssues.value.replace('report.', '')]
+        ? get(reportContent.value, pathToIssues.value.replace('report.', ''))
         : reportContent.value;
     });
 
     function resetDialog() {
       emit('input', false);
       stepperModel.value = props.report.type === 'file' ? 1 : 2;
-      name.value = titlePattern.value = subtitlePattern.value = pathToIssues.value =
-        '';
+      name.value = '';
+      titlePattern.value = '';
+      subtitlePattern.value = '';
+      pathToIssues.value = '';
       bodyFieldsTypes.value = {};
-      tags.value = internalComparisonFields.value = externalComparisonFields.value = [];
-      mergeFields.value = riskField.value = titleFields.value = bodyFields.value = [];
+      tags.value = [];
+      internalComparisonFields.value = [];
+      externalComparisonFields.value = [];
+      mergeFields.value = [];
+      riskField.value = [];
+      titleFields.value = [];
+      bodyFields.value = [];
     }
 
     function slugifyDisplayName() {

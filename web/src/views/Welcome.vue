@@ -24,7 +24,11 @@
           <!-- <v-divider /> -->
           <v-card-text>
             <v-row>
-              <v-col v-if="systemConfig.saml" class="sso-block">
+              <v-col
+                v-if="systemConfig.saml"
+                class="sso-block"
+                cols="12"
+              >
                 <v-row
                   align="center"
                   justify="center"
@@ -69,7 +73,10 @@
                 </v-row>
               </v-col>
               <v-slide-y-transition>
-                <v-col v-if="!systemConfig.saml || forceLogin" class="sign-in-block mx-1">
+                <v-col
+                  v-if="!systemConfig.saml || forceLogin"
+                  class="sign-in-block mx-1"
+                >
                   <v-row>
                     <v-text-field
                       id="email"

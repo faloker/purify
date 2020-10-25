@@ -43,7 +43,7 @@ async function bootstrap() {
   const options = new DocumentBuilder()
     .setTitle('Purify API')
     .setDescription('The Purify API description')
-    .setVersion('0.2.0')
+    .setVersion('1.1.2')
     .addBearerAuth()
     .addApiKey({
       type: 'apiKey',
