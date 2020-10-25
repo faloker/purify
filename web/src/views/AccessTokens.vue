@@ -10,7 +10,7 @@
       <v-spacer />
       <v-col class="mr-3">
         <v-row align="center" justify="end">
-          <v-btn color="primary" @click.stop="createDialog = true">
+          <v-btn color="primary" @click="createDialog = true">
             <v-icon left>
               add
             </v-icon>Create API token
@@ -75,7 +75,7 @@
                     </v-btn>
                   </template>
                   <v-list>
-                    <v-list-item @click.stop="openConfirmationDialog(item)">
+                    <v-list-item @click="openConfirmationDialog(item)">
                       <strong class="red--text text--lighten-1">Delete token</strong>
                     </v-list-item>
                   </v-list>
@@ -115,7 +115,7 @@
           <v-btn
             color="quinary"
             text
-            @click.stop="createDialog = false"
+            @click="createDialog = false"
           >
             Close
           </v-btn>
@@ -124,7 +124,7 @@
             color="quinary"
             text
             :disabled="!name || name.length < 3"
-            @click.stop="createToken"
+            @click="createToken"
           >
             Create
           </v-btn>
@@ -191,7 +191,7 @@
           <v-btn
             color="quinary"
             text
-            @click.stop="exampleDialog = false"
+            @click="exampleDialog = false"
           >
             OK
           </v-btn>
