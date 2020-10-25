@@ -89,7 +89,7 @@ export class TemplatesService {
         filteredUnitIssues = filteredUnitIssues.filter((existingIssue) =>
           existingIssue.fields
             .toLowerCase()
-            .includes(get(issue, comparisonField).toLowerCase())
+            .includes(JSON.stringify(get(issue, comparisonField).toLowerCase()))
         );
       }
 
@@ -139,7 +139,7 @@ export class TemplatesService {
               ? { ...issue, fields: JSON.stringify(oldIssueFields) }
               : issue
           );
-          
+
           allIssuesInUnit = allIssuesInUnit.map((issue) =>
             issue._id === issueToUpdate._id
               ? { ...issue, fields: JSON.stringify(oldIssueFields) }
