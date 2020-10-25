@@ -61,7 +61,7 @@ function decodeValue(str: string) {
 function parseField(field: any, fieldValue: any) {
   let mkdwn = '';
   const fieldType = field.type || 'text';
-  const fieldName = field.alias || parseKey(field.key);
+  const fieldName = field.alias || parseKey(field.key || field);
 
   if (isPrintable(fieldValue)) {
     mkdwn += `## ${fieldName}\n`;
@@ -82,13 +82,12 @@ function parseField(field: any, fieldValue: any) {
       mkdwn += '\n';
     } else if (typeof fieldValue[0] === 'object') {
       mkdwn += `## ${fieldName}\n`;
-
       for (const [index, element] of fieldValue.entries()) {
         mkdwn += `<details><summary><b># ${index}</b></summary><p>\n\n`;
 
-        for (const key of Object.keys(element)) {
+        Object.keys(element).forEach((key) => {
           mkdwn += parseField(key, element[key]);
-        }
+        });
 
         mkdwn += '</p></details>\n\n';
       }

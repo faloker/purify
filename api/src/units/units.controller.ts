@@ -81,6 +81,7 @@ export class UnitsController {
   @ApiOperation({ summary: 'List reports' })
   @ApiOkResponse({ description: 'List of reports' })
   @ApiParam({ name: 'unitName', type: 'string', required: true })
+  @ApiTags('reports')
   getReports(@Param('unitName') unit: Unit) {
     return this.reportsService.getReports(unit._id);
   }
@@ -95,6 +96,7 @@ export class UnitsController {
     type: FileUploadDto,
   })
   @ApiParam({ name: 'unitName', type: 'string', required: true })
+  @ApiTags('reports')
   @UseInterceptors(FileInterceptor('file'))
   saveReport(
     @UploadedFile() file,
@@ -109,6 +111,7 @@ export class UnitsController {
   @ApiOperation({ summary: 'Upload JSON object' })
   @ApiCreatedResponse({ description: 'Upload successfull' })
   @ApiParam({ name: 'unitName', type: 'string', required: true })
+  @ApiTags('reports')
   saveOneshot(@Body() body: any, @Param('unitName') unit: Unit) {
     return this.reportsService.saveOneshot(body, unit);
   }
@@ -119,6 +122,7 @@ export class UnitsController {
   })
   @ApiCreatedResponse({ description: 'Upload successfull' })
   @ApiNotFoundResponse({ description: 'No such template' })
+  @ApiTags('reports')
   saveOneshotWithTemplate(
     @Body() body: any,
     @Param('unitName') unit: Unit,
