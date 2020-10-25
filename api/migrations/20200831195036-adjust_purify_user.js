@@ -4,6 +4,7 @@ module.exports = {
   async up(db, client) {
     const salt = crypto.randomBytes(16).toString('hex');
     const password = crypto
+      // deepcode ignore HardcodedSecret: default password for system user
       .pbkdf2Sync('secret', salt, 9999, 512, 'sha512')
       .toString('hex');
     await db.collection('users').updateOne(
