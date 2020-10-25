@@ -9,7 +9,7 @@
     <v-card>
       <v-container style="max-width: 600px;">
         <v-timeline dense clipped>
-          <v-timeline-item class="mb-7" large>
+          <v-timeline-item class="mb-7" small>
             <template v-slot:icon>
               <v-avatar>
                 <img :src="user.image">
