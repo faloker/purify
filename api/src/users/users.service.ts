@@ -67,7 +67,7 @@ export class UsersService {
     return new this.userModel({
       ...newUser,
       salt: randomBytes(16).toString('hex'),
-      image: `https://api.adorable.io/avatars/285/${nanoid(10)}.png`,
+      image: `https://avatars.dicebear.com/api/avataaars/${nanoid()}.svg`,
     }).save();
   }
 
@@ -253,6 +253,11 @@ export class UsersService {
 
     if (userSelfChange.name) {
       user.name = userSelfChange.name;
+      await user.save();
+    }
+
+    if (userSelfChange.image) {
+      user.image = userSelfChange.image;
       await user.save();
     }
   }

@@ -14,6 +14,21 @@
           <v-card-title>Your Info</v-card-title>
           <v-card-text>
             <v-col>
+              <v-row align="center" justify="start">
+                <v-avatar size="62">
+                  <img :src="user.image">
+                </v-avatar>
+                <v-btn
+                  class="mt-2 ml-3"
+                  color="primary"
+                  small
+                  @click="changeAvatarDialog = true"
+                >
+                  Change avatar
+                </v-btn>
+              </v-row>
+            </v-col>
+            <v-col>
               <v-row>
                 <v-text-field
                   v-model="name"
@@ -119,6 +134,57 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+    </v-dialog>   
+    <v-dialog
+      v-model="changeAvatarDialog"
+      max-width="400"
+      @click:outside="changeAvatarDialog = false"
+      @keydown.esc="changeAvatarDialog = false"
+    >
+      <v-card>
+        <v-card-title>
+          <span>Change avatar</span>
+        </v-card-title>
+        <v-card-subtitle>
+          <span>Feel free to use any public image hosting, but take a look at 
+            <a
+              href="https://avatars.dicebear.com/"
+              target="_blank"
+            >avatars.dicebear.com</a> first.</span>
+        </v-card-subtitle>
+        <v-card-text>
+          <v-col>
+            <v-row>
+              <v-text-field
+                id="newAvatarUrl"
+                v-model="newAvatarUrl"
+                label="New avatar URL"
+                required
+                dense
+                outlined
+              />
+            </v-row>
+          </v-col>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-btn
+            color="quinary"
+            text
+            @click="changeAvatarDialog = false"
+          >
+            Close
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            color="quinary"
+            text
+            @click="changeAvatar"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
   </v-container>
 </template>
@@ -131,26 +197,21 @@ import {
   SHOW_SUCCESS_MSG,
 } from '@/store/actions';
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import {
-  defineComponent,
-  ref,
-  computed,
-  onMounted,
-  ComputedRef,
-  Ref,
-} from '@vue/composition-api';
+import { defineComponent, ref, computed } from '@vue/composition-api';
 
 export default defineComponent({
   name: 'AccountSettings',
 
-  setup(props, context) {
+  setup() {
     const user = computed(() => store.state.profile.user);
     const systemConfig = computed(() => store.state.system.config);
     const name = ref(user.value.name);
     const dialog = ref(false);
+    const changeAvatarDialog = ref(false);
     const oldPassword = ref('');
     const password1 = ref('');
     const password2 = ref('');
+    const newAvatarUrl = ref('');
 
     async function changePwd() {
       store
@@ -177,8 +238,28 @@ export default defineComponent({
         })
         .catch(() => {});
     }
+
+    async function changeAvatar() {
+      store
+        .dispatch(SELF_CHANGE, { image: newAvatarUrl.value })
+        .then(async () => {
+          changeAvatarDialog.value = false;
+
+          await store.dispatch(
+            SHOW_SUCCESS_MSG,
+            'Your avatar has been changed'
+          );
+
+          await store.dispatch(PROFILE_FETCH).catch(() => {});
+        })
+        .catch(() => {});
+    }
+
     return {
       user,
+      changeAvatarDialog,
+      changeAvatar,
+      newAvatarUrl,
       systemConfig,
       name,
       changeName,
