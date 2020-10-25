@@ -94,6 +94,12 @@ export class UserSelfChangeDto {
   @IsString()
   @IsNotEmpty()
   readonly name?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  readonly image?: string;
 }
 
 export class CreateTokenDto {
