@@ -103,4 +103,27 @@ export class UnitsController {
   ) {
     return this.reportsService.saveFileReport(file, unit, body.template);
   }
+
+  @Post(':unitName/oneshots')
+  @Roles(['owner', 'admin', 'user'])
+  @ApiOperation({ summary: 'Upload JSON object' })
+  @ApiCreatedResponse({ description: 'Upload successfull' })
+  @ApiParam({ name: 'unitName', type: 'string', required: true })
+  saveOneshot(@Body() body: any, @Param('unitName') unit: Unit) {
+    return this.reportsService.saveOneshot(body, unit);
+  }
+
+  @Post(':unitName/oneshots/:templateName')
+  @ApiOperation({
+    summary: 'Upload JSON object and apply the template',
+  })
+  @ApiCreatedResponse({ description: 'Upload successfull' })
+  @ApiNotFoundResponse({ description: 'No such template' })
+  saveOneshotWithTemplate(
+    @Body() body: any,
+    @Param('unitName') unit: Unit,
+    @Param('templateName') templateName: string
+  ) {
+    return this.reportsService.saveOneshot(body, unit, templateName);
+  }
 }
