@@ -146,7 +146,7 @@ export class TemplatesService {
               : issue
           );
         } else {
-          let risk = get(issue, template.riskField, '').toLowerCase();
+          const risk = get(issue, template.riskField, '').toLowerCase();
 
           const newIssue = await new this.issueModel({
             unit: report.unit,
