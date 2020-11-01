@@ -148,16 +148,12 @@ export class TemplatesService {
         } else {
           let risk = get(issue, template.riskField, '').toLowerCase();
 
-          if (['negligible', 'informative'].includes(risk)) {
-            risk = 'info';
-          }
-
           const newIssue = await new this.issueModel({
             unit: report.unit,
             project: report.project,
-            risk: ['low', 'medium', 'high', 'critical', 'info'].includes(risk)
+            risk: ['low', 'medium', 'high', 'critical'].includes(risk)
               ? risk
-              : 'medium',
+              : 'info',
             template: template._id,
             fields: JSON.stringify(issue),
             report: report._id,
