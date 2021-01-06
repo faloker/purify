@@ -10,7 +10,7 @@
   "dependencies": {
     "@vue/composition-api": "^1.0.0-beta.13",
     "apexcharts": "^3.20.2",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "codemirror": "^5.57.0",
     "core-js": "^3.6.5",
     "date-fns": "^2.16.1",
