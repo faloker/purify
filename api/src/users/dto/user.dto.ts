@@ -97,6 +97,12 @@ export class UserSelfChangeDto {
 
   @ApiProperty()
   @IsOptional()
+  @IsEmail()
+  @IsNotEmpty()
+  readonly email?: string;
+
+  @ApiProperty()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   readonly image?: string;

@@ -260,5 +260,10 @@ export class UsersService {
       user.image = userSelfChange.image;
       await user.save();
     }
+
+    if (userSelfChange.email) {
+      user.email = userSelfChange.email;
+      await user.save();
+    }
   }
 }

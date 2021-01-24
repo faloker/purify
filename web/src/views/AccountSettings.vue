@@ -39,12 +39,10 @@
               </v-row>
               <v-row>
                 <v-text-field
+                  v-model="email"
                   label="Email"
                   dense
                   outlined
-                  filled
-                  :value="user.email"
-                  readonly
                 />
               </v-row>
             </v-col>
@@ -206,6 +204,7 @@ export default defineComponent({
     const user = computed(() => store.state.profile.user);
     const systemConfig = computed(() => store.state.system.config);
     const name = ref(user.value.name);
+    const email = ref(user.value.email);
     const dialog = ref(false);
     const changeAvatarDialog = ref(false);
     const oldPassword = ref('');
@@ -231,9 +230,9 @@ export default defineComponent({
 
     async function changeName() {
       store
-        .dispatch(SELF_CHANGE, { name: name.value })
+        .dispatch(SELF_CHANGE, { name: name.value, email: email.value })
         .then(async () => {
-          await store.dispatch(SHOW_SUCCESS_MSG, 'Your name has been changed');
+          await store.dispatch(SHOW_SUCCESS_MSG, 'Your data has been changed');
           await store.dispatch(PROFILE_FETCH).catch(() => {});
         })
         .catch(() => {});
@@ -262,6 +261,7 @@ export default defineComponent({
       newAvatarUrl,
       systemConfig,
       name,
+      email,
       changeName,
       dialog,
       password2,
