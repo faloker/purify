@@ -39,7 +39,6 @@ describe('Units / Edit', () => {
       cy.contains('Save').click();
     })
     
-    cy.get('.v-dialog--active').should('not.be.visible');
     cy.get('.v-snack__content').should('be.visible').contains('Success');
   });
 });

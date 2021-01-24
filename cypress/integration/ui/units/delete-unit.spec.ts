@@ -22,7 +22,7 @@ describe('Units / Delete', () => {
     })
 
     cy.get('.v-data-table').within(() => {
-      cy.contains('dast').should('not.be.visible');
+      cy.contains('dast').should('not.exist');
     })
 
     cy.get('.v-snack__content').should('be.visible').contains('Success');

@@ -66,7 +66,6 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      v-permission="['owner']"
                       icon
                       v-bind="attrs"
                       v-on="on"
@@ -161,17 +160,6 @@
                 readonly
                 :append-outer-icon="ttcIcon"
                 @click:append-outer="copyText"
-              />
-            </v-row>
-            <v-row>
-              <v-text-field
-                id="tokenName"
-                label="Token name"
-                dense
-                outlined
-                filled
-                :value="name"
-                readonly
               />
             </v-row>
             <v-row>
@@ -335,6 +323,7 @@ function useCreateToken() {
 
         newToken.value = token.value;
         exampleDialog.value = true;
+        name.value = '';
       })
       .catch(() => {});
   }

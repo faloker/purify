@@ -3,6 +3,7 @@
     "apiUrl": "http://localhost:8080",
     "webUrl": "http://localhost:8080"
   },
+  "experimentalStudio": true,
   "viewportWidth": 1280,
   "viewportHeight": 800,
   "projectId": "okxjr8"

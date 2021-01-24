@@ -20,7 +20,6 @@ describe('Users / Create', () => {
     });
 
     cy.contains('OK').click();
-    cy.get('.v-dialog--active').should('not.be.visible');
 
     cy.get('.v-data-table').within(() => {
       cy.contains('test@test.test').should('be.visible');

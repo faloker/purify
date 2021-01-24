@@ -31,10 +31,12 @@
   "devDependencies": {
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",
     "@cypress/code-coverage": "^3.8.1",
+    "@types/jest": "^26.0.20",
+    "@types/mocha": "^8.2.0",
     "@types/mongoose": "^5.7.36",
     "@types/node": "^14.10.2",
     "babel-plugin-istanbul": "^6.0.0",
-    "cypress": "^5.2.0",
+    "cypress": "^6.3.0",
     "cypress-file-upload": "^4.1.1",
     "istanbul-lib-coverage": "^3.0.0",
     "nyc": "^15.1.0",
@@ -43,7 +45,7 @@
   },
   "dependencies": {
     "concurrently": "^5.3.0",
-    "mongoose": "^5.10.5",
+    "mongoose": "^5.11.13",
     "wait-on": "^5.2.0"
   },
   "nyc": {
