@@ -25,6 +25,8 @@ module.exports = (on, config) => {
         await conn.collection(col).deleteMany({});
       });
 
+      conn.collection('users').deleteMany({ role: { $ne: 'owner' } });
+
       return null;
     },
 

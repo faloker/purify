@@ -56,7 +56,6 @@ Cypress.Commands.add('assumeRole', (role: Role, memberships?: string[]) => {
           });
       });
   }
-  // return cy.wrap(bearer);
 });
 
 Cypress.Commands.add('apiCreateUser', (user: any) => {

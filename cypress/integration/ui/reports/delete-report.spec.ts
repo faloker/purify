@@ -20,7 +20,6 @@ describe('Reports / Delete', () => {
       cy.contains('button', 'OK').click();
     })
 
-    cy.get('.v-dialog--active').should('not.be.visible');
     cy.get('.v-snack__content').should('be.visible').contains('Success');
   });
 });

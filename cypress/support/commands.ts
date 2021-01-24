@@ -1,5 +1,7 @@
 /// <reference path="../support/index.d.ts" />
 
+import { Role } from '../../api/src/users/interfaces/user.interface';
+
 Cypress.Commands.add('login', (username = 'test', password = 'testtest') => {
   cy.visit(`${Cypress.env('webUrl')}/#/welcome`);
 
@@ -13,6 +15,23 @@ Cypress.Commands.add('loginAsSystem', () => {
   cy.login('system@purify.com', 'secret');
 });
 
+Cypress.Commands.add('logout', () => {
+  cy.get('#btn-mini-profile').click();
+  cy.get('#menu-mini-profile').should('be.visible');
+  cy.get('#btn-logout').click();
+
+  cy.contains('Sign In');
+});
+
+Cypress.Commands.add('loginAs', (role: string) => {
+  if (role === Role.OWNER) {
+    cy.login('system@purify.com', 'secret');
+  } else {
+    cy.login(`${role}@user.com`, 'secret');
+  }
+
+  cy.contains('Recent Projects');
+});
 
 Cypress.Commands.add('createProject', (displayName, description = '') => {
   cy.contains('Create project').click();
@@ -67,7 +86,7 @@ Cypress.Commands.add('uploadReport', (filename: string) => {
     cy.contains('button', 'Upload').should('be.disabled');
     cy.get('#file-input').attachFile(filename);
     cy.contains('button', 'Upload').should('not.be.disabled').click();
-  })
+  });
 
   cy.get('.v-data-table').within(() => {
     cy.contains('button', 'Create').should('be.visible');
@@ -86,6 +105,40 @@ Cypress.Commands.add('createUser', (email: string) => {
     cy.get('.v-input--selection-controls__ripple').last().click();
     cy.contains('Create').click();
     cy.contains('button', 'Create').should('not.be.disabled').click();
+  });
+});
+
+Cypress.Commands.add('initAllRoles', (memberships?: string[]) => {
+  [Role.ADMIN, Role.USER, Role.OBSERVER].forEach((role) => {
+    cy.request('POST', `${Cypress.env('apiUrl')}/api/auth`, {
+      email: 'system@purify.com',
+      password: 'secret',
+    })
+      .its('body')
+      .then((response) => {
+        cy.request({
+          method: 'POST',
+          url: `${Cypress.env('apiUrl')}/api/users`,
+          body: {
+            email: `${role}@user.com`,
+            role: role,
+            memberships: memberships || [],
+            ssoBypass: true,
+          },
+          auth: {
+            bearer: response.token,
+          },
+        })
+          .its('body')
+          .then((response) => {
+            cy.request('POST', `${Cypress.env('apiUrl')}/api/auth/change_password`, {
+              token: `${response.link.substring(
+                response.link.lastIndexOf('/') + 1
+              )}`,
+              password: 'secret',
+            });
+          });
+      });
   });
 });
 

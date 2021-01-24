@@ -140,5 +140,11 @@ declare namespace Cypress {
     createUser(email: string): void;
 
     assumeRole(role: string, memberships?: string[]): Chainable<string>;
+
+    initAllRoles(memberships?: string[]): void;
+
+    loginAs(role: string): void;
+
+    logout(): void;
   }
 }
