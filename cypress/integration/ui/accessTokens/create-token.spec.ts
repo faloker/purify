@@ -17,7 +17,6 @@ describe('API Access Tokens / Create', () => {
       cy.get('.v-dialog--active').within(() => {
         cy.contains('New token created').should('be.visible');
         cy.get('#textToCopy').should('not.have.value', '');
-        cy.get('#tokenName').should('not.have.value', '');
         cy.get('textarea').should('not.have.value', '');
         cy.contains('OK').click();
       });
