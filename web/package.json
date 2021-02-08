@@ -18,7 +18,7 @@
     "jsonlint": "^1.6.3",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.20",
-    "marked": "^1.1.1",
+    "marked": "^2.0.0",
     "slug": "^3.3.4",
     "vue": "^2.6.12",
     "vue-apexcharts": "^1.6.0",
