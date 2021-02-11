@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@vue/composition-api": "^1.0.0-beta.13",
-    "apexcharts": "^3.20.2",
+    "apexcharts": "^3.24.0",
     "axios": "^0.19.2",
     "codemirror": "^5.57.0",
     "core-js": "^3.6.5",
