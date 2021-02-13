@@ -3,7 +3,7 @@
 $rally-font-size: 16;
 
 $body-font-family: 'Roboto Condensed', sans-serif;
-$heading-font-family: 'Nunito', sans-serif;
+$heading-font-family: 'Lato', sans-serif;
 $btn-font-size: #{14 / 16}rem;
 $btn-font-weight: 700;
 
@@ -68,7 +68,7 @@ $headings: (
   'body-1':(
     'font-family': $heading-font-family,
     'letter-spacing': initial,
-    'size': #{16 / $rally-font-size}rem,
+    'size': #{14 / $rally-font-size}rem,
     'weight': 400
   ),
   'body-2':(

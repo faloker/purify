@@ -5,7 +5,10 @@
         <v-card-title class="font-weight-bold">
           <v-icon left>
             mdi-apps
-          </v-icon>Recent Projects
+          </v-icon>
+          <h4 class="font-weight-bold">
+            Recent Projects
+          </h4>
         </v-card-title>
         <v-row
           v-if="!projectsLoading"
