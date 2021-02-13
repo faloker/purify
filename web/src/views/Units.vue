@@ -86,7 +86,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      v-permission="['owner']"
+                      v-permission="['owner', 'admin']"
                       icon
                       v-bind="attrs"
                       v-on="on"
