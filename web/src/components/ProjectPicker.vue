@@ -1,7 +1,9 @@
 <template>
   <v-menu
     v-model="menu"
+    :nudge-width="200"
     offset-y
+    rounded="lg"
     :close-on-content-click="false"
     nudge-bottom="5"
     transition="slide-y-reverse-transition"
@@ -21,7 +23,9 @@
     </template>
     <v-list dense>
       <v-subheader class="mb-1">
-        PROJECTS
+        <b>
+          PROJECTS
+        </b>
         <v-spacer /> 
         <v-chip
           small
@@ -32,7 +36,7 @@
           <v-icon small left>
             mdi-cogs
           </v-icon>
-          <strong>Manage Projects</strong>
+          <strong>Manage</strong>
         </v-chip>
       </v-subheader>
       <v-text-field
