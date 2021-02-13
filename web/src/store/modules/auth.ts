@@ -47,9 +47,11 @@ export default class Auth extends VuexModule {
 
   @Action
   async [AUTO_REFRESH]() {
+    // @ts-ignore
     const { exp } = jwt_decode(this.token);
     const now = Date.now();
 
+    // @ts-ignore
     const { role, memberships, ssoBypass } = jwt_decode(this.token);
     const { data } = await currentUser();
     const user = { ...data, role, memberships, ssoBypass };
