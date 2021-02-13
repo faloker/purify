@@ -123,8 +123,8 @@ export class UsersController {
   async getAllUsers(@Req() req): Promise<UserList[]> {
     let users = await this.usersService.getAll();
 
-    if (req.user.role != Role.OWNER) {
-      users = users.filter((user) => user.role != Role.OWNER);
+    if (req.user.role !== Role.OWNER) {
+      users = users.filter((user) => user.role !== Role.OWNER);
       
       users.forEach((user) => {
         user.memberships = user.memberships.filter((m: any) =>
