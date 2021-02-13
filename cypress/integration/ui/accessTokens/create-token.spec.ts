@@ -28,6 +28,8 @@ describe('API Access Tokens / Create', () => {
   });
 
   it('Unable to create a token with the same name', () => {
+    cy.task('db:drop:tokens');
+
     cy.loginAs('owner');
     cy.visit(`${Cypress.env('webUrl')}/#/user/tokens`);
     
