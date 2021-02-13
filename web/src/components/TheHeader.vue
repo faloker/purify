@@ -51,7 +51,7 @@
               <v-list-item-title>Templates</v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-permission="['owner', 'admin']"
+              v-permission="['owner']"
               active-class="primary--text"
               :to="{ name: 'Users' }"
             >
