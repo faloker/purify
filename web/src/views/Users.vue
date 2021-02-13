@@ -2,18 +2,20 @@
   <v-container>
     <v-row justify="space-between" align="center">
       <v-col>
-        <p class="text-h4 font-weight-bold">
+        <h1 class="font-weight-bold">
           Users
-        </p>
-        <p>All the people in your Purify installation.</p>
+        </h1>
+        <div class="body-1">
+          All the people in your Purify installation
+        </div>
       </v-col>
       <v-spacer />
       <v-col>
         <v-row class="mx-1">
           <user-dialog
             v-model="createDialog"
-            :roles="['Owner', 'Admin', 'User', 'Observer']"
-            :projects="projects"
+            :roles="rolesToPick"
+            :projects="projectsToPick"
             :email.sync="email"
             :role.sync="role"
             :memberships.sync="memberships"
@@ -32,7 +34,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-divider />
+    <v-divider class="my-1" />
     <v-row>
       <v-col>
         <v-text-field
@@ -125,7 +127,9 @@
                     </v-list-item>
                     <v-divider />
                     <v-list-item @click.stop="openConfirmationDialog(item)">
-                      <strong class="red--text text--lighten-1">Delete User</strong>
+                      <strong
+                        class="red--text text--lighten-1"
+                      >Delete User</strong>
                     </v-list-item>
                   </v-list>
                 </v-menu>
@@ -148,8 +152,8 @@
           v-model="editDialog"
           heading="Edit User"
           ok-button-text="Save"
-          :roles="['Owner', 'Admin', 'User', 'Observer']"
-          :projects="projects"
+          :roles="rolesToPick"
+          :projects="projectsToPick"
           :name.sync="newName"
           :email.sync="newEmail"
           :role.sync="newRole"
@@ -186,7 +190,7 @@ import {
   EDIT_USER,
   RESET_USER_PASSWORD,
 } from '@/store/actions';
-import { User, SystemConfig } from '@/store/types';
+import { User, SystemConfig, Role, Project } from '@/store/types';
 export default defineComponent({
   name: 'Users',
 
@@ -224,11 +228,27 @@ export default defineComponent({
       },
     ]);
 
-    const users = computed(() => store.state.users.items);
-    const projects = computed(() => store.state.projects.items);
+    const currentUser = computed(() => store.state.profile.user);
+    const users: ComputedRef<User[]> = computed(() => store.state.users.items);
+    const projects: ComputedRef<Project[]> = computed(
+      () => store.state.projects.items
+    );
     const systemConfig: ComputedRef<SystemConfig> = computed(
       () => store.state.system.config
     );
+
+    const projectsToPick = computed(() => {
+      return currentUser.value.role === Role.OWNER
+        ? projects.value
+        : projects.value.filter((project) =>
+            currentUser.value.memberships.includes(project._id)
+          );
+    });
+    const rolesToPick = computed(() => {
+      return currentUser.value.role === Role.OWNER
+        ? ['Owner', 'Admin', 'User', 'Observer']
+        : ['Admin', 'User', 'Observer'];
+    });
 
     onMounted(async () => {
       store
@@ -251,6 +271,9 @@ export default defineComponent({
       searchTerm,
       users,
       projects,
+      currentUser,
+      rolesToPick,
+      projectsToPick,
     };
   },
 });
