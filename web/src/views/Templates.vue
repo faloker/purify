@@ -2,18 +2,18 @@
   <v-container>
     <v-row justify="space-between" align="center">
       <v-col>
-        <p class="text-h4 font-weight-bold">
+        <h1 class="font-weight-bold">
           Templates
-        </p>
-        <p>
+        </h1>
+        <div class="body-1">
           Templates are code-free and user-friendly structures that parse
-          reports the way you tell them.
-        </p>
+          reports the way you tell them
+        </div>
       </v-col>
       <v-col class="mr-3">
         <v-row align="center" justify="end">
           <v-btn
-            v-permission="['owner']"
+            v-permission="['owner', 'admin', 'user']"
             color="primary"
             @click.stop="importDialog = true"
           >
@@ -24,7 +24,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-divider />
+    <v-divider class="my-1" />
     <v-row>
       <v-col>
         <v-text-field
@@ -76,7 +76,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      v-permission="['owner']"
+                      v-permission="['owner', 'admin', 'user']"
                       icon
                       v-bind="attrs"
                       v-on="on"
