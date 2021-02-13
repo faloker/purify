@@ -13,6 +13,7 @@ import {
   Req,
   BadRequestException,
   UseInterceptors,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   CreateUserDto,
@@ -119,8 +120,20 @@ export class UsersController {
     description: 'List of users',
     type: [UserList],
   })
-  async getAllUsers(): Promise<UserList[]> {
-    return this.usersService.getAll();
+  async getAllUsers(@Req() req): Promise<UserList[]> {
+    let users = await this.usersService.getAll();
+
+    if (req.user.role !== Role.OWNER) {
+      users = users.filter((user) => user.role !== Role.OWNER);
+      
+      users.forEach((user) => {
+        user.memberships = user.memberships.filter((m: any) =>
+          req.user.memberships.includes(m._id)
+        );
+      });
+    }
+
+    return users;
   }
 
   @Post('users')
@@ -135,7 +148,7 @@ export class UsersController {
         !req.user.memberships.includes(createUserDto.memberships[0]) ||
         createUserDto.role === Role.OWNER
       ) {
-        throw new BadRequestException();
+        throw new ForbiddenException();
       }
     }
     const user = await this.usersService.createUser(createUserDto);

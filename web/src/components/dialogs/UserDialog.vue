@@ -33,11 +33,7 @@
               />
             </v-row>
             <v-row>
-              <v-radio-group
-                v-model="roleModel"
-                :hint="hintText"
-                persistent-hint
-              >
+              <v-radio-group v-model="roleModel" row>
                 <v-radio
                   v-for="role in roles"
                   :key="role"
@@ -45,6 +41,21 @@
                   :value="role"
                 />
               </v-radio-group>
+            </v-row>
+            <v-row>
+              <v-slide-x-transition>
+                <v-alert
+                  v-if="roleModel"
+                  dense
+                  text
+                  border="left"
+                  type="info"
+                >
+                  <div class="body-1">
+                    {{ hintText }}
+                  </div>
+                </v-alert>
+              </v-slide-x-transition>
             </v-row>
             <v-row v-if="heading !== 'Invite User'" class="mt-5">
               <v-autocomplete
@@ -59,12 +70,13 @@
                 item-value="_id"
               >
                 <template v-slot:prepend-item>
-                  <v-list-item
-                    ripple
-                    @click.stop="toggle"
-                  >
+                  <v-list-item ripple @click.stop="toggle">
                     <v-list-item-action>
-                      <v-icon :color="membershipsModel.length > 0 ? 'indigo darken-4' : ''">
+                      <v-icon
+                        :color="
+                          membershipsModel.length > 0 ? 'indigo darken-4' : ''
+                        "
+                      >
                         {{ icon }}
                       </v-icon>
                     </v-list-item-action>
@@ -81,7 +93,7 @@
                     small
                   >
                     <span>{{ item.displayName }}</span>
-                  </v-chip>                  
+                  </v-chip>
                   <span
                     v-if="index === 3"
                     class="grey--text caption"
@@ -235,13 +247,13 @@ export default defineComponent({
     const hintText = computed(() => {
       switch (roleModel.value) {
         case 'Owner':
-          return 'Has access to all features, can edit all projects, and can make changes to user accounts.';
+          return 'Has access to all features, can edit all projects, and can make changes to user accounts';
         case 'Admin':
-          return 'Can invite new users and create units for specific projects.';
+          return 'Can invite new users and create units for specific projects';
         case 'User':
-          return 'Can edit issues, create templates and upload reports for specific projects.';
+          return 'Can edit issues, create templates and upload reports for specific projects';
         case 'Observer':
-          return 'Can view data for specific projects.';
+          return 'Can view data for specific projects';
         default:
           return '';
       }

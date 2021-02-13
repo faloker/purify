@@ -32,7 +32,7 @@ export class UsersService {
 
   async getAll() {
     return this.userModel
-      .find({}, { password: 0, token: 0, salt: 0, refreshToken: 0 })
+      .find({}, { password: 0, token: 0, salt: 0, refreshToken: 0, recentProjects: 0, __v: 0 })
       .lean()
       .populate('memberships', 'displayName');
   }
