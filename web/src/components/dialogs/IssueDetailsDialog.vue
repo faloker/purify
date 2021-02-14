@@ -65,6 +65,7 @@
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-btn
+                        id="commentBtn"
                         small
                         class="mr-2"
                         elevation="0"
@@ -119,6 +120,7 @@
                     >
                       <template v-slot:activator="{ on }">
                         <v-chip
+                          id="issue-resolution"
                           small
                           class="ml-1 text-capitalize"
                           v-on="on"
@@ -177,6 +179,7 @@
                     >
                       <template v-slot:activator="{ on }">
                         <v-chip
+                          id="issue-risk"
                           small
                           class="ml-1 text-capitalize"
                           v-on="on"
@@ -215,6 +218,7 @@
                   </v-list-item-title>
                   <v-list-item-subtitle>
                     <v-chip
+                      id="issue-ticket"
                       small
                       class="ml-1"
                       :href="issue.ticket.link"
@@ -240,7 +244,7 @@
                     </span>
                   </v-list-item-title>
                   <v-list-item-subtitle>
-                    <v-chip small>
+                    <v-chip id="issue-date" small>
                       {{ formatDate(issue.createdAt, 'dd MMM yyyy') }}
                     </v-chip>
                   </v-list-item-subtitle>

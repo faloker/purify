@@ -101,15 +101,15 @@ declare namespace Cypress {
     apiCreateUnit(displayName?: string): void;
 
     /**
-     * Upload the JSON object into the "test-title-unit" unit. A JSON object located at ../fixtures/oneshot-example.json.
+     * Upload the JSON object into the "test-name.unit" unit. A JSON object located at ../fixtures/oneshot-example.json.
      *
-     * @param {string} apiToken The API token to use for authentication.
+     * @param {string} templateName  Name of template to use.
      *
      * @example
      * // upload oneshot
-     * cy.apiUploadOneshot(token);
+     * cy.apiUploadOneshot('bandit');
      */
-    apiUploadOneshot(apiToken: string): void;
+    apiUploadOneshot(templateName: string): void;
 
     /**
      * Create a new template for the report through the API.

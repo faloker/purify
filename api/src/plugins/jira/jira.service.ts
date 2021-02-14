@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
+/* istanbul ignore file */
+
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as JiraClient from 'jira-connector';
 import { InjectModel } from '@nestjs/mongoose';
