@@ -70,7 +70,7 @@ Collect all your findings in one place, review/validate/track them, collaborate 
 
 ## Questions
 
-For questions and support please use the official [Discord channel](https://discord.gg/a9hz3PF). The issue list of this repo is exclusively for bug reports and feature requests.
+For questions and support please use [Github Discussions](https://github.com/faloker/purify/discussions/new). The issue list of this repo is exclusively for bug reports and feature requests.
 
 
 ## Built With
