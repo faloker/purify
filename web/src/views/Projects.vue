@@ -2,10 +2,12 @@
   <v-container>
     <v-row align="center" justify="space-between">
       <v-col>
-        <p class="text-h4 font-weight-bold">
+        <h1 class="font-weight-bold">
           Projects
-        </p>
-        <p>All projects in your Purify installation.</p>
+        </h1>
+        <div class="body-1">
+          All projects in your Purify installation
+        </div>
       </v-col>
       <v-spacer />
       <v-col class="mr-3">
@@ -22,7 +24,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-divider />
+    <v-divider class="my-1" />
     <v-row>
       <v-col>
         <v-text-field
@@ -85,8 +87,8 @@
                     <v-list-item @click.stop="openManageDialog(item)">
                       <v-list-item-title>Manage Users</v-list-item-title>
                     </v-list-item>
-                    <v-divider />
-                    <v-list-item @click.stop="openConfirmationDialog(item)">
+                    <v-divider v-permission="['owner']" />
+                    <v-list-item v-permission="['owner']" @click.stop="openConfirmationDialog(item)">
                       <v-list-item-title>
                         <strong class="red--text text--lighten-1">Delete Project</strong>
                       </v-list-item-title>

@@ -13,7 +13,6 @@ describe('Units / Create', () => {
   it('Create unit', () => {
     cy.createUnit('dast');
 
-    cy.get('.v-dialog--active').should('not.be.visible');
     cy.get('.v-data-table').within(() => {
       cy.contains('dast').should('be.visible');
     });

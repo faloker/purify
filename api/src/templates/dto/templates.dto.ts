@@ -49,6 +49,7 @@ export class EditTemplateDto {
   readonly titlePattern: string;
 
   @IsString()
+  @IsOptional()
   readonly subtitlePattern: string;
 
   @IsArray()

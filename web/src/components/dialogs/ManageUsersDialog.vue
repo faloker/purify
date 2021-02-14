@@ -19,7 +19,8 @@
           </v-btn>
         </v-card-title>
         <v-card-subtitle>
-          Manage user permissions in this project. You can also invite new members to the project.
+          Manage user permissions in this project. You can also invite new
+          members to the project.
         </v-card-subtitle>
         <v-text-field
           id="search"
@@ -31,22 +32,16 @@
           dense
           clearable
         />
-        <v-card-text style="max-height: 500px;">
+        <v-card-text style="max-height: 500px">
           <v-skeleton-loader
             type="list"
-            :types="{'list': 'list-item-avatar-two-line@3'}"
+            :types="{ list: 'list-item-avatar-two-line@3' }"
             :loading="loading"
             transition="slide-y-transition"
           >
             <v-list>
-              <v-slide-y-transition
-                group
-                hide-on-leave
-              >
-                <v-list-item
-                  v-for="user in filteredUsers"
-                  :key="user._id"
-                >
+              <v-slide-y-transition group hide-on-leave>
+                <v-list-item v-for="user in filteredUsers" :key="user._id">
                   <v-list-item-avatar>
                     <img :src="user.image" alt="ava">
                   </v-list-item-avatar>
@@ -60,14 +55,22 @@
                         dark
                         label
                       >
-                        {{ user.role }}
+                        <strong>{{ user.role }}</strong>
                       </v-chip>
                     </v-list-item-title>
-                    <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{
+                        user.email
+                      }}
+                    </v-list-item-subtitle>
                   </v-list-item-content>
                   <v-list-item-action v-if="user.role !== 'owner'">
                     <v-btn
-                      v-if="user.memberships.some(m => m.displayName === project.displayName)"
+                      v-if="
+                        user.memberships.some(
+                          (m) => m.displayName === project.displayName
+                        )
+                      "
                       outlined
                       color="tertiary"
                       small
@@ -109,7 +112,7 @@
     <user-dialog
       v-model="createDialog"
       heading="Invite User"
-      :roles="['Admin', 'User', 'Observer']"
+      :roles="rolesToPick"
       :email.sync="email"
       :role.sync="role"
       :sso-bypass.sync="ssoBypass"
@@ -141,10 +144,11 @@ import {
   FETCH_USERS,
   REMOVE_USER,
   SHOW_SUCCESS_MSG,
+  FETCH_PROJECTS,
   ADD_USER,
   CREATE_USER,
 } from '@/store/actions';
-import { User, Project } from '@/store/types';
+import { User, Project, Role } from '@/store/types';
 export default defineComponent({
   name: 'ManageUsersDialog',
 
@@ -172,6 +176,7 @@ export default defineComponent({
     const filteredUsers = computed(() =>
       users.value
         .filter((user) => user._id !== currentUser.value._id)
+        .filter((user) => user.role !== Role.OWNER)
         .filter((user) => {
           return (
             toLower(user.name).includes(toLower(searchTerm.value)) ||
@@ -181,6 +186,12 @@ export default defineComponent({
         })
         .sort()
     );
+
+    const rolesToPick = computed(() => {
+      return currentUser.value.role === Role.OWNER
+        ? ['Owner', 'Admin', 'User', 'Observer']
+        : ['Admin', 'User', 'Observer'];
+    });
 
     watch(
       () => props.value,
@@ -204,6 +215,7 @@ export default defineComponent({
         })
         .then(async () => {
           await store.dispatch(SHOW_SUCCESS_MSG, 'Membership has been updated');
+          await store.dispatch(FETCH_PROJECTS, true).catch(() => {});
         })
         .catch(() => {});
     }
@@ -216,12 +228,14 @@ export default defineComponent({
         })
         .then(async () => {
           await store.dispatch(SHOW_SUCCESS_MSG, 'Membership has been updated');
+          await store.dispatch(FETCH_PROJECTS, true).catch(() => {});
         })
         .catch(() => {});
     }
 
     return {
       searchTerm,
+      rolesToPick,
       loading,
       filteredUsers,
       roles,

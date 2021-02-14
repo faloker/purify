@@ -2,10 +2,12 @@
   <v-container>
     <v-row justify="space-between" align="center">
       <v-col>
-        <p class="text-h4 font-weight-bold">
+        <h1 class="font-weight-bold">
           API access tokens
-        </p>
-        <p>Create a few tokens to connect to the Purify API.</p>
+        </h1>
+        <div class="body-1">
+          Create a few tokens to connect to the Purify API
+        </div>
       </v-col>
       <v-spacer />
       <v-col class="mr-3">
@@ -18,7 +20,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-divider />
+    <v-divider class="my-1" />
     <v-row>
       <v-col>
         <v-text-field
@@ -66,7 +68,6 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      v-permission="['owner']"
                       icon
                       v-bind="attrs"
                       v-on="on"
@@ -161,17 +162,6 @@
                 readonly
                 :append-outer-icon="ttcIcon"
                 @click:append-outer="copyText"
-              />
-            </v-row>
-            <v-row>
-              <v-text-field
-                id="tokenName"
-                label="Token name"
-                dense
-                outlined
-                filled
-                :value="name"
-                readonly
               />
             </v-row>
             <v-row>
@@ -335,6 +325,7 @@ function useCreateToken() {
 
         newToken.value = token.value;
         exampleDialog.value = true;
+        name.value = '';
       })
       .catch(() => {});
   }

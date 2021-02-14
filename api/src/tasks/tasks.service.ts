@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
+/* istanbul ignore file */
+
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/mongoose';

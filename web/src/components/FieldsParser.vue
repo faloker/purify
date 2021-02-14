@@ -84,9 +84,12 @@ export default defineComponent({
   },
 
   setup(props) {
+    // @ts-ignore
     const fieldKey = computed(() => props.ikey.key || props.ikey);
+    // @ts-ignore
     const fieldType = computed(() => props.ikey.type || 'text');
     const fieldName = computed(
+      // @ts-ignore
       () => props.ikey.alias || parseKey(fieldKey.value)
     );
 

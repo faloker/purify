@@ -20,7 +20,11 @@
             {{ message.title }}
           </div>
         </v-row>
-        <v-row>{{ message.text }}</v-row>
+        <v-row>
+          <div class="body-1">
+            {{ message.text }}
+          </div>
+        </v-row>
       </v-col>
     </v-row>
   </v-snackbar>

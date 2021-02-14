@@ -40,14 +40,7 @@ export class ProjectsService {
 
     for (const project of projects) {
       const numUsers = await this.userModel.countDocuments({
-        $or: [
-          {
-            memberships: { $elemMatch: { $eq: project._id } },
-          },
-          {
-            role: { $eq: Role.OWNER },
-          },
-        ],
+        memberships: { $elemMatch: { $eq: project._id } },
       });
       const units = await this.unitModel
         .find({ project: project._id })
@@ -117,7 +110,7 @@ export class ProjectsService {
     const risks = new Array(5).fill(0);
 
     interval.forEach((day) => {
-      let date = day.getTime();
+      const date = day.getTime();
 
       created.push({
         x: date,

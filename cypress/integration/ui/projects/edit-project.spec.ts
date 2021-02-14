@@ -42,7 +42,6 @@ describe('Projects / Edit', () => {
       cy.contains('Save').click();
     })
 
-    cy.get('.v-dialog--active').should('not.be.visible');
     cy.contains('test name').should('be.visible');
     cy.contains('new-test').should('be.visible');
     cy.contains('new test desc').should('be.visible');

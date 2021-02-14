@@ -27,11 +27,11 @@ export class UserInterceptor implements NestInterceptor {
         throw new NotFoundException('User not found');
       }
 
-      if (req.user.role === Role.OWNER) {
-        req.params.id = user;
-      } else {
-        throw new ForbiddenException();
-      }
+      // if (req.user.role === Role.OWNER) {
+      req.params.id = user;
+      // } else {
+      //   throw new ForbiddenException();
+      // }
     }
 
     return next.handle();
