@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Injectable, BadRequestException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';

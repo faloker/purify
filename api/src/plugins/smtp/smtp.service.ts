@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Injectable } from '@nestjs/common';
 import { createTransport } from 'nodemailer';
 import { InjectModel } from '@nestjs/mongoose';
