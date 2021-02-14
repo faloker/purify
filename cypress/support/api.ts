@@ -157,13 +157,22 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('apiUploadOneshot', (apiToken) => {
-  cy.request({
-    method: 'POST',
-    url: `${Cypress.env('apiUrl')}/api/upload/oneshot/test-title-unit`,
-    body: oneshotExample,
-    headers: { apikey: apiToken },
-  }).then((resp) => {
-    cy.apiCreateTemplate(apiToken, resp.body._id);
-  });
+Cypress.Commands.add('apiUploadOneshot', (templateName: string) => {
+  cy.request('POST', `${Cypress.env('apiUrl')}/api/auth`, {
+    email: 'system@purify.com',
+    password: 'secret',
+  })
+    .its('body')
+    .then((response) => {
+      cy.request({
+        method: 'POST',
+        url: `${Cypress.env(
+          'apiUrl'
+        )}/api/units/test-name.unit/oneshots/${templateName}`,
+        body: oneshotExample,
+        auth: {
+          bearer: response.token,
+        },
+      })
+    });
 });
