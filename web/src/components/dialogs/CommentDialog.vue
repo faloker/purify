@@ -16,6 +16,7 @@
               </v-avatar>
             </template>
             <v-text-field
+              id="commentInput"
               v-model="input"
               hide-details
               flat
