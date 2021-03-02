@@ -17,9 +17,9 @@
         <v-fade-transition group hide-on-leave>
           <span
             v-if="unit"
-            key="unitName"
+            key="projectName"
             class="text-h6 font-weight-black mr-3"
-          >{{ unit.displayName }}</span>
+          >{{ project.displayName }}: {{unit.displayName}}</span>
           <span
             v-else
             key="projectName"
@@ -35,6 +35,17 @@
             <v-icon left>
               mdi-poll
             </v-icon>Overview
+          </v-btn>
+          <v-btn
+            key="all-issues"
+            class="mx-2 mb-2"
+            text
+            :to="{ name: 'ProjectIssues' }"
+            color="primary"
+          >
+            <v-icon left>
+              mdi-bug
+            </v-icon>Project Issues
           </v-btn>
           <v-btn
             key="units"

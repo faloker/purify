@@ -88,6 +88,14 @@ export const router = new Router({
           meta: { title: 'Purify | Overview' },
         },
         {
+          path: 'issues',
+          name: 'ProjectIssues',
+          components: {
+            default: () => import('@/views/ProjectIssues.vue'),
+          },
+          meta: { title: 'Purify | Project Issues' },
+        },
+        {
           path: 'units/overview',
           name: 'Units',
           meta: { title: 'Purify | Units' },
