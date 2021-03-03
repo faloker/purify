@@ -84,7 +84,6 @@ export default defineComponent({
 
       return [...new Set(result)];
     });
-    const unitName = computed(() => store.state.system.unitName);
     const projectName = computed(() => store.state.system.projectName);
 
     const queryParams = computed(() => {
@@ -125,7 +124,7 @@ export default defineComponent({
       store.commit(SET_ISSUES_QUERY, queryParams.value);
       await store
         .dispatch(ISSUES_FETCH, {
-          unitName: unitName.value,
+          projectName: projectName.value,
           ...queryParams.value,
         })
         .catch(() => {});

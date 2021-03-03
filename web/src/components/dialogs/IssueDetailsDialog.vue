@@ -361,7 +361,7 @@ export default defineComponent({
     });
 
     const projectName = computed(() => store.state.system.projectName);
-    const unitName = computed(() => store.state.system.unitName);
+    const unitName = props.issue.unit as string;
     const items = computed(() => {
       return [
         {
@@ -373,13 +373,13 @@ export default defineComponent({
           },
         },
         {
-          text: unitName.value.replace(projectName.value + '.', ''),
+          text: unitName.replace(projectName.value + '.', ''),
           disabled: false,
           to: {
-            name: 'Units',
+            name: 'Issues',
             params: {
               projectName: projectName.value,
-              unitName: unitName.value,
+              unitName: unitName,
             },
           },
         },
