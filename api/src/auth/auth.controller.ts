@@ -56,7 +56,7 @@ export class AuthController {
   })
   @UseGuards(CredentialsAuthGuard)
   async login(@Request() req, @Res() response) {
-    const tokens = await this.authService.login(req.user);
+    const tokens = await this.authService.generateUserTokens(req.user);
 
     response
       .status(200)
@@ -67,9 +67,17 @@ export class AuthController {
   @Get('refresh_token')
   @ApiExcludeEndpoint()
   async refreshToken(@Request() req, @Res() response) {
+
+    // If we are using TrustedHeaders then we should always login the user
+    // so their permissions are synced with upstream auth server
+    if (this.configService.get<string>('USE_TRUSTED_HEADER') === 'true') {
+      req.user = await this.authService.validateTrustedHeaderUser(req.headers)
+      return this.login(req,response)
+    }
+
     if (req.cookies) {
       try {
-        const tokens = await this.authService.refreshToken(
+        const tokens = await this.authService.refreshUserTokens(
           req.cookies.refreshToken
         );
 
@@ -107,7 +115,7 @@ export class AuthController {
   @Post('saml/callback')
   @UseGuards(SamlAuthGuard)
   async samlCallback(@Request() req, @Res() response) {
-    const tokens = await this.authService.login(req.user);
+    const tokens = await this.authService.generateUserTokens(req.user);
 
     response
       .cookie('refreshToken', tokens.refreshToken, this.cookiesConfig)

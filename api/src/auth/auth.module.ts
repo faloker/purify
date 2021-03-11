@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
+import { ProjectsModule } from '../projects/projects.module';
 import { PassportModule } from '@nestjs/passport';
 import { APIKeyStrategy } from './apikey.strategy';
 import { LocalStrategy } from './local.strategy';
@@ -15,6 +16,7 @@ import { SamlStrategy } from './saml.strategy';
   imports: [
     ConfigModule,
     forwardRef(() => UsersModule),
+    forwardRef(() => ProjectsModule),
     PassportModule.register({ failureFlash: true }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

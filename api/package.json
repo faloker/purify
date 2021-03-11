@@ -5,6 +5,7 @@
   "author": "",
   "license": "MIT",
   "scripts": {
+    "migrate": "export $(cat .env | xargs) && migrate-mongo up",
     "prebuild": "rimraf dist",
     "build": "NODE_ENV=production nest build",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -38,6 +39,7 @@
     "helmet": "^4.4.1",
     "jira-connector": "^2.16.1",
     "lodash": "^4.17.20",
+    "migrate-mongo": "^8.1.4",
     "mongoose": "^5.11.16",
     "nanoid": "^3.1.20",
     "nodemailer": "^6.4.18",
@@ -47,6 +49,7 @@
     "passport-local": "^1.0.0",
     "passport-localapikey-update": "^0.6.0",
     "passport-saml": "^2.0.5",
+    "passport-trusted-header": "^1.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",

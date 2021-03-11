@@ -64,7 +64,7 @@
                   <p
                     class="ml-2"
                   >
-                    Click 
+                    Click
                     <a
                       class="text-decoration-underline"
                       @click.stop="forceLogin = !forceLogin"
@@ -74,7 +74,7 @@
               </v-col>
               <v-slide-y-transition>
                 <v-col
-                  v-if="!systemConfig.saml || forceLogin"
+                  v-if="(!systemConfig.upstreamAuth && !systemConfig.saml) || forceLogin"
                   class="sign-in-block mx-1"
                 >
                   <v-row>
@@ -108,6 +108,25 @@
                       Sign In
                     </v-btn>
                   </v-row>
+                </v-col>
+                <v-col
+                  v-if="systemConfig.upstreamAuth"
+                  class="sign-in-block mx-1"
+                >
+                  <v-row
+                    align="center"
+                    justify="center"
+                    class="mb-3"
+                  >
+                    <v-btn
+                        block
+                        color="primary"
+                        @click.prevent="continueToOverview"
+                      >
+                        Continue
+                    </v-btn>
+                  </v-row>
+
                 </v-col>
               </v-slide-y-transition>
             </v-row>
@@ -171,10 +190,15 @@ export default defineComponent({
         });
     }
 
+    function continueToOverview() {
+      router.push({ name: 'Overview' });
+    }
+
     return {
       tabs,
       email,
       login,
+      continueToOverview,
       loading,
       inProgress,
       password,

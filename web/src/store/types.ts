@@ -2,6 +2,7 @@ export interface SystemConfig {
   jira: boolean;
   registration: boolean;
   saml: boolean;
+  upstreamAuth: boolean;
 }
 
 export interface Message {

@@ -15,7 +15,12 @@ import {
 
 @Module
 export default class System extends VuexModule {
-  config: SystemConfig = { jira: false, registration: true, saml: false };
+  config: SystemConfig = {
+    jira: false,
+    registration: true,
+    saml: false,
+    upstreamAuth: false,
+  };
   message: Message = {
     text: '',
     title: '',
