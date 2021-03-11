@@ -68,33 +68,6 @@ Collect all your findings in one place, review/validate/track them, collaborate 
   - email: demo@user.com
   - password: 123456
 
-## Getting started with Development
-### Terminal 1:
-```
-docker run -p 27017:27017 --rm mongo:4.4.1
-```
-
-### Terminal 2:
-```
-cd web
-npm install
-npm run serve
-```
-
-### Terminal 3:
-```
-cd api
-cp .env.dev .env
-npm install
-```
-Replace `MONGODB_URI=mongodb://mongo:27017` with `MONGODB_URI=mongodb://localhost:27017` in `.env`
-```
-npm run migrate
-npm run start:dev
-```
-
-Log in to localhost:8080 as `system@purify.com` and `secret`
-
 ## Questions
 
 For questions and support please use [Github Discussions](https://github.com/faloker/purify/discussions/new). The issue list of this repo is exclusively for bug reports and feature requests.
