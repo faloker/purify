@@ -7,8 +7,7 @@ import { CreateProjectDto } from '../projects/dto/projects.dto'
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/interfaces/user.interface';
 import { ConfigService } from '@nestjs/config';
-import { validate } from 'class-validator';
-import { plainToClass } from 'class-transformer';
+import { validateClass } from '../utils/validate';
 
 @Injectable()
 export class AuthService {
@@ -80,11 +79,7 @@ export class AuthService {
         role: 'observer',
         ssoBypass: false,
       }
-      await validate(plainToClass(CreateUserDto, createUserDto)).then(errors => {
-        if (errors.length > 0) {
-          throw new Error(`Invalid User ${email}`)
-        }
-      });
+      await validateClass(CreateUserDto, createUserDto);
       user = await this.usersService.createUser(createUserDto);
     }
 
@@ -131,12 +126,7 @@ export class AuthService {
             displayName: projectName,
           }
 
-          await validate(plainToClass(CreateProjectDto, createProjectDto)).then(errors => {
-            if (errors.length > 0) {
-              throw new Error(`Invalid Project ${projectName}`)
-            }
-          });
-
+          await validateClass(CreateProjectDto, createProjectDto);
           project = await this.projectsService.create(createProjectDto);
         }
         return project._id
