@@ -261,7 +261,7 @@ export class ProjectsService {
     return this.projectModel.findOne({ name: projectName }).lean();
   }
 
-  async findMany(projectNames: Array<string>) {
+  async findMany(projectNames: string[]) {
     return this.projectModel.find({ name:  { $in: projectNames } }).lean();
   }
 

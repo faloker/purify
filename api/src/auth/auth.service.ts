@@ -19,7 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(email: string, pass: string): Promise<User | null> {
     const user = await this.usersService.findOne({ email, type: 'local' });
 
     if (
@@ -32,7 +32,7 @@ export class AuthService {
     }
   }
 
-  async validateADUser(user: any): Promise<any> {
+  async validateADUser(user: any): Promise<User | undefined> {
     const entity = await this.usersService.findOne({
       email: user.uid,
       type: 'ldap',
@@ -50,7 +50,7 @@ export class AuthService {
     }
   }
 
-  async validateTrustedHeaderUser(headers: any): Promise<any> {
+  async validateTrustedHeaderUser(headers: any): Promise<User> {
     const emailHeader = this.configService.get<string>('TRUSTED_HEADER_EMAIL_HEADER_NAME');
     const editPermissions = this.configService.get<string>('TRUSTED_HEADER_MANAGE_PERMISSIONS') === "true";
     const groupHeader = this.configService.get<string>('TRUSTED_HEADER_GROUP_HEADER_NAME');
@@ -71,12 +71,12 @@ export class AuthService {
 
     const email = headers[emailHeader]
     let user = await this.usersService.findOne({
-      email: email,
+      email,
     });
 
     if (!user) {
       const createUserDto = {
-        email: email,
+        email,
         role: 'observer',
         ssoBypass: false,
       }
@@ -163,7 +163,7 @@ export class AuthService {
         })
 
         user = await this.usersService.findOne({
-          email: email,
+          email,
         });
       }
     }
