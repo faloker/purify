@@ -9,6 +9,12 @@ import { User } from '../users/interfaces/user.interface';
 import { ConfigService } from '@nestjs/config';
 import { validateClass } from '../utils/validate';
 
+function filterGroups(groupNames: string[], prefix: string) {
+  return groupNames
+      .filter((groupName) => groupName.startsWith(prefix))
+      .map((groupName) => groupName.slice(prefix.length))
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -100,9 +106,7 @@ export class AuthService {
       let userUpdateRequired = false
 
       // Extract Roles and check if user needs to be updated
-      const roles = groupNames
-        .filter((groupName) => groupName.startsWith(groupRolePrefix))
-        .map((groupName) => groupName.slice(groupRolePrefix.length))
+      const roles = filterGroups(groupNames, groupRolePrefix)
 
       // Get highest privilege role in roles list (if there are multiple)
       const targetRole = ['owner', 'admin', 'user', 'observer'].find((roleString) => roles.includes(roleString)) || 'observer';
@@ -112,9 +116,7 @@ export class AuthService {
       }
 
       // Extract Memberships, create projects and check if user needs to be updated
-      const membershipNames: string[] = groupNames
-        .filter((groupName) => groupName.startsWith(groupProjectPrefix))
-        .map((groupName) => groupName.slice(groupProjectPrefix.length))
+      const membershipNames: string[] = filterGroups(groupNames, groupProjectPrefix)
 
       const projects = await this.projectsService.findMany(membershipNames)
 
