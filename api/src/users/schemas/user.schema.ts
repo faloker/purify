@@ -19,7 +19,7 @@ export const UserSchema = new Schema({
   refreshToken: String,
   type: {
     type: String,
-    enum: ['local', 'ldap', 'saml'],
+    enum: ['local', 'ldap', 'saml', 'headers'],
     default: 'local',
   },
   role: {

@@ -16,6 +16,7 @@ export class SystemService {
       registration:
         this.configService.get<string>('ALLOW_REGISTRATION') === 'true',
       saml: this.configService.get<string>('USE_SAML') === 'true',
+      upstreamAuth: this.configService.get<string>('USE_TRUSTED_HEADER') === 'true',
     };
   }
 }

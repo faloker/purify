@@ -17,7 +17,10 @@ async function bootstrap() {
   const configService = app.get<ConfigService>(ConfigService);
 
   if (configService.get<string>('NODE_ENV') === 'local') {
-    app.use(cors());
+    app.use(cors({
+      origin: true,
+      credentials: true,
+    }));
   }
 
   app.setGlobalPrefix('api');

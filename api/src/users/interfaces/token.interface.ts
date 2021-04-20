@@ -18,6 +18,6 @@ export enum TokenType {
 
 interface Activity {
   date: Date;
-  fromIP: String;
-  userAgent: String;
+  fromIP: string;
+  userAgent: string;
 }
