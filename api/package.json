@@ -41,7 +41,7 @@
     "lodash": "^4.17.20",
     "migrate-mongo": "^8.1.4",
     "mongoose": "^5.11.16",
-    "nanoid": "^3.1.20",
+    "nanoid": "^3.1.31",
     "nodemailer": "^6.4.18",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
