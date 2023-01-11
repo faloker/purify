@@ -31,7 +31,7 @@
     "@slack/webhook": "^6.0.0",
     "cache-manager": "^3.4.0",
     "class-transformer": "^0.3.2",
-    "class-validator": "^0.13.1",
+    "class-validator": "^0.14.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
